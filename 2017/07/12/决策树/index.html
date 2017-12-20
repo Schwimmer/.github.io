@@ -89,7 +89,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="决策树,python," />
+  <meta name="keywords" content="python,决策树," />
 
 
 
@@ -106,13 +106,13 @@
 
 
 <meta name="description" content="1 决策树公式符号$$\begin{align}&amp;amp;Ent(X)   熵 \\&amp;amp;Gain(X)   信息增益\\&amp;amp;Gini(X)   基尼指数\\&amp;amp;D   训练集\\&amp;amp;A   训练集的某个特征\\&amp;amp;N   特征A的类别总数\\&amp;amp;K   标签分类的数量\\\end{align}$$ 1.1 关键步骤-python实现创建决策树分支的createB">
-<meta name="keywords" content="决策树,python">
+<meta name="keywords" content="python,决策树">
 <meta property="og:type" content="article">
 <meta property="og:title" content="决策树">
 <meta property="og:url" content="http://Schwimmer.github.io/2017/07/12/决策树/index.html">
 <meta property="og:site_name" content="Schwimmer&#39;s Blog">
 <meta property="og:description" content="1 决策树公式符号$$\begin{align}&amp;amp;Ent(X)   熵 \\&amp;amp;Gain(X)   信息增益\\&amp;amp;Gini(X)   基尼指数\\&amp;amp;D   训练集\\&amp;amp;A   训练集的某个特征\\&amp;amp;N   特征A的类别总数\\&amp;amp;K   标签分类的数量\\\end{align}$$ 1.1 关键步骤-python实现创建决策树分支的createB">
-<meta property="og:updated_time" content="2017-07-13T08:32:38.300Z">
+<meta property="og:updated_time" content="2017-08-06T08:24:31.097Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="决策树">
 <meta name="twitter:description" content="1 决策树公式符号$$\begin{align}&amp;amp;Ent(X)   熵 \\&amp;amp;Gain(X)   信息增益\\&amp;amp;Gini(X)   基尼指数\\&amp;amp;D   训练集\\&amp;amp;A   训练集的某个特征\\&amp;amp;N   特征A的类别总数\\&amp;amp;K   标签分类的数量\\\end{align}$$ 1.1 关键步骤-python实现创建决策树分支的createB">
@@ -385,15 +385,6 @@
 <p>在面对类别比较少的离散数据时，两者差不多。但如果面对连续的数据（如体重、身高、年龄、距离等），或者每列数据没有明显的类别之分（最极端的例子的该列所有数据都独一无二）。</p>
 <p>那么根据信息增益公式，$Ent(D)$不变，当数据独一无二时，<br>$$<br>Ent(D|A)=\sum_{i=1}^n \frac {1}{n}Ent(D_i)<br>$$<br>这样$Ent(D|A)$最小，程序会倾向于这种划分，导致划分效果差。</p>
 <p>信息增益比的公式为<br>$$<br>Gain_R(D,A)=\frac {Gain(D,A)}{Ent(D)}<br>$$<br>可以理解成对分支数目的惩罚项。</p>
-<h2 id="1-4-决策树的剪枝"><a href="#1-4-决策树的剪枝" class="headerlink" title="1.4 决策树的剪枝"></a>1.4 决策树的剪枝</h2><p>剪枝是为了解决过拟合。通过极小化决策树整体的损失函数来实现。设树T的叶结点个数为$|T|$，t是T的叶结点，该叶结点有$N_t$个样本点，其中k类的样本点有$N_{tk}$个，则损失函数定义为<br>$$<br>C_{\alpha}(T) = \sum_{t=1}^T N_tEnt_t(T) + \alpha|T|<br>$$<br>由于<br>$$<br>Ent_t(T) =  - \sum_{k=1}^K \frac {N_{tk}}{N_t} log_2\frac {N_{tk}}{N_t}<br>$$<br>则令<br>$$<br>C(T) = - \sum_{t=1}^T\sum_{k=1}^KN_{tk}log_2\frac {N_{tk}}{N_t}<br>$$<br>于是<br>$$<br>C_\alpha(T) = C(T) +\alpha|T|<br>$$<br>这里，$C(T)$表示训练数据的预测误差，$|T|$表示模型复杂度，$\alpha$控制两者影响，较大时选择较简单的树，反之亦然，等于0时就不考虑模型复杂度。</p>
-<p>两种剪枝思路</p>
-<p><strong>预剪枝（Pre-Pruning）</strong></p>
-<p>构造的同时剪枝。比如设一个阈值，熵减小的数量小于这个阈值，即使还可以继续降低熵，也停止继续创建分支。但实际效果不好</p>
-<p><strong>后剪枝（Post-Pruning）</strong></p>
-<p>三种主要方法</p>
-<p><strong>1）REP错误率降低剪枝</strong></p>
-<p>简单粗暴，对每个非叶结点的子树，用其替换一个叶结点，类别用子树覆盖训练样本中类最多的代替。这样产生的简化树再跟原树比较在测试数据集中的效果。若错误更少就替换。算法以Bottom-up的方式遍历所有的子树，直到没有任何改进时，终止。</p>
-<p><strong>2）PEP悲观剪枝</strong></p>
 <h2 id="1-5-CART算法"><a href="#1-5-CART算法" class="headerlink" title="1.5 CART算法"></a>1.5 CART算法</h2><p>CART是分类与回归树，由特征选择、树的生成和剪枝组成。</p>
 <p>CART是在给定输入变量X条件下输出随机变量Y的条件概率分布的方法。CART假设决策树是<strong>二叉树</strong>，内部结点特征的取值为是和否，约定左是右否。</p>
 <p>决策树等价于递归的二分每个特征，将输入空间即特征空间划分为有限个单元，并在这些单元上确定预测的概率分布，也就是在输入给定的条件下输出的条件概率分布。</p>
@@ -405,14 +396,31 @@
 <p><strong>算法过程</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">输入：训练集D，停止条件</div><div class="line">输出：CART决策树</div><div class="line"></div><div class="line">从根结点递归对每个结点进行以下操作，构建二叉树：</div><div class="line">1）对每个特征和可能的取值a，根据A=a的为是或否，将D分割成D1和D2，计算基尼指数</div><div class="line">2）选出基尼指数最小的特征及其对应的切分点作为最优特征与最优切分点。</div><div class="line">3）对两个子结点递归调用#1、#2，直至满足停止条件</div><div class="line">4）生成CART决策树</div></pre></td></tr></table></figure>
 <p>3）CART剪枝</p>
-<p>1.6 连续和缺失值处理</p>
-<p>1）连续值离散化</p>
-<p>最简单的策略是<strong>二分法</strong>，也是C4.5采用的机制。</p>
+<h2 id="1-6-决策树的剪枝"><a href="#1-6-决策树的剪枝" class="headerlink" title="1.6 决策树的剪枝"></a>1.6 决策树的剪枝</h2><blockquote>
+<p>如何判断剪枝后泛华性能提升？</p>
+<p>用<strong>留出法</strong>。将一部分训练集作为验证集。</p>
+</blockquote>
+<p>剪枝是为了解决过拟合。通过极小化决策树整体的损失函数来实现。设树T的叶结点个数为$|T|$，t是T的叶结点，该叶结点有$N_t$个样本点，其中k类的样本点有$N_{tk}$个，则损失函数定义为<br>$$<br>C_{\alpha}(T) = \sum_{t=1}^T N_tEnt_t(T) + \alpha|T|<br>$$<br>由于<br>$$<br>Ent_t(T) =  - \sum_{k=1}^K \frac {N_{tk}}{N_t} log_2\frac {N_{tk}}{N_t}<br>$$<br>则令<br>$$<br>C(T) = - \sum_{t=1}^T\sum_{k=1}^KN_{tk}log_2\frac {N_{tk}}{N_t}<br>$$<br>于是<br>$$<br>C_\alpha(T) = C(T) +\alpha|T|<br>$$<br>这里，$C(T)$表示训练数据的预测误差，$|T|$表示模型复杂度，$\alpha$控制两者影响，较大时选择较简单的树，反之亦然，等于0时就不考虑模型复杂度。</p>
+<p>两种剪枝思路</p>
+<p><strong>预剪枝（Pre-Pruning）</strong></p>
+<p>构造的同时剪枝。比如设一个阈值，熵减小的数量小于这个阈值，即使还可以继续降低熵，也停止继续创建分支。</p>
+<blockquote>
+<p>有些分支虽然当前划分时性能下降，但后续划分有可能又会提高，仅根据当前验证集来判断是否要继续划分，往往会导致欠拟合。</p>
+</blockquote>
+<p><strong>后剪枝（Post-Pruning）</strong></p>
+<p>三种主要方法</p>
+<p><strong>1）REP错误率降低剪枝</strong></p>
+<p>简单粗暴，对每个非叶结点的子树，用其替换一个叶结点，类别用子树覆盖训练样本中类最多的代替。这样产生的简化树再跟原树比较在测试数据集中的效果。若错误更少就替换。算法以Bottom-up的方式遍历所有的子树，直到没有任何改进时，终止。</p>
+<p><strong>2）PEP悲观剪枝</strong></p>
+<h2 id="1-7-连续和缺失值处理"><a href="#1-7-连续和缺失值处理" class="headerlink" title="1.7 连续和缺失值处理"></a>1.7 连续和缺失值处理</h2><p>1）连续值离散化</p>
+<p>jueceshu最简单的策略是<strong>二分法</strong>，也是C4.5采用的机制。</p>
+<p>对于连续属性a，可以考察包含n-1个元素的候选划分点集合<br>$$<br>T_a=\left \{  \frac {a^i+a^{i+1}} {2} | 1 \leqslant i \leqslant n-1    \right \}<br>$$<br>即把区间的中位点作为候选划分点，然后像离散值那样考察划分点，再选出最优的划分点。</p>
 <p>2）缺失值</p>
 <p>考虑：①如何在属性值缺失的情况下进行划分属性选择？②给定划分属性，若样本在该属性的值缺失，如何划分？</p>
-<p>对于问题①：靠<strong>权重</strong>。</p>
-<p>给定D和特征A，令$\widetilde D$表示D在特征A上没有缺失值的样本子集。假设A有N个可取值$\{A^1,A^2,…,A^N\}$，令$\widetilde D^n$表示取值为$A^n$的样本子集。$\widetilde D^k$    表示$\widetilde D$中属于第k类的样本子集。对每个样本x赋权重$W_x$并定义<br>$$<br>p=\frac {\sum_{x \in \widetilde D} w_x}{\sum_{x \in D} w_x} \\<br>$$</p>
-<p>参考</p>
+<p>靠<strong>权重</strong>。在判定划分时，权重相等，用已知的样本来划分属性。对于每个划分属性，若属性缺失，将缺失的记录根据属性的每个划分所占比例作为权重，分到属性的每个子结点中。</p>
+<h2 id="1-8-多变量决策树"><a href="#1-8-多变量决策树" class="headerlink" title="1.8 多变量决策树"></a>1.8 多变量决策树</h2><p>非子结点不再针对某个属性，而是多个属性的线性组合。即，每个非子结点都是一个线性分类器。</p>
+<h1 id="2、随机森林"><a href="#2、随机森林" class="headerlink" title="2、随机森林"></a>2、随机森林</h1><p>见《集成学习》</p>
+<h1 id="3、GBDT"><a href="#3、GBDT" class="headerlink" title="3、GBDT"></a>3、GBDT</h1><p>参考</p>
 <p>统计学习方法</p>
 <p><a href="http://www.jianshu.com/p/794d08199e5e" target="_blank" rel="external">决策树的剪枝问题</a></p>
 
@@ -444,9 +452,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/决策树/" rel="tag"># 决策树</a>
-          
             <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/决策树/" rel="tag"># 决策树</a>
           
         </div>
       
@@ -459,8 +467,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/" rel="next" title="浅谈在线最优化求解算法-以CTR预测模型为例">
-                <i class="fa fa-chevron-left"></i> 浅谈在线最优化求解算法-以CTR预测模型为例
+              <a href="/2017/07/12/利率计算/" rel="next" title="利率计算">
+                <i class="fa fa-chevron-left"></i> 利率计算
               </a>
             
           </div>
@@ -469,8 +477,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/12/Hexo + Github 搭建博客入门/" rel="prev" title="Hexo + Github 搭建博客入门">
-                Hexo + Github 搭建博客入门 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/07/12/Elastic Search 配置和使用/" rel="prev" title="Elastic Search 配置和使用">
+                Elastic Search 配置和使用 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -543,7 +551,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">20</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -554,7 +562,7 @@
             
             <div class="site-state-item site-state-categories">
               
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">10</span>
                 <span class="site-state-item-name">分类</span>
               
             </div>
@@ -565,7 +573,7 @@
             
             <div class="site-state-item site-state-tags">
               
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">标签</span>
               
             </div>
@@ -600,7 +608,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-决策树"><span class="nav-number">1.</span> <span class="nav-text">1 决策树</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-关键步骤-python实现"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 关键步骤-python实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-ID3算法"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 ID3算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-C4-5算法"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 C4.5算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-决策树的剪枝"><span class="nav-number">1.4.</span> <span class="nav-text">1.4 决策树的剪枝</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-5-CART算法"><span class="nav-number">1.5.</span> <span class="nav-text">1.5 CART算法</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-决策树"><span class="nav-number">1.</span> <span class="nav-text">1 决策树</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-关键步骤-python实现"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 关键步骤-python实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-ID3算法"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 ID3算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-C4-5算法"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 C4.5算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-5-CART算法"><span class="nav-number">1.4.</span> <span class="nav-text">1.5 CART算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-6-决策树的剪枝"><span class="nav-number">1.5.</span> <span class="nav-text">1.6 决策树的剪枝</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-7-连续和缺失值处理"><span class="nav-number">1.6.</span> <span class="nav-text">1.7 连续和缺失值处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-8-多变量决策树"><span class="nav-number">1.7.</span> <span class="nav-text">1.8 多变量决策树</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2、随机森林"><span class="nav-number">2.</span> <span class="nav-text">2、随机森林</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3、GBDT"><span class="nav-number">3.</span> <span class="nav-text">3、GBDT</span></a></li></ol></div>
             
 
           </div>

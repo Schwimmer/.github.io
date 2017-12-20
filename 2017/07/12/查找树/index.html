@@ -1,0 +1,794 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="树," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="动态查找树主要有：二叉查找树（Binary Search Tree），平衡二叉查找树（Balanced Binary Search Tree），红黑树 (Red-Black Tree )，B-tree/B+-tree/ B*-tree (B~Tree)。前三者是典型的二叉查找树结构，其查找的时间复杂度*O(log2N)*与树的深度相关，那么降低树的深度自然对查找效率是有所提高的；还有一个实际问题：">
+<meta name="keywords" content="树">
+<meta property="og:type" content="article">
+<meta property="og:title" content="查找树">
+<meta property="og:url" content="http://Schwimmer.github.io/2017/07/12/查找树/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="动态查找树主要有：二叉查找树（Binary Search Tree），平衡二叉查找树（Balanced Binary Search Tree），红黑树 (Red-Black Tree )，B-tree/B+-tree/ B*-tree (B~Tree)。前三者是典型的二叉查找树结构，其查找的时间复杂度*O(log2N)*与树的深度相关，那么降低树的深度自然对查找效率是有所提高的；还有一个实际问题：">
+<meta property="og:image" content="http://static.oschina.net/uploads/img/201301/06112317_yHxY.jpg">
+<meta property="og:image" content="http://static.oschina.net/uploads/img/201301/06112317_ssDu.jpg">
+<meta property="og:image" content="http://static.oschina.net/uploads/img/201301/06112317_NTuh.jpg">
+<meta property="og:image" content="http://static.oschina.net/uploads/img/201301/06112317_djvw.jpg">
+<meta property="og:image" content="http://static.oschina.net/uploads/img/201301/06112318_AOeO.jpg">
+<meta property="og:updated_time" content="2017-07-16T04:44:25.307Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="查找树">
+<meta name="twitter:description" content="动态查找树主要有：二叉查找树（Binary Search Tree），平衡二叉查找树（Balanced Binary Search Tree），红黑树 (Red-Black Tree )，B-tree/B+-tree/ B*-tree (B~Tree)。前三者是典型的二叉查找树结构，其查找的时间复杂度*O(log2N)*与树的深度相关，那么降低树的深度自然对查找效率是有所提高的；还有一个实际问题：">
+<meta name="twitter:image" content="http://static.oschina.net/uploads/img/201301/06112317_yHxY.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://Schwimmer.github.io/2017/07/12/查找树/"/>
+
+
+
+
+
+  <title> 查找树 | Schwimmer's Blog </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/查找树/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                查找树
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">
+                2017-07-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法与数据结构/" itemprop="url" rel="index">
+                    <span itemprop="name">算法与数据结构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong>动态查找树主要有：二叉查找树（Binary Search Tree），平衡二叉查找树（Balanced Binary Search Tree），红黑树 (Red-Black Tree )，B-tree/B+-tree/ B*-tree (B~Tree)。前三者是典型的二叉查找树结构，其查找的时间复杂度*</strong>O<em>(log2</em>N<em>)<em>*与树的深度相关，那么降低树的深度自然对查找效率是有所提高的；还有一个实际问题：就是大规模数据存储中，实现索引查询这样一个实际背景下，树节点存储的元素数量是有限的（如果元素数量非常多的话，查找就退化成节点内部的线性查找了），这样导致二叉查找树结构由于树的深度过大而造成磁盘I/O读写过于频繁，进而导致查询效率低下（为什么会出现这种情况，待会在外部存储器-磁盘中有所解释），那么如何减少树的深度（当然是不能减少查询的数据量），一个基本的想法就是：采用多叉树结构（由于树节点元素数量是有限的，自然该节点的子树数量也就是有限的）。</em></em></p>
+<p><strong>这样我们就提出了一个新的查找树结构——多路查找树。根据平衡二叉树的启发，自然就想到平衡多路查找树结构，也就是B树</strong></p>
+<h1 id="1、B树"><a href="#1、B树" class="headerlink" title="1、B树"></a>1、B树</h1><h2 id="1-1-原理"><a href="#1-1-原理" class="headerlink" title="1.1 原理"></a>1.1 原理</h2><p>二叉搜索树：</p>
+<ol>
+<li>所有非叶子结点至多拥有两个儿子（ Left 和 Right ）；</li>
+<li>所有结点存储一个关键字；</li>
+<li>非叶子结点的左指针指向小于其关键字的子树，右指针指向大于其关键字的子树；</li>
+</ol>
+<p><img src="http://static.oschina.net/uploads/img/201301/06112317_yHxY.jpg" alt=""></p>
+<h2 id="1-2-搜索方法"><a href="#1-2-搜索方法" class="headerlink" title="1.2 搜索方法"></a>1.2 搜索方法</h2><p> B 树的搜索，从根结点开始，如果查询的关键字与结点的关键字相等，那么就命中；否则，如果查询关键字比 结点关键字小，就进入左儿子；如果比结点关键字大，就进入右儿子；如果左儿子或右儿子的指针为空，则报告找不到相应的关键字；</p>
+<p> 如果 B 树的所有非叶子结点的左右子树的 结点数目均保持差不多（平衡），那么 B 树的搜索性能逼近二分查找；但它比连续内存空间的二分查找的优点是，改变 B 树结构（插入与删除结点）不需要移动大段的内存数据，甚至通常是常数开销；如</p>
+<p><img src="http://static.oschina.net/uploads/img/201301/06112317_ssDu.jpg" alt=""></p>
+<p>但 B 树在经过多次插入与删除后，有可能导致不同的结构：</p>
+<p><img src="http://static.oschina.net/uploads/img/201301/06112317_NTuh.jpg" alt=""></p>
+<p>右边也是一个 B 树，但 它的搜索性能已经是线性的了；同样的关键字集合有可能导致不同的树结构索引；所以，使用 B 树还 要考虑尽可能让 B 树保持左图的结构，和避免右图的结构，也就是所谓的“平衡”问题；       </p>
+<p>实际使用的 B 树都是在原 B 树的基 础上加上平衡算法，即“平衡二叉树”；如何保持 B 树结点分布均匀的平衡算法是平衡二叉树的 关键；<strong>平衡算法</strong>是一种在 B 树中插入和删除结点的策略；</p>
+<h1 id="2、B-树"><a href="#2、B-树" class="headerlink" title="2、B-树"></a>2、B-树</h1><h2 id="1-1-原理-1"><a href="#1-1-原理-1" class="headerlink" title="1.1 原理"></a>1.1 原理</h2><p>是一种多路搜索树（并不是二叉的）：</p>
+<p>​       1. 定义任意非叶子结点最多只有 M 个儿 子；且 M&gt;2 ；</p>
+<p>​       2. 根结点的儿子数为 [2, M] ；</p>
+<p>​       3. 除根结点以外的非叶子结点的儿子数为 [M/2, M] ；</p>
+<p>​       4. 每个结点存放至少 M/2-1 （取 上整）和至多 M-1 个关键字；（至少 2 个关键 字）</p>
+<p>​       5. 非叶子结点的关键字个数 = 指向儿 子的指针个数 -1 ；</p>
+<p>​       6. 非叶子结点的关键字： K[1], K[2], …, K[M-1] ；且 K[i] &lt; K[i+1] ；</p>
+<p>​       7. 非叶子结点的指针： P[1], P[2], …, P[M] ；其中 P[1] 指向关键字小于 K[1] 的子树， P[M] 指向关键字大于K[M-1] 的子树，其它 P[i] 指 向关键字属于 (K[i-1], K[i]) 的子树；</p>
+<p>​       8. 所有叶子结点位于同一层；</p>
+<p>如：（ M=3 ）</p>
+<p><img src="http://static.oschina.net/uploads/img/201301/06112317_djvw.jpg" alt=""></p>
+<p>B- 树的特性：</p>
+<p>​       1. 关键字集合分布在整颗树中；</p>
+<p>​       2. 任何一个关键字出现且只出现在一个结点中；</p>
+<p>​       3. 搜索有可能在非叶子结点结束；</p>
+<p>​       4. 其搜索性能等价于在关键字全集内做一次二分查找；</p>
+<p>​       5. 自动层次控制；</p>
+<p>​       由于限制了除根结点以外的非叶子结点，至少含有 M/2 个儿子，确保了结点的至少利用率，其最底搜索性能为：</p>
+<p><img src="http://static.oschina.net/uploads/img/201301/06112318_AOeO.jpg" alt=""></p>
+<p> 其中， M 为设定的非叶子结点最多子树个 数， N 为关键字总数；</p>
+<p>​       所以 B- 树的性能<strong>总是等价于二分查找 （与 M 值无关）</strong>，也就没有 B 树平衡 的问题；</p>
+<p>​       由于 M/2 的限制，在插入结点时，如果 结点已满，需要将结点分裂为两个各占 M/2 的结点；删除结点时，需将两个不足 M/2 的 兄弟结点合并；</p>
+<h2 id="1-2-方法"><a href="#1-2-方法" class="headerlink" title="1.2 方法"></a>1.2 方法</h2><p>参考</p>
+<p><a href="http://www.oschina.net/question/565065_86338" target="_blank" rel="external">BTree,B-Tree,B+Tree,B*Tree都是什么</a></p>
+<p><a href="http://blog.csdn.net/hbhhww/article/details/8206846" target="_blank" rel="external">B-tree/B+tree/B*tree</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/树/" rel="tag"># 树</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/12/集成学习/" rel="next" title="集成学习">
+                <i class="fa fa-chevron-left"></i> 集成学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/12/利率计算/" rel="prev" title="利率计算">
+                利率计算 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Schwimmer" />
+          <p class="site-author-name" itemprop="name">Schwimmer</p>
+           
+              <p class="site-description motion-element" itemprop="description">Record and Think!</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1、B树"><span class="nav-number">1.</span> <span class="nav-text">1、B树</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-原理"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-搜索方法"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 搜索方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2、B-树"><span class="nav-number">2.</span> <span class="nav-text">2、B-树</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-原理-1"><span class="nav-number">2.1.</span> <span class="nav-text">1.1 原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-方法"><span class="nav-number">2.2.</span> <span class="nav-text">1.2 方法</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+<div>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+本站总访问量 <span id="busuanzi_value_site_pv"></span> 次&nbsp&nbsp&nbsp
+本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</div>
+
+
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

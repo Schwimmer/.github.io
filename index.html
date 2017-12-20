@@ -268,6 +268,1440 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/12/20/机器学习笔记-最大熵/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/12/20/机器学习笔记-最大熵/" itemprop="url">
+                  机器学习笔记-最大熵
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-20T00:00:00+08:00">
+                2017-12-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习算法/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="机器学习笔记-最大熵"><a href="#机器学习笔记-最大熵" class="headerlink" title="机器学习笔记-最大熵"></a>机器学习笔记-最大熵</h1><h1 id="1、最大熵原理"><a href="#1、最大熵原理" class="headerlink" title="1、最大熵原理"></a>1、最大熵原理</h1><p>日常生活中，很多事情的发生表现出一定的随机性，试验的结果往往是不确定的，也不知道这个随机现象所服从的概率分布。<strong>最大熵的实质</strong>就是，在已知部分知识的前提下，关于未知分布最合理的推断就是符合已知知识最不确定或者最随机的推断。任何其他的选择都意味着我们增加了其他的约束和假设。</p>
+<p>将最大熵应用到分类，就是最大熵模型。给定一个训练集：<br>$$<br>T = \{  (x_1,y_1),  (x_2,y_2),…, (x_N,y_N)\}<br>$$<br>其中$x_i \in X$是输入，$y_i \in Y$是输出，X和Y表示输入和输出空间。N为样本数。<strong>目标是</strong>，利用最大熵原理选出一个最好的分类模型，即对于任意给定的输入$x \in X$，可以以概率$p(y|x)$输出$y \in Y$ 。</p>
+<p>按照最大熵原理，应该<strong>优先保证模型满足已知的所有约束</strong>。思路是，从训练数据T中抽取若干有用的特征，要求这些特征在T上关于经验分布$\tilde{p}(x,y)$的数学期望与它们在模型中关于$p(x,y)$的数学期望相等。这样，一个特征就是一个约束了。</p>
+<p>这里就涉及到，<strong>特征如何刻画？经验分布如何表示？</strong></p>
+<h1 id="2、特征函数"><a href="#2、特征函数" class="headerlink" title="2、特征函数"></a>2、特征函数</h1><p>假设通过特征选择，抽取若干特征。特征通常由特征函数来表示。例如<br>$$<br>f(x,y) =\left\{\begin{matrix}<br>\begin{aligned}<br>&amp; 1，若x,y满足某个事实 \ <br>&amp; 0，否则<br>\end{aligned}<br>\end{matrix}\right.<br>$$<br>这里的特征不是指输入的某个特征，而是指输入和输出共同的特征。</p>
+<blockquote>
+<p>例如，假设我们需要判断“打”是动词还是量词，已知的训练数据有</p>
+<p>(x1,y1)=(一打火柴，量词);</p>
+<p>(x2,y2)=(三打啤酒，量词);</p>
+<p>(x3,y3)=(打电话，动词);</p>
+<p>(x4,y4)=(打篮球，动词);</p>
+<p>通过观察，发现“打”前面是数字时，是量词，“打”后面是名词时，是动词。这就是从训练数据中提取的两个特征，可分别用特征函数表示为</p>
+</blockquote>
+<h1 id="3、经验分布"><a href="#3、经验分布" class="headerlink" title="3、经验分布"></a>3、经验分布</h1><p>经验（概率）分布就是通过对训练集T进行统计得到的分布，用$\tilde p$表示。这里列举两个经验分布<br>$$<br>\tilde p(x,y) = \frac {count(x,y)} {N} , \tilde p(x)=\frac {count(x)} {N}<br>$$<br>其中，count表示出现的次数。</p>
+<h1 id="4、约束条件"><a href="#4、约束条件" class="headerlink" title="4、约束条件"></a>4、约束条件</h1><p>对于任意一个特征函数f，$E_{\tilde p}f$ 表示f在训练数据T上关于$\tilde p(x,y)$的数学期望， $E_{p}f$ 表示f在训练数据T上关于$p(x,y)$的数学期望。按照期望的定义，我们有<br>$$<br>E_{\tilde p}f=\sum_{x,y}\tilde p(x,y)f(x,y)<br>$$</p>
+<p>$$<br>E_{ p}f=\sum_{x,y} p(x,y)f(x,y)<br>$$</p>
+<p>其中，p(x,y)是未知的，而建模的目标是生成$p(y|x)$，因此，根据Bayes定理，$p(x,y)=p(x)p(y|x)$。在样本数量足够的条件下，$p(x)$可以用$\tilde p(x)$近似表示。这样<br>$$<br>E_{ p}f=\sum_{x,y} \tilde p(x)p(y|x)f(x,y)<br>$$<br>对于概率分布$p(y|x)$，我们希望特征f的期望值应该和从训练集中得到的特征期望值是一致的，因此，<strong>增加约束</strong><br>$$<br>E_{ p}f=E_{\tilde p}f<br>$$<br>假设我们从训练集中抽取了n个特征，相应的，便有n个特征函数$f_i(i=1,2,…,n)$以及n个约束条件<br>$$<br>C_i:E_{ p}(f_i)=E_{\tilde p}(f_i) \tag {3-1}<br>$$</p>
+<blockquote>
+<p>关于约束条件的几何解释</p>
+<p><img src="/2017/12/20/机器学习笔记-最大熵/home/david/00projects/00markdown/public_for_git/Algorithm/机器学习笔记-最大熵/最大熵1.png" alt="最大熵1"></p>
+<p>（a）：P是所有可能的概率空间，此时没有约束条件，所有的概率模型$p(y|x)$都是允许的；</p>
+<p>（b）：增加了一个线性约束条件$C_1$，此时，目标分布$p(y|x)$只能落在由$C_1$定义的线段上；</p>
+<p>（c）：在（b）的基础上增加了另一个约束条件$C_2$ ，且$C_1 \cap C_2  \neq \varnothing$。此时，目标分布只能落在交点上，即被唯一确定；</p>
+<p>（d）：在（b）基础上增加了另一个约束$C_3$，且$C_1 \cap C_2  = \varnothing$，此时不存在能够同时满足$C_1$和$C_3$的$p(y|x)$。</p>
+</blockquote>
+<p>利用（3-1）定义的约束条件，我们定义P的一个子空间<br>$$<br>C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,…,n\}<br>$$</p>
+<h1 id="5、最大熵模型"><a href="#5、最大熵模型" class="headerlink" title="5、最大熵模型"></a>5、最大熵模型</h1><p>由于我们的目标是获得一个条件分布，因此这里也采用相应的条件熵<br>$$<br>H(p(y|x))=-\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)<br>$$<br>可以看出这里也是用$\tilde p(x)$来近似$p(x)$。以下将$H(p(y|x))$简记为$H(p)$。至此，可以给出最大熵模型的完整描述。</p>
+<p>对于给定的训练集T，特征函数$f_i(x,y), i=1,2,…n$，最大熵模型就是求解<br>$$<br>\underset {p \in C} {max}    H(p) = \begin{pmatrix}<br>-\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)<br>\end{pmatrix}, \\<br>s.t. \sum_y p(y|x)=1 \tag {5-1} \\<br>s.t.  C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,…,n\}<br>$$<br>其中的s.t.是为了保证$p(y|x)$是一个（合法的）条件概率分布。</p>
+<p>等价于一个求极小值问题<br>$$<br>\underset {p \in C} {min}    -H(p) = \begin{pmatrix}<br>\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)<br>\end{pmatrix}, \\<br>s.t. \sum_y p(y|x)=1 \tag {5-2} \\<br>s.t.  C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,…,n\}<br>$$</p>
+<h1 id="6、模型求解"><a href="#6、模型求解" class="headerlink" title="6、模型求解"></a>6、模型求解</h1><p>对于5-1的求解，主要思路和步骤如下：</p>
+<ol>
+<li>利用Lagrange乘子将最大熵模型由一个带约束的最优化问题转为无约束的最优化问题，这是一个<strong>极小极大问题（min max）</strong>。</li>
+<li>利用对偶问题等价性，转化为求解上一步得到的极大/极小问题的对偶问题，也是一个极大极小问题。</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/11/09/Python编码问题/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/11/09/Python编码问题/" itemprop="url">
+                  Python编码问题
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-09T15:51:07+08:00">
+                2017-11-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python/" itemprop="url" rel="index">
+                    <span itemprop="name">python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Python编码问题"><a href="#Python编码问题" class="headerlink" title="Python编码问题"></a>Python编码问题</h1><p>困扰了很长时间的问题，找到一篇解释不错的文章，转载并整理之。</p>
+<p><a href="http://www.jianshu.com/p/5017d8342dd2" target="_blank" rel="external">‘ascii’ codec can’t decode byte 0xe4 in position 0: ordinal not in range(128)</a></p>
+<p><strong>python的编码是<code>unicode -&gt; str</code>，解码是<code>str -&gt; unicode</code></strong></p>
+<p>关于文件开头的”编码指示”，也就是<code>-*- coding: -*-</code>这个语句。Python 默认脚本文件都是 UTF-8 编码的，当文件中有非 UTF-8 编码范围内的字符的时候就要使用”编码指示”来修正. 关于 sys.defaultencoding，这个在解码没有明确指明解码方式的时候使用。比如我有如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#! /usr/bin/env python   </div><div class="line"># -*- coding: utf-8 -*-   </div><div class="line">s = &apos;中文&apos;  # 注意这里的 str 是 str 类型的，而不是 unicode   </div><div class="line">s.encode(&apos;gb18030&apos;)</div></pre></td></tr></table></figure>
+<p>这句代码将 s 重新编码为<code>gb18030</code>的格式，即进行<code>unicode -&gt; str</code>的转换。因为 s 本身就是 str类型的，因此 Python 会自动的先将 s 解码为<code>unicode</code>，然后再编码成 <code>gb18030</code>。因为解码是python自动进行的，我们没有指明解码方式，python 就会使用<code>sys.defaultencoding</code>指明的方式来解码。很多情况下 <code>sys.defaultencoding</code> 是<code>ANSCII</code>，如果 s 不是这个类型就会出错。</p>
+<p>拿上面的情况来说，我的 <code>sys.defaultencoding</code>是<code>anscii</code>，而 s 的编码方式和文件的编码方式一致，是 utf8 的，所以出错了:<code>UnicodeDecodeError: &#39;ascii&#39; codec can&#39;t decode byte 0xe4 in position 0: ordinal not in range(128)</code> </p>
+<h2 id="Unicode和UTF8的区别"><a href="#Unicode和UTF8的区别" class="headerlink" title="Unicode和UTF8的区别"></a>Unicode和UTF8的区别</h2><ol>
+<li><p><code>unicode</code>指的是万国码，是一种“字码表”。而utf-8是这种字码表储存的编码方法。unicode不一定要由utf-8这种方式编成<code>bytecode</code>储存，也可以使用utf-16,utf-7等其他方式。目前大多都以utf-8的方式来变成<code>bytecode</code>。</p>
+</li>
+<li><p><code>python</code>中字符串类型分为<code>byte string</code> 和<code>unicode string</code>两种。</p>
+</li>
+<li><p>如果在python文件中指定编码方式为<code>utf-8(#coding=utf-8)</code>，那么所有带中文的字符串都会被认为是utf-8编码的byte string（例如：mystr=”你好”），但是在函数中所产生的字符串则被认为是unicode string<br>问题就出在这边，unicode string 和byte string是不可以混合使用的，一旦混合使用了，就会产生这样的错误。例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">self.response.out.write(&quot;你好&quot;+self.request.get(&quot;argu&quot;))</div></pre></td></tr></table></figure>
+<p>​</p>
+</li>
+</ol>
+<p><strong>以下有两个解决方法：</strong>      </p>
+<ul>
+<li><p>第一种,是明确的指示出 s 的编码方式 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#! /usr/bin/env python </div><div class="line"># -*- coding: utf-8 -*- </div><div class="line">s = &apos;中文&apos; </div><div class="line">s.decode(&apos;utf-8&apos;).encode(&apos;gb18030&apos;)</div></pre></td></tr></table></figure>
+</li>
+<li><p>第二种,更改<code>sys.defaultencoding</code>为文件的编码方式 </p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">#! /usr/bin/env python </div><div class="line"># -*- coding: utf-8 -*- </div><div class="line">import sys #要重新载入sys。因为 Python 初始化后会删除 sys.setdefaultencoding 这个方 法</div><div class="line">reload(sys) </div><div class="line">sys.setdefaultencoding(&apos;utf-8&apos;)</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/11/05/Gensim-LDA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/11/05/Gensim-LDA/" itemprop="url">
+                  未命名
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-05T22:43:03+08:00">
+                2017-11-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Gensim-LDA"><a href="#Gensim-LDA" class="headerlink" title="Gensim-LDA"></a>Gensim-LDA</h1><p><a href="http://blog.csdn.net/whzhcahzxh/article/details/17528261" target="_blank" rel="external">http://blog.csdn.net/whzhcahzxh/article/details/17528261</a></p>
+<p>首先，引用gensim包，gensim包中引用corpora,models, similarities，分别做语料库建立，模型库和相似度比较库，后面可以看到例子</p>
+<p>from gensim import corpora, models, similarities</p>
+<p>我调用了结巴分词做中文处理，所以同样</p>
+<p>import jieba</p>
+<p>手工写个文本列表</p>
+<p>sentences = [“我喜欢吃土豆”,”土豆是个百搭的东西”,”我不喜欢今天雾霾的北京”]</p>
+<p>用结巴分词后待用，因为gensim包做主题模型，在意的是语料库，所以，中文英文，one-term，two-term都是无所谓的，如果有已经生成好的语料库，那么可以考虑直接跳到建模环节</p>
+<p>官方提供的语料库范例是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">corpus = [[(0, 1.0), (1, 1.0), (2, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(2, 1.0), (3, 1.0), (4, 1.0), (5, 1.0), (6, 1.0), (8, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(1, 1.0), (3, 1.0), (4, 1.0), (7, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(0, 1.0), (4, 2.0), (7, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(3, 1.0), (5, 1.0), (6, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(9, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(9, 1.0), (10, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(9, 1.0), (10, 1.0), (11, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(8, 1.0), (10, 1.0), (11, 1.0)]]</div></pre></td></tr></table></figure>
+<p>每个中括号代表一句话，用逗号隔开，（0，1.0）代表词典中编号为0的词出现了一次，以此类推，很好理解</p>
+<p>回到过程中来，将范例的语句分词</p>
+<p>words=[]<br>for doc in sentences:<br>​    words.append(list(jieba.cut(doc)))<br>print words</p>
+<p>输出：</p>
+<p>[[u’\u6211’, u’\u559c\u6b22’, u’\u5403’, u’\u571f\u8c46’], [u’\u571f\u8c46’, u’\u662f’, u’\u4e2a’, u’\u767e’, u’\u642d’, u’\u7684’, u’\u4e1c\u897f’], [u’\u6211’, u’\u4e0d’, u’\u559c\u6b22’, u’\u4eca\u5929’, u’\u96fe’, u’\u973e’, u’\u7684’, u’\u5317\u4eac’]]</p>
+<p>此时输出的格式为unicode，不影响后期运算，因此我保留不变，如果想看分词结果可以用循环输出jieba分词结果</p>
+<p>得到的分词结果构造词典</p>
+<p>dic = corpora.Dictionary(words)<br>print dic<br>print dic.token2id</p>
+<p>输出：</p>
+<p>Dictionary(15 unique tokens)<br>{‘\xe5\x8c\x97\xe4\xba\xac’: 12, ‘\xe6\x90\xad’: 6, ‘\xe7\x9a\x84’: 9, ‘\xe5\x96\x9c\xe6\xac\xa2’: 1, ‘\xe4\xb8\x8d’: 10, ‘\xe4\xb8\x9c\xe8\xa5\xbf’: 4, ‘\xe5\x9c\x9f\xe8\xb1\x86’: 2, ‘\xe9\x9c\xbe’: 14, ‘\xe6\x98\xaf’: 7, ‘\xe4\xb8\xaa’: 5, ‘\xe9\x9b\xbe’: 13, ‘\xe7\x99\xbe’: 8, ‘\xe4\xbb\x8a\xe5\xa4\xa9’: 11, ‘\xe6\x88\x91’: 3, ‘\xe5\x90\x83’: 0}<br>可以看到各个词或词组在字典中的编号</p>
+<p>为了方便看，我给了个循环输出：</p>
+<p>for word,index in dic.token2id.iteritems():<br>​    print word +” 编号为:”+ str(index)</p>
+<p>输出：</p>
+<p>北京 编号为:12<br>搭 编号为:6<br>的 编号为:9<br>喜欢 编号为:1<br>不 编号为:10<br>东西 编号为:4<br>土豆 编号为:2<br>霾 编号为:14<br>是 编号为:7<br>个 编号为:5<br>雾 编号为:13<br>百 编号为:8<br>今天 编号为:11<br>我 编号为:3<br>吃 编号为:0</p>
+<p>为什么是乱序，我也不知道</p>
+<p>词典生成好之后，就开始生成语料库了</p>
+<p>corpus = [dic.doc2bow(text) for text in words]<br>print corpus</p>
+<p>输出：</p>
+<p>[[(0, 1), (1, 1), (2, 1), (3, 1)], [(2, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1), (9, 1)], [(1, 1), (3, 1), (9, 1), (10, 1), (11, 1), (12, 1), (13, 1), (14, 1)]]</p>
+<p>语料库的官方描述写的是向量空间模型格式的语料库，<em>Corpus</em> is simply an object which, when iterated over, returns its documents represented as sparse vectors.</p>
+<p>官方说明给了一个tips：</p>
+<p>In this example, the whole corpus is stored in memory, as a Python list. However,the corpus interface only dictates that a corpus must support iteration over its constituent documents. For very large corpora, it is advantageous to keep the corpus on disk, and access its documents sequentially, one at a time. All the operations and transformations are implemented in such a way that makes them independent of the size of the corpus, memory-wise.</p>
+<p>大概意思就是说范例中的语料库是存在内存中的一个列表格式，但是接口对语料库的要求只是，支持在构建文本文件中可循环即可，因此对于很大的语料库，最好还是存在硬盘上，然后依次访问文件。这样可以不用考虑语料库的size，也避免了内存占用太多</p>
+<p>此时，得到了语料库，接下来做一个TF-IDF变换</p>
+<p>可以理解成 将用词频向量表示一句话 变换成为用 词的重要性向量表示一句话</p>
+<p>（TF-IDF变换：评估一字词对于一个文件集或一个语料库中的其中一份文件的重要程度。字词的重要性随着它在文件中出现的次数成正比增加，但同时会随着它在<a href="http://baike.baidu.com/view/686705.htm" target="_blank" rel="external">语料库</a>中出现的频率成反比下降。）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#通过语料库得到tfidf模型</span></div><div class="line">tfidf = models.TfidfModel(corpus)</div><div class="line">vec = [(<span class="number">0</span>, <span class="number">1</span>), (<span class="number">4</span>, <span class="number">1</span>)]</div><div class="line"><span class="keyword">print</span> tfidf[vec]</div><div class="line"><span class="comment">#对corpus的每个文档中的每个词计算tfidf，得到的结果是，每个文档的每个词都是一个元组，包括id和tfidf值</span></div><div class="line">corpus_tfidf = tfidf[corpus]</div><div class="line"><span class="keyword">for</span> doc <span class="keyword">in</span> corpus_tfidf:</div><div class="line">    <span class="keyword">print</span> doc</div></pre></td></tr></table></figure>
+<p>输出：</p>
+<p>[(0, 0.7071067811865475), (4, 0.7071067811865475)]<br>[(0, 0.8425587958192721), (1, 0.3109633824035548), (2, 0.3109633824035548), (3, 0.3109633824035548)]<br>[(2, 0.16073253746956623), (4, 0.4355066251613605), (5, 0.4355066251613605), (6, 0.4355066251613605), (7, 0.4355066251613605), (8, 0.4355066251613605), (9, 0.16073253746956623)]<br>[(1, 0.1586956620869655), (3, 0.1586956620869655), (9, 0.1586956620869655), (10, 0.42998768831312806), (11, 0.42998768831312806), (12, 0.42998768831312806), (13, 0.42998768831312806), (14, 0.42998768831312806)]</p>
+<p>vec是查询文本向量，比较vec和训练中的三句话相似度</p>
+<p>index = similarities.SparseMatrixSimilarity(tfidf[corpus], num_features=14)<br>sims = index[tfidf[vec]]<br>print list(enumerate(sims))</p>
+<p>输出：</p>
+<p>[(0, 0.59577906), (1, 0.30794966), (2, 0.0)]</p>
+<p>表示和第1句话相似度为59.578%，和第二句话的相似度位30.79%，第三句没有相似度，</p>
+<p>我们看看vec这句话是什么：0为吃，4为东西，所以vec这句话可以是[“吃东西”]或者[“东西吃”]</p>
+<p>而第一句话”我喜欢吃土豆”,”土豆是个百搭的东西”明显有相似度，而第三句话”我不喜欢今天雾霾的北京”，相似度几乎为0，至于为什么第一句比第二句更相似，就需要考虑TfIdf document representation和cosine similarity measure了</p>
+<p>回到tfidf转换，接着训练LSI模型，假定三句话属于2个主题，</p>
+<p>lsi = models.LsiModel(corpus_tfidf, id2word=dic, num_topics=2)<br>lsiout=lsi.print_topics(2)<br>print lsiout[0]<br>print lsiout[1]</p>
+<p>输出：</p>
+<p>0.532<em>“吃” + 0.290</em>“喜欢” + 0.290<em>“我” + 0.258</em>“土豆” + 0.253<em>“霾” + 0.253</em>“雾” + 0.253<em>“北京” + 0.253</em>“今天” + 0.253<em>“不” + 0.166</em>“东西”<br>0.393<em>“百” + 0.393</em>“搭” + 0.393<em>“东西” + 0.393</em>“是” + 0.393<em>“个” + -0.184</em>“霾” + -0.184<em>“雾” + -0.184</em>“北京” + -0.184<em>“今天” + -0.184</em>“不”</p>
+<p>这就是基于SVD建立的两个主题模型内容</p>
+<p>将文章投影到主题空间中</p>
+<p>corpus_lsi = lsi[corpus_tfidf]<br>for doc in corpus_lsi:<br>​    print doc</p>
+<p>输出：</p>
+<p>[(0, -0.70861576320682107), (1, 0.1431958007198823)]<br>[(0, -0.42764142348481798), (1, -0.88527674470703799)]<br>[(0, -0.66124862582594512), (1, 0.4190711252114323)]</p>
+<p>因此第一三两句和主题一相似，第二句和主题二相似</p>
+<p>同理做个LDA</p>
+<p>lda = models.LdaModel(corpus_tfidf, id2word=dic, num_topics=2)<br>ldaOut=lda.print_topics(2)<br>print ldaOut[0]<br>print ldaOut[1]<br>corpus_lda = lda[corpus_tfidf]<br>for doc in corpus_lda:<br>​    print doc</p>
+<p>得到的结果每次都变，给一次的输出：</p>
+<p>0.077<em>吃 + 0.075</em>北京 + 0.075<em>雾 + 0.074</em>今天 + 0.073<em>不 + 0.072</em>霾 + 0.070<em>喜欢 + 0.068</em>我 + 0.062<em>的 + 0.061</em>土豆<br>0.091<em>吃 + 0.073</em>搭 + 0.073<em>土豆 + 0.073</em>个 + 0.073<em>是 + 0.072</em>百 + 0.071<em>东西 + 0.066</em>我 + 0.065<em>喜欢 + 0.059</em>霾<br>[(0, 0.31271095988105352), (1, 0.68728904011894654)]<br>[(0, 0.19957991735916861), (1, 0.80042008264083142)]<br>[(0, 0.80940337254233863), (1, 0.19059662745766134)]</p>
+<p>第一二句和主题二相似，第三句和主题一相似</p>
+<p>结论和LSI不一样，我估计这和样本数目太少，区别度不高有关，毕竟让我来区分把第一句和哪一句分在一个主题，我也不确定</p>
+<p>输入一句话，查询属于LSI得到的哪个主题类型，先建立索引：</p>
+<p>index = similarities.MatrixSimilarity(lsi[corpus])<br>query = “雾霾”<br>query_bow = dic.doc2bow(list(jieba.cut(query)))<br>print query_bow<br>query_lsi = lsi[query_bow]<br>print query_lsi</p>
+<p>输出:</p>
+<p>[(13, 1), (14, 1)]<br>[(0, 0.50670602027401368), (1, -0.3678056037187441)]</p>
+<p>与第一个主题相似</p>
+<p>比较和第几句话相似，用LSI得到的索引接着做，并排序输出</p>
+<p>sims = index[query_lsi]<br>print list(enumerate(sims))<br>sort_sims = sorted(enumerate(sims), key=lambda item: -item[1])<br>print sort_sims</p>
+<p>输出：</p>
+<p>[(0, 0.90161765), (1, -0.10271341), (2, 0.99058259)]<br>[(2, 0.99058259), (0, 0.90161765), (1, -0.10271341)]</p>
+<p>可见和第二句话相似度很高，因为只有第二句话出现了雾霾两个词，可是惊讶的是和第一句话的相似度也很高，这得益于LSI模型的算法：<strong>在A和C共现，B和C共现的同时，可以找到A和B的相似度</strong></p>
+<h1 id="Gensim-Tutorials"><a href="#Gensim-Tutorials" class="headerlink" title="Gensim-Tutorials"></a>Gensim-Tutorials</h1><p><a href="http://radimrehurek.com/gensim/tutorial.html" target="_blank" rel="external">http://radimrehurek.com/gensim/tutorial.html</a></p>
+<p>Gensim 使用Python标准logging模块来记录log，使用方法是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">import logging</div><div class="line">logging.basicConfig(format=&apos;%(asctime)s : %(levelname)s : %(message)s&apos;, level=logging.INFO)</div></pre></td></tr></table></figure>
+<h1 id="快速示例"><a href="#快速示例" class="headerlink" title="快速示例"></a>快速示例</h1>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/10/31/中文文本聚类/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/10/31/中文文本聚类/" itemprop="url">
+                  未命名
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-31T17:21:25+08:00">
+                2017-10-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <hr>
+<hr>
+<h1 id="中文文本聚类"><a href="#中文文本聚类" class="headerlink" title="中文文本聚类"></a>中文文本聚类</h1><p>1、处理掉英文、数字、字符等，只保留中文</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/10/31/gensim处理中文word2vec/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/10/31/gensim处理中文word2vec/" itemprop="url">
+                  未命名
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-31T16:33:44+08:00">
+                2017-10-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="gensim处理中文word2vec"><a href="#gensim处理中文word2vec" class="headerlink" title="gensim处理中文word2vec"></a>gensim处理中文word2vec</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> gensim.models <span class="keyword">import</span> KeyedVectors  </div><div class="line"></div><div class="line">model = KeyedVectors.load_word2vec_format(<span class="string">'/home/david/00projects/00user-gene/model_20150427'</span>, binary=<span class="keyword">True</span>)  </div><div class="line">a = model.similarity(<span class="string">'refreshed'</span>, <span class="string">'Refreshed'</span>)</div></pre></td></tr></table></figure>
+<p>这是用中文训练出来的模型，会报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">UnicodeDecodeError: &apos;utf8&apos; codec can&apos;t decode byte 0x9b in position 2: invalid start byte</div></pre></td></tr></table></figure>
+<p>官网的FAQ是这样的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">Q10: Loading a word2vec model fails with UnicodeDecodeError: &apos;utf-8&apos; codec can&apos;t decode bytes in position ...</div><div class="line"></div><div class="line">A: The strings (words) stored in your model are not valid utf8. By default, gensim decodes the words using the strict encoding settings, which results in the above exception whenever an invalid utf8 sequence is encountered.</div><div class="line"></div><div class="line">The fix is on your side and it is to either:</div><div class="line"></div><div class="line">a) Store your model using a program that understands unicode and utf8 (such as gensim). Some C and Java word2vec tools are known to truncate the strings at byte boundaries, which can result in cutting a multi-byte utf8 character in half, making it non-valid utf8, leading to this error.</div><div class="line"></div><div class="line">b) Set the unicode_errors flag when running load_word2vec_model, e.g. load_word2vec_model(..., unicode_errors=&apos;ignore&apos;). Note that this silences the error, but the utf8 problem is still there -- invalid utf8 characters will just be ignored in this case.</div></pre></td></tr></table></figure>
+<p>然并卵。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/08/12/pandas/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/08/12/pandas/" itemprop="url">
+                  未命名
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-12T19:08:30+08:00">
+                2017-08-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="pandas"><a href="#pandas" class="headerlink" title="pandas"></a>pandas</h1><h1 id="1、DataFrame"><a href="#1、DataFrame" class="headerlink" title="1、DataFrame"></a>1、DataFrame</h1><h2 id="1-1-创建随机"><a href="#1-1-创建随机" class="headerlink" title="1.1 创建随机"></a>1.1 创建随机</h2><p>引入pandas包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">In [1]: import pandas as pd</div><div class="line"></div><div class="line">In [2]: import numpy as np</div><div class="line"></div><div class="line">In [3]: import matplotlib.pyplot as plt</div></pre></td></tr></table></figure>
+<p>创建一个Series，pandas可以生成一个默认的索引</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">s = pd.Series([1,3,5,np.nan,6,8])</div></pre></td></tr></table></figure>
+<p>通过numpy创建DataFrame，包含一个日期索引，以及标记的列</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">dates = pd.date_range(&apos;20170101&apos;, periods=6)</div><div class="line">df = pd.DataFrame(np.random.randn(6,4), index=dates, columns=list(&apos;ABCD&apos;))</div><div class="line"></div><div class="line">df</div><div class="line">Out[4]: </div><div class="line">                   A         B         C         D</div><div class="line">2016-10-10  0.630275  1.081899 -1.594402 -2.571683</div><div class="line">2016-10-11 -0.211379 -0.166089 -0.480015 -0.346706</div><div class="line">2016-10-12 -0.416171 -0.640860  0.944614 -0.756651</div><div class="line">2016-10-13  0.652248  0.186364  0.943509  0.053282</div><div class="line">2016-10-14 -0.430867 -0.494919 -0.280717 -1.327491</div><div class="line">2016-10-15  0.306519 -2.103769 -0.019832  0.035211</div></pre></td></tr></table></figure>
+<p>其中，<code>np.random.randn</code>可以返回一个随机数组</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">np.random.randn(1,2)</div><div class="line"></div><div class="line">Out[11]: array([[-2.67809797,  1.49728361]])</div></pre></td></tr></table></figure>
+<ul>
+<li>np.random.rand  随机样本位于[0,1)中</li>
+<li>np.random.randn 从标准正态分布$N=(\mu , \sigma ^2)$中返回样本，默认的范围是$N(0,1)$，等价于np.random.standard_normal</li>
+</ul>
+<blockquote>
+<p>如果要返回2*4的$N(3,6.25)$的随机分布，可知均值是3，标准差是2.5，则</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; 3+2.5*np.random.randn(2,4)</div><div class="line">&gt;</div></pre></td></tr></table></figure>
+</blockquote>
+<p>如果在matlib模块中使用，则返回的是matrix而不是array</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> numpy.matlib</div><div class="line">np.matlib.randn(<span class="number">1</span>,<span class="number">2</span>)</div><div class="line"></div><div class="line">Out[<span class="number">13</span>]: matrix([[ <span class="number">0.13107513</span>, <span class="number">-0.87977247</span>]])</div></pre></td></tr></table></figure>
+<h2 id="1-2-通过dict创建"><a href="#1-2-通过dict创建" class="headerlink" title="1.2 通过dict创建"></a>1.2 通过dict创建</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">df2 = pd.DataFrame(&#123; &apos;A&apos; : 1.,</div><div class="line">                     &apos;B&apos; : pd.Timestamp(&apos;20130102&apos;),</div><div class="line">                     &apos;C&apos; : pd.Series(1,index=list(range(4)),dtype=&apos;float32&apos;),</div><div class="line">                     &apos;D&apos; : np.array([3] * 4,dtype=&apos;int32&apos;),</div><div class="line">                     &apos;E&apos; : pd.Categorical([&quot;test&quot;,&quot;train&quot;,&quot;test&quot;,&quot;train&quot;]),</div><div class="line">                     &apos;F&apos; : &apos;foo&apos; &#125;)</div><div class="line">                     </div><div class="line">Out[20]: </div><div class="line">     A          B    C  D      E    F</div><div class="line">0  1.0 2013-01-02  1.0  3   test  foo</div><div class="line">1  1.0 2013-01-02  1.0  3  train  foo</div><div class="line">2  1.0 2013-01-02  1.0  3   test  foo</div><div class="line">3  1.0 2013-01-02  1.0  3  train  foo</div></pre></td></tr></table></figure>
+<p>有几个方法可以构造一个Timestamp对象</p>
+<ul>
+<li>pd.Timestamp</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">import pandas as pd</div><div class="line">from datetime import datetime as dt</div><div class="line">p1=pd.Timestamp(2017,6,19)</div><div class="line">p2=pd.Timestamp(dt(2017,6,19,hour=9,minute=13,second=45))</div><div class="line">p3=pd.Timestamp(&quot;2017-6-19 9:13:45&quot;)</div><div class="line"></div><div class="line">print(&quot;type of p1:&quot;,type(p1))</div><div class="line">print(p1)</div><div class="line">print(&quot;type of p2:&quot;,type(p2))</div><div class="line">print(p2)</div><div class="line">print(&quot;type of p3:&quot;,type(p3))</div><div class="line">print(p3)</div><div class="line"></div><div class="line"></div><div class="line">(&apos;type of p1:&apos;, &lt;class &apos;pandas.tslib.Timestamp&apos;&gt;)</div><div class="line">2017-06-19 00:00:00</div><div class="line">(&apos;type of p2:&apos;, &lt;class &apos;pandas.tslib.Timestamp&apos;&gt;)</div><div class="line">2017-06-19 09:13:45</div><div class="line">(&apos;type of p3:&apos;, &lt;class &apos;pandas.tslib.Timestamp&apos;&gt;)</div><div class="line">2017-06-19 09:13:45</div></pre></td></tr></table></figure>
+<ul>
+<li>to_datetime()</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">import pandas as pd</div><div class="line">from datetime import datetime as dt</div><div class="line"></div><div class="line">p4=pd.to_datetime(&quot;2017-6-19 9:13:45&quot;)</div><div class="line">p5=pd.to_datetime(dt(2017,6,19,hour=9,minute=13,second=45))</div><div class="line"></div><div class="line">print(&quot;type of p4:&quot;,type(p4))</div><div class="line">print(p4)</div><div class="line">print(&quot;type of p5:&quot;,type(p5))</div><div class="line">print(p5)</div><div class="line"></div><div class="line">(&apos;type of p4:&apos;, &lt;class &apos;pandas.tslib.Timestamp&apos;&gt;)</div><div class="line">2017-06-19 09:13:45</div><div class="line">(&apos;type of p5:&apos;, &lt;class &apos;pandas.tslib.Timestamp&apos;&gt;)</div><div class="line">2017-06-19 09:13:45</div></pre></td></tr></table></figure>
+<p>在df2对象中，每一列都有对应的dtypes</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">df2.dtypes</div><div class="line"></div><div class="line">Out[30]: </div><div class="line">A           float64</div><div class="line">B    datetime64[ns]</div><div class="line">C           float32</div><div class="line">D             int32</div><div class="line">E          category</div><div class="line">F            object</div><div class="line">dtype: object</div></pre></td></tr></table></figure>
+<h2 id="1-3-查看数据"><a href="#1-3-查看数据" class="headerlink" title="1.3 查看数据"></a>1.3 查看数据</h2><p>参考<a href="http://pandas.pydata.org/pandas-docs/stable/basics.html#basics" target="_blank" rel="external">Basics section</a></p>
+<p>查看head和tail</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">df.head(1)</div><div class="line">df.tail(3)</div></pre></td></tr></table></figure>
+<p>查看index、column和数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">df.index</div><div class="line">df.columns</div><div class="line">df.values</div></pre></td></tr></table></figure>
+<p>显示数据的快速统计</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">df.describe()</div><div class="line">Out[19]: </div><div class="line">              A         B         C         D</div><div class="line">count  6.000000  6.000000  6.000000  6.000000</div><div class="line">mean   0.073711 -0.431125 -0.687758 -0.233103</div><div class="line">std    0.843157  0.922818  0.779887  0.973118</div><div class="line">min   -0.861849 -2.104569 -1.509059 -1.135632</div><div class="line">25%   -0.611510 -0.600794 -1.368714 -1.076610</div><div class="line">50%    0.022070 -0.228039 -0.767252 -0.386188</div><div class="line">75%    0.658444  0.041933 -0.034326  0.461706</div><div class="line">max    1.212112  0.567020  0.276232  1.071804</div></pre></td></tr></table></figure>
+<p>转置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">df.T</div></pre></td></tr></table></figure>
+<p>通过列名来排序</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#对于矩阵，axis=0表示行，1表示列</div><div class="line">df.sort_index(axis=1, ascending=False)</div></pre></td></tr></table></figure>
+<p>通过某一列的数值排序</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">df.sort_values(by=&apos;B&apos;)</div></pre></td></tr></table></figure>
+<h2 id="1-4-选择"><a href="#1-4-选择" class="headerlink" title="1.4 选择"></a>1.4 选择</h2><p>选择某一列</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">df[&apos;A&apos;]</div></pre></td></tr></table></figure>
+<p>选择某几行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">df[0:3]</div><div class="line">#也可以通过行的索引来选择，但是不能单独写某一行</div><div class="line">df[&apos;20130102&apos;:&apos;20130104&apos;]</div></pre></td></tr></table></figure>
+<h1 id="2、Series"><a href="#2、Series" class="headerlink" title="2、Series"></a>2、Series</h1><h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://pandas.pydata.org/pandas-docs/stable/10min.html#minutes-to-pandas" target="_blank" rel="external">10 Minutes to pandas</a></p>
+<p><a href="http://blog.csdn.net/csdn15698845876/article/details/73456967" target="_blank" rel="external">pandas中Timestamp类用法讲解</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/19/OpenRTB笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/07/19/OpenRTB笔记/" itemprop="url">
+                  未命名
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-19T18:08:40+08:00">
+                2017-07-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <hr>
+<h2 id="OpenRTB笔记"><a href="#OpenRTB笔记" class="headerlink" title="OpenRTB笔记"></a>OpenRTB笔记</h2><p><a href="https://github.com/leeowenowen/OpenRTB" target="_blank" rel="external">文档的中文翻译</a></p>
+<p>1 术语</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Seat</td>
+<td>期望获取展示并使用竞拍者代表他们进行竞拍的实体</td>
+</tr>
+<tr>
+<td>Publisher</td>
+<td>操作一个或者多个网站的实体</td>
+</tr>
+<tr>
+<td>Site</td>
+<td>如果没有特殊说明，指的是一个支持广告内容的网页或者应用</td>
+</tr>
+<tr>
+<td>Deal ID</td>
+<td>标识在特定场景下Publisher与Seat之间预先安排用于购买展示的协议</td>
+</tr>
+</tbody>
+</table>
+<p>2、对象模型</p>
+<p>2.1 BidRequest</p>
+<p>在它的直属子对象中，只有<code>Imp</code>是技术上必须的，因为它是描述一次展示的基础信息，必须使用<code>Banner</code>, <code>Video</code>以及<code>Native</code>中的至少一个来定义展示的类型（例如， 无论一个或者多个展示者想要接收；尽管一次竞价是这些指明类型中的明确的一种）。一个展示对象可能包含一组私有市场。</p>
+<p><img src="https://raw.githubusercontent.com/leeowenowen/OpenRTB_API_Specification-/master/res/bid_request_object_model.png" alt=""></p>
+<h1 id="iAB标签体系"><a href="#iAB标签体系" class="headerlink" title="iAB标签体系"></a>iAB标签体系</h1>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/19/网页中可以提取什么/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/07/19/网页中可以提取什么/" itemprop="url">
+                  未命名
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-19T17:26:49+08:00">
+                2017-07-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <hr>
+<h2 id="网页中可以提取什么"><a href="#网页中可以提取什么" class="headerlink" title="网页中可以提取什么"></a>网页中可以提取什么</h2>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/Docker-配置和使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/07/12/Docker-配置和使用/" itemprop="url">
+                  Docker 配置和使用
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">
+                2017-07-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/系统工具/" itemprop="url" rel="index">
+                    <span itemprop="name">系统工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="0、基本概念"><a href="#0、基本概念" class="headerlink" title="0、基本概念"></a>0、基本概念</h1><p>镜像</p>
+<blockquote>
+<p>Docker镜像通过镜像ID进行识别。镜像ID是一个64字符的十六进制的字符串。但是当我们运行镜像时，通常我们不会使用镜像ID来引用镜像，而是使用镜像名来引用。要列出本地所有有效的镜像，可以使用命令</p>
+<p>$ docker images</p>
+<p>镜像可以发布为不同版本，这种机制我们称之为标签（Tag）。 </p>
+</blockquote>
+<p>容器</p>
+<blockquote>
+<p>Docker容器可以使用命令创建：</p>
+<p>$ docker run imagename</p>
+<p>它会在所有的镜像层之上增加一个<strong>可写层</strong>。这个可写层有运行在CPU上的进程，而且有两个不同的状态：运行态（Running）和退出态（Exited）。这就是Docker容器。当我们使用docker run启动容器，Docker容器就进入运行态，当我们停止Docker容器时，它就进入退出态。</p>
+<p>对容器的变更是<strong>写入到容器的文件系统的，而不是写入到Docker镜像</strong>中的。</p>
+<p>用同一个镜像启动多个Docker容器，这些容器启动后都是活动的，彼此还是相互隔离的。我们对其中一个容器所做的变更只会局限于那个容器本身。</p>
+<p>如果对容器的底层镜像进行修改，那么当前正在运行的容器是不受影响的，不会发生自动更新现象。</p>
+</blockquote>
+<h1 id="1、配置"><a href="#1、配置" class="headerlink" title="1、配置"></a>1、配置</h1><h2 id="1-1-安装"><a href="#1-1-安装" class="headerlink" title="1.1 安装"></a>1.1 安装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ sudo apt-get update</div><div class="line">$ sudo apt-get install docker</div></pre></td></tr></table></figure>
+<p>编辑/etc/default/docker增加如下配置，自定义docker镜像存放路径</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">DOCKER_OPTS=&quot;--graph=/home/david/opt/docker&quot;</div></pre></td></tr></table></figure>
+<p>sudo service docker start    #启动<br>sudo service docker stop    #关闭<br>sudo service docker restart #重启 </p>
+<h2 id="1-2-pull一个镜像"><a href="#1-2-pull一个镜像" class="headerlink" title="1.2 pull一个镜像"></a>1.2 pull一个镜像</h2><p>查看镜像：此时应该没有镜像<br>docker images</p>
+<p>下载镜像</p>
+<p>sudo docker pull ubuntu</p>
+<h2 id="1-3-创建容器"><a href="#1-3-创建容器" class="headerlink" title="1.3 创建容器"></a>1.3 创建容器</h2><p>docker ps命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ sudo docker ps #列出当前所有正在运行的container</div><div class="line">$ sudo docker ps -l #列出最近一次启动的，且正在运行的container</div><div class="line">$ sudo docker ps -a #列出所有的container</div></pre></td></tr></table></figure>
+<p>启动容器，并且进入到Ubuntu容器的bash命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo docker run -itv /home/david/docker:/home/davida/gitlab  ubuntu  /bin/bash</div></pre></td></tr></table></figure>
+<p>其中，</p>
+<h2 id="1-4-提交容器"><a href="#1-4-提交容器" class="headerlink" title="1.4 提交容器"></a>1.4 提交容器</h2><p>退出容器，使用 docker commit 命令来提交更新后的副本。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> sudo docker commit -m 'xmo run evn' -a 'david' bde4f2f2db5f  ubuntu-ruby:v1</div></pre></td></tr></table></figure>
+<p>其中，-m 来指定提交的说明信息，跟我们使用的版本控制工具一样；-a 可以指定更新的作者信息；之后是用来创建镜像的容器的ID；最后指定目标镜像的仓库名和 tag 信息。创建成功后会返回这个镜像的 ID 信息。v1是tag（版本号）</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo docker inspect ubuntu-ruby</div></pre></td></tr></table></figure>
+<p>查看详细信息</p>
+<h2 id="1-5-Dockerfile提交容器"><a href="#1-5-Dockerfile提交容器" class="headerlink" title="1.5 Dockerfile提交容器"></a>1.5 Dockerfile提交容器</h2><p>Dockerfile的指令是忽略大小写的，建议使用大写，使用 # 作为注释，每一行只支持一条指令，每条指令可以携带多个参数。<br>Dockerfile的指令根据作用可以分为两种，<strong>构建指令和设置指令</strong>。构建指令用于构建image，其指定的操作不会在运行image的容器上执行；设置指令用于设置image的属性，其指定的操作将在运行image的容器中执行。</p>
+<p>1）FROM 基础image</p>
+<p>基础image可以是官方远程仓库中的，也可以位于本地仓库。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FROM &lt;image&gt;</div></pre></td></tr></table></figure>
+<p>或者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FROM &lt;image&gt;:&lt;tag&gt;</div></pre></td></tr></table></figure>
+<p>制定某个tag版本</p>
+<h2 id="1-4-用SSH访问容器"><a href="#1-4-用SSH访问容器" class="headerlink" title="1.4 用SSH访问容器"></a>1.4 用SSH访问容器</h2><p>先安装ssh</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">apt-get update</div><div class="line">apt-get install openssh-server</div></pre></td></tr></table></figure>
+<p>需要修改/etc/ssh/sshd_config文件中内容  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">RSAAuthentication yes #启用 RSA 认证</div><div class="line">PubkeyAuthentication yes #启用公钥私钥配对认证方式</div><div class="line">AuthorizedKeysFile .ssh/authorized_keys #公钥文件路径（和上面生成的文件同）</div><div class="line">PermitRootLogin yes #root能使用ssh登录</div></pre></td></tr></table></figure>
+<p>重启sshd服务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">/etc/init.d/ssh stop</div><div class="line">/etc/init.d/ssh start</div></pre></td></tr></table></figure>
+<h1 id="2、常用命令"><a href="#2、常用命令" class="headerlink" title="2、常用命令"></a>2、常用命令</h1><h3 id="docker-start和docker-run"><a href="#docker-start和docker-run" class="headerlink" title="docker start和docker run"></a>docker start和docker run</h3><p><img src="http://static.open-open.com/lib/uploadImg/20151105/20151105115304_352.png?_=5942369" alt=""></p>
+<p>从图片可以看出，docker run 命令先是利用镜像创建了一个容器，然后运行这个容器。</p>
+<p>docker run命令类似于git pull命令。git pull命令就是git fetch 和 git merge两个命令的组合，同样的，docker run就是docker create和docker start两个命令的组合。 </p>
+<h3 id="docker-ps"><a href="#docker-ps" class="headerlink" title="docker ps"></a><strong>docker ps</strong></h3><p>docker ps 命令会列出所有运行中的容器。这隐藏了非运行态容器的存在，如果想要找出这些容器，我们需要使用docker ps -a</p>
+<h3 id="docker-images"><a href="#docker-images" class="headerlink" title="docker images"></a>docker images</h3><p>docker images命令会列出了所有顶层（top-level）镜像。实际上，在这里我们没有办法区分一个镜像和一个只读层，所以我们提出了top-level 镜像。只有创建容器时使用的镜像或者是直接pull下来的镜像能被称为顶层（top-level）镜像，并且每一个顶层镜像下面都隐藏了多个镜像层。 </p>
+<p>docker images -a</p>
+<p>docker images –a命令列出了所有的镜像，也可以说是列出了所有的可读层。如果你想要查看某一个image-id下的所有层，可以使用docker history来查看。 </p>
+<h3 id="docker-stop"><a href="#docker-stop" class="headerlink" title="docker stop "></a>docker stop <container-id></container-id></h3><p>docker stop命令会向运行中的容器发送一个SIGTERM的信号，然后停止所有的进程。 </p>
+<h3 id="docker-commit"><a href="#docker-commit" class="headerlink" title="docker commit "></a>docker commit <container-id></container-id></h3><p>docker commit命令将容器的可读写层转换为一个只读层，这样就把一个容器转换成了不可变的镜像。 </p>
+<h3 id="dockesr-exec"><a href="#dockesr-exec" class="headerlink" title="dockesr exec "></a>dockesr exec <running-container-id></running-container-id></h3><p>docker exec 命令会在运行中的容器执行一个新进程。 </p>
+<h3 id="docker-save"><a href="#docker-save" class="headerlink" title="docker save "></a>docker save <image-id></image-id></h3><p>docker save命令会创建一个镜像的压缩文件，这个文件能够在另外一个主机的Docker上使用。和export命令不同，这个命令为每一个层都保存了它们的元数据。这个命令只能对镜像生效。 </p>
+<h3 id="docker-export"><a href="#docker-export" class="headerlink" title="docker export "></a>docker export <container-id></container-id></h3><p>docker export命令创建一个tar文件，并且移除了元数据和不必要的层，将多个层整合成了一个层，只保存了当前统一视角看到的内容（expoxt后 的容器再import到Docker中，通过docker images –tree命令只能看到一个镜像；而save后的镜像则不同，它能够看到这个镜像的历史镜像）。 </p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.linuxidc.com/Linux/2015-07/120444.htm" target="_blank" rel="external">Ubuntu 15.04下安装Docker</a></p>
+<p><a href="http://blog.csdn.net/chszs/article/details/48252799" target="_blank" rel="external">Docker的镜像和容器的区别</a></p>
+<p><a href="http://www.cnblogs.com/bethal/p/5942369.html" target="_blank" rel="external">Docker容器和镜像区别</a></p>
+<p><a href="http://blog.csdn.net/qinyushuang/article/details/43342553" target="_blank" rel="external">Docker学习笔记（3）– 如何使用Dockerfile构建镜像</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/Hexo + Github 搭建博客入门/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -367,9 +1801,9 @@
       
         
           
-            <h1 id="1、安装node-js"><a href="#1、安装node-js" class="headerlink" title="1、安装node.js"></a>1、安装node.js</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> sudo add-apt-repository ppa:chris-lea/node.js</div><div class="line"><span class="meta">$</span> sudo apt-get update</div><div class="line"><span class="meta">$</span> sudo apt-get install nodejs</div><div class="line"><span class="meta">#</span>原方法没有这一步，但是后面的操作会提示npm command not found</div><div class="line"><span class="meta">$</span> sudo apt-get install npm</div></pre></td></tr></table></figure>
-<h1 id="2、安装hexo"><a href="#2、安装hexo" class="headerlink" title="2、安装hexo"></a>2、安装hexo</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> sudo npm install hexo -g</div></pre></td></tr></table></figure>
-<h1 id="3、初始博客的根目录"><a href="#3、初始博客的根目录" class="headerlink" title="3、初始博客的根目录"></a>3、初始博客的根目录</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> cd ~/myblog</div><div class="line"><span class="meta">$</span> hexo init</div></pre></td></tr></table></figure>
+            <h1 id="1、安装node-js"><a href="#1、安装node-js" class="headerlink" title="1、安装node.js"></a>1、安装node.js</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo add-apt-repository ppa:chris-lea/node.js</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></div><div class="line"><span class="meta">#</span><span class="bash">原方法没有这一步，但是后面的操作会提示npm <span class="built_in">command</span> not found</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install npm</span></div></pre></td></tr></table></figure>
+<h1 id="2、安装hexo"><a href="#2、安装hexo" class="headerlink" title="2、安装hexo"></a>2、安装hexo</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo npm install hexo -g</span></div></pre></td></tr></table></figure>
+<h1 id="3、初始博客的根目录"><a href="#3、初始博客的根目录" class="headerlink" title="3、初始博客的根目录"></a>3、初始博客的根目录</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> ~/myblog</span></div><div class="line"><span class="meta">$</span><span class="bash"> hexo init</span></div></pre></td></tr></table></figure>
 <h1 id="4、在github上新建仓库"><a href="#4、在github上新建仓库" class="headerlink" title="4、在github上新建仓库"></a>4、在github上新建仓库</h1><p>名称必须是</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gitusername.github.io</div></pre></td></tr></table></figure>
 <p>我的就是</p>
@@ -388,6 +1822,7 @@
 <p> tips</p>
 <p> 我目前用的新建文章的方法，就是直接在source/_posts/下面新建md文件</p>
 <p> 可以偷懒写成</p>
+<p> cd ~/myblog</p>
 <p> hexo clean;hexo g;hexo s</p>
 <p> 或</p>
 <p> hexo clean;hexo g;hexo d</p>
@@ -408,6 +1843,14 @@
 <p><code>![你想输入的替代文字](xxxx/图片名.jpg)</code></p>
 <p><strong>注意：</strong>xxxx是这个md文件的名字，也是同名文件夹的名字，你想引入的图片就只需要放入xxxx这个文件夹内就好了，很像引用相对路径。</p>
 <p>5 最后检查一下，<code>hexo g</code>生成页面后，进入<code>public\2017\02\26\index.html</code>文件中查看相关字段，可以发现，html标签内的语句是<code>&lt;img src=&quot;2017/02/26/xxxx/图片名.jpg&quot;&gt;</code>，而不是<code>&lt;img src=&quot;xxxx/图片名.jpg&gt;</code>。这很重要，关乎你的网页是否可以真正加载你想插入的图片。</p>
+<h1 id="11、sitemap-插件"><a href="#11、sitemap-插件" class="headerlink" title="11、sitemap 插件"></a>11、sitemap 插件</h1><p>谷歌与百度的站点地图，前者适用于其他搜索引擎，用来手动提交以增加收录</p>
+<p>安装：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">npm install hexo-generator-sitemap@1 --save</div><div class="line">npm install hexo-generator-baidu-sitemap@0.1.1 --save</div></pre></td></tr></table></figure>
+<p><code>_config.yml</code>添加代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">baidusitemap:</div><div class="line">  path: baidusitemap.xml</div></pre></td></tr></table></figure>
+<p>谷歌的<code>sitemap.xml</code>不需要写到配置文件中，自动生效。</p>
+<p>在主页后面加<code>/baidusitemap.xml</code>可以看到baidusitemap（谷歌同理），将该网址它提交给百度搜索：<a href="http://zhanzhang.baidu.com/?castk=LTE%3D" target="_blank" rel="external">百度站长平台</a>，贴吧账号无法在这里使用。</p>
+<p>不过由于Github禁止了百度爬虫，百度无法抓取其中的URL：</p>
 <h1 id="踩过的坑"><a href="#踩过的坑" class="headerlink" title="踩过的坑"></a>踩过的坑</h1><p>1）若启动时报错</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> Error: Warning: Permanently added &apos;github.com,192.30.253.112&apos; (RSA) to the list of known hosts.</div><div class="line">sign_and_send_pubkey: signing failed: agent refused operation</div><div class="line">Permission denied (publickey).</div><div class="line">fatal: Could not read from remote repository.</div></pre></td></tr></table></figure>
 <p>处理是</p>
@@ -447,844 +1890,13 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/决策树/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/07/12/决策树/" itemprop="url">
-                  决策树
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">
-                2017-07-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/机器学习算法推导/" itemprop="url" rel="index">
-                    <span itemprop="name">机器学习算法推导</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="1-决策树"><a href="#1-决策树" class="headerlink" title="1 决策树"></a>1 决策树</h1><p>公式符号<br>$$<br>\begin{align}<br>&amp;Ent(X)   熵 \\<br>&amp;Gain(X)   信息增益\\<br>&amp;Gini(X)   基尼指数\\<br>&amp;D   训练集\\<br>&amp;A   训练集的某个特征\\<br>&amp;N   特征A的类别总数\\<br>&amp;K   标签分类的数量\\<br>\end{align}<br>$$</p>
-<h2 id="1-1-关键步骤-python实现"><a href="#1-1-关键步骤-python实现" class="headerlink" title="1.1 关键步骤-python实现"></a>1.1 关键步骤-python实现</h2><p>创建决策树分支的createBranch()伪代码函数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">检查数据集中每个子项是否属于同一个分类：</div><div class="line">	IF YES return 类标签；</div><div class="line">	ELSE </div><div class="line">		寻找划分数据集的最好特征；</div><div class="line">		划分数据集；</div><div class="line">		创建分支节点；</div><div class="line">			for 每个划分的子集</div><div class="line">				递归调用createBranch()并增加返回结果到分支节点中</div><div class="line">        return 分支节点</div></pre></td></tr></table></figure>
-<p>对label的分类计算熵</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">calcEnt</span><span class="params">(dataSet)</span>:</span></div><div class="line">	labelNum = len(dataSet)</div><div class="line">    ent = <span class="number">0.0</span></div><div class="line">	<span class="comment">#定义字典存放每个类别的count统计</span></div><div class="line">	labelCounts = &#123;&#125;</div><div class="line">    <span class="comment">#统计每个label的个数</span></div><div class="line">	<span class="keyword">for</span> featureVec <span class="keyword">in</span> dataSet:</div><div class="line">        <span class="comment">#最后一列是label</span></div><div class="line">		label = featureVec[<span class="number">-1</span>]</div><div class="line">        <span class="keyword">if</span> label <span class="keyword">not</span> <span class="keyword">in</span> labelCounts.keys(): labelCounts[label] = <span class="number">0</span></div><div class="line">        labelCounts[label] += <span class="number">1</span></div><div class="line">    <span class="comment">#计算概率以及熵</span></div><div class="line">    <span class="keyword">for</span> key <span class="keyword">in</span> labelCounts:</div><div class="line">        prob = float(labelCounts[key]) / labelNum</div><div class="line">        ent -= prob * log(<span class="number">2</span>, prob)</div><div class="line">    <span class="keyword">return</span> ent</div></pre></td></tr></table></figure>
-<p>对数据集进行划分</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">splitDataSet</span><span class="params">(dataSet, axis, value)</span>:</span></div><div class="line">    subDataSet = []</div><div class="line">    <span class="keyword">for</span> featureVec <span class="keyword">in</span> dataSet:</div><div class="line">        <span class="keyword">if</span> featureVec[axis] == value:</div><div class="line">            reducedFeatVec = featureVec[:axis]</div><div class="line">            reducedFeatVec.extend(featureVec[axis+<span class="number">1</span>:])</div><div class="line">    		resDataSet.append(reducedFeatVec)</div><div class="line">    <span class="keyword">return</span> subDataSet</div></pre></td></tr></table></figure>
-<p>选出最好的数据集划分方式</p>
-<p><strong>信息增益</strong></p>
-<p><strong>熵</strong>的定义是<br>$$<br>Ent(X) = -\sum_{i=1}^{n}p(x_i)log_2p(x_i)<br>$$<br>n是类别总数。</p>
-<p><strong>条件熵</strong>$Ent(Y|X)$表示在已知X的条件下Y的不确定性，定义为给定X时Y的条件概率分布的熵对X的期望<br>$$<br>Ent(Y|X)=\sum_{i=1}^np_iEnt(Y|X=x_i)<br>$$<br>对于训练集D以及其中的特征A，熵就是<br>$$<br>Ent(D) = -\sum_{k=1}^K \frac {|C_k|}{|D|} log_2\frac{|C_k|}{|D|}<br>$$<br>其中，K是标签分类的数量，$C_k$是每个分类的样本数</p>
-<p>条件熵就是<br>$$<br>\begin{aligned}<br>Ent(D|A) &amp;=\sum_{i=1}^N\frac{|D_i|}{|D|}Ent(D_i) \\<br>&amp;=\sum_{i=1}^N\frac{|D_i|}{|D|}(-\sum_{k=1}^K \frac {|D_{ik}|}{|D_i|} log_2\frac{|D_{ik}|}{|D_i|})<br>\end{aligned}<br>$$<br>其中，N是特征A的类别总数，$D_i$是特征A的每种类别的数量。</p>
-<p>信息增益就是两者之差<br>$$<br>Gain(D,A)=Ent(D)-Ent(D|A)<br>$$<br>信息增益也称为<strong>互信息</strong>。</p>
-<p>找出信息增益最大的来划分数据集</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">chooseBestFeature</span><span class="params">(dataSet)</span>:</span></div><div class="line">	<span class="comment">#feature数量，最后一列是label</span></div><div class="line">	numFeature = len(dataSet[<span class="number">0</span>]<span class="number">-1</span>)</div><div class="line">    bestInfoGain = <span class="number">0.0</span></div><div class="line">    bestFeature = <span class="number">-1</span></div><div class="line">	<span class="comment">#先计算熵</span></div><div class="line">	baseEntropy = calcEnt(dataSet)</div><div class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> range(numFeature):</div><div class="line">		<span class="comment">#首先需要知道该特征有几个值</span></div><div class="line">		uniqueValue = set([sample[i] <span class="keyword">for</span> sample <span class="keyword">in</span> dataSet]) <span class="comment">#用set去重是最快方法</span></div><div class="line">		newEntropy = <span class="number">0.0</span></div><div class="line">        <span class="comment">#对于每个特征，计算条件熵</span></div><div class="line">        <span class="keyword">for</span> value <span class="keyword">in</span> uniqueValue:</div><div class="line">            <span class="comment">#用这个特征划分数据集</span></div><div class="line">            subDataSet = splitDataSet(dataSet, i, value)</div><div class="line">            newEntropy += calcEnt(subDataSet)</div><div class="line">        <span class="comment">#计算信息增益</span></div><div class="line">        infoGain = baseEntropy-newEntropy</div><div class="line">        <span class="keyword">if</span> infoGain &gt; bestInfoGain:</div><div class="line">            bestInfoGain = infoGain</div><div class="line">            bestFeature = i</div><div class="line"><span class="keyword">return</span> bestFeature</div></pre></td></tr></table></figure>
-<p>如果所有特征都处理过了，但是类标签依然不是唯一的，用投票决定</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">majorityCnt</span><span class="params">(classList)</span>:</span></div><div class="line">	classCount=&#123;&#125;</div><div class="line">    <span class="keyword">for</span> vote <span class="keyword">in</span> classList:</div><div class="line">        <span class="keyword">if</span> vote <span class="keyword">not</span> <span class="keyword">in</span> classCount.keys() classCount[vote] = <span class="number">0</span></div><div class="line">        classCount[vote] += <span class="number">1</span></div><div class="line">    sortedClassCount = sorted(classCount, key = operator.itemgetter(<span class="number">1</span>), reverse = <span class="keyword">True</span>)</div><div class="line">    <span class="keyword">return</span> sortedClassCount[<span class="number">0</span>][<span class="number">0</span>]</div></pre></td></tr></table></figure>
-<h2 id="1-2-ID3算法"><a href="#1-2-ID3算法" class="headerlink" title="1.2 ID3算法"></a>1.2 ID3算法</h2><p>与上面的步骤类似。但是ID3只有树的生成，容易过拟合。</p>
-<h2 id="1-3-C4-5算法"><a href="#1-3-C4-5算法" class="headerlink" title="1.3 C4.5算法"></a>1.3 C4.5算法</h2><p>与ID3相比，C4.5用信息增益比来选择特征。</p>
-<p><strong>信息增益比</strong></p>
-<p>在面对类别比较少的离散数据时，两者差不多。但如果面对连续的数据（如体重、身高、年龄、距离等），或者每列数据没有明显的类别之分（最极端的例子的该列所有数据都独一无二）。</p>
-<p>那么根据信息增益公式，$Ent(D)$不变，当数据独一无二时，<br>$$<br>Ent(D|A)=\sum_{i=1}^n \frac {1}{n}Ent(D_i)<br>$$<br>这样$Ent(D|A)$最小，程序会倾向于这种划分，导致划分效果差。</p>
-<p>信息增益比的公式为<br>$$<br>Gain_R(D,A)=\frac {Gain(D,A)}{Ent(D)}<br>$$<br>可以理解成对分支数目的惩罚项。</p>
-<h2 id="1-4-决策树的剪枝"><a href="#1-4-决策树的剪枝" class="headerlink" title="1.4 决策树的剪枝"></a>1.4 决策树的剪枝</h2><p>剪枝是为了解决过拟合。通过极小化决策树整体的损失函数来实现。设树T的叶结点个数为$|T|$，t是T的叶结点，该叶结点有$N_t$个样本点，其中k类的样本点有$N_{tk}$个，则损失函数定义为<br>$$<br>C_{\alpha}(T) = \sum_{t=1}^T N_tEnt_t(T) + \alpha|T|<br>$$<br>由于<br>$$<br>Ent_t(T) =  - \sum_{k=1}^K \frac {N_{tk}}{N_t} log_2\frac {N_{tk}}{N_t}<br>$$<br>则令<br>$$<br>C(T) = - \sum_{t=1}^T\sum_{k=1}^KN_{tk}log_2\frac {N_{tk}}{N_t}<br>$$<br>于是<br>$$<br>C_\alpha(T) = C(T) +\alpha|T|<br>$$<br>这里，$C(T)$表示训练数据的预测误差，$|T|$表示模型复杂度，$\alpha$控制两者影响，较大时选择较简单的树，反之亦然，等于0时就不考虑模型复杂度。</p>
-<p>两种剪枝思路</p>
-<p><strong>预剪枝（Pre-Pruning）</strong></p>
-<p>构造的同时剪枝。比如设一个阈值，熵减小的数量小于这个阈值，即使还可以继续降低熵，也停止继续创建分支。但实际效果不好</p>
-<p><strong>后剪枝（Post-Pruning）</strong></p>
-<p>三种主要方法</p>
-<p><strong>1）REP错误率降低剪枝</strong></p>
-<p>简单粗暴，对每个非叶结点的子树，用其替换一个叶结点，类别用子树覆盖训练样本中类最多的代替。这样产生的简化树再跟原树比较在测试数据集中的效果。若错误更少就替换。算法以Bottom-up的方式遍历所有的子树，直到没有任何改进时，终止。</p>
-<p><strong>2）PEP悲观剪枝</strong></p>
-<h2 id="1-5-CART算法"><a href="#1-5-CART算法" class="headerlink" title="1.5 CART算法"></a>1.5 CART算法</h2><p>CART是分类与回归树，由特征选择、树的生成和剪枝组成。</p>
-<p>CART是在给定输入变量X条件下输出随机变量Y的条件概率分布的方法。CART假设决策树是<strong>二叉树</strong>，内部结点特征的取值为是和否，约定左是右否。</p>
-<p>决策树等价于递归的二分每个特征，将输入空间即特征空间划分为有限个单元，并在这些单元上确定预测的概率分布，也就是在输入给定的条件下输出的条件概率分布。</p>
-<p>1.5.1 CART的生成</p>
-<p>递归构建二叉树的过程。回归树用<strong>最小二乘</strong>，分类树用<strong>基尼指数</strong>。</p>
-<p>1）回归树</p>
-<p>2）分类树</p>
-<p>假设有K个类，样本点属于第k类的概率是$p_k$，则基尼指数定义为<br>$$<br>Gini(p) = \sum_{k=1}^K p_k(1-p_k) = 1-\sum_{k=1}^K p_k^2=1-\sum_{k=1}^K(\frac{|C_k|}{|D|})^2<br>$$<br>如果是两分类问题，则概率分布的基尼指数为<br>$$<br>Gini(P)=2p(1-p)<br>$$<br>若样本集合D根据特征A是否取某一值a被划分为$D_1$和$D_2$两部分，即<br>$$<br>D_1=\{(x,y)\in D | A(x)=a\}, D_2=D-D_1<br>$$<br>则在特征A的条件下，集合D的基尼指数为<br>$$<br>Gini(D,A)=\frac {|D_1|}{|D|}Gini(D_1)+\frac {|D_2|}{|D|}Gini(D_2)<br>$$<br>Gini越大，样本集合的不确定性越大，与熵相似。</p>
-<p><strong>算法过程</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">输入：训练集D，停止条件</div><div class="line">输出：CART决策树</div><div class="line"></div><div class="line">从根结点递归对每个结点进行以下操作，构建二叉树：</div><div class="line">1）对每个特征和可能的取值a，根据A=a的为是或否，将D分割成D1和D2，计算基尼指数</div><div class="line">2）选出基尼指数最小的特征及其对应的切分点作为最优特征与最优切分点。</div><div class="line">3）对两个子结点递归调用#1、#2，直至满足停止条件</div><div class="line">4）生成CART决策树</div></pre></td></tr></table></figure>
-<p>3）CART剪枝</p>
-<p>1.6 连续和缺失值处理</p>
-<p>1）连续值离散化</p>
-<p>最简单的策略是<strong>二分法</strong>，也是C4.5采用的机制。</p>
-<p>2）缺失值</p>
-<p>考虑：①如何在属性值缺失的情况下进行划分属性选择？②给定划分属性，若样本在该属性的值缺失，如何划分？</p>
-<p>对于问题①：靠<strong>权重</strong>。</p>
-<p>给定D和特征A，令$\widetilde D$表示D在特征A上没有缺失值的样本子集。假设A有N个可取值$\{A^1,A^2,…,A^N\}$，令$\widetilde D^n$表示取值为$A^n$的样本子集。$\widetilde D^k$    表示$\widetilde D$中属于第k类的样本子集。对每个样本x赋权重$W_x$并定义<br>$$<br>p=\frac {\sum_{x \in \widetilde D} w_x}{\sum_{x \in D} w_x} \\<br>$$</p>
-<p>参考</p>
-<p>统计学习方法</p>
-<p><a href="http://www.jianshu.com/p/794d08199e5e" target="_blank" rel="external">决策树的剪枝问题</a></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/" itemprop="url">
-                  浅谈在线最优化求解算法-以CTR预测模型为例
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">
-                2017-07-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/机器学习算法推导/" itemprop="url" rel="index">
-                    <span itemprop="name">机器学习算法推导</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>[TOC]</p>
-<h1 id="1、最优化求解问题"><a href="#1、最优化求解问题" class="headerlink" title="1、最优化求解问题"></a>1、最优化求解问题</h1><p>通常，我们需要求解的最优化问题有如下三类：</p>
-<p><strong>（1）无约束优化问题</strong>：<br>$$<br>X=\arg \underset{X}{min}f(X)<br>$$<br>含义是求解X，令目标函数$f(X)$最小。</p>
-<p>对于这类问题，在$f(X)$ 是凸函数的前提下，通常做法就是对$f(X)$ 求导，并令$\frac {\partial} {\partial X} f(X) =0$ ，求解可以得到最优值。</p>
-<blockquote>
-<p> <strong>凸函数</strong></p>
-<p> 如果$f(x)$是定义在N维向量空间上的实变量函数，对于在$f(x)$的定义域C上的任意两个点$x_1$和$x_2$，以及任意[0,1]之间的值t都有：<br> $$<br> f(tX_1 + (1-t)X_2) \leq tf(X_1)+(1-t)f(X_2)\\<br> \forall X_1,X_2 \in C,  0 \leq t \leq 1<br> $$<br> 则称$f(x)$是凸函数。一个函数是凸函数是其存在最优解的充要条件。</p>
-<p> 此外，如果$f(x)$满足<br> $$<br> f(tX_1 + (1-t)X_2)&lt; tf(X_1)+(1-t)f(X_2)\\<br> \forall X_1,X_2 \in C,  0 \leq t \leq 1<br> $$<br> 则$f(x)$为严格凸函数。如下图所示，左边是严格凸函数，右边是凸函数</p>
-<p> <img src="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/凸函数.png" alt="凸函数"></p>
-</blockquote>
-<p><strong>（2）有等式约束的最优化问题</strong>：<br>$$<br>X=\arg \underset{X}{min}f(X)\\<br>s.t. h_k(X)=0;k=1,2,…,n<br>$$<br>含义是在n个等式约束$h_k(X)$ 的条件下求解X，另目标函数$f(X)$最小。</p>
-<p>针对有等式的最优化问题，采用<strong>拉格朗日乘数法</strong>进行求解，通过拉格朗日系数$A=[a_1,a_2,…,a_n]^T$ 把等式约束和目标函数组合成一个式子<br>$$<br>X=\arg \underset{X}{min}[f(X)+ A^TH(X)]<br>$$<br>相当于转化成无约束最优化求解问题，解决方法是分别对X，A求偏导并令其等于0。</p>
-<p><strong>（3）不等式约束的优化问题求解</strong> ：<br>$$<br>X=\arg \underset{X}{min}f(X)\\<br>s.t. h_k(X)=0;k=1,2,…,n\\<br>g_l(X)\leq 0;l=1,2,…,m<br>$$</p>
-<p>对于不等式约束，通过KKT条件求解。将所有的约束和目标函数写为一个式子<br>$$<br>L(X,A,B)=f(X)+A^TH(X)+B^TG(X)<br>$$<br>KKT条件是说最优值必须满足以下条件：<br>$$<br>\frac \partial {\partial X} L(X,A,B)=0\\<br>H(X)=0\\<br>B^TG(X)=0<br>$$<br>KKT条件是求解最优值的必要条件，要使其成为充要条件，还需要f(x)为凸函数。</p>
-<h1 id="2、批量最优化求解算法"><a href="#2、批量最优化求解算法" class="headerlink" title="2、批量最优化求解算法"></a>2、批量最优化求解算法</h1><p>一些定义：</p>
-<p>$i=1,2,…,N$表示向量维度</p>
-<p>$j=1,2,…,M$表示样本个数</p>
-<p>$t=1,2,…$表示迭代次数</p>
-<h2 id="2-1-批量和随机求解"><a href="#2-1-批量和随机求解" class="headerlink" title="2.1 批量和随机求解"></a>2.1 批量和随机求解</h2><p>我们面对的最优化问题都是无约束的最优化问题（有约束的也可以转成无约束的），因此通常可以将其描述为<br>$$<br>W=\arg \underset{W}{min}   l(W,Z)\\<br>Z=\{ (X_j,y_j) | j=1,2,…,M  \}\\<br>y_j=h(W,X_j)<br>\tag {2-1-1}<br>$$<br>就是<strong>在已知训练集的情况下，求使得目标函数最小的权重矩阵</strong>。其中，$Z$是训练集，$\mathbf{X}$是特征向量，$X_j$是其中一个样本，$Y$是预测值，$y_j$是其中一个样本对应的预测值。一共有M个样本。$h(W,X_j)$ 是特征向量到预测值的<strong>映射函数</strong>，$ l(W,Z)$ 最优化求解的目标函数，也称为<strong>损失函数</strong>，$W$ 为特征权重，也就是在损失函数中需要求解的参数。</p>
-<blockquote>
-<p> 损失函数一般包括损失项和正则项</p>
-</blockquote>
-<p>常用的损失函数有：</p>
-<p>（1）<strong>平方损失函数</strong>（线性回归）</p>
-<p>最小二乘法（Ordinary Least Squares）是常用的一种平方损失函数，最小二乘的基本原理是：最优拟合直线应该是使各点到回归直线的距离和最小的直线，即平方和最小。</p>
-<p>线性回归的映射函数为：<br>$$<br>h(W,X_j)=W^TX_j<br>$$<br>损失函数可以表示为<br>$$<br>l(W,Z)=\sum_{j=1}^M (y_j-W^TX_j)^2<br>$$<br>（2）<strong>Logistics损失函数</strong>（逻辑回归）</p>
-<p>逻辑回归的映射函数为：<br>$$<br>h(W,X_j)=\frac 1 {1+e^{-W^TX_j}}<br>$$</p>
-<blockquote>
-<p>logistic函数的优点是：</p>
-<p>1、他的输入范围是$-\infty \rightarrow  + \infty $ ，<strong>输出范围是(0,1)，正好满足概率分布为（0，1）的要求</strong>。我们用概率去描述分类器，自然比单纯的某个阈值要方便很多； </p>
-<p>2、是一个单调上升的函数，具有良好的连续性，<strong>不存在不连续点</strong>。</p>
-</blockquote>
-<p>由于该函数服从伯努利分布（0-1分布），通过最大似然估计，对于每一维的权重W，损失函数可以表示为<br>$$<br>l(W,Z)=(Y-h_W(\mathbf X))X<br>$$</p>
-<blockquote>
-<p><strong>推导过程</strong></p>
-<p>令<br>$$<br>h_W(X) = \frac 1 {1+e^{-W^T\mathbf X}}<br>$$<br>该函数服从伯努利分布（一次点击要么成功，要么失败，通过训练集可以知道不同特征组合下成功和失败的概率）<br>$$<br>P(Y=1 | \mathbf X;W) = h_W(\mathbf X)\\<br>P(Y=0 | \mathbf X;W) = 1-h_W(\mathbf X)<br>$$<br>则概率分布函数为<br>$$<br>P(Y|\mathbf X;W) = (h_W(\mathbf X))^Y<em>(1-h_W(\mathbf X))^{1-Y}<br>$$<br>（<em>*也就是说，我们有样本，通过样本能知道概率分布，那么我们需要知道得到这个概率分布的最有可能的参数W。即我们通过样本知道一些特征组合下的点击率，现在需要求概率函数中的系数。</em></em>）</p>
-<p>我们假设样本数据相互独立，所以它们的联合分布可以表示为各边际分布的乘积，用似然函数表示为：<br>$$<br>\begin{aligned}<br>L(W)=P(Y|\mathbf X;W) &amp;= (h_W(\mathbf X))^Y(1-h_W(\mathbf X))^{1-Y}\\<br>&amp;=\prod_{j=1}^M(h_W(X_j))^{y_j}(1-h_W(X_j))^{1-y_j}<br>\end{aligned}<br>\tag {2-1-2}<br>$$<br>从而，损失函数的求解，可以转化为求最有可能导致这样概率分布的W，也就是求L(W)的最大值。最简单的方法就是对W求偏导，并令导数为零。</p>
-<p>在多数情况下，直接对变量进行求导反而会使得计算式子更加的复杂，此时可以借用对数函数。由于对数函数是单调增函数，因此与（2-1-2）具有相同的最大值，上式变为<br>$$<br>\begin{aligned}<br>l(W) &amp;= Log L(W)\\<br>&amp;=\sum_{j=1}^M(y_jln h(X_j)+(1-y_j)ln (1-h(X_j)))<br>\end{aligned}<br>$$<br>对其求关于W的偏导</p>
-<p>首先求logistic函数的导数，得（最后一个X是对$W^TX$的求导）<br>$$<br>h_W^{‘}(\mathbf X) = h_W(\mathbf X)(1-h_W(\mathbf X))X<br>$$</p>
-<blockquote>
-<p><strong>推导过程如下</strong></p>
-<p><img src="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/求导的推导.jpg" alt="求导的推导"></p>
-</blockquote>
-<p>为了求解方便，将l(W)转为（其实1/M没用，完全可以去掉，不懂为何要加上）<br>$$<br>J(W) = -\frac {1}{M} l(W)<br>$$<br>则就变成求J(W)的最小值。求偏导的过程如下：</p>
-<p><img src="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/最大似然估计求偏导.png" alt="最大似然估计求偏导"></p>
-<p>最后得到目标函数（损失函数）为：<br>$$<br>\frac {\partial }{\partial W}J(W) =-\frac{1}{M} (Y-h_W(\mathbf X))X<br>$$</p>
-</blockquote>
-<p>对于损失函数的求解，一个典型的方法就是梯度下降法，由于损失函数是凸函数，因此沿着梯度下降的方向找到最小点。</p>
-<p>假设样本总数为n，<strong>批量梯度下降</strong>是：<br>$$<br>Repeat until convergence \{ \\<br>W^{(t+1)} := W^t - \eta^t\triangledown  _{W}l(W^{t},Z) \\<br>\}\\<br> \tag{1-2}<br>$$<br>而<strong>随机梯度下降（SGD）</strong>是：<br>$$<br>Repeat until convergence \{ \\<br>      for j=1 to M, \{ \\<br>          W^{(t+1)} := W^t - \eta^t\triangledown  _{W}l(W^{t},Z_j) \\<br>\}<br>$$<br>两者的区别是：</p>
-<p>前者每次更新$W$都需要遍历一次整个样本集合；而后者在遍历样本集合的时候，每个样本都能改变$W$ ，有更快的收敛速度 。由于SGD针对观测到的随机一条数据进行权重的更新，很适合进行增量计算，实现梯度下降的online模式。</p>
-<h2 id="2-2-正则化"><a href="#2-2-正则化" class="headerlink" title="2.2 正则化"></a>2.2 正则化</h2><p>正则化的主要目的是防止过拟合。对于损失函数构成的模型，可能会出现有些权重很大，有些权重很小的情况，导致过拟合，使得模型的复杂度提高，泛化能力较差（对未知数据的预测能力）。</p>
-<p> <img src="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/过拟合1.png" alt="过拟合1"></p>
-<p>而正则化就是对损失函数中权重的限制，限制其模不要太大：<br>$$<br>W=\arg \underset{W}{min}   l(W,Z)\\<br>s.t. \Psi(W)&lt;\delta<br>$$</p>
-<p>其中，$\Psi(W)$称为正则化因子，是一个关于W求模的函数，常用的正则化因子有L1和L2正则化。<br>$$<br>L1 Regularization         \Psi(W)=||W||_1=\sum_{i=1}^N|w_i|\\<br>L2  Regularization       \Psi(W)=||W||_2^2=\sum_{i=1}^N(w_i)^2=W^TW<br>$$<br>L1和L2的主要区别有两个：</p>
-<p>（1）L1在0处不可导，而L2可导。</p>
-<p>（2）L1通常能产生更稀疏的模型，也就是W的更多维度是0。这些为0的权重就代表了不是很重要的维度，所以能起到特征选择的目的。</p>
-<p>（3）L2能限制特征权重各个维度的模不要太大，解决过拟合。</p>
-<blockquote>
-<p><img src="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/正则化解空间.png" alt="正则化解空间"><br> 其中，左图的圆形区域是L2正则化的单位圆，右图的方形区域是L1正则化的单位圆。<br><strong>单位圆</strong></p>
-<p>使$||X||_p=1$的图形，当p=1和2时，单位圆分别为$|x|+|y|=1$和$x^2+y^2=1$。</p>
-</blockquote>
-<p>但是在SGD中，由于每次W的更新并不是沿着全局梯度进行下降，而是沿着某个样本产生的梯度方向进行下降，这样即使采用L1的方式也很难产生稀疏解。因此在接下来的在线最优化求解算法中，稀疏性是一个主要的追求目标。</p>
-<p>参考：</p>
-<p><a href="http://www.mamicode.com/info-detail-517504.html【正则化方法：L1和L2" target="_blank" rel="external">http://www.mamicode.com/info-detail-517504.html【正则化方法：L1和L2</a> regularization、数据集扩增、dropout】</p>
-<p><a href="http://blog.csdn.net/zouxy09/article/details/24971995/【机器学习中的范数规则化之（一）L0、L1与L2范数】" target="_blank" rel="external">http://blog.csdn.net/zouxy09/article/details/24971995/【机器学习中的范数规则化之（一）L0、L1与L2范数】</a></p>
-<h1 id="3、在线最优化求解算法"><a href="#3、在线最优化求解算法" class="headerlink" title="3、在线最优化求解算法"></a>3、在线最优化求解算法</h1><h2 id="3-1-截断梯度法TG"><a href="#3-1-截断梯度法TG" class="headerlink" title="3.1 截断梯度法TG"></a>3.1 截断梯度法TG</h2><p>为了使特征权重W有更多的0，最简单的方法就是设一个阈值，当W的某个维度值小于这个阈值的时候置为0，这个称为<strong>简单截断法</strong>。但实际中W的某个系数比较小可能是由于该维度训练不足引起，所以这么做会导致这部分特征的丢失。于是又改进为<strong>截断梯度法Truncated Gradient</strong>。</p>
-<h3 id="3-1-1-简单截断法"><a href="#3-1-1-简单截断法" class="headerlink" title="3.1.1 简单截断法"></a>3.1.1 简单截断法</h3><p>以$k$为窗口，当$t/k$不为整数时，采用标准的SGD；否则，采用如下的权重更新方式：<br>$$<br>W^{t+1}=T_0(W^t - \eta^tG^t,\theta) \\<br>T_0(v_i,\theta) = \begin{Bmatrix}<br>0 if |v_i|\leqslant \theta\ <br>v_i otherwise<br>\end{Bmatrix}<br>$$</p>
-<p>其中，$G^t=\triangledown  _{W}l(W^{t},Z^{t})$ 代表第t次迭代中损失函数的梯度，$\eta^{t}$ 是学习率，通常将其设置为 $1/\sqrt{t}$ 的函数。可以看出，简单截断法的思路是，如果某个维度的权重变化小于设定的$\theta$ ，则直接置为0。</p>
-<h3 id="3-1-2-截断梯度法"><a href="#3-1-2-截断梯度法" class="headerlink" title="3.1.2 截断梯度法"></a>3.1.2 截断梯度法</h3><p>在前一种方法上的改进。加入了L1正则化项$\eta^{t}\lambda sgn(W^{t})$ 。</p>
-<p>$$<br>W^{t+1}=W^t-\eta ^tG^t-\eta^t\lambda sgn(W^t)<br>$$<br>其中$sgn(v)$是符号函数。由于每次仅根据一个样本进行更新，因此也不再使用区分样本的下表$j$。</p>
-<p>采用类似的方式表示为：<br>$$<br>W^{t+1}=T_1(W^t - \eta^tG^t,\eta^t\lambda^t,\theta) \\<br>T_1(v_i,\alpha,\theta) = \begin{Bmatrix}<br>\begin{aligned}<br>&amp; max(0,v_i-\alpha) if v_i\in [0,\theta]\ <br>&amp; min(0,v_i+\alpha) if v_i\in [-\theta,0]\\<br>&amp; v_i otherwise<br>\end{aligned}<br>\end{Bmatrix}<br>$$<br>其中，$\lambda^{t} \in \mathbb{R}$且$\lambda^{t}\geqslant0 $ 。同样以k为窗口，每k步进行一次截断。当t/k不为整数时，$\lambda^{t}=0$， 否则，$\lambda^{t}=k\lambda$。可以看出，$\lambda$和$\theta$决定了权重的稀疏程度，这两个值越大越稀疏。</p>
-<h2 id="3-2-前向后向切分FOBOS"><a href="#3-2-前向后向切分FOBOS" class="headerlink" title="3.2 前向后向切分FOBOS"></a>3.2 前向后向切分FOBOS</h2><h3 id="3-2-1-FOBOS算法原理"><a href="#3-2-1-FOBOS算法原理" class="headerlink" title="3.2.1 FOBOS算法原理"></a>3.2.1 FOBOS算法原理</h3><p>在FOBOS（Forward-backward Splitting）中，将权重的更新分为两个步骤：<br>$$<br>W^{t+\frac{1}{2}} = W^t-\eta^tG^{t}\\<br>W^{t+1}=\arg \underset{W}{min} \{\frac {1} {2} ||W- W^{t+\frac{1}{2}}||_2^2+\eta^{t+\frac {1}{2}}\Psi (W)\}<br>\tag {3-2-1}<br>$$<br>前一个步骤还是标准的梯度下降，后一个步骤可以理解为对梯度下降的结果进行微调，其中第一项是L2正则化，表示不能离损失迭代结果太远，第二项$\Psi (W)$是正则化项。</p>
-<p>将上面两个式子合并，有<br>$$<br>W^{t+1}=\arg \underset{W}{min} \{\frac {1} {2} ||W- W^{t}-\eta^{t}G^{t}||_2^2+\eta^{t+\frac {1}{2}}\Psi (W)\}<br>$$<br>令<br>$$<br>F(W)=\frac {1} {2} ||W- W^{t}-\eta^{t}G^{t}||_2^2+\eta^{t+\frac {1}{2}}\Psi (W)<br>$$<br>如果$W^{t+1}$存在一个最优解，<strong><em>那么可以推断0向量一定属于$F(W)$的一维次梯度集合</em>。</strong><br>$$<br>0 \in \partial F(W)=W-W^{t}+\eta^{t}G^{t}+\eta^{t+\frac 1 2}\partial \Psi(W)<br>$$</p>
-<blockquote>
-<p><strong>次导数和次梯度</strong></p>
-<p>参考SubGradient.pdf</p>
-<p>次导数是一个区间，一维次梯度就是次导数</p>
-</blockquote>
-<p>由于$W^{t+1}=\arg \underset{x}{min} F(W)$，则有：<br>$$<br>0=\left \{ W-W^{t} - \eta^{t}G^{t}+\eta^{t+\frac {1}{2}}\partial\Psi(W) \right \}|_{W=W^{t+1}}<br>$$</p>
-<p>便可以得到另一种更新权重的方式<br>$$<br>W^{t+1}=W^{t}+ \eta^{t}G^{t}-\eta^{t+\frac {1}{2}}\partial\Psi(W^{t+1})<br>$$<br>从上式可以看到权重的更新不仅与迭代前的状态有关，也与迭代后的$W^{t+1}$有关。</p>
-<h3 id="3-2-2-L1-FOBOS"><a href="#3-2-2-L1-FOBOS" class="headerlink" title="3.2.2 L1-FOBOS"></a>3.2.2 L1-FOBOS</h3><p>在L1正则化下，有$\Psi (W)=\lambda||w||_1$ 。对于（2-3-1），<br>$$<br>W^{t+1}=\arg \underset{W}{min} \{\frac {1} {2} ||W- W^{t+\frac{1}{2}}||_2^2+\eta^{t+\frac {1}{2}}\Psi (W)\}<br>$$<br>用向量V来表示$W^{t+\frac 1 2}$ ，用标量$\tilde{\lambda} \in \mathbb{R}$来表示$\eta^{t+\frac 1 2}\lambda$ ，将公式展开，并改写为<br>$$<br>W^{t+1}=\arg \underset{W}{min}\sum_{i=1}^N (\frac {1} {2}(w_i-v_i)^2+ \tilde{\lambda}|w_i|)<br>\tag {3-2-2}<br>$$<br>可以看到，在求和公式中的每一项都是大于0的，所以公式（3-2-2）可以拆解成对特征权重W的每一维度单独求解<br>$$<br>w_i^{t+1}=\arg \underset{w_i}{min}(\frac {1} {2}(w_i-v_i)^2+ \tilde{\lambda}|w_i|)<br>\tag {3-2-3}<br>$$<br>假设$w_i^<em>$是一个维度上的最优解，通过反证法证明$w_i^</em>v_i\geq0$（证明略）。再分$v_i\geq0$和$v_i&lt;0$来讨论。</p>
-<p><strong>（1）当$v_i\geq0$时</strong>，</p>
-<p>由于$w_i^<em>v_i\geq0$，所以$w_i^</em> \geq0$ 。相当于给（2-3-3）增加了一个不等式约束条件：<br>$$<br>w_i^{t+1}=\arg \underset{w_i}{min}(\frac {1} {2}(w_i-v_i)^2+ \tilde{\lambda}|w_i|)\\<br>s.t. -w_i\leq 0<br>$$<br>通过拉格朗日乘子求解这个含不等式的约束问题。</p>
-<p>引入拉格朗日系数$\beta \geq 0$ ，由KKT条件，有<br>$$<br>\frac \partial {\partial w_i}\left ( \frac {1} {2}(w_i-v_i)^2+ \tilde{\lambda}|w_i|-\beta w_i \right )|_{w_i=w_i^<em>}=0 \\<br>\beta w_i^</em>=0<br>$$<br>根据上面的求导可得<br>$$<br>w_i^*=v_i-\tilde{\lambda}+\beta<br>$$<br>再分为两种情况</p>
-<p>① 当$w_i^<em> &gt; 0$ 时，由于$\beta w_i^</em>=0$ 所以$\beta=0$，此时有$w_i^*=v_i-\tilde{\lambda}$ ，从而$v_i-\tilde{\lambda} &gt; 0$ 。</p>
-<p>② 当$w_i^* = 0$ 时，有$v_i-\tilde{\lambda}+\beta=0$ 。由于$\beta \geq 0$ ，所以$v_i-\tilde{\lambda} \leq 0$  。</p>
-<p>可以得出，当$v_i\geq0$ 时，<br>$$<br>w_i^<em> = max(0, v_i-\tilde{\lambda})<br>$$<br><em>*（2）当$v_i&lt;0$时</em></em>，</p>
-<p>采用同样的分析方法，得到<br>$$<br>w_i^* =- max(0, -v_i-\tilde{\lambda})<br>$$<br>综上，可得FOBOS在L1正则化条件下，特征权重各个维度的更新方式为：<br>$$<br>\begin{aligned}<br>w_i^{t+1} &amp;= sgn(v_i)max(0,|v_i|-\tilde{\lambda})\\<br>&amp; = sgn(w_i^{t}-\eta^{t}g_i^{t})max \left \{ 0, |w_i^{t}-\eta^{t}g_i^{t}|-\eta^{t+ \frac {1} {2}} \lambda \right \}<br> \end{aligned}<br> \tag{3-2-4}<br>$$<br>其中，$g_i^{t}$就是梯度在维度i上的取值。</p>
-<p><strong>从公式（3-2-4）可以看出，L1-FOBOS每次更新W的时候，对W的每个维度都会进行判定，当$|w_i^{t}-\eta^{t}g_i^{t}|-\eta^{t+ \frac {1} {2}} \lambda&lt;0$的时候对齐进行截断，即权重置为0。</strong></p>
-<p>换一种写法，<br>$$<br>|w_i^{t}-\eta^{t}g_i^{t}|&lt;\eta^{t+ \frac {1} {2}} \lambda<br>\tag {3-2-5}<br>$$<br>可以看出截断的意义是，<strong>当一条样本产生的梯度不足以令对应维度上的权重值发生足够大的变大（$\eta^{t+ \frac {1} {2}} \lambda$ ），则认为在本次更新过程中该维度不重要，令其权重为0</strong>。</p>
-<p>若对L1-FOBOS进行适当的变换，可以发现，L1-FOBOS就是TG在特定条件下的特殊形式。</p>
-<h2 id="3-3-RDA"><a href="#3-3-RDA" class="headerlink" title="3.3 RDA"></a>3.3 RDA</h2><h3 id="3-3-1-RDA算法原理"><a href="#3-3-1-RDA算法原理" class="headerlink" title="3.3.1 RDA算法原理"></a>3.3.1 RDA算法原理</h3><p>TG和FOBOS都是建立在SGD的基础之上，属于梯度下降类型的方法，这类型方法的优点就是精度比较高，并且 TG、 FOBOS 也都能在稀疏性上得到提升。 但是有些其它类型的算法，例如 RDA，是从另一个方面来求解 Online Optimization 并且更有效地提升了特征权重的稀疏性。 </p>
-<p>正则对偶平均（ RDA, Regularized Dual Averaging） 是微软十年的研究成果， RDA 是 Simple Dual Averaging Scheme 的一个扩展， 由 Lin Xiao 发表于 2010 年 。</p>
-<p>在 RDA 中， 特征权重的更新策略为：<br>$$<br>W^{t+1} = \arg \underset{W}{min} \left \{ \frac 1 t \sum_{r=1}^t \left \langle G^r,W \right \rangle  +\Psi(W)+\frac {\beta^{t}}{t}h(W) \right \}<br>\tag {3-3-1}<br>$$<br>本质上，公式（3-3-1）包括了3个部分：</p>
-<p>（1）线性函数$\frac 1 t \sum_{r=1}^t \left \langle G^r,W \right \rangle$ 包含了之前所有梯度（或次梯度）的平均值（dual average），$G^r$ 是梯度；</p>
-<p>（2）$\Psi(W)$ 为正则项；</p>
-<p>（3）额外正则项$\frac {\beta^{t}}{t}h(W)$。其中$h(W)$是一个辅助的严格凸函数。$\{\beta^{t}|t\geq 1\}$ 是一个非负且非自减序列。</p>
-<h3 id="3-3-2-L1-RDA"><a href="#3-3-2-L1-RDA" class="headerlink" title="3.3.2 L1-RDA"></a>3.3.2 L1-RDA</h3><p>在L1正则化下，有$\Psi (W)=\lambda||w||_1$，并且由于$h(W)$是一个关于W的严格凸函数，就令$h(W)=\frac {1} {2} ||W||_2^2 $ 。此外，将$\{\beta^{t}|t\geq 1\}$定义为$\beta^{t}=\gamma \sqrt t $ 。再代入（2-4-1），有<br>$$<br>W^{t+1} = \arg \underset{W}{min} \left \{ \frac 1 t \sum_{r=1}^t \left \langle G^r,W \right \rangle  +\lambda||w||_1+\frac {\gamma} {2\sqrt t}||W||_2^2 \right \}<br>\tag {3-3-2}<br>$$<br>分解到每一个权重的维度上<br>$$<br>w_i^{t+1} = \arg \underset{w_i}{min} \left \{ \bar{g_i}^{t}w_i +\lambda|w_i|+\frac {\gamma} {2\sqrt t}w_i^2 \right \}<br>\tag {3-3-3}<br>$$<br>这里$\lambda &gt;0, \frac {\gamma} {\sqrt t}&gt;0,  \bar{g_i}^{t} = \frac 1 t \sum_{r=1}^t g_i^{(r)}$ 。公式（2-4-3）就是一个无约束的非平滑最优化问题（因为第二项$\lambda|w_i|$ 在0处不可导）。所以用次导数求解。</p>
-<p>假设$w_i^<em>$ 是其最优解，并且定义$\xi \in \partial  |w_i|$为$|w_i|$ 在$w_i^</em>$ 的次导数，则有<br>$$<br>\partial |w_i^<em>| =  \left\{\begin{matrix}<br>-1&lt;\xi&lt;1  &amp; if w_i^</em>=0\ <br>1 &amp; if w_i^<em>&gt;0\ <br>-1 &amp; if w_i^</em><0 \end{matrix}\right.="" $$="" 对公式（3-3-3）求次导数，并令其为0，则有="" \bar{g_i}^{t}="" +="" \lambda\xi="" \frac="" {\gamma}="" {\sqrt="" t}="" w_i="0" 由于$\lambda="">0$，再分情况讨论（略），可以得到L1-RDA特征权重的各个维度更新的方式为：<br>$$<br>w_i^{t+1}=\begin{Bmatrix}<br>0 &amp; if |\bar{g_i}^{t}|&lt;\lambda\ <br>-\frac {\sqrt t}{\gamma}\left (\bar{g_i}^{t}-\lambda sgn(\bar{g_i}^{t})  \right ) &amp; otherwise<br>\end{Bmatrix}<br>\tag {3-3-4}<br>$$<br><strong>这里可以看出，当某个维度上累积梯度平均值的绝对值小于阈值$\lambda$ 时，产生截断</strong>。</0></p>
-<h3 id="3-3-3-L1-RDA和L1-FOBOS的比较"><a href="#3-3-3-L1-RDA和L1-FOBOS的比较" class="headerlink" title="3.3.3 L1-RDA和L1-FOBOS的比较"></a>3.3.3 L1-RDA和L1-FOBOS的比较</h3><p>在L1-FOBOS中，进行截断的条件是<br>$$<br>|w_i^{t}-\eta^{t}g_i^{t}|&lt;\eta^{t+ \frac {1} {2}} \lambda<br>$$<br>通常会定义$\eta$为与$\frac 1 {\sqrt t}$ 正相关的函数$\eta=\Theta \left ( \frac {1} {\sqrt t} \right )$ 。因此L1-FOBOS的<strong>截断阈值为$\Theta \left ( \frac {1} {\sqrt t} \right )\lambda$  ，</strong>随着**t的增加，这个阈值会逐渐降低。</p>
-<p>相比较而言，L1-RDA的<strong>截断阈值是$\lambda$ </strong>。是一个常数，并不随着t变化，因此相对于L1-FOBOS更简单粗暴。这种性质使得L1-RDA更容易产生稀疏性。此外， RDA 中判定截断的对象是梯度的累加平均值$\bar{g_i}^{t} $ ， 不同于 TG或L1-FOBOS 中针对单次梯度计算的结果进行判定，避免了由于某些维度由于训练不足导致截断的问题。 并且通过调节一个参数$\lambda$，很容易在精度和稀疏性上进行权衡 。</p>
-<h2 id="3-4-FTRL"><a href="#3-4-FTRL" class="headerlink" title="3.4 FTRL"></a>3.4 FTRL</h2><p>有实验证明， <strong>L1-FOBOS 这一类基于梯度下降的方法有比较高的精度，但是 L1-RDA 却能在损失一定精度的情况下产生更好的稀疏性。 FTRL则是结合了两者的优点</strong>。</p>
-<h3 id="3-4-1-L1-FOBOS和L1-RDA在形式上的统一"><a href="#3-4-1-L1-FOBOS和L1-RDA在形式上的统一" class="headerlink" title="3.4.1 L1-FOBOS和L1-RDA在形式上的统一"></a>3.4.1 L1-FOBOS和L1-RDA在形式上的统一</h3><p>之前提到，L1-FOBOS可以表示为（这里令$\eta^{t+\frac 1 2}=\eta^t=\Theta(\frac 1 {\sqrt t})$  是一个随t变化的非增正序列）<br>$$<br>W^{t+1}=\arg \underset{W}{min} \{\frac {1} {2} ||W- W^t-\eta^tG^t||^2+\eta^{t}\lambda||w||_1\}<br>$$<br>将其按W的维度分解为N个独立的最优化步骤<br>$$<br>\underset{w_i}{minimize} \left \{  \frac 1 2 (w_i-w_i^t+\eta^tg_i^t)^2+\eta^t\lambda|w_i| \right \}\\<br>=\underset{w_i}{minimize}\left \{  \frac 1 2 (w_i-w_i^t)^2 + \frac 1 2(\eta^tg_i^t)^2+w_i\eta^tg_i^t- w_i^t\eta^tg_i^t+    \eta^t\lambda|w_i| \right \}\\<br>$$<br>同时除以$\eta^t$ ，得到<br>$$<br>\underset{w_i}{minimize}\left \{ w_ig_i^t+\lambda|w_i|+\frac 1 {2\eta^t}(w_i-w_i^t)^2 + [\frac {\eta^t}{2}(g_i^t)2+w_i^tg_i^t] \right \}<br>$$<br>由于$\frac {\eta^t}{2}(g_i^t)2+w_i^tg_i^t$ 与变量$w_i$ 无关，因此上式可以等价于<br>$$<br>\underset{w_i}{minimize}\left \{ w_ig_i^t+\lambda|w_i|+\frac 1 {2\eta^t}(w_i-w_i^t)^2 +  \right \}<br>$$<br>再将这N个独立的合并，则L1-FOBOS可以写成<br>$$<br>W^{t+1} = \arg \underset{W}{min} \left \{ G^t\cdot W+\lambda||W||_1+\frac 1 {2\eta^t}||W-W^t||_2^2 \right \}<br>$$<br>而对于L1-RDA的公式（3-3-2）<br>$$<br>W^{t+1} = \arg \underset{W}{min} \left \{ \frac 1 t \sum_{r=1}^t \left \langle G^r,W \right \rangle  +\lambda||w||_1+\frac {\gamma} {2\sqrt t}||W||_2^2 \right \} \\<br>$$<br>同时乘以t，得到<br>$$<br>\begin{aligned}<br>W^{t+1} &amp; = \arg \underset{W}{min} \left \{ \sum_{r=1}^t  G^r \cdot W  +t\lambda||w||_1+\frac {1} {2\eta^t}||W-0||_2^2 \right \}\\<br>&amp; =\arg \underset{W}{min} \left \{  G^{1:t} \cdot W  +t\lambda||w||_1+\frac {1} {2\eta^t}||W-0||_2^2 \right \}<br>\end{aligned}<br>$$<br>如果令$\sigma ^s = \frac 1 {\eta^s}-\frac 1 {\eta^{s-1}}$  ，则$\sigma^{1:t} = \frac 1 {\eta^t}$ 。L1-FOBOS和L1-RDA的公式可以写成<br>$$<br>W^{t+1} = \arg \underset{W}{min} \left \{ G^t\cdot W+\lambda||W||_1+\frac 1 2\sigma^{1:t}||W-W^t||_2^2 \right \}\\<br>W^{t+1} =\arg \underset{W}{min} \left \{  G^{1:t} \cdot W  +t\lambda||W||_1+\frac 1 2\sigma^{1:t}||W-0||_2^2 \right \}<br>\tag {3-4-1}<br>$$<br>比较这两个公式，可以看出L1-FOBOS和L1-RDA的区别在于：</p>
-<p>（1）前者对梯度只考虑当前的状态，而后者的梯度是累加的形式；</p>
-<p>（2）前者的第三项限制了W的变化不能离已经迭代过的解太远，后者限制W不能离0太远。</p>
-<h3 id="3-4-2-FTRL算法原理"><a href="#3-4-2-FTRL算法原理" class="headerlink" title="3.4.2 FTRL算法原理"></a>3.4.2 FTRL算法原理</h3><p>FTRL综合考虑了L1-FOBOS和L1-RDA中对正则项和W限制的区别，其特征权重的更新公式为<br>$$<br>W^{t+1} =\arg \underset{W}{min} \left \{  G^{1:t} \cdot W  +\lambda_1||W||_1+\lambda_2||W||_2^2+\frac 1 2\sum_{s=1}^t \sigma^s ||W-W^s||_2^2 \right \}<br>\tag {3-4-2}<br>$$<br>其中L2的正则项在论文中并没有出现，但是2013年的FTRL工程化实现的论文却使用。事实上该项的引入并不影响FRTL<br>的稀疏性， 后面的推导过程会显示这一点。 L2正则项的引入仅仅相当于对最优化过程多了一个约束，使得结果求解结果更加“平滑”。 </p>
-<p>对（3-4-2）进行变换，将其的最后一项展开<br>$$<br>W^{t+1} =\arg \underset{W}{min} \left \{  (G^{1:t}-\sum_{s=1}^t\sigma^sW^s) \cdot W  +\lambda_1||W||_1+\frac 1 2 (\lambda_2+\sum_{s=1}^t\sigma^s)||W||_2^2+\frac 1 2\sum_{s=1}^t \sigma^s ||W^s||_2^2 \right \}<br>$$<br>其中，由于$\frac 1 2\sum_{s=1}^t \sigma^s ||W^s||_2^2$ 相对于W是常数项，再令<br>$$<br>Z^{t} =G^{1:t}-\sum_{s=1}^t\sigma^sW^s<br>\tag {3-4-3}<br>$$<br>上式等价于<br>$$<br>W^{t+1} =\arg \underset{W}{min} \left \{  Z^t \cdot W  +\lambda_1||W||_1+\frac 1 2 (\lambda_2+\sum_{s=1}^t\sigma^s)||W||_2^2 \right \}<br>$$<br>再针对每个维度将其拆解成N个独立的标量最小化问题<br>$$<br> \underset{w_i}{minimize} \left \{  z_i^tw_i  +\lambda_1|w_i|+\frac 1 2 (\lambda_2+\sum_{s=1}^t\sigma^s)w_i^2 \right \}<br>$$<br>到这里，遇到了与L1-RDA的（3-3-3）类似的优化问题，用相同的分析方法可以得到<br>$$<br>w_i^{t+1}=\left\{\begin{matrix}<br>0 &amp; if |z_i^t|&lt;\lambda_1\ <br>-\left ( \lambda_2+\sum_{s=1}^t\sigma^s \right )^{-1} \left ( z_i^t-\lambda_1 sgn(z_i^t) \right ) &amp; otherwise<br>\end{matrix} \right.<br>\tag {3-4-4}<br>$$<br>可以看出，引入L2并没有对FTRL结果的稀疏性产生影响。</p>
-<h3 id="3-4-3-学习率"><a href="#3-4-3-学习率" class="headerlink" title="3.4.3 学习率"></a>3.4.3 学习率</h3><p>前面的推导中，学习率的选择和计算没有被提及。事实上在FTRL中，每个维度的学习率都是单独考虑的。</p>
-<p>考虑特征维度的变化率：如果特征 1 比特征 2 的变化更快，那么在维度 1 上的学习率应该下降得更快。我们很容易就可以想到可以用某个维度上梯度分量来反映这种变化率。在FTRL 中，维度 i上的学习率是这样计算的<strong>（原作者没有推导过程）</strong>：<br>$$<br>\eta_i^t=\frac {\alpha}{\beta + \sqrt {\sum_{s=1}^t (g_i^s)^2}}<br>$$<br>由于$\sum_{s=1}^t\sigma^s=\frac 1 {\eta^t}$ ，因此（3-4-4）就变成<br>$$<br>w_i^{t+1}=\left\{\begin{matrix}<br>0 &amp; if |z_i^t|&lt;\lambda_1\ <br>-\left ( \lambda_2 + \frac {\beta + \sqrt {\sum_{s=1}^t (g_i^s)^2}}{\alpha}  \right )^{-1} \left ( z_i^t-\lambda_1 sgn(z_i^t) \right ) &amp; otherwise<br>\end{matrix} \right.<br>\tag {3-4-5}<br>$$<br>这里的$\alpha, \beta$ 都是要输入的参数。</p>
-<h3 id="2-5-4-伪代码解读"><a href="#2-5-4-伪代码解读" class="headerlink" title="2.5.4 伪代码解读"></a>2.5.4 伪代码解读</h3><p> <img src="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/FTRL伪代码.png" alt="FTRL伪代码"></p>
-<p>首先设置各个参数的初始值，包括</p>
-<ul>
-<li>更新学习率的$\alpha,\beta$。</li>
-<li>L1和L2正则化的参数$\lambda_1, \lambda_2$ </li>
-<li>更新权重时用到的$z_i$ 一维数组（数组的长度是特征项个数），初始值是0</li>
-<li>存放梯度累加的$n_i$ 一维数组（数组的长度是特征项个数），初始值是0</li>
-</ul>
-<p>算法步骤中：</p>
-<p>（1）第一阶段，计算第t次迭代的预测值</p>
-<p><strong>S1</strong>：用给定的初始值计算权重$w_{t,i}$，并计算出预测值$p_t$ 。见①</p>
-<p>（2）第二阶段，更新第t+1次的权重，对当前样本不为0的每个特征项都要进行一次更新。在第i个特征项中，</p>
-<p><strong>S1</strong>：采用logloss计算损失函数的梯度$g_{t+1}$，见②</p>
-<p><strong>S2</strong>：可以看出①里面还需要计算$n_i$  和$z_i$ 在第t+1次的值。</p>
-<p>对于$z_i$，根据公式（2-5-3）<br>$$<br>Z^{t} =G^{1:t}-\sum_{s=1}^t\sigma^sW^s<br>$$<br>可以看出z的更新可以通过下式计算<br>$$<br>\begin {aligned}<br>Z^{t+1}&amp; =G^{1:t+1}-\sum_{s=1}^{t+1}\sigma^sW^s\\<br>&amp;=G^{1:t}-\sum_{s=1}^t\sigma^sW^s + G^{t+1} - \sigma^{t+1}W^{t+1}\\<br>&amp;=Z^t + G^{t+1} - \sigma^{t+1}W^{t+1}<br> \end{aligned}<br> \tag {3-4-6}<br>$$<br>则需要计算$\sigma^{t+1}$ 的值。而根据上文的推导<br>$$<br>\sigma ^s = \frac 1 {\eta^s}-\frac 1 {\eta^{s-1}}<br>$$<br>又<br>$$<br>\eta_i^t=\frac {\alpha}{\beta + \sqrt {\sum_{s=1}^t (g_i^s)^2}}<br>$$<br>则<br>$$<br>\begin {aligned}<br>\sigma ^{t+1}&amp; = \frac 1 {\eta^{t+1}}-\frac 1 {\eta^t}\\<br>&amp;=\frac {\beta + \sqrt {\sum_{s=1}^{t+1} (g_i^s)^2}}{\alpha}-\frac {\beta + \sqrt {\sum_{s=1}^t (g_i^s)^2}}{\alpha}\\<br>&amp;=\frac 1 \alpha \left ( \sqrt {\sum_{s=1}^{t+1} (g_i^s)^2}- \sqrt {\sum_{s=1}^t (g_i^s)^2}\right )<br> \end{aligned}<br>$$<br>由于用$n_i$ 记录$g_i$ 的累加和，上式可以变成<br>$$<br>\sigma ^{t+1} = \sqrt {n^t+(g^{t+1})^2}-\sqrt {n^t}<br>\tag {3-4-7}<br>$$<br>见③。再根据公式（3-4-6），计算$z_i$ 的值，见④。</p>
-<p><strong>S3</strong>：对于$n_i$ ，根据公式（3-4-7），<br>$$<br>n^{t+1} = n^t +(g^{t+1})^2<br>$$<br>见⑤。</p>
-<h3 id="2-5-5-实现代码"><a href="#2-5-5-实现代码" class="headerlink" title="2.5.5 实现代码"></a>2.5.5 实现代码</h3><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">predict</span></span>(x: <span class="type">Array</span>[<span class="type">Int</span>]): <span class="type">Double</span> = &#123;</div><div class="line">  <span class="keyword">var</span> wTx = <span class="number">0.0</span></div><div class="line"></div><div class="line">  x foreach &#123; x =&gt;</div><div class="line">    <span class="keyword">val</span> sign = <span class="keyword">if</span> (z(x) &lt; <span class="number">0</span>) <span class="number">-1.0</span> <span class="keyword">else</span> <span class="number">1.0</span></div><div class="line"></div><div class="line">    <span class="keyword">if</span> (sign * z(x) &lt;= <span class="type">L1</span>)</div><div class="line">      w(x) = <span class="number">0.0</span></div><div class="line">    <span class="keyword">else</span></div><div class="line">      w(x) = (sign * <span class="type">L1</span> - z(x)) / ((beta + math.sqrt(n(x))) / alpha + <span class="type">L2</span>)</div><div class="line"></div><div class="line">    wTx = wTx + w(x)</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> <span class="number">1.0</span> / (<span class="number">1.0</span> + math.exp(-math.max(math.min(wTx, <span class="number">35.0</span>), <span class="number">-35.0</span>)))</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">update</span></span>(x: <span class="type">Array</span>[<span class="type">Int</span>], p: <span class="type">Double</span>, y: <span class="type">Int</span>): <span class="type">Unit</span> = &#123;</div><div class="line">  <span class="keyword">val</span> g = p - y</div><div class="line"></div><div class="line">  x foreach &#123; x =&gt;</div><div class="line">    <span class="keyword">val</span> sigma = (math.sqrt(n(x) + g * g) - math.sqrt(n(x))) / alpha</div><div class="line">    z(x) = z(x) + g - sigma * w(x)</div><div class="line">    n(x) = n(x) + g * g</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>从代码可以看出，在更新权重时，SGD和FTRL的区别在于：</p>
-<p><del>SGD在遍历每个样本的时候，都会更新所有维度的权重，而FTRL在遍历每个样本的时候只会更新样本对应维度的权重。从而可以节省训练的时间</del></p>
-<p>并不是节省时间。SGD也可以用于在线学习，过拟合的限制上没有FTRL好。参数太多，会导致模型复杂度上升，容易过拟合。</p>
-<h3 id="3-4-6-实验及结论"><a href="#3-4-6-实验及结论" class="headerlink" title="3.4.6 实验及结论"></a>3.4.6 实验及结论</h3><p>1、</p>
-<p>训练：16-10-22的前7天数据</p>
-<p>预测：16-10-22当天数据</p>
-<p>维度：1048576</p>
-<p>参数：默认</p>
-<p> <img src="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/roc3.png" alt="roc3"></p>
-<p>logloss：</p>
-<p>线上方法：0.274321867859</p>
-<p>FRTL：0.0326626593411</p>
-<p>2、</p>
-<p>训练：16-10-22的前7天数据</p>
-<p>预测：16-10-22当天数据，其中每9条用于在线学习，预测第10条</p>
-<p>维度：1048576</p>
-<p>参数：默认</p>
-<p>训练时间：11:54-12:18</p>
-<p> <img src="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/roc1.png" alt="roc1"></p>
-<p>logloss：</p>
-<p>线上方法：0.275704770725</p>
-<p>FRTL：0.032281346379</p>
-<p>3、</p>
-<p>训练集：16-10-18的前10天数据</p>
-<p>预测：16-10-18当天数据，其中每9条用于在线学习，预测第10条</p>
-<p>维度：4194304</p>
-<p>参数：默认</p>
-<p>训练时间：13:50-14:19</p>
-<p> <img src="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/roc2.png" alt="roc2"></p>
-<p>logloss</p>
-<p>线上方法：0.073087783303</p>
-<p>FTRL：0.022967801811</p>
-<p>4、</p>
-<p>训练集：16-10-18的前10天数据</p>
-<p>预测：16-10-18当天数据，其中每9条用于在线学习，预测第10条</p>
-<p>维度：4194304</p>
-<p>参数：训练的特征项改为1-10</p>
-<p>训练时间：17:07-17:45</p>
-<p> <img src="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/roc4.png" alt="roc4"></p>
-<p>logloss</p>
-<p>线上方法：0.073087783303</p>
-<p>FTRL：0.0221369813697</p>
-<p>特征权重不为0的维度有11301个</p>
-<h2 id="观点"><a href="#观点" class="headerlink" title="观点"></a>观点</h2><p>FTRL在线训练时间长了效果往往会下降，因为学习率会逐渐降低，必须要offline结合online。</p>
-<h1 id="主要参考资料"><a href="#主要参考资料" class="headerlink" title="主要参考资料"></a>主要参考资料</h1><p>【在线最优化求解(Online Optimization)-冯扬】</p>
-<p>【逻辑回归从入门到精通-腾讯柳超】</p>
-<p>【FTRL的理论论文】Factorization machines with follow-the-regularized-leader for CTR prediction in display advertising  <a href="http://www0.cs.ucl.ac.uk/staff/w.zhang/rtb-papers/fm-ftrl.pdf" target="_blank" rel="external">http://www0.cs.ucl.ac.uk/staff/w.zhang/rtb-papers/fm-ftrl.pdf</a></p>
-<p>【FTRL的工程实现论文】<a href="https://www.eecs.tufts.edu/~dsculley/papers/ad-click-prediction.pdf" target="_blank" rel="external">https://www.eecs.tufts.edu/~dsculley/papers/ad-click-prediction.pdf</a> </p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/06/12/Python-容器/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/06/12/Python-容器/" itemprop="url">
-                  Python-容器
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-12T11:49:53+08:00">
-                2017-06-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Python开发/" itemprop="url" rel="index">
-                    <span itemprop="name">Python开发</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="1-序列"><a href="#1-序列" class="headerlink" title="1 序列"></a>1 序列</h1><h2 id="1-1-列表"><a href="#1-1-列表" class="headerlink" title="1.1 列表[]"></a>1.1 列表[]</h2><p>列表是可变的，这是它区别于字符串和元组的最重要的特点，一句话概括即：列表可以修改，而字符串和元组不能。</p>
-<h3 id="1-1-1-创建"><a href="#1-1-1-创建" class="headerlink" title="1.1.1 创建"></a>1.1.1 创建</h3><p>直接创建</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">list1 = [&apos;a&apos;,&apos;b&apos;]</div><div class="line">list2 = [1,2]</div></pre></td></tr></table></figure>
-<p>list函数创建</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">list3 = list(&quot;hello&quot;)</div><div class="line">print list3</div></pre></td></tr></table></figure>
-<p>输出</p>
-<p>[‘h’, ‘e’, ‘l’, ‘l’, ‘o’]</p>
-<h3 id="1-1-2-过滤"><a href="#1-1-2-过滤" class="headerlink" title="1.1.2 过滤"></a>1.1.2 过滤</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[elem for elem in li if len(elem) &gt; 1]</div></pre></td></tr></table></figure>
-<h3 id="1-1-3-划分"><a href="#1-1-3-划分" class="headerlink" title="1.1.3 划分"></a>1.1.3 划分</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">a=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>]</div><div class="line"><span class="comment">#不包括1</span></div><div class="line">a[:<span class="number">1</span>]</div><div class="line"><span class="comment">#输出[1]</span></div><div class="line"><span class="comment">#包括2</span></div><div class="line">a[<span class="number">2</span>:]</div><div class="line"><span class="comment">#输出[3、4]</span></div></pre></td></tr></table></figure>
-<p>1.1.4 二维列表</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">dataSet = [[1, 1, &apos;yes&apos;],</div><div class="line">               [1, 1, &apos;yes&apos;],</div><div class="line">               [1, 0, &apos;no&apos;],</div><div class="line">               [0, 1, &apos;no&apos;],</div><div class="line">               [0, 1, &apos;no&apos;]]</div></pre></td></tr></table></figure>
-<h2 id="1-2-元组"><a href="#1-2-元组" class="headerlink" title="1.2 元组"></a>1.2 元组</h2><h1 id="2、映射"><a href="#2、映射" class="headerlink" title="2、映射"></a>2、映射</h1><p>2.1 词典</p>
-<h1 id="3、集合"><a href="#3、集合" class="headerlink" title="3、集合"></a>3、集合</h1>
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2016/05/21/JPA连接池问题/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/05/21/JPA连接池问题/" itemprop="url">
-                  JPA连接池问题
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-21T11:49:53+08:00">
-                2016-05-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Bug集/" itemprop="url" rel="index">
-                    <span itemprop="name">Bug集</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>用hibernate的JPA框架连接MySql并提供API接口，往往过一夜就会报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">org.hibernate.exception.JDBCConnectionException: Unable to acquire JDBC Connection</div></pre></td></tr></table></figure>
-<p>根据<a href="https://stackoverflow.com/questions/42746872/springbootgenericjdbcexception-unable-to-acquire-jdbc-connection" target="_blank" rel="external">stackflow</a>上的解释，因为有太多connection，导致无法建立新的connection。因此需要设置连接池</p>
-<p><a href="http://blog.csdn.net/qq441568267/article/details/52951767" target="_blank" rel="external">连接池的作用</a></p>
-<p><strong>1.JDBC数据库连接池的必要性</strong></p>
-<p>在使用开发基于<a href="http://lib.csdn.net/base/mysql" target="_blank" rel="external">数据库</a>的web程序时，传统的模式基本是按以下步骤：　　</p>
-<p>在主程序（如servlet、beans）中建立数据库连接。</p>
-<p>进行sql操作</p>
-<p>断开数据库连接。</p>
-<p>这种模式开发，存在的问题:</p>
-<p>普通的JDBC数据库连接使用 DriverManager 来获取，每次向数据库建立连接的时候都要将 Connection 加载到内存中，再验证用户名和密码(得花费0.05s～1s的时间)。需要数据库连接的时候，就向数据库要求一个，执行完成后再断开连接。这样的方式将会消耗大量的资源和时间。数据库的连接资源并没有得到很好的重复利用.若同时有几百人甚至几千人在线，频繁的进行数据库连接操作将占用很多的系统资源，严重的甚至会造成服务器的崩溃。</p>
-<p>对于每一次数据库连接，使用完后都得断开。否则，如果程序出现异常而未能关闭，将会导致数据库系统中的内存泄漏，最终将导致重启数据库。</p>
-<p>这种开发不能控制被创建的连接对象数，系统资源会被毫无顾及的分配出去，如连接过多，也可能导致内存泄漏，服务器崩溃.</p>
-<p><strong>2.数据库连接池（connection pool）</strong></p>
-<p>为解决传统开发中的数据库连接问题，可以采用数据库连接池技术。</p>
-<p>数据库连接池的基本思想就是为数据库连接建立一个“缓冲池”。预先在缓冲池中放入一定数量的连接，当需要建立数据库连接时，只需从“缓冲池”中取出一个，使用完毕之后再放回去。</p>
-<p>数据库连接池负责分配、管理和释放数据库连接，它允许应用程序重复使用一个现有的数据库连接，而不是重新建立一个。</p>
-<p>数据库连接池在初始化时将创建一定数量的数据库连接放到连接池中，这些数据库连接的数量是由最小数据库连接数来设定的。无论这些数据库连接是否被使用，连接池都将一直保证至少拥有这么多的连接数量。连接池的最大数据库连接数量限定了这个连接池能占有的最大连接数，当应用程序向连接池请求的连接数超过最大连接数量时，这些请求将被加入到等待队列中。</p>
-<p><strong>3.数据库连接池技术的优点</strong></p>
-<p>(1)资源重用：由于数据库连接得以重用，避免了频繁创建，释放连接引起的大量性能开销。在减少系统消耗的基础上，另一方面也增加了系统运行环境的平稳性。</p>
-<p>(2)更快的系统反应速度:数据库连接池在初始化过程中，往往已经创建了若干数据库连接置于连接池中备用。此时连接的初始化工作均已完成。对于业务请求处理而言，直接利用现有可用连接避免了数据库连接初始化和释放过程的时间开销，从而减少了系统的响应时间</p>
-<p>(3)新的资源分配手段对于多应用共享同一数据库的系统而言，可在应用层通过数据库连接池的配置实现某一应用最大可用数据库连接数的限制避免某一应用独占所有的数据库资源.</p>
-<p>(4)统一的连接管理，避免数据库连接泄露在较为完善的数据库连接池实现中，可根据预先的占用超时设定，强制回收被占用连接，从而避免了常规数据库连接操作中可能出现的资源泄露。</p>
-<p><strong>4.c3p0数据库连接池</strong></p>
-<p>设置的方法参见</p>
-<p><a href="https://www.mkyong.com/hibernate/how-to-configure-the-c3p0-connection-pool-in-hibernate/" target="_blank" rel="external">How to configure the C3P0 connection pool in Hibernate</a></p>
-<p>配置后的persistence.xml</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">properties</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"hibernate.dialect"</span> <span class="attr">value</span>=<span class="string">"org.hibernate.dialect.MySQL5Dialect"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"hibernate.connection.driver_class"</span> <span class="attr">value</span>=<span class="string">"com.mysql.jdbc.Driver"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"hibernate.connection.username"</span> <span class="attr">value</span>=<span class="string">"usr_dba"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"hibernate.connection.password"</span> <span class="attr">value</span>=<span class="string">"4rfv%TGB^YHN"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"hibernate.connection.url"</span> <span class="attr">value</span>=<span class="string">"jdbc:mysql://10.11.10.44:3306/symphony"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"hibernate.max_fetch_depth"</span> <span class="attr">value</span>=<span class="string">"3"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"hibernate.hbm2ddl.auto"</span> <span class="attr">value</span>=<span class="string">"update"</span> /&gt;</span></div><div class="line">  <span class="comment">&lt;!-- 下面开始c3p0的配置 --&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"hibernate.connection.provider_class"</span> <span class="attr">value</span>=<span class="string">"org.hibernate.service.jdbc.connections.internal.C3P0ConnectionProvider"</span>/&gt;</span></div><div class="line">  <span class="comment">&lt;!-- 最小连接数 --&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"hibernate.c3p0.min_size"</span> <span class="attr">value</span>=<span class="string">"1"</span>/&gt;</span></div><div class="line">  <span class="comment">&lt;!-- 最大连接数 --&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"hibernate.c3p0.max_size"</span> <span class="attr">value</span>=<span class="string">"100"</span>/&gt;</span></div><div class="line">  <span class="comment">&lt;!-- 获得连接的超时时间,如果超过这个时间,会抛出异常，单位（毫秒） --&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"hibernate.c3p0.timeout"</span> <span class="attr">value</span>=<span class="string">"10"</span>/&gt;</span></div><div class="line">  <span class="comment">&lt;!-- 指定连接池里最大缓存多少个Statement对象 --&gt;</span> </div><div class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"hibernate.c3p0.max_statements"</span> <span class="attr">value</span>=<span class="string">"100"</span>/&gt;</span></div><div class="line">  <span class="comment">&lt;!-- 每隔3000秒检查连接池里的空闲连接 ，单位是（秒）--&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"hibernate.c3p0.idle_test_period"</span> <span class="attr">value</span>=<span class="string">"3000"</span>/&gt;</span></div><div class="line">  <span class="comment">&lt;!-- 当连接池里面的连接用完的时候，C3P0自动一次性获取多少个新的连接 --&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"hibernate.c3p0.acquire_increment"</span> <span class="attr">value</span>=<span class="string">"5"</span>/&gt;</span></div><div class="line">  <span class="comment">&lt;!-- 每次都验证连接是否可用 --&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"hibernate.c3p0.validate"</span> <span class="attr">value</span>=<span class="string">"true"</span>/&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">properties</span>&gt;</span></div></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
+
 
 
           </div>
@@ -1327,7 +1939,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">20</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1338,7 +1950,7 @@
             
             <div class="site-state-item site-state-categories">
               
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">10</span>
                 <span class="site-state-item-name">分类</span>
               
             </div>
@@ -1349,7 +1961,7 @@
             
             <div class="site-state-item site-state-tags">
               
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">标签</span>
               
             </div>
