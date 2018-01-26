@@ -268,243 +268,6 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2018/01/26/机器学习笔记-最大熵/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2018/01/26/机器学习笔记-最大熵/" itemprop="url">
-                  机器学习笔记-最大熵
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-26T11:40:42+08:00">
-                2018-01-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="1、最大熵原理"><a href="#1、最大熵原理" class="headerlink" title="1、最大熵原理"></a>1、最大熵原理</h1><p>日常生活中，很多事情的发生表现出一定的随机性，试验的结果往往是不确定的，也不知道这个随机现象所服从的概率分布。<strong>最大熵的实质</strong>就是，在已知部分知识的前提下，关于未知分布最合理的推断就是符合已知知识最不确定或者最随机的推断。任何其他的选择都意味着我们增加了其他的约束和假设。</p>
-<p>将最大熵应用到分类，就是最大熵模型。给定一个训练集：</p>
-<script type="math/tex; mode=display">
-T = \{  (x_1,y_1),  (x_2,y_2),..., (x_N,y_N)\}</script><p>其中$x_i \in X$是输入，$y_i \in Y$是输出，X和Y表示输入和输出空间。N为样本数。<strong>目标是</strong>，利用最大熵原理选出一个最好的分类模型，即对于任意给定的输入$x \in X$，可以以概率$p(y|x)$输出$y \in Y$ 。</p>
-<p>按照最大熵原理，应该<strong>优先保证模型满足已知的所有约束</strong>。思路是，从训练数据T中抽取若干有用的特征，要求这些特征在T上关于经验分布$\tilde{p}(x,y)$的数学期望与它们在模型中关于$p(x,y)$的数学期望相等。这样，一个特征就是一个约束了。</p>
-<p>这里就涉及到，<strong>特征如何刻画？经验分布如何表示？</strong></p>
-<h1 id="2、特征函数"><a href="#2、特征函数" class="headerlink" title="2、特征函数"></a>2、特征函数</h1><p>假设通过特征选择，抽取若干特征。特征通常由特征函数来表示。例如</p>
-<script type="math/tex; mode=display">
-f(x,y) =\left\{\begin{matrix}
-\begin{aligned}
-& 1，若x,y满足某个事实 \\ 
-& 0，否则
-\end{aligned}
-\end{matrix}\right.</script><p>这里的特征不是指输入的某个特征，而是指输入和输出共同的特征。</p>
-<blockquote>
-<p>例如，假设我们需要判断“打”是动词还是量词，已知的训练数据有</p>
-<p>(x1,y1)=(一打火柴，量词);</p>
-<p>(x2,y2)=(三打啤酒，量词);</p>
-<p>(x3,y3)=(打电话，动词);</p>
-<p>(x4,y4)=(打篮球，动词);</p>
-<p>通过观察，发现“打”前面是数字时，是量词，“打”后面是名词时，是动词。这就是从训练数据中提取的两个特征，可分别用特征函数表示为</p>
-</blockquote>
-<h1 id="3、经验分布"><a href="#3、经验分布" class="headerlink" title="3、经验分布"></a>3、经验分布</h1><p>经验（概率）分布就是通过对训练集T进行统计得到的分布，用$\tilde p$表示。这里列举两个经验分布</p>
-<script type="math/tex; mode=display">
-\tilde p(x,y) = \frac {count(x,y)} {N} , \tilde p(x)=\frac {count(x)} {N}</script><p>其中，count表示出现的次数。</p>
-<h1 id="4、约束条件"><a href="#4、约束条件" class="headerlink" title="4、约束条件"></a>4、约束条件</h1><p>对于任意一个特征函数f，$E<em>{\tilde p}f$ 表示f在训练数据T上关于$\tilde p(x,y)$的数学期望， $E</em>{p}f$ 表示f在训练数据T上关于$p(x,y)$的数学期望。按照期望的定义，我们有</p>
-<script type="math/tex; mode=display">
-E_{\tilde p}f=\sum_{x,y}\tilde p(x,y)f(x,y)</script><script type="math/tex; mode=display">
-E_{ p}f=\sum_{x,y} p(x,y)f(x,y)</script><p>其中，p(x,y)是未知的，而建模的目标是生成$p(y|x)$，因此，根据Bayes定理，$p(x,y)=p(x)p(y|x)$。在样本数量足够的条件下，$p(x)$可以用$\tilde p(x)$近似表示。这样</p>
-<script type="math/tex; mode=display">
-E_{ p}f=\sum_{x,y} \tilde p(x)p(y|x)f(x,y)</script><p>对于概率分布$p(y|x)$，我们希望特征f的期望值应该和从训练集中得到的特征期望值是一致的，因此，<strong>增加约束</strong></p>
-<script type="math/tex; mode=display">
-E_{ p}f=E_{\tilde p}f</script><p>假设我们从训练集中抽取了n个特征，相应的，便有n个特征函数$f_i(i=1,2,…,n)$以及n个约束条件</p>
-<script type="math/tex; mode=display">
-C_i:E_{ p}(f_i)=E_{\tilde p}(f_i) \tag {3-1}</script><blockquote>
-<p>关于约束条件的几何解释</p>
-<p><img src="/2018/01/26/机器学习笔记-最大熵/home/david/00projects/00markdown/public_for_git/Algorithm/机器学习笔记-最大熵/最大熵1.png" alt="最大熵1"></p>
-<p>（a）：P是所有可能的概率空间，此时没有约束条件，所有的概率模型$p(y|x)$都是允许的；</p>
-<p>（b）：增加了一个线性约束条件$C_1$，此时，目标分布$p(y|x)$只能落在由$C_1$定义的线段上；</p>
-<p>（c）：在（b）的基础上增加了另一个约束条件$C_2$ ，且$C_1 \cap C_2  \neq \varnothing$。此时，目标分布只能落在交点上，即被唯一确定；</p>
-<p>（d）：在（b）基础上增加了另一个约束$C_3$，且$C_1 \cap C_2  = \varnothing$，此时不存在能够同时满足$C_1$和$C_3$的$p(y|x)$。</p>
-</blockquote>
-<p>利用（3-1）定义的约束条件，我们定义P的一个子空间</p>
-<script type="math/tex; mode=display">
-C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><h1 id="5、最大熵模型"><a href="#5、最大熵模型" class="headerlink" title="5、最大熵模型"></a>5、最大熵模型</h1><p>由于我们的目标是获得一个条件分布，因此这里也采用相应的条件熵</p>
-<script type="math/tex; mode=display">
-H(p(y|x))=-\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)</script><p>可以看出这里也是用$\tilde p(x)$来近似$p(x)$。以下将$H(p(y|x))$简记为$H(p)$。至此，可以给出最大熵模型的完整描述。</p>
-<p>对于给定的训练集T，特征函数$f_i(x,y), i=1,2,…n$，最大熵模型就是求解</p>
-<script type="math/tex; mode=display">
-\underset {p \in C} {max} \ \  H(p) = \begin{pmatrix}
--\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)
-\end{pmatrix}, \\
-s.t. \sum_y p(y|x)=1 \tag {5-1} \\
-s.t. \ C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><p>其中的s.t.是为了保证$p(y|x)$是一个（合法的）条件概率分布。</p>
-<p>等价于一个求极小值问题</p>
-<script type="math/tex; mode=display">
-\underset {p \in C} {min} \ \  -H(p) = \begin{pmatrix}
-\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)
-\end{pmatrix}, \\
-s.t. \sum_y p(y|x)=1 \tag {5-2} \\
-s.t. \ C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><h1 id="6、模型求解"><a href="#6、模型求解" class="headerlink" title="6、模型求解"></a>6、模型求解</h1><p>对于5-1的求解，主要思路和步骤如下：</p>
-<ol>
-<li>利用Lagrange乘子将最大熵模型由一个带约束的最优化问题转为无约束的最优化问题，这是一个<strong>极小极大问题（min max）</strong>。</li>
-<li>利用对偶问题等价性，转化为求解上一步得到的极大/极小问题的对偶问题，也是一个极大极小问题。</li>
-</ol>
-<h2 id="6-1-原始问题和对偶问题"><a href="#6-1-原始问题和对偶问题" class="headerlink" title="6.1 原始问题和对偶问题"></a>6.1 原始问题和对偶问题</h2><p>根据（5-2），引入拉格朗日乘子$\lambda=(\lambda_0,\lambda_1,…,\lambda_n)^T$，定义拉格朗日函数</p>
-<script type="math/tex; mode=display">
-L(p,\lambda) = -H(p) + \lambda_0(1-\sum_y p(y|x))+\sum_{i=1}^n\lambda_i(\tau_i-E_p(f_i))  \tag{6-1}</script><p>利用对偶性，求解（6-1）的<strong>原始问题</strong>表示为：</p>
-<script type="math/tex; mode=display">
-\underset {p \in C} {min}\  \underset {\lambda} {max}\ L(p,\lambda) \tag{6-2}</script><p><strong>对偶问题</strong>为：</p>
-<script type="math/tex; mode=display">
-\underset {\lambda} {max}\ \underset {p \in C} {min}\  L(p,\lambda) \tag{6-3}</script><p>由于$H(p)$是关于p的凸函数，因此要求解最大熵模型，只需求解对偶问题（6-3）即可。</p>
-<h3 id="6-1-1-指数形式的解"><a href="#6-1-1-指数形式的解" class="headerlink" title="6.1.1 指数形式的解"></a>6.1.1 指数形式的解</h3><p>首先求解内部的极小问题。由于$\underset {p \in C} {min}\  L(p,\lambda)$是关于$\lambda$的函数，将其记做：</p>
-<script type="math/tex; mode=display">
-\Psi (\lambda) =\underset {p \in C} {min}\  L(p,\lambda) = L(p_{\lambda}, \lambda) \tag {6-4}</script><p>其中</p>
-<script type="math/tex; mode=display">
-p_{\lambda}=\underset {p \in C} {argmin}\ L(p,\lambda)=p_{\lambda}(y|x) \tag {6-5}</script><p>根据拉格朗日乘子法，求$L(p,\lambda)$对$p(y|x)$的偏导，得（求解过程略）：</p>
-<script type="math/tex; mode=display">
-p_{\lambda}=\frac {1} {Z_{\lambda}(x)} \ \exp(\sum_{i=1}^n \lambda_i f_i(x,y)) \tag{6-6}</script><p>其中，</p>
-<script type="math/tex; mode=display">
-Z_{\lambda}(x)=\sum_y \exp(\sum_{i=1}^n \lambda_i f_i(x,y)) \tag{6-7}</script><p>称为<strong>规范化因子</strong>（normalizing factor）。注意，此时已经没有$\lambda_0$了。</p>
-<p>由（6-6）定义的$p_{\lambda}$就是最大熵模型的解，它具有<strong>指数形式</strong>。其中，$\lambda_i$就是特征$f_i$的权重，越大表示特征越重要。</p>
-<h3 id="6-1-2-最大似然估计"><a href="#6-1-2-最大似然估计" class="headerlink" title="6.1.2 最大似然估计"></a>6.1.2 最大似然估计</h3><p>得到对偶问题的内层极小值问题的解之后，接着求解外层的极大值问题$\underset {\lambda} {max} \ \Psi(\lambda)$。</p>
-<p>设其解为</p>
-<script type="math/tex; mode=display">
-\lambda^* = \underset {\lambda} {argmax} \ \Psi(\lambda) \tag{6-8}</script><p>则最大熵模型的解为</p>
-<script type="math/tex; mode=display">
-p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$与最大似然估计是等价的！</p>
-<h1 id="7、最优化方法"><a href="#7、最优化方法" class="headerlink" title="7、最优化方法"></a>7、最优化方法</h1><p>通用的方法有梯度下降，拟牛顿法等，最大熵模型有两个量身定做的方法：通用迭代尺度法（Generalized Iterative Scaling，GIS）和改进的迭代尺度法（Impoved Iterative Scaling，IIS）。</p>
-<h2 id="7-1-GIS算法"><a href="#7-1-GIS算法" class="headerlink" title="7.1 GIS算法"></a>7.1 GIS算法</h2><blockquote>
-<p>算法1：</p>
-<p>S1：初始化参数，令$\lambda=0$</p>
-<p>S2：计算$E_{\tilde p}(f_i),\ i=1,2,…,n$</p>
-<p>S3：执行一次迭代，对参数做一次刷新。</p>
-<p>​    计算$E<em>{p</em>{\lambda}}(f_i)$</p>
-<p>​    FOR i=1,2,…,n DO {</p>
-<p>​        $\lambda<em>i\  += \ \eta \log\frac {E</em>{\tilde p}(f<em>i)} {E</em>{p_{\lambda}}(f_i)}$</p>
-<p>​    }</p>
-<p>S4：检查是否收敛，若未收敛则继续S3</p>
-</blockquote>
-<p>其中，$\eta$是学习率，在实际中取$\frac {1} {C}$，$$，表示训练数据中包含特征最多的那个样本所包含的特征个数。</p>
-<script type="math/tex; mode=display">
-\Delta\lambda_i=\eta \log\frac {E_{\tilde p}(f_i)} {E_{p_{\lambda}}(f_i)}</script><p>是校正量。</p>
-<p>每次迭代，先用当前的权重估算每个特征$f<em>i$在训练数据中的概率分布的期望，然后逐个与相应的经验分布的期望比较，其偏差程度通过$\log\frac {E</em>{\tilde p}(f<em>i)} {E</em>{p_{\lambda}}(f_i)}$来进行刻画。</p>
-<p>收敛条件就是当两次迭代的$\lambda$在一个较小的范围。</p>
-<p>GIS每次迭代时间很长，不太稳定，容易溢出，一般不会使用。</p>
-<h2 id="7-2-IIS算法"><a href="#7-2-IIS算法" class="headerlink" title="7.2 IIS算法"></a>7.2 IIS算法</h2><p>与GIS的不同主要在$\Delta\lambda_i$的计算上。IIS通过求解方程</p>
-<script type="math/tex; mode=display">
-\sum_{x,y} \tilde p(x)p(y|x)f_i(x,y)\exp(\Delta\lambda_i\sum_{i=1}^nf_i(x,y))=\tilde p(f_i)</script><p>1）若$\sum<em>{i=1}^nf_i(x,y)$为常数，即对任意样本(x,y)，都有$\sum</em>{i=1}^nf_i(x,y)=C$，则</p>
-<script type="math/tex; mode=display">
-\Delta\lambda_i=\frac {1} {C} \log\frac {E_{\tilde p}(f_i)} {E_{p_{\lambda}}(f_i)}</script><p>此时，IIS可以看做是GIS的一种推广。</p>
-<p>2）若$\sum_{i=1}^nf_i(x,y)$不是常数，则需要通过数值方式来求解$\Delta\lambda_i$，如牛顿法。</p>
-<h1 id="8、优缺点"><a href="#8、优缺点" class="headerlink" title="8、优缺点"></a>8、优缺点</h1><p>优点是：在建模时，只需要集中精力选取特征，不需要花费精力考虑如何使用这些特征，可以灵活使用不同类型的特征。</p>
-<p>缺点是计算量大。</p>
-<p>参考</p>
-<p>【1】 <a href="http://blog.csdn.net/itplus/article/details/26550273" target="_blank" rel="external">最大熵学习笔记</a></p>
-<p>【2】统计学习方法</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2018/01/25/pandas/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1145,129 +908,6 @@ p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$�
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2018/01/25/中文文本聚类/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2018/01/25/中文文本聚类/" itemprop="url">
-                  未命名
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-25T17:02:30+08:00">
-                2018-01-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <hr>
-<hr>
-<h1 id="中文文本聚类"><a href="#中文文本聚类" class="headerlink" title="中文文本聚类"></a>中文文本聚类</h1><p>1、处理掉英文、数字、字符等，只保留中文</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2018/01/25/gensim处理中文word2vec/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1351,6 +991,129 @@ p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$�
 <p>官网的FAQ是这样的</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">Q10: Loading a word2vec model fails with UnicodeDecodeError: &apos;utf-8&apos; codec can&apos;t decode bytes in position ...</div><div class="line"></div><div class="line">A: The strings (words) stored in your model are not valid utf8. By default, gensim decodes the words using the strict encoding settings, which results in the above exception whenever an invalid utf8 sequence is encountered.</div><div class="line"></div><div class="line">The fix is on your side and it is to either:</div><div class="line"></div><div class="line">a) Store your model using a program that understands unicode and utf8 (such as gensim). Some C and Java word2vec tools are known to truncate the strings at byte boundaries, which can result in cutting a multi-byte utf8 character in half, making it non-valid utf8, leading to this error.</div><div class="line"></div><div class="line">b) Set the unicode_errors flag when running load_word2vec_model, e.g. load_word2vec_model(..., unicode_errors=&apos;ignore&apos;). Note that this silences the error, but the utf8 problem is still there -- invalid utf8 characters will just be ignored in this case.</div></pre></td></tr></table></figure>
 <p>然并卵。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2018/01/25/中文文本聚类/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2018/01/25/中文文本聚类/" itemprop="url">
+                  未命名
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-25T17:02:30+08:00">
+                2018-01-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <hr>
+<hr>
+<h1 id="中文文本聚类"><a href="#中文文本聚类" class="headerlink" title="中文文本聚类"></a>中文文本聚类</h1><p>1、处理掉英文、数字、字符等，只保留中文</p>
 
           
         
@@ -1562,7 +1325,7 @@ p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$�
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/人群地理信息分析/">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/机器学习笔记-最大熵/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -1584,8 +1347,8 @@ p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$�
             
               
                 
-                <a class="post-title-link" href="/2017/07/12/人群地理信息分析/" itemprop="url">
-                  人群地理信息分析
+                <a class="post-title-link" href="/2017/07/12/机器学习笔记-最大熵/" itemprop="url">
+                  机器学习笔记-最大熵
                 </a>
               
             
@@ -1624,8 +1387,8 @@ p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$�
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/算法/" itemprop="url" rel="index">
-                    <span itemprop="name">算法</span>
+                  <a href="/categories/机器学习笔记/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习笔记</span>
                   </a>
                 </span>
 
@@ -1661,8 +1424,123 @@ p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$�
       
         
           
-            <p>数据源</p>
-<p>移动端的request中</p>
+            <h1 id="1、最大熵原理"><a href="#1、最大熵原理" class="headerlink" title="1、最大熵原理"></a>1、最大熵原理</h1><p>日常生活中，很多事情的发生表现出一定的随机性，试验的结果往往是不确定的，也不知道这个随机现象所服从的概率分布。<strong>最大熵的实质</strong>就是，在已知部分知识的前提下，关于未知分布最合理的推断就是符合已知知识最不确定或者最随机的推断。任何其他的选择都意味着我们增加了其他的约束和假设。</p>
+<p>将最大熵应用到分类，就是最大熵模型。给定一个训练集：</p>
+<script type="math/tex; mode=display">
+T = \{  (x_1,y_1),  (x_2,y_2),..., (x_N,y_N)\}</script><p>其中$x_i \in X$是输入，$y_i \in Y$是输出，X和Y表示输入和输出空间。N为样本数。<strong>目标是</strong>，利用最大熵原理选出一个最好的分类模型，即对于任意给定的输入$x \in X$，可以以概率$p(y|x)$输出$y \in Y$ 。</p>
+<p>按照最大熵原理，应该<strong>优先保证模型满足已知的所有约束</strong>。思路是，从训练数据T中抽取若干有用的特征，要求这些特征在T上关于经验分布$\tilde{p}(x,y)$的数学期望与它们在模型中关于$p(x,y)$的数学期望相等。这样，一个特征就是一个约束了。</p>
+<p>这里就涉及到，<strong>特征如何刻画？经验分布如何表示？</strong></p>
+<h1 id="2、特征函数"><a href="#2、特征函数" class="headerlink" title="2、特征函数"></a>2、特征函数</h1><p>假设通过特征选择，抽取若干特征。特征通常由特征函数来表示。例如</p>
+<script type="math/tex; mode=display">
+f(x,y) =\left\{\begin{matrix}
+\begin{aligned}
+& 1，若x,y满足某个事实 \\ 
+& 0，否则
+\end{aligned}
+\end{matrix}\right.</script><p>这里的特征不是指输入的某个特征，而是指输入和输出共同的特征。</p>
+<blockquote>
+<p>例如，假设我们需要判断“打”是动词还是量词，已知的训练数据有</p>
+<p>(x1,y1)=(一打火柴，量词);</p>
+<p>(x2,y2)=(三打啤酒，量词);</p>
+<p>(x3,y3)=(打电话，动词);</p>
+<p>(x4,y4)=(打篮球，动词);</p>
+<p>通过观察，发现“打”前面是数字时，是量词，“打”后面是名词时，是动词。这就是从训练数据中提取的两个特征，可分别用特征函数表示为</p>
+</blockquote>
+<h1 id="3、经验分布"><a href="#3、经验分布" class="headerlink" title="3、经验分布"></a>3、经验分布</h1><p>经验（概率）分布就是通过对训练集T进行统计得到的分布，用$\tilde p$表示。这里列举两个经验分布</p>
+<script type="math/tex; mode=display">
+\tilde p(x,y) = \frac {count(x,y)} {N} , \tilde p(x)=\frac {count(x)} {N}</script><p>其中，count表示出现的次数。</p>
+<h1 id="4、约束条件"><a href="#4、约束条件" class="headerlink" title="4、约束条件"></a>4、约束条件</h1><p>对于任意一个特征函数f，$E<em>{\tilde p}f$ 表示f在训练数据T上关于$\tilde p(x,y)$的数学期望， $E</em>{p}f$ 表示f在训练数据T上关于$p(x,y)$的数学期望。按照期望的定义，我们有</p>
+<script type="math/tex; mode=display">
+E_{\tilde p}f=\sum_{x,y}\tilde p(x,y)f(x,y)</script><script type="math/tex; mode=display">
+E_{ p}f=\sum_{x,y} p(x,y)f(x,y)</script><p>其中，p(x,y)是未知的，而建模的目标是生成$p(y|x)$，因此，根据Bayes定理，$p(x,y)=p(x)p(y|x)$。在样本数量足够的条件下，$p(x)$可以用$\tilde p(x)$近似表示。这样</p>
+<script type="math/tex; mode=display">
+E_{ p}f=\sum_{x,y} \tilde p(x)p(y|x)f(x,y)</script><p>对于概率分布$p(y|x)$，我们希望特征f的期望值应该和从训练集中得到的特征期望值是一致的，因此，<strong>增加约束</strong></p>
+<script type="math/tex; mode=display">
+E_{ p}f=E_{\tilde p}f</script><p>假设我们从训练集中抽取了n个特征，相应的，便有n个特征函数$f_i(i=1,2,…,n)$以及n个约束条件</p>
+<script type="math/tex; mode=display">
+C_i:E_{ p}(f_i)=E_{\tilde p}(f_i) \tag {3-1}</script><blockquote>
+<p>关于约束条件的几何解释</p>
+<p><img src="/2017/07/12/机器学习笔记-最大熵/home/david/00projects/00markdown/public_for_git/Algorithm/机器学习笔记-最大熵/最大熵1.png" alt="最大熵1"></p>
+<p>（a）：P是所有可能的概率空间，此时没有约束条件，所有的概率模型$p(y|x)$都是允许的；</p>
+<p>（b）：增加了一个线性约束条件$C_1$，此时，目标分布$p(y|x)$只能落在由$C_1$定义的线段上；</p>
+<p>（c）：在（b）的基础上增加了另一个约束条件$C_2$ ，且$C_1 \cap C_2  \neq \varnothing$。此时，目标分布只能落在交点上，即被唯一确定；</p>
+<p>（d）：在（b）基础上增加了另一个约束$C_3$，且$C_1 \cap C_2  = \varnothing$，此时不存在能够同时满足$C_1$和$C_3$的$p(y|x)$。</p>
+</blockquote>
+<p>利用（3-1）定义的约束条件，我们定义P的一个子空间</p>
+<script type="math/tex; mode=display">
+C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><h1 id="5、最大熵模型"><a href="#5、最大熵模型" class="headerlink" title="5、最大熵模型"></a>5、最大熵模型</h1><p>由于我们的目标是获得一个条件分布，因此这里也采用相应的条件熵</p>
+<script type="math/tex; mode=display">
+H(p(y|x))=-\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)</script><p>可以看出这里也是用$\tilde p(x)$来近似$p(x)$。以下将$H(p(y|x))$简记为$H(p)$。至此，可以给出最大熵模型的完整描述。</p>
+<p>对于给定的训练集T，特征函数$f_i(x,y), i=1,2,…n$，最大熵模型就是求解</p>
+<script type="math/tex; mode=display">
+\underset {p \in C} {max} \ \  H(p) = \begin{pmatrix}
+-\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)
+\end{pmatrix}, \\
+s.t. \sum_y p(y|x)=1 \tag {5-1} \\
+s.t. \ C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><p>其中的s.t.是为了保证$p(y|x)$是一个（合法的）条件概率分布。</p>
+<p>等价于一个求极小值问题</p>
+<script type="math/tex; mode=display">
+\underset {p \in C} {min} \ \  -H(p) = \begin{pmatrix}
+\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)
+\end{pmatrix}, \\
+s.t. \sum_y p(y|x)=1 \tag {5-2} \\
+s.t. \ C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><h1 id="6、模型求解"><a href="#6、模型求解" class="headerlink" title="6、模型求解"></a>6、模型求解</h1><p>对于5-1的求解，主要思路和步骤如下：</p>
+<ol>
+<li>利用Lagrange乘子将最大熵模型由一个带约束的最优化问题转为无约束的最优化问题，这是一个<strong>极小极大问题（min max）</strong>。</li>
+<li>利用对偶问题等价性，转化为求解上一步得到的极大/极小问题的对偶问题，也是一个极大极小问题。</li>
+</ol>
+<h2 id="6-1-原始问题和对偶问题"><a href="#6-1-原始问题和对偶问题" class="headerlink" title="6.1 原始问题和对偶问题"></a>6.1 原始问题和对偶问题</h2><p>根据（5-2），引入拉格朗日乘子$\lambda=(\lambda_0,\lambda_1,…,\lambda_n)^T$，定义拉格朗日函数</p>
+<script type="math/tex; mode=display">
+L(p,\lambda) = -H(p) + \lambda_0(1-\sum_y p(y|x))+\sum_{i=1}^n\lambda_i(\tau_i-E_p(f_i))  \tag{6-1}</script><p>利用对偶性，求解（6-1）的<strong>原始问题</strong>表示为：</p>
+<script type="math/tex; mode=display">
+\underset {p \in C} {min}\  \underset {\lambda} {max}\ L(p,\lambda) \tag{6-2}</script><p><strong>对偶问题</strong>为：</p>
+<script type="math/tex; mode=display">
+\underset {\lambda} {max}\ \underset {p \in C} {min}\  L(p,\lambda) \tag{6-3}</script><p>由于$H(p)$是关于p的凸函数，因此要求解最大熵模型，只需求解对偶问题（6-3）即可。</p>
+<h3 id="6-1-1-指数形式的解"><a href="#6-1-1-指数形式的解" class="headerlink" title="6.1.1 指数形式的解"></a>6.1.1 指数形式的解</h3><p>首先求解内部的极小问题。由于$\underset {p \in C} {min}\  L(p,\lambda)$是关于$\lambda$的函数，将其记做：</p>
+<script type="math/tex; mode=display">
+\Psi (\lambda) =\underset {p \in C} {min}\  L(p,\lambda) = L(p_{\lambda}, \lambda) \tag {6-4}</script><p>其中</p>
+<script type="math/tex; mode=display">
+p_{\lambda}=\underset {p \in C} {argmin}\ L(p,\lambda)=p_{\lambda}(y|x) \tag {6-5}</script><p>根据拉格朗日乘子法，求$L(p,\lambda)$对$p(y|x)$的偏导，得（求解过程略）：</p>
+<script type="math/tex; mode=display">
+p_{\lambda}=\frac {1} {Z_{\lambda}(x)} \ \exp(\sum_{i=1}^n \lambda_i f_i(x,y)) \tag{6-6}</script><p>其中，</p>
+<script type="math/tex; mode=display">
+Z_{\lambda}(x)=\sum_y \exp(\sum_{i=1}^n \lambda_i f_i(x,y)) \tag{6-7}</script><p>称为<strong>规范化因子</strong>（normalizing factor）。注意，此时已经没有$\lambda_0$了。</p>
+<p>由（6-6）定义的$p_{\lambda}$就是最大熵模型的解，它具有<strong>指数形式</strong>。其中，$\lambda_i$就是特征$f_i$的权重，越大表示特征越重要。</p>
+<h3 id="6-1-2-最大似然估计"><a href="#6-1-2-最大似然估计" class="headerlink" title="6.1.2 最大似然估计"></a>6.1.2 最大似然估计</h3><p>得到对偶问题的内层极小值问题的解之后，接着求解外层的极大值问题$\underset {\lambda} {max} \ \Psi(\lambda)$。</p>
+<p>设其解为</p>
+<script type="math/tex; mode=display">
+\lambda^* = \underset {\lambda} {argmax} \ \Psi(\lambda) \tag{6-8}</script><p>则最大熵模型的解为</p>
+<script type="math/tex; mode=display">
+p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$与最大似然估计是等价的！</p>
+<h1 id="7、最优化方法"><a href="#7、最优化方法" class="headerlink" title="7、最优化方法"></a>7、最优化方法</h1><p>通用的方法有梯度下降，拟牛顿法等，最大熵模型有两个量身定做的方法：通用迭代尺度法（Generalized Iterative Scaling，GIS）和改进的迭代尺度法（Impoved Iterative Scaling，IIS）。</p>
+<h2 id="7-1-GIS算法"><a href="#7-1-GIS算法" class="headerlink" title="7.1 GIS算法"></a>7.1 GIS算法</h2><blockquote>
+<p>算法1：</p>
+<p>S1：初始化参数，令$\lambda=0$</p>
+<p>S2：计算$E_{\tilde p}(f_i),\ i=1,2,…,n$</p>
+<p>S3：执行一次迭代，对参数做一次刷新。</p>
+<p>​    计算$E<em>{p</em>{\lambda}}(f_i)$</p>
+<p>​    FOR i=1,2,…,n DO {</p>
+<p>​        $\lambda<em>i\  += \ \eta \log\frac {E</em>{\tilde p}(f<em>i)} {E</em>{p_{\lambda}}(f_i)}$</p>
+<p>​    }</p>
+<p>S4：检查是否收敛，若未收敛则继续S3</p>
+</blockquote>
+<p>其中，$\eta$是学习率，在实际中取$\frac {1} {C}$，$$，表示训练数据中包含特征最多的那个样本所包含的特征个数。</p>
+<script type="math/tex; mode=display">
+\Delta\lambda_i=\eta \log\frac {E_{\tilde p}(f_i)} {E_{p_{\lambda}}(f_i)}</script><p>是校正量。</p>
+<p>每次迭代，先用当前的权重估算每个特征$f<em>i$在训练数据中的概率分布的期望，然后逐个与相应的经验分布的期望比较，其偏差程度通过$\log\frac {E</em>{\tilde p}(f<em>i)} {E</em>{p_{\lambda}}(f_i)}$来进行刻画。</p>
+<p>收敛条件就是当两次迭代的$\lambda$在一个较小的范围。</p>
+<p>GIS每次迭代时间很长，不太稳定，容易溢出，一般不会使用。</p>
+<h2 id="7-2-IIS算法"><a href="#7-2-IIS算法" class="headerlink" title="7.2 IIS算法"></a>7.2 IIS算法</h2><p>与GIS的不同主要在$\Delta\lambda_i$的计算上。IIS通过求解方程</p>
+<script type="math/tex; mode=display">
+\sum_{x,y} \tilde p(x)p(y|x)f_i(x,y)\exp(\Delta\lambda_i\sum_{i=1}^nf_i(x,y))=\tilde p(f_i)</script><p>1）若$\sum<em>{i=1}^nf_i(x,y)$为常数，即对任意样本(x,y)，都有$\sum</em>{i=1}^nf_i(x,y)=C$，则</p>
+<script type="math/tex; mode=display">
+\Delta\lambda_i=\frac {1} {C} \log\frac {E_{\tilde p}(f_i)} {E_{p_{\lambda}}(f_i)}</script><p>此时，IIS可以看做是GIS的一种推广。</p>
+<p>2）若$\sum_{i=1}^nf_i(x,y)$不是常数，则需要通过数值方式来求解$\Delta\lambda_i$，如牛顿法。</p>
+<h1 id="8、优缺点"><a href="#8、优缺点" class="headerlink" title="8、优缺点"></a>8、优缺点</h1><p>优点是：在建模时，只需要集中精力选取特征，不需要花费精力考虑如何使用这些特征，可以灵活使用不同类型的特征。</p>
+<p>缺点是计算量大。</p>
+<p>参考</p>
+<p>【1】 <a href="http://blog.csdn.net/itplus/article/details/26550273" target="_blank" rel="external">最大熵学习笔记</a></p>
+<p>【2】统计学习方法</p>
 
           
         
@@ -1706,7 +1584,7 @@ p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$�
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/Docker-配置和使用/">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/集成学习/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -1728,8 +1606,8 @@ p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$�
             
               
                 
-                <a class="post-title-link" href="/2017/07/12/Docker-配置和使用/" itemprop="url">
-                  Docker 配置和使用
+                <a class="post-title-link" href="/2017/07/12/集成学习/" itemprop="url">
+                  集成学习
                 </a>
               
             
@@ -1768,8 +1646,8 @@ p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$�
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/系统工具/" itemprop="url" rel="index">
-                    <span itemprop="name">系统工具</span>
+                  <a href="/categories/机器学习算法/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习算法</span>
                   </a>
                 </span>
 
@@ -1805,67 +1683,233 @@ p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$�
       
         
           
-            <h1 id="0、基本概念"><a href="#0、基本概念" class="headerlink" title="0、基本概念"></a>0、基本概念</h1><p>镜像</p>
+            <p>个体学习器一般是弱学习器。</p>
 <blockquote>
-<p>Docker镜像通过镜像ID进行识别。镜像ID是一个64字符的十六进制的字符串。但是当我们运行镜像时，通常我们不会使用镜像ID来引用镜像，而是使用镜像名来引用。要列出本地所有有效的镜像，可以使用命令</p>
-<p>$ docker images</p>
-<p>镜像可以发布为不同版本，这种机制我们称之为标签（Tag）。 </p>
+<p> 弱学习器是指泛华性能略优于随机猜测的学习器，例如二分上略高于50%的学习器。</p>
 </blockquote>
-<p>容器</p>
+<p>要获得好的集成，个体学习器应“好而不同”，即个体学习器要有一定的<strong>准确性和多样性</strong>（学习器之间有差异）。</p>
+<p>理论上，假设个体学习器的误差是相互独立，那么随着学习器数量增大，集成的错误率将指数下降，最终趋向于零。</p>
+<p>但实际上不可能相互独立。且<strong>准确性和多样性本身就是矛盾的</strong>，追求准确性就要牺牲多样性。所以<strong>如何产生并结合“好而不同”的学习器，是集成学习研究的核心</strong>。</p>
+<p>根据集成的方式不同，</p>
+<p>1）个体学习器存在强依赖性，必须串行生成，如Boosting；</p>
+<p>2）个体学习器间不存在强依赖关系，可同时并行生成，如Bagging和随机森林。</p>
+<h1 id="1、Boosting"><a href="#1、Boosting" class="headerlink" title="1、Boosting"></a>1、Boosting</h1><p>工作机制：</p>
+<p>先从初始训练集训练出一个基学习器，再根据基学习器的表现对训练样本分布进行调整，使前一个做错的样本在后续得到更多关注，然后基于调整后的样本分布来训练下一个基学习器；重复迭代s达到T。</p>
+<p>代表是AdaBoost.</p>
+<h2 id="1-1-算法描述"><a href="#1-1-算法描述" class="headerlink" title="1.1  算法描述"></a>1.1  算法描述</h2><p>假设$y_i \in {-1,+1}$</p>
+<p><img src="/2017/07/12/集成学习/home/david/myblog/source/_posts/集成学习/adaboost.png" alt="adaboost"></p>
+<p>AdsBoost有多种推广方式，一般的是基于加性模型（additive model），即用基学习器的线性组合</p>
+<script type="math/tex; mode=display">
+H(x) = \sum_{t=1}^T a_th_t(x)</script><p>来最小化指数损失函数</p>
+<script type="math/tex; mode=display">
+l_{exp}(H|D) =E_{x \sim D}[e^{-f(x)H(x)}]</script><p>求偏导</p>
+<script type="math/tex; mode=display">
+\frac {\partial l_{exp(H|D)}} {\partial H(x)} =</script><p>后面看不懂了。。。</p>
+<p>2、Bagging</p>
+<p>3、随机森林</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/Hexo + Github 搭建博客入门/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/07/12/Hexo + Github 搭建博客入门/" itemprop="url">
+                  Hexo + Github 搭建博客入门
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">
+                2017-07-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/hexo美化/" itemprop="url" rel="index">
+                    <span itemprop="name">hexo美化</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1、安装node-js"><a href="#1、安装node-js" class="headerlink" title="1、安装node.js"></a>1、安装node.js</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo add-apt-repository ppa:chris-lea/node.js</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></div><div class="line"><span class="meta">#</span><span class="bash">原方法没有这一步，但是后面的操作会提示npm <span class="built_in">command</span> not found</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install npm</span></div></pre></td></tr></table></figure>
+<h1 id="2、安装hexo"><a href="#2、安装hexo" class="headerlink" title="2、安装hexo"></a>2、安装hexo</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo npm install hexo -g</span></div></pre></td></tr></table></figure>
+<h1 id="3、初始博客的根目录"><a href="#3、初始博客的根目录" class="headerlink" title="3、初始博客的根目录"></a>3、初始博客的根目录</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> ~/myblog</span></div><div class="line"><span class="meta">$</span><span class="bash"> hexo init</span></div></pre></td></tr></table></figure>
+<p>mac的根目录在</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/Users/david/david/myblog</div></pre></td></tr></table></figure>
+<h1 id="4、在github上新建仓库"><a href="#4、在github上新建仓库" class="headerlink" title="4、在github上新建仓库"></a>4、在github上新建仓库</h1><p>名称必须是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gitusername.github.io</div></pre></td></tr></table></figure>
+<p>我的就是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Schwimmer.github.io</div></pre></td></tr></table></figure>
+<p>并将本地的SSH KEY添加到git上（略）</p>
+<h1 id="5、让博客可以发布到git"><a href="#5、让博客可以发布到git" class="headerlink" title="5、让博客可以发布到git"></a>5、让博客可以发布到git</h1><p>1）安装hexo-deployer-Git（不然会出现ERROR Deployer not found: git）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-deployer-git --save</div></pre></td></tr></table></figure>
+<p>2） 配置你hexo博客根目录下的_config.yml文件(应该是最下面一行，修改成你的github)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: git@github.com:Schwimmer/Schwimmer.github.io.git</div><div class="line">  branch: master</div></pre></td></tr></table></figure>
 <blockquote>
-<p>Docker容器可以使用命令创建：</p>
-<p>$ docker run imagename</p>
-<p>它会在所有的镜像层之上增加一个<strong>可写层</strong>。这个可写层有运行在CPU上的进程，而且有两个不同的状态：运行态（Running）和退出态（Exited）。这就是Docker容器。当我们使用docker run启动容器，Docker容器就进入运行态，当我们停止Docker容器时，它就进入退出态。</p>
-<p>对容器的变更是<strong>写入到容器的文件系统的，而不是写入到Docker镜像</strong>中的。</p>
-<p>用同一个镜像启动多个Docker容器，这些容器启动后都是活动的，彼此还是相互隔离的。我们对其中一个容器所做的变更只会局限于那个容器本身。</p>
-<p>如果对容器的底层镜像进行修改，那么当前正在运行的容器是不受影响的，不会发生自动更新现象。</p>
+<p> tips</p>
+<p> 冒号后面一定要跟空格</p>
 </blockquote>
-<h1 id="1、配置"><a href="#1、配置" class="headerlink" title="1、配置"></a>1、配置</h1><h2 id="1-1-安装"><a href="#1-1-安装" class="headerlink" title="1.1 安装"></a>1.1 安装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ sudo apt-get update</div><div class="line">$ sudo apt-get install docker</div></pre></td></tr></table></figure>
-<p>编辑/etc/default/docker增加如下配置，自定义docker镜像存放路径</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">DOCKER_OPTS=&quot;--graph=/home/david/opt/docker&quot;</div></pre></td></tr></table></figure>
-<p>sudo service docker start    #启动<br>sudo service docker stop    #关闭<br>sudo service docker restart #重启 </p>
-<h2 id="1-2-pull一个镜像"><a href="#1-2-pull一个镜像" class="headerlink" title="1.2 pull一个镜像"></a>1.2 pull一个镜像</h2><p>查看镜像：此时应该没有镜像<br>docker images</p>
-<p>下载镜像</p>
-<p>sudo docker pull ubuntu</p>
-<h2 id="1-3-创建容器"><a href="#1-3-创建容器" class="headerlink" title="1.3 创建容器"></a>1.3 创建容器</h2><p>docker ps命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ sudo docker ps #列出当前所有正在运行的container</div><div class="line">$ sudo docker ps -l #列出最近一次启动的，且正在运行的container</div><div class="line">$ sudo docker ps -a #列出所有的container</div></pre></td></tr></table></figure>
-<p>启动容器，并且进入到Ubuntu容器的bash命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo docker run -itv /home/david/docker:/home/davida/gitlab  ubuntu  /bin/bash</div></pre></td></tr></table></figure>
-<p>其中，</p>
-<h2 id="1-4-提交容器"><a href="#1-4-提交容器" class="headerlink" title="1.4 提交容器"></a>1.4 提交容器</h2><p>退出容器，使用 docker commit 命令来提交更新后的副本。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> sudo docker commit -m 'xmo run evn' -a 'david' bde4f2f2db5f  ubuntu-ruby:v1</div></pre></td></tr></table></figure>
-<p>其中，-m 来指定提交的说明信息，跟我们使用的版本控制工具一样；-a 可以指定更新的作者信息；之后是用来创建镜像的容器的ID；最后指定目标镜像的仓库名和 tag 信息。创建成功后会返回这个镜像的 ID 信息。v1是tag（版本号）</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo docker inspect ubuntu-ruby</div></pre></td></tr></table></figure>
-<p>查看详细信息</p>
-<h2 id="1-5-Dockerfile提交容器"><a href="#1-5-Dockerfile提交容器" class="headerlink" title="1.5 Dockerfile提交容器"></a>1.5 Dockerfile提交容器</h2><p>Dockerfile的指令是忽略大小写的，建议使用大写，使用 # 作为注释，每一行只支持一条指令，每条指令可以携带多个参数。<br>Dockerfile的指令根据作用可以分为两种，<strong>构建指令和设置指令</strong>。构建指令用于构建image，其指定的操作不会在运行image的容器上执行；设置指令用于设置image的属性，其指定的操作将在运行image的容器中执行。</p>
-<p>1）FROM 基础image</p>
-<p>基础image可以是官方远程仓库中的，也可以位于本地仓库。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FROM &lt;image&gt;</div></pre></td></tr></table></figure>
-<p>或者</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FROM &lt;image&gt;:&lt;tag&gt;</div></pre></td></tr></table></figure>
-<p>制定某个tag版本</p>
-<h2 id="1-4-用SSH访问容器"><a href="#1-4-用SSH访问容器" class="headerlink" title="1.4 用SSH访问容器"></a>1.4 用SSH访问容器</h2><p>先安装ssh</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">apt-get update</div><div class="line">apt-get install openssh-server</div></pre></td></tr></table></figure>
-<p>需要修改/etc/ssh/sshd_config文件中内容  </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">RSAAuthentication yes #启用 RSA 认证</div><div class="line">PubkeyAuthentication yes #启用公钥私钥配对认证方式</div><div class="line">AuthorizedKeysFile .ssh/authorized_keys #公钥文件路径（和上面生成的文件同）</div><div class="line">PermitRootLogin yes #root能使用ssh登录</div></pre></td></tr></table></figure>
-<p>重启sshd服务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">/etc/init.d/ssh stop</div><div class="line">/etc/init.d/ssh start</div></pre></td></tr></table></figure>
-<h1 id="2、常用命令"><a href="#2、常用命令" class="headerlink" title="2、常用命令"></a>2、常用命令</h1><h3 id="docker-start和docker-run"><a href="#docker-start和docker-run" class="headerlink" title="docker start和docker run"></a>docker start和docker run</h3><p><img src="http://static.open-open.com/lib/uploadImg/20151105/20151105115304_352.png?_=5942369" alt=""></p>
-<p>从图片可以看出，docker run 命令先是利用镜像创建了一个容器，然后运行这个容器。</p>
-<p>docker run命令类似于git pull命令。git pull命令就是git fetch 和 git merge两个命令的组合，同样的，docker run就是docker create和docker start两个命令的组合。 </p>
-<h3 id="docker-ps"><a href="#docker-ps" class="headerlink" title="docker ps"></a><strong>docker ps</strong></h3><p>docker ps 命令会列出所有运行中的容器。这隐藏了非运行态容器的存在，如果想要找出这些容器，我们需要使用docker ps -a</p>
-<h3 id="docker-images"><a href="#docker-images" class="headerlink" title="docker images"></a>docker images</h3><p>docker images命令会列出了所有顶层（top-level）镜像。实际上，在这里我们没有办法区分一个镜像和一个只读层，所以我们提出了top-level 镜像。只有创建容器时使用的镜像或者是直接pull下来的镜像能被称为顶层（top-level）镜像，并且每一个顶层镜像下面都隐藏了多个镜像层。 </p>
-<p>docker images -a</p>
-<p>docker images –a命令列出了所有的镜像，也可以说是列出了所有的可读层。如果你想要查看某一个image-id下的所有层，可以使用docker history来查看。 </p>
-<h3 id="docker-stop"><a href="#docker-stop" class="headerlink" title="docker stop "></a>docker stop <container-id></container-id></h3><p>docker stop命令会向运行中的容器发送一个SIGTERM的信号，然后停止所有的进程。 </p>
-<h3 id="docker-commit"><a href="#docker-commit" class="headerlink" title="docker commit "></a>docker commit <container-id></container-id></h3><p>docker commit命令将容器的可读写层转换为一个只读层，这样就把一个容器转换成了不可变的镜像。 </p>
-<h3 id="dockesr-exec"><a href="#dockesr-exec" class="headerlink" title="dockesr exec "></a>dockesr exec <running-container-id></running-container-id></h3><p>docker exec 命令会在运行中的容器执行一个新进程。 </p>
-<h3 id="docker-save"><a href="#docker-save" class="headerlink" title="docker save "></a>docker save <image-id></image-id></h3><p>docker save命令会创建一个镜像的压缩文件，这个文件能够在另外一个主机的Docker上使用。和export命令不同，这个命令为每一个层都保存了它们的元数据。这个命令只能对镜像生效。 </p>
-<h3 id="docker-export"><a href="#docker-export" class="headerlink" title="docker export "></a>docker export <container-id></container-id></h3><p>docker export命令创建一个tar文件，并且移除了元数据和不必要的层，将多个层整合成了一个层，只保存了当前统一视角看到的内容（expoxt后 的容器再import到Docker中，通过docker images –tree命令只能看到一个镜像；而save后的镜像则不同，它能够看到这个镜像的历史镜像）。 </p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.linuxidc.com/Linux/2015-07/120444.htm" target="_blank" rel="external">Ubuntu 15.04下安装Docker</a></p>
-<p><a href="http://blog.csdn.net/chszs/article/details/48252799" target="_blank" rel="external">Docker的镜像和容器的区别</a></p>
-<p><a href="http://www.cnblogs.com/bethal/p/5942369.html" target="_blank" rel="external">Docker容器和镜像区别</a></p>
-<p><a href="http://blog.csdn.net/qinyushuang/article/details/43342553" target="_blank" rel="external">Docker学习笔记（3）— 如何使用Dockerfile构建镜像</a></p>
+<h1 id="6、hexo常用命令"><a href="#6、hexo常用命令" class="headerlink" title="6、hexo常用命令"></a>6、hexo常用命令</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">hexo clean #清除缓存</div><div class="line">hexo new &quot;title&quot; #新建文章</div><div class="line">hexo g #生成html，或hexo generate</div><div class="line">hexo s #在本地启动服务，启动后访问localhost:4000就可以打开，或hexo server</div><div class="line">hexo d #发布到git，发布后访问https://schwimmer.github.io/就可以打开，或hexo deploy</div></pre></td></tr></table></figure>
+<blockquote>
+<p> tips</p>
+<p> 我目前用的新建文章的方法，就是直接在source/_posts/下面新建md文件</p>
+<p> 可以偷懒写成</p>
+<p> cd ~/myblog</p>
+<p> hexo clean;hexo g;hexo s</p>
+<p> 或</p>
+<p> hexo clean;hexo g;hexo d</p>
+</blockquote>
+<h1 id="7、支持数学公式"><a href="#7、支持数学公式" class="headerlink" title="7、支持数学公式"></a>7、支持数学公式</h1><p>更新：</p>
+<p>现在用</p>
+<p><a href="http://blog.csdn.net/u014630987/article/details/78670258" target="_blank" rel="external">如何在 hexo 中支持 Mathjax？</a></p>
+<p><a href="http://blog.csdn.net/emptyset110/article/details/50123231" target="_blank" rel="external">搭建一个支持LaTEX的hexo博客</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-math --save</div></pre></td></tr></table></figure>
+<p>这时如果你会发现出了一些问题，原因是hexo先用marked.<a href="http://lib.csdn.net/base/javascript" target="_blank" rel="external">js</a>渲染，然后再交给MathJax渲染。在marked.js渲染的时候下划线<code>_</code>是被escape掉并且换成了<code>&lt;em&gt;</code>标签，即斜体字，另外LaTeX中的<code>\\</code>也会被转义成一个<code>\</code>，这样会导致MathJax渲染时不认为它是一个换行符了。</p>
+<p>为了使Marked.js与MathJax共存，打开node_modules/marked/lib/marked.js并做如下改动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Step 1:</div><div class="line">  escape: /^\\([\\`*&#123;&#125;\[\]()# +\-.!_&gt;])/,11替换成</div><div class="line">  escape: /^\\([`*\[\]()# +\-.!_&gt;])/,11这一步是在原基础上取消了对\\,\&#123;,\&#125;的转义(escape)</div><div class="line">Step 2:</div><div class="line">  em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,11替换成</div><div class="line">  em:/^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML&quot;&gt;&lt;/script&gt;</div></pre></td></tr></table></figure>
+<h1 id="8、安装主题"><a href="#8、安装主题" class="headerlink" title="8、安装主题"></a>8、安装主题</h1><p>转自：<a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="external">NexT主题安装教程</a></p>
+<h1 id="9、文章阅读计数"><a href="#9、文章阅读计数" class="headerlink" title="9、文章阅读计数"></a>9、文章阅读计数</h1><p>转自：<a href="http://www.jianshu.com/p/702a7aec4d00" target="_blank" rel="external">Hexo添加不蒜子和LeanCloud统计无标题文章</a></p>
+<p>找到站点的<code>themes/next/layout/_partials</code>目录下的<code>footer.swig</code>文件。插入代码如下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&#123;% if theme.copyright %&#125;</div><div class="line">&lt;div class=&quot;powered-by&quot;&gt;</div><div class="line">  &#123;&#123; __(&apos;footer.powered&apos;, &apos;&lt;a class=&quot;theme-link&quot; href=&quot;https://hexo.io&quot;&gt;Hexo&lt;/a&gt;&apos;) &#125;&#125;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">&lt;div class=&quot;theme-info&quot;&gt;</div><div class="line">  &#123;&#123; __(&apos;footer.theme&apos;) &#125;&#125; -</div><div class="line">  &lt;a class=&quot;theme-link&quot; href=&quot;https://github.com/iissnan/hexo-theme-next&quot;&gt;</div><div class="line">    NexT.&#123;&#123; theme.scheme &#125;&#125;</div><div class="line">  &lt;/a&gt;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line"># 此位置插入以下代码</div><div class="line">&lt;div&gt;</div><div class="line">&lt;script async src=&quot;https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js&quot;&gt;&lt;/script&gt;</div><div class="line"></div><div class="line">本站总访问量 &lt;span id=&quot;busuanzi_value_site_pv&quot;&gt;&lt;/span&gt; 次&amp;nbsp&amp;nbsp&amp;nbsp</div><div class="line">本站访客数&lt;span id=&quot;busuanzi_value_site_uv&quot;&gt;&lt;/span&gt;人次</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">&#123;% endif %&#125;</div></pre></td></tr></table></figure>
+<h1 id="10、增加图片"><a href="#10、增加图片" class="headerlink" title="10、增加图片"></a>10、增加图片</h1><p>1 把主页配置文件<code>_config.yml</code> 里的<code>post_asset_folder:</code>这个选项设置为<code>true</code></p>
+<p>2 在你的hexo目录下执行这样一句话<code>npm install hexo-asset-image --save</code>，这是下载安装一个可以上传本地图片的插件，来自dalao：<a href="https://github.com/CodeFalling/hexo-asset-image" target="_blank" rel="external">dalao的git</a></p>
+<p>3 等待一小段时间后，再运行<code>hexo n &quot;xxxx&quot;</code>来生成md博文时，<code>/source/_posts</code>文件夹内除了<code>xxxx.md</code>文件还有一个<strong>同名的文件夹</strong></p>
+<p>4 最后在<code>xxxx.md</code>中想引入图片时，先把图片复制到xxxx这个文件夹中，然后只需要在xxxx.md中按照markdown的格式引入图片：</p>
+<p><code>![你想输入的替代文字](xxxx/图片名.jpg)</code></p>
+<p><strong>注意：</strong>xxxx是这个md文件的名字，也是同名文件夹的名字，你想引入的图片就只需要放入xxxx这个文件夹内就好了，很像引用相对路径。</p>
+<p>5 最后检查一下，<code>hexo g</code>生成页面后，进入<code>public\2017\02\26\index.html</code>文件中查看相关字段，可以发现，html标签内的语句是<code>&lt;img src=&quot;2017/02/26/xxxx/图片名.jpg&quot;&gt;</code>，而不是<code>&lt;img src=&quot;xxxx/图片名.jpg&gt;</code>。这很重要，关乎你的网页是否可以真正加载你想插入的图片。</p>
+<h1 id="11、sitemap-插件"><a href="#11、sitemap-插件" class="headerlink" title="11、sitemap 插件"></a>11、sitemap 插件</h1><p>谷歌与百度的站点地图，前者适用于其他搜索引擎，用来手动提交以增加收录</p>
+<p>安装：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">npm install hexo-generator-sitemap@1 --save</div><div class="line">npm install hexo-generator-baidu-sitemap@0.1.1 --save</div></pre></td></tr></table></figure>
+<p><code>_config.yml</code>添加代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">baidusitemap:</div><div class="line">  path: baidusitemap.xml</div></pre></td></tr></table></figure>
+<p>谷歌的<code>sitemap.xml</code>不需要写到配置文件中，自动生效。</p>
+<p>在主页后面加<code>/baidusitemap.xml</code>可以看到baidusitemap（谷歌同理），将该网址它提交给百度搜索：<a href="http://zhanzhang.baidu.com/?castk=LTE%3D" target="_blank" rel="external">百度站长平台</a>，贴吧账号无法在这里使用。</p>
+<p>不过由于Github禁止了百度爬虫，百度无法抓取其中的URL：</p>
+<h1 id="踩过的坑"><a href="#踩过的坑" class="headerlink" title="踩过的坑"></a>踩过的坑</h1><p>1）若启动时报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> Error: Warning: Permanently added &apos;github.com,192.30.253.112&apos; (RSA) to the list of known hosts.</div><div class="line">sign_and_send_pubkey: signing failed: agent refused operation</div><div class="line">Permission denied (publickey).</div><div class="line">fatal: Could not read from remote repository.</div></pre></td></tr></table></figure>
+<p>处理是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ eval &quot;$(ssh-agent -s)&quot;</div><div class="line">$ ssh-add</div></pre></td></tr></table></figure>
+<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><p><a href="http://blog.csdn.net/kesarchen/article/details/50579550" target="_blank" rel="external">ubuntu下使用hexo搭建博客</a> </p>
 
           
         
@@ -1960,7 +2004,7 @@ p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$�
             
             <div class="site-state-item site-state-categories">
               
-                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-count">11</span>
                 <span class="site-state-item-name">分类</span>
               
             </div>
