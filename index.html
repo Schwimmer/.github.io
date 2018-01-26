@@ -18,7 +18,7 @@
 
 
 
-  <meta name="google-site-verification" content="<meta name="google-site-verification" content="Mx7Ikp0IpBtTbSpHDTBV0_CMJA-E8CLn8NRIrwyq5m4" />" />
+  <meta name="google-site-verification" content="0" />
 
 
 
@@ -439,7 +439,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2018/01/25/Gensim-LDA/">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2018/01/25/网页中可以提取什么/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -461,7 +461,7 @@
             
               
                 
-                <a class="post-title-link" href="/2018/01/25/Gensim-LDA/" itemprop="url">
+                <a class="post-title-link" href="/2018/01/25/网页中可以提取什么/" itemprop="url">
                   未命名
                 </a>
               
@@ -516,82 +516,163 @@
       
         
           
-            <h1 id="Gensim-LDA"><a href="#Gensim-LDA" class="headerlink" title="Gensim-LDA"></a>Gensim-LDA</h1><p><a href="http://blog.csdn.net/whzhcahzxh/article/details/17528261" target="_blank" rel="external">http://blog.csdn.net/whzhcahzxh/article/details/17528261</a></p>
-<p>首先，引用gensim包，gensim包中引用corpora,models, similarities，分别做语料库建立，模型库和相似度比较库，后面可以看到例子</p>
-<p>from gensim import corpora, models, similarities</p>
-<p>我调用了结巴分词做中文处理，所以同样</p>
-<p>import jieba</p>
-<p>手工写个文本列表</p>
-<p>sentences = [“我喜欢吃土豆”,”土豆是个百搭的东西”,”我不喜欢今天雾霾的北京”]</p>
-<p>用结巴分词后待用，因为gensim包做主题模型，在意的是语料库，所以，中文英文，one-term，two-term都是无所谓的，如果有已经生成好的语料库，那么可以考虑直接跳到建模环节</p>
-<p>官方提供的语料库范例是这样的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">corpus = [[(0, 1.0), (1, 1.0), (2, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(2, 1.0), (3, 1.0), (4, 1.0), (5, 1.0), (6, 1.0), (8, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(1, 1.0), (3, 1.0), (4, 1.0), (7, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(0, 1.0), (4, 2.0), (7, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(3, 1.0), (5, 1.0), (6, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(9, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(9, 1.0), (10, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(9, 1.0), (10, 1.0), (11, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(8, 1.0), (10, 1.0), (11, 1.0)]]</div></pre></td></tr></table></figure>
-<p>每个中括号代表一句话，用逗号隔开，（0，1.0）代表词典中编号为0的词出现了一次，以此类推，很好理解</p>
-<p>回到过程中来，将范例的语句分词</p>
-<p>words=[]<br>for doc in sentences:<br>​    words.append(list(jieba.cut(doc)))<br>print words</p>
-<p>输出：</p>
-<p>[[u’\u6211’, u’\u559c\u6b22’, u’\u5403’, u’\u571f\u8c46’], [u’\u571f\u8c46’, u’\u662f’, u’\u4e2a’, u’\u767e’, u’\u642d’, u’\u7684’, u’\u4e1c\u897f’], [u’\u6211’, u’\u4e0d’, u’\u559c\u6b22’, u’\u4eca\u5929’, u’\u96fe’, u’\u973e’, u’\u7684’, u’\u5317\u4eac’]]</p>
-<p>此时输出的格式为unicode，不影响后期运算，因此我保留不变，如果想看分词结果可以用循环输出jieba分词结果</p>
-<p>得到的分词结果构造词典</p>
-<p>dic = corpora.Dictionary(words)<br>print dic<br>print dic.token2id</p>
-<p>输出：</p>
-<p>Dictionary(15 unique tokens)<br>{‘\xe5\x8c\x97\xe4\xba\xac’: 12, ‘\xe6\x90\xad’: 6, ‘\xe7\x9a\x84’: 9, ‘\xe5\x96\x9c\xe6\xac\xa2’: 1, ‘\xe4\xb8\x8d’: 10, ‘\xe4\xb8\x9c\xe8\xa5\xbf’: 4, ‘\xe5\x9c\x9f\xe8\xb1\x86’: 2, ‘\xe9\x9c\xbe’: 14, ‘\xe6\x98\xaf’: 7, ‘\xe4\xb8\xaa’: 5, ‘\xe9\x9b\xbe’: 13, ‘\xe7\x99\xbe’: 8, ‘\xe4\xbb\x8a\xe5\xa4\xa9’: 11, ‘\xe6\x88\x91’: 3, ‘\xe5\x90\x83’: 0}<br>可以看到各个词或词组在字典中的编号</p>
-<p>为了方便看，我给了个循环输出：</p>
-<p>for word,index in dic.token2id.iteritems():<br>​    print word +” 编号为:”+ str(index)</p>
-<p>输出：</p>
-<p>北京 编号为:12<br>搭 编号为:6<br>的 编号为:9<br>喜欢 编号为:1<br>不 编号为:10<br>东西 编号为:4<br>土豆 编号为:2<br>霾 编号为:14<br>是 编号为:7<br>个 编号为:5<br>雾 编号为:13<br>百 编号为:8<br>今天 编号为:11<br>我 编号为:3<br>吃 编号为:0</p>
-<p>为什么是乱序，我也不知道</p>
-<p>词典生成好之后，就开始生成语料库了</p>
-<p>corpus = [dic.doc2bow(text) for text in words]<br>print corpus</p>
-<p>输出：</p>
-<p>[[(0, 1), (1, 1), (2, 1), (3, 1)], [(2, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1), (9, 1)], [(1, 1), (3, 1), (9, 1), (10, 1), (11, 1), (12, 1), (13, 1), (14, 1)]]</p>
-<p>语料库的官方描述写的是向量空间模型格式的语料库，<em>Corpus</em> is simply an object which, when iterated over, returns its documents represented as sparse vectors.</p>
-<p>官方说明给了一个tips：</p>
-<p>In this example, the whole corpus is stored in memory, as a Python list. However,the corpus interface only dictates that a corpus must support iteration over its constituent documents. For very large corpora, it is advantageous to keep the corpus on disk, and access its documents sequentially, one at a time. All the operations and transformations are implemented in such a way that makes them independent of the size of the corpus, memory-wise.</p>
-<p>大概意思就是说范例中的语料库是存在内存中的一个列表格式，但是接口对语料库的要求只是，支持在构建文本文件中可循环即可，因此对于很大的语料库，最好还是存在硬盘上，然后依次访问文件。这样可以不用考虑语料库的size，也避免了内存占用太多</p>
-<p>此时，得到了语料库，接下来做一个TF-IDF变换</p>
-<p>可以理解成 将用词频向量表示一句话 变换成为用 词的重要性向量表示一句话</p>
-<p>（TF-IDF变换：评估一字词对于一个文件集或一个语料库中的其中一份文件的重要程度。字词的重要性随着它在文件中出现的次数成正比增加，但同时会随着它在<a href="http://baike.baidu.com/view/686705.htm" target="_blank" rel="external">语料库</a>中出现的频率成反比下降。）</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#通过语料库得到tfidf模型</span></div><div class="line">tfidf = models.TfidfModel(corpus)</div><div class="line">vec = [(<span class="number">0</span>, <span class="number">1</span>), (<span class="number">4</span>, <span class="number">1</span>)]</div><div class="line"><span class="keyword">print</span> tfidf[vec]</div><div class="line"><span class="comment">#对corpus的每个文档中的每个词计算tfidf，得到的结果是，每个文档的每个词都是一个元组，包括id和tfidf值</span></div><div class="line">corpus_tfidf = tfidf[corpus]</div><div class="line"><span class="keyword">for</span> doc <span class="keyword">in</span> corpus_tfidf:</div><div class="line">    <span class="keyword">print</span> doc</div></pre></td></tr></table></figure>
-<p>输出：</p>
-<p>[(0, 0.7071067811865475), (4, 0.7071067811865475)]<br>[(0, 0.8425587958192721), (1, 0.3109633824035548), (2, 0.3109633824035548), (3, 0.3109633824035548)]<br>[(2, 0.16073253746956623), (4, 0.4355066251613605), (5, 0.4355066251613605), (6, 0.4355066251613605), (7, 0.4355066251613605), (8, 0.4355066251613605), (9, 0.16073253746956623)]<br>[(1, 0.1586956620869655), (3, 0.1586956620869655), (9, 0.1586956620869655), (10, 0.42998768831312806), (11, 0.42998768831312806), (12, 0.42998768831312806), (13, 0.42998768831312806), (14, 0.42998768831312806)]</p>
-<p>vec是查询文本向量，比较vec和训练中的三句话相似度</p>
-<p>index = similarities.SparseMatrixSimilarity(tfidf[corpus], num_features=14)<br>sims = index[tfidf[vec]]<br>print list(enumerate(sims))</p>
-<p>输出：</p>
-<p>[(0, 0.59577906), (1, 0.30794966), (2, 0.0)]</p>
-<p>表示和第1句话相似度为59.578%，和第二句话的相似度位30.79%，第三句没有相似度，</p>
-<p>我们看看vec这句话是什么：0为吃，4为东西，所以vec这句话可以是[“吃东西”]或者[“东西吃”]</p>
-<p>而第一句话”我喜欢吃土豆”,”土豆是个百搭的东西”明显有相似度，而第三句话”我不喜欢今天雾霾的北京”，相似度几乎为0，至于为什么第一句比第二句更相似，就需要考虑TfIdf document representation和cosine similarity measure了</p>
-<p>回到tfidf转换，接着训练LSI模型，假定三句话属于2个主题，</p>
-<p>lsi = models.LsiModel(corpus_tfidf, id2word=dic, num_topics=2)<br>lsiout=lsi.print_topics(2)<br>print lsiout[0]<br>print lsiout[1]</p>
-<p>输出：</p>
-<p>0.532<em>“吃” + 0.290</em>“喜欢” + 0.290<em>“我” + 0.258</em>“土豆” + 0.253<em>“霾” + 0.253</em>“雾” + 0.253<em>“北京” + 0.253</em>“今天” + 0.253<em>“不” + 0.166</em>“东西”<br>0.393<em>“百” + 0.393</em>“搭” + 0.393<em>“东西” + 0.393</em>“是” + 0.393<em>“个” + -0.184</em>“霾” + -0.184<em>“雾” + -0.184</em>“北京” + -0.184<em>“今天” + -0.184</em>“不”</p>
-<p>这就是基于SVD建立的两个主题模型内容</p>
-<p>将文章投影到主题空间中</p>
-<p>corpus_lsi = lsi[corpus_tfidf]<br>for doc in corpus_lsi:<br>​    print doc</p>
-<p>输出：</p>
-<p>[(0, -0.70861576320682107), (1, 0.1431958007198823)]<br>[(0, -0.42764142348481798), (1, -0.88527674470703799)]<br>[(0, -0.66124862582594512), (1, 0.4190711252114323)]</p>
-<p>因此第一三两句和主题一相似，第二句和主题二相似</p>
-<p>同理做个LDA</p>
-<p>lda = models.LdaModel(corpus_tfidf, id2word=dic, num_topics=2)<br>ldaOut=lda.print_topics(2)<br>print ldaOut[0]<br>print ldaOut[1]<br>corpus_lda = lda[corpus_tfidf]<br>for doc in corpus_lda:<br>​    print doc</p>
-<p>得到的结果每次都变，给一次的输出：</p>
-<p>0.077<em>吃 + 0.075</em>北京 + 0.075<em>雾 + 0.074</em>今天 + 0.073<em>不 + 0.072</em>霾 + 0.070<em>喜欢 + 0.068</em>我 + 0.062<em>的 + 0.061</em>土豆<br>0.091<em>吃 + 0.073</em>搭 + 0.073<em>土豆 + 0.073</em>个 + 0.073<em>是 + 0.072</em>百 + 0.071<em>东西 + 0.066</em>我 + 0.065<em>喜欢 + 0.059</em>霾<br>[(0, 0.31271095988105352), (1, 0.68728904011894654)]<br>[(0, 0.19957991735916861), (1, 0.80042008264083142)]<br>[(0, 0.80940337254233863), (1, 0.19059662745766134)]</p>
-<p>第一二句和主题二相似，第三句和主题一相似</p>
-<p>结论和LSI不一样，我估计这和样本数目太少，区别度不高有关，毕竟让我来区分把第一句和哪一句分在一个主题，我也不确定</p>
-<p>输入一句话，查询属于LSI得到的哪个主题类型，先建立索引：</p>
-<p>index = similarities.MatrixSimilarity(lsi[corpus])<br>query = “雾霾”<br>query_bow = dic.doc2bow(list(jieba.cut(query)))<br>print query_bow<br>query_lsi = lsi[query_bow]<br>print query_lsi</p>
-<p>输出:</p>
-<p>[(13, 1), (14, 1)]<br>[(0, 0.50670602027401368), (1, -0.3678056037187441)]</p>
-<p>与第一个主题相似</p>
-<p>比较和第几句话相似，用LSI得到的索引接着做，并排序输出</p>
-<p>sims = index[query_lsi]<br>print list(enumerate(sims))<br>sort_sims = sorted(enumerate(sims), key=lambda item: -item[1])<br>print sort_sims</p>
-<p>输出：</p>
-<p>[(0, 0.90161765), (1, -0.10271341), (2, 0.99058259)]<br>[(2, 0.99058259), (0, 0.90161765), (1, -0.10271341)]</p>
-<p>可见和第二句话相似度很高，因为只有第二句话出现了雾霾两个词，可是惊讶的是和第一句话的相似度也很高，这得益于LSI模型的算法：<strong>在A和C共现，B和C共现的同时，可以找到A和B的相似度</strong></p>
-<h1 id="Gensim-Tutorials"><a href="#Gensim-Tutorials" class="headerlink" title="Gensim-Tutorials"></a>Gensim-Tutorials</h1><p><a href="http://radimrehurek.com/gensim/tutorial.html" target="_blank" rel="external">http://radimrehurek.com/gensim/tutorial.html</a></p>
-<p>Gensim 使用Python标准logging模块来记录log，使用方法是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">import logging</div><div class="line">logging.basicConfig(format=&apos;%(asctime)s : %(levelname)s : %(message)s&apos;, level=logging.INFO)</div></pre></td></tr></table></figure>
-<h1 id="快速示例"><a href="#快速示例" class="headerlink" title="快速示例"></a>快速示例</h1>
+            <hr>
+<h2 id="网页中可以提取什么"><a href="#网页中可以提取什么" class="headerlink" title="网页中可以提取什么"></a>网页中可以提取什么</h2>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2018/01/25/OpenRTB笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2018/01/25/OpenRTB笔记/" itemprop="url">
+                  未命名
+                </a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-25T17:02:30+08:00">
+                2018-01-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <hr>
+<h2 id="OpenRTB笔记"><a href="#OpenRTB笔记" class="headerlink" title="OpenRTB笔记"></a>OpenRTB笔记</h2><p><a href="https://github.com/leeowenowen/OpenRTB" target="_blank" rel="external">文档的中文翻译</a></p>
+<p>1 术语</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Seat</td>
+<td>期望获取展示并使用竞拍者代表他们进行竞拍的实体</td>
+</tr>
+<tr>
+<td>Publisher</td>
+<td>操作一个或者多个网站的实体</td>
+</tr>
+<tr>
+<td>Site</td>
+<td>如果没有特殊说明，指的是一个支持广告内容的网页或者应用</td>
+</tr>
+<tr>
+<td>Deal ID</td>
+<td>标识在特定场景下Publisher与Seat之间预先安排用于购买展示的协议</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>2、对象模型</p>
+<p>2.1 BidRequest</p>
+<p>在它的直属子对象中，只有<code>Imp</code>是技术上必须的，因为它是描述一次展示的基础信息，必须使用<code>Banner</code>, <code>Video</code>以及<code>Native</code>中的至少一个来定义展示的类型（例如， 无论一个或者多个展示者想要接收；尽管一次竞价是这些指明类型中的明确的一种）。一个展示对象可能包含一组私有市场。</p>
+<p><img src="https://raw.githubusercontent.com/leeowenowen/OpenRTB_API_Specification-/master/res/bid_request_object_model.png" alt=""></p>
+<h1 id="iAB标签体系"><a href="#iAB标签体系" class="headerlink" title="iAB标签体系"></a>iAB标签体系</h1>
           
         
       
@@ -883,7 +964,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2018/01/25/OpenRTB笔记/">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2018/01/25/Gensim-LDA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -905,7 +986,7 @@
             
               
                 
-                <a class="post-title-link" href="/2018/01/25/OpenRTB笔记/" itemprop="url">
+                <a class="post-title-link" href="/2018/01/25/Gensim-LDA/" itemprop="url">
                   未命名
                 </a>
               
@@ -960,163 +1041,82 @@
       
         
           
-            <hr>
-<h2 id="OpenRTB笔记"><a href="#OpenRTB笔记" class="headerlink" title="OpenRTB笔记"></a>OpenRTB笔记</h2><p><a href="https://github.com/leeowenowen/OpenRTB" target="_blank" rel="external">文档的中文翻译</a></p>
-<p>1 术语</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>名称</th>
-<th>解释</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Seat</td>
-<td>期望获取展示并使用竞拍者代表他们进行竞拍的实体</td>
-</tr>
-<tr>
-<td>Publisher</td>
-<td>操作一个或者多个网站的实体</td>
-</tr>
-<tr>
-<td>Site</td>
-<td>如果没有特殊说明，指的是一个支持广告内容的网页或者应用</td>
-</tr>
-<tr>
-<td>Deal ID</td>
-<td>标识在特定场景下Publisher与Seat之间预先安排用于购买展示的协议</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>2、对象模型</p>
-<p>2.1 BidRequest</p>
-<p>在它的直属子对象中，只有<code>Imp</code>是技术上必须的，因为它是描述一次展示的基础信息，必须使用<code>Banner</code>, <code>Video</code>以及<code>Native</code>中的至少一个来定义展示的类型（例如， 无论一个或者多个展示者想要接收；尽管一次竞价是这些指明类型中的明确的一种）。一个展示对象可能包含一组私有市场。</p>
-<p><img src="https://raw.githubusercontent.com/leeowenowen/OpenRTB_API_Specification-/master/res/bid_request_object_model.png" alt=""></p>
-<h1 id="iAB标签体系"><a href="#iAB标签体系" class="headerlink" title="iAB标签体系"></a>iAB标签体系</h1>
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2018/01/25/网页中可以提取什么/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2018/01/25/网页中可以提取什么/" itemprop="url">
-                  未命名
-                </a>
-              
-            
-          </h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-25T17:02:30+08:00">
-                2018-01-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <hr>
-<h2 id="网页中可以提取什么"><a href="#网页中可以提取什么" class="headerlink" title="网页中可以提取什么"></a>网页中可以提取什么</h2>
+            <h1 id="Gensim-LDA"><a href="#Gensim-LDA" class="headerlink" title="Gensim-LDA"></a>Gensim-LDA</h1><p><a href="http://blog.csdn.net/whzhcahzxh/article/details/17528261" target="_blank" rel="external">http://blog.csdn.net/whzhcahzxh/article/details/17528261</a></p>
+<p>首先，引用gensim包，gensim包中引用corpora,models, similarities，分别做语料库建立，模型库和相似度比较库，后面可以看到例子</p>
+<p>from gensim import corpora, models, similarities</p>
+<p>我调用了结巴分词做中文处理，所以同样</p>
+<p>import jieba</p>
+<p>手工写个文本列表</p>
+<p>sentences = [“我喜欢吃土豆”,”土豆是个百搭的东西”,”我不喜欢今天雾霾的北京”]</p>
+<p>用结巴分词后待用，因为gensim包做主题模型，在意的是语料库，所以，中文英文，one-term，two-term都是无所谓的，如果有已经生成好的语料库，那么可以考虑直接跳到建模环节</p>
+<p>官方提供的语料库范例是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">corpus = [[(0, 1.0), (1, 1.0), (2, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(2, 1.0), (3, 1.0), (4, 1.0), (5, 1.0), (6, 1.0), (8, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(1, 1.0), (3, 1.0), (4, 1.0), (7, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(0, 1.0), (4, 2.0), (7, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(3, 1.0), (5, 1.0), (6, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(9, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(9, 1.0), (10, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(9, 1.0), (10, 1.0), (11, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(8, 1.0), (10, 1.0), (11, 1.0)]]</div></pre></td></tr></table></figure>
+<p>每个中括号代表一句话，用逗号隔开，（0，1.0）代表词典中编号为0的词出现了一次，以此类推，很好理解</p>
+<p>回到过程中来，将范例的语句分词</p>
+<p>words=[]<br>for doc in sentences:<br>​    words.append(list(jieba.cut(doc)))<br>print words</p>
+<p>输出：</p>
+<p>[[u’\u6211’, u’\u559c\u6b22’, u’\u5403’, u’\u571f\u8c46’], [u’\u571f\u8c46’, u’\u662f’, u’\u4e2a’, u’\u767e’, u’\u642d’, u’\u7684’, u’\u4e1c\u897f’], [u’\u6211’, u’\u4e0d’, u’\u559c\u6b22’, u’\u4eca\u5929’, u’\u96fe’, u’\u973e’, u’\u7684’, u’\u5317\u4eac’]]</p>
+<p>此时输出的格式为unicode，不影响后期运算，因此我保留不变，如果想看分词结果可以用循环输出jieba分词结果</p>
+<p>得到的分词结果构造词典</p>
+<p>dic = corpora.Dictionary(words)<br>print dic<br>print dic.token2id</p>
+<p>输出：</p>
+<p>Dictionary(15 unique tokens)<br>{‘\xe5\x8c\x97\xe4\xba\xac’: 12, ‘\xe6\x90\xad’: 6, ‘\xe7\x9a\x84’: 9, ‘\xe5\x96\x9c\xe6\xac\xa2’: 1, ‘\xe4\xb8\x8d’: 10, ‘\xe4\xb8\x9c\xe8\xa5\xbf’: 4, ‘\xe5\x9c\x9f\xe8\xb1\x86’: 2, ‘\xe9\x9c\xbe’: 14, ‘\xe6\x98\xaf’: 7, ‘\xe4\xb8\xaa’: 5, ‘\xe9\x9b\xbe’: 13, ‘\xe7\x99\xbe’: 8, ‘\xe4\xbb\x8a\xe5\xa4\xa9’: 11, ‘\xe6\x88\x91’: 3, ‘\xe5\x90\x83’: 0}<br>可以看到各个词或词组在字典中的编号</p>
+<p>为了方便看，我给了个循环输出：</p>
+<p>for word,index in dic.token2id.iteritems():<br>​    print word +” 编号为:”+ str(index)</p>
+<p>输出：</p>
+<p>北京 编号为:12<br>搭 编号为:6<br>的 编号为:9<br>喜欢 编号为:1<br>不 编号为:10<br>东西 编号为:4<br>土豆 编号为:2<br>霾 编号为:14<br>是 编号为:7<br>个 编号为:5<br>雾 编号为:13<br>百 编号为:8<br>今天 编号为:11<br>我 编号为:3<br>吃 编号为:0</p>
+<p>为什么是乱序，我也不知道</p>
+<p>词典生成好之后，就开始生成语料库了</p>
+<p>corpus = [dic.doc2bow(text) for text in words]<br>print corpus</p>
+<p>输出：</p>
+<p>[[(0, 1), (1, 1), (2, 1), (3, 1)], [(2, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1), (9, 1)], [(1, 1), (3, 1), (9, 1), (10, 1), (11, 1), (12, 1), (13, 1), (14, 1)]]</p>
+<p>语料库的官方描述写的是向量空间模型格式的语料库，<em>Corpus</em> is simply an object which, when iterated over, returns its documents represented as sparse vectors.</p>
+<p>官方说明给了一个tips：</p>
+<p>In this example, the whole corpus is stored in memory, as a Python list. However,the corpus interface only dictates that a corpus must support iteration over its constituent documents. For very large corpora, it is advantageous to keep the corpus on disk, and access its documents sequentially, one at a time. All the operations and transformations are implemented in such a way that makes them independent of the size of the corpus, memory-wise.</p>
+<p>大概意思就是说范例中的语料库是存在内存中的一个列表格式，但是接口对语料库的要求只是，支持在构建文本文件中可循环即可，因此对于很大的语料库，最好还是存在硬盘上，然后依次访问文件。这样可以不用考虑语料库的size，也避免了内存占用太多</p>
+<p>此时，得到了语料库，接下来做一个TF-IDF变换</p>
+<p>可以理解成 将用词频向量表示一句话 变换成为用 词的重要性向量表示一句话</p>
+<p>（TF-IDF变换：评估一字词对于一个文件集或一个语料库中的其中一份文件的重要程度。字词的重要性随着它在文件中出现的次数成正比增加，但同时会随着它在<a href="http://baike.baidu.com/view/686705.htm" target="_blank" rel="external">语料库</a>中出现的频率成反比下降。）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#通过语料库得到tfidf模型</span></div><div class="line">tfidf = models.TfidfModel(corpus)</div><div class="line">vec = [(<span class="number">0</span>, <span class="number">1</span>), (<span class="number">4</span>, <span class="number">1</span>)]</div><div class="line"><span class="keyword">print</span> tfidf[vec]</div><div class="line"><span class="comment">#对corpus的每个文档中的每个词计算tfidf，得到的结果是，每个文档的每个词都是一个元组，包括id和tfidf值</span></div><div class="line">corpus_tfidf = tfidf[corpus]</div><div class="line"><span class="keyword">for</span> doc <span class="keyword">in</span> corpus_tfidf:</div><div class="line">    <span class="keyword">print</span> doc</div></pre></td></tr></table></figure>
+<p>输出：</p>
+<p>[(0, 0.7071067811865475), (4, 0.7071067811865475)]<br>[(0, 0.8425587958192721), (1, 0.3109633824035548), (2, 0.3109633824035548), (3, 0.3109633824035548)]<br>[(2, 0.16073253746956623), (4, 0.4355066251613605), (5, 0.4355066251613605), (6, 0.4355066251613605), (7, 0.4355066251613605), (8, 0.4355066251613605), (9, 0.16073253746956623)]<br>[(1, 0.1586956620869655), (3, 0.1586956620869655), (9, 0.1586956620869655), (10, 0.42998768831312806), (11, 0.42998768831312806), (12, 0.42998768831312806), (13, 0.42998768831312806), (14, 0.42998768831312806)]</p>
+<p>vec是查询文本向量，比较vec和训练中的三句话相似度</p>
+<p>index = similarities.SparseMatrixSimilarity(tfidf[corpus], num_features=14)<br>sims = index[tfidf[vec]]<br>print list(enumerate(sims))</p>
+<p>输出：</p>
+<p>[(0, 0.59577906), (1, 0.30794966), (2, 0.0)]</p>
+<p>表示和第1句话相似度为59.578%，和第二句话的相似度位30.79%，第三句没有相似度，</p>
+<p>我们看看vec这句话是什么：0为吃，4为东西，所以vec这句话可以是[“吃东西”]或者[“东西吃”]</p>
+<p>而第一句话”我喜欢吃土豆”,”土豆是个百搭的东西”明显有相似度，而第三句话”我不喜欢今天雾霾的北京”，相似度几乎为0，至于为什么第一句比第二句更相似，就需要考虑TfIdf document representation和cosine similarity measure了</p>
+<p>回到tfidf转换，接着训练LSI模型，假定三句话属于2个主题，</p>
+<p>lsi = models.LsiModel(corpus_tfidf, id2word=dic, num_topics=2)<br>lsiout=lsi.print_topics(2)<br>print lsiout[0]<br>print lsiout[1]</p>
+<p>输出：</p>
+<p>0.532<em>“吃” + 0.290</em>“喜欢” + 0.290<em>“我” + 0.258</em>“土豆” + 0.253<em>“霾” + 0.253</em>“雾” + 0.253<em>“北京” + 0.253</em>“今天” + 0.253<em>“不” + 0.166</em>“东西”<br>0.393<em>“百” + 0.393</em>“搭” + 0.393<em>“东西” + 0.393</em>“是” + 0.393<em>“个” + -0.184</em>“霾” + -0.184<em>“雾” + -0.184</em>“北京” + -0.184<em>“今天” + -0.184</em>“不”</p>
+<p>这就是基于SVD建立的两个主题模型内容</p>
+<p>将文章投影到主题空间中</p>
+<p>corpus_lsi = lsi[corpus_tfidf]<br>for doc in corpus_lsi:<br>​    print doc</p>
+<p>输出：</p>
+<p>[(0, -0.70861576320682107), (1, 0.1431958007198823)]<br>[(0, -0.42764142348481798), (1, -0.88527674470703799)]<br>[(0, -0.66124862582594512), (1, 0.4190711252114323)]</p>
+<p>因此第一三两句和主题一相似，第二句和主题二相似</p>
+<p>同理做个LDA</p>
+<p>lda = models.LdaModel(corpus_tfidf, id2word=dic, num_topics=2)<br>ldaOut=lda.print_topics(2)<br>print ldaOut[0]<br>print ldaOut[1]<br>corpus_lda = lda[corpus_tfidf]<br>for doc in corpus_lda:<br>​    print doc</p>
+<p>得到的结果每次都变，给一次的输出：</p>
+<p>0.077<em>吃 + 0.075</em>北京 + 0.075<em>雾 + 0.074</em>今天 + 0.073<em>不 + 0.072</em>霾 + 0.070<em>喜欢 + 0.068</em>我 + 0.062<em>的 + 0.061</em>土豆<br>0.091<em>吃 + 0.073</em>搭 + 0.073<em>土豆 + 0.073</em>个 + 0.073<em>是 + 0.072</em>百 + 0.071<em>东西 + 0.066</em>我 + 0.065<em>喜欢 + 0.059</em>霾<br>[(0, 0.31271095988105352), (1, 0.68728904011894654)]<br>[(0, 0.19957991735916861), (1, 0.80042008264083142)]<br>[(0, 0.80940337254233863), (1, 0.19059662745766134)]</p>
+<p>第一二句和主题二相似，第三句和主题一相似</p>
+<p>结论和LSI不一样，我估计这和样本数目太少，区别度不高有关，毕竟让我来区分把第一句和哪一句分在一个主题，我也不确定</p>
+<p>输入一句话，查询属于LSI得到的哪个主题类型，先建立索引：</p>
+<p>index = similarities.MatrixSimilarity(lsi[corpus])<br>query = “雾霾”<br>query_bow = dic.doc2bow(list(jieba.cut(query)))<br>print query_bow<br>query_lsi = lsi[query_bow]<br>print query_lsi</p>
+<p>输出:</p>
+<p>[(13, 1), (14, 1)]<br>[(0, 0.50670602027401368), (1, -0.3678056037187441)]</p>
+<p>与第一个主题相似</p>
+<p>比较和第几句话相似，用LSI得到的索引接着做，并排序输出</p>
+<p>sims = index[query_lsi]<br>print list(enumerate(sims))<br>sort_sims = sorted(enumerate(sims), key=lambda item: -item[1])<br>print sort_sims</p>
+<p>输出：</p>
+<p>[(0, 0.90161765), (1, -0.10271341), (2, 0.99058259)]<br>[(2, 0.99058259), (0, 0.90161765), (1, -0.10271341)]</p>
+<p>可见和第二句话相似度很高，因为只有第二句话出现了雾霾两个词，可是惊讶的是和第一句话的相似度也很高，这得益于LSI模型的算法：<strong>在A和C共现，B和C共现的同时，可以找到A和B的相似度</strong></p>
+<h1 id="Gensim-Tutorials"><a href="#Gensim-Tutorials" class="headerlink" title="Gensim-Tutorials"></a>Gensim-Tutorials</h1><p><a href="http://radimrehurek.com/gensim/tutorial.html" target="_blank" rel="external">http://radimrehurek.com/gensim/tutorial.html</a></p>
+<p>Gensim 使用Python标准logging模块来记录log，使用方法是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">import logging</div><div class="line">logging.basicConfig(format=&apos;%(asctime)s : %(levelname)s : %(message)s&apos;, level=logging.INFO)</div></pre></td></tr></table></figure>
+<h1 id="快速示例"><a href="#快速示例" class="headerlink" title="快速示例"></a>快速示例</h1>
           
         
       
@@ -1327,7 +1327,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/决策树/">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/Elastic Search 配置和使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -1349,8 +1349,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/07/12/决策树/" itemprop="url">
-                  决策树
+                <a class="post-title-link" href="/2017/07/12/Elastic Search 配置和使用/" itemprop="url">
+                  Elastic Search 配置和使用
                 </a>
               
             
@@ -1389,8 +1389,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/机器学习算法推导/" itemprop="url" rel="index">
-                    <span itemprop="name">机器学习算法推导</span>
+                  <a href="/categories/数据分析/" itemprop="url" rel="index">
+                    <span itemprop="name">数据分析</span>
                   </a>
                 </span>
 
@@ -1426,111 +1426,208 @@
       
         
           
-            <h1 id="1-决策树"><a href="#1-决策树" class="headerlink" title="1 决策树"></a>1 决策树</h1><p>公式符号</p>
-<script type="math/tex; mode=display">
-\begin{align}
-&Ent(X)\ \ \ 熵 \\
-&Gain(X)\ \ \ 信息增益\\
-&Gini(X)\ \ \ 基尼指数\\
-&D\ \ \ 训练集\\
-&A\ \ \ 训练集的某个特征\\
-&N\ \ \ 特征A的类别总数\\
-&K\ \ \ 标签分类的数量\\
-\end{align}</script><h2 id="1-1-关键步骤-python实现"><a href="#1-1-关键步骤-python实现" class="headerlink" title="1.1 关键步骤-python实现"></a>1.1 关键步骤-python实现</h2><p>创建决策树分支的createBranch()伪代码函数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">检查数据集中每个子项是否属于同一个分类：</div><div class="line">	IF YES return 类标签；</div><div class="line">	ELSE </div><div class="line">		寻找划分数据集的最好特征；</div><div class="line">		划分数据集；</div><div class="line">		创建分支节点；</div><div class="line">			for 每个划分的子集</div><div class="line">				递归调用createBranch()并增加返回结果到分支节点中</div><div class="line">        return 分支节点</div></pre></td></tr></table></figure>
-<p>对label的分类计算熵</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">calcEnt</span><span class="params">(dataSet)</span>:</span></div><div class="line">	labelNum = len(dataSet)</div><div class="line">    ent = <span class="number">0.0</span></div><div class="line">	<span class="comment">#定义字典存放每个类别的count统计</span></div><div class="line">	labelCounts = &#123;&#125;</div><div class="line">    <span class="comment">#统计每个label的个数</span></div><div class="line">	<span class="keyword">for</span> featureVec <span class="keyword">in</span> dataSet:</div><div class="line">        <span class="comment">#最后一列是label</span></div><div class="line">		label = featureVec[<span class="number">-1</span>]</div><div class="line">        <span class="keyword">if</span> label <span class="keyword">not</span> <span class="keyword">in</span> labelCounts.keys(): labelCounts[label] = <span class="number">0</span></div><div class="line">        labelCounts[label] += <span class="number">1</span></div><div class="line">    <span class="comment">#计算概率以及熵</span></div><div class="line">    <span class="keyword">for</span> key <span class="keyword">in</span> labelCounts:</div><div class="line">        prob = float(labelCounts[key]) / labelNum</div><div class="line">        ent -= prob * log(<span class="number">2</span>, prob)</div><div class="line">    <span class="keyword">return</span> ent</div></pre></td></tr></table></figure>
-<p>对数据集进行划分</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">splitDataSet</span><span class="params">(dataSet, axis, value)</span>:</span></div><div class="line">    subDataSet = []</div><div class="line">    <span class="keyword">for</span> featureVec <span class="keyword">in</span> dataSet:</div><div class="line">        <span class="keyword">if</span> featureVec[axis] == value:</div><div class="line">            reducedFeatVec = featureVec[:axis]</div><div class="line">            reducedFeatVec.extend(featureVec[axis+<span class="number">1</span>:])</div><div class="line">    		resDataSet.append(reducedFeatVec)</div><div class="line">    <span class="keyword">return</span> subDataSet</div></pre></td></tr></table></figure>
-<p>选出最好的数据集划分方式</p>
-<p><strong>信息增益</strong></p>
-<p><strong>熵</strong>的定义是</p>
-<script type="math/tex; mode=display">
-Ent(X) = -\sum_{i=1}^{n}p(x_i)log_2p(x_i)</script><p>n是类别总数。</p>
-<p><strong>条件熵</strong>$Ent(Y|X)$表示在已知X的条件下Y的不确定性，定义为给定X时Y的条件概率分布的熵对X的期望</p>
-<script type="math/tex; mode=display">
-Ent(Y|X)=\sum_{i=1}^np_iEnt(Y|X=x_i)</script><p>对于训练集D以及其中的特征A，熵就是</p>
-<script type="math/tex; mode=display">
-Ent(D) = -\sum_{k=1}^K \frac {|C_k|}{|D|} log_2\frac{|C_k|}{|D|}</script><p>其中，K是标签分类的数量，$C_k$是每个分类的样本数</p>
-<p>条件熵就是</p>
-<script type="math/tex; mode=display">
-\begin{aligned} 
-Ent(D|A) &=\sum_{i=1}^N\frac{|D_i|}{|D|}Ent(D_i) \\
-&=\sum_{i=1}^N\frac{|D_i|}{|D|}(-\sum_{k=1}^K \frac {|D_{ik}|}{|D_i|} log_2\frac{|D_{ik}|}{|D_i|})
-\end{aligned}</script><p>其中，N是特征A的类别总数，$D_i$是特征A的每种类别的数量。</p>
-<p>信息增益就是两者之差</p>
-<script type="math/tex; mode=display">
-Gain(D,A)=Ent(D)-Ent(D|A)</script><p>信息增益也称为<strong>互信息</strong>。</p>
-<p>找出信息增益最大的来划分数据集</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">chooseBestFeature</span><span class="params">(dataSet)</span>:</span></div><div class="line">	<span class="comment">#feature数量，最后一列是label</span></div><div class="line">	numFeature = len(dataSet[<span class="number">0</span>]<span class="number">-1</span>)</div><div class="line">    bestInfoGain = <span class="number">0.0</span></div><div class="line">    bestFeature = <span class="number">-1</span></div><div class="line">	<span class="comment">#先计算熵</span></div><div class="line">	baseEntropy = calcEnt(dataSet)</div><div class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> range(numFeature):</div><div class="line">		<span class="comment">#首先需要知道该特征有几个值</span></div><div class="line">		uniqueValue = set([sample[i] <span class="keyword">for</span> sample <span class="keyword">in</span> dataSet]) <span class="comment">#用set去重是最快方法</span></div><div class="line">		newEntropy = <span class="number">0.0</span></div><div class="line">        <span class="comment">#对于每个特征，计算条件熵</span></div><div class="line">        <span class="keyword">for</span> value <span class="keyword">in</span> uniqueValue:</div><div class="line">            <span class="comment">#用这个特征划分数据集</span></div><div class="line">            subDataSet = splitDataSet(dataSet, i, value)</div><div class="line">            newEntropy += calcEnt(subDataSet)</div><div class="line">        <span class="comment">#计算信息增益</span></div><div class="line">        infoGain = baseEntropy-newEntropy</div><div class="line">        <span class="keyword">if</span> infoGain &gt; bestInfoGain:</div><div class="line">            bestInfoGain = infoGain</div><div class="line">            bestFeature = i</div><div class="line"><span class="keyword">return</span> bestFeature</div></pre></td></tr></table></figure>
-<p>如果所有特征都处理过了，但是类标签依然不是唯一的，用投票决定</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">majorityCnt</span><span class="params">(classList)</span>:</span></div><div class="line">	classCount=&#123;&#125;</div><div class="line">    <span class="keyword">for</span> vote <span class="keyword">in</span> classList:</div><div class="line">        <span class="keyword">if</span> vote <span class="keyword">not</span> <span class="keyword">in</span> classCount.keys() classCount[vote] = <span class="number">0</span></div><div class="line">        classCount[vote] += <span class="number">1</span></div><div class="line">    sortedClassCount = sorted(classCount, key = operator.itemgetter(<span class="number">1</span>), reverse = <span class="keyword">True</span>)</div><div class="line">    <span class="keyword">return</span> sortedClassCount[<span class="number">0</span>][<span class="number">0</span>]</div></pre></td></tr></table></figure>
-<h2 id="1-2-ID3算法"><a href="#1-2-ID3算法" class="headerlink" title="1.2 ID3算法"></a>1.2 ID3算法</h2><p>与上面的步骤类似。但是ID3只有树的生成，容易过拟合。</p>
-<h2 id="1-3-C4-5算法"><a href="#1-3-C4-5算法" class="headerlink" title="1.3 C4.5算法"></a>1.3 C4.5算法</h2><p>与ID3相比，C4.5用信息增益比来选择特征。</p>
-<p><strong>信息增益比</strong></p>
-<p>在面对类别比较少的离散数据时，两者差不多。但如果面对连续的数据（如体重、身高、年龄、距离等），或者每列数据没有明显的类别之分（最极端的例子的该列所有数据都独一无二）。</p>
-<p>那么根据信息增益公式，$Ent(D)$不变，当数据独一无二时，</p>
-<script type="math/tex; mode=display">
-Ent(D|A)=\sum_{i=1}^n \frac {1}{n}Ent(D_i)</script><p>这样$Ent(D|A)$最小，程序会倾向于这种划分，导致划分效果差。</p>
-<p>信息增益比的公式为</p>
-<script type="math/tex; mode=display">
-Gain_R(D,A)=\frac {Gain(D,A)}{Ent(D)}</script><p>可以理解成对分支数目的惩罚项。</p>
-<h2 id="1-5-CART算法"><a href="#1-5-CART算法" class="headerlink" title="1.5 CART算法"></a>1.5 CART算法</h2><p>CART是分类与回归树，由特征选择、树的生成和剪枝组成。</p>
-<p>CART是在给定输入变量X条件下输出随机变量Y的条件概率分布的方法。CART假设决策树是<strong>二叉树</strong>，内部结点特征的取值为是和否，约定左是右否。</p>
-<p>决策树等价于递归的二分每个特征，将输入空间即特征空间划分为有限个单元，并在这些单元上确定预测的概率分布，也就是在输入给定的条件下输出的条件概率分布。</p>
-<p>1.5.1 CART的生成</p>
-<p>递归构建二叉树的过程。回归树用<strong>最小二乘</strong>，分类树用<strong>基尼指数</strong>。</p>
-<p>1）回归树</p>
-<p>2）分类树</p>
-<p>假设有K个类，样本点属于第k类的概率是$p_k$，则基尼指数定义为</p>
-<script type="math/tex; mode=display">
-Gini(p) = \sum_{k=1}^K p_k(1-p_k) = 1-\sum_{k=1}^K p_k^2=1-\sum_{k=1}^K(\frac{|C_k|}{|D|})^2</script><p>如果是两分类问题，则概率分布的基尼指数为</p>
-<script type="math/tex; mode=display">
-Gini(P)=2p(1-p)</script><p>若样本集合D根据特征A是否取某一值a被划分为$D_1$和$D_2$两部分，即</p>
-<script type="math/tex; mode=display">
-D_1=\{(x,y)\in D | A(x)=a\}, D_2=D-D_1</script><p>则在特征A的条件下，集合D的基尼指数为</p>
-<script type="math/tex; mode=display">
-Gini(D,A)=\frac {|D_1|}{|D|}Gini(D_1)+\frac {|D_2|}{|D|}Gini(D_2)</script><p>Gini越大，样本集合的不确定性越大，与熵相似。</p>
-<p><strong>算法过程</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">输入：训练集D，停止条件</div><div class="line">输出：CART决策树</div><div class="line"></div><div class="line">从根结点递归对每个结点进行以下操作，构建二叉树：</div><div class="line">1）对每个特征和可能的取值a，根据A=a的为是或否，将D分割成D1和D2，计算基尼指数</div><div class="line">2）选出基尼指数最小的特征及其对应的切分点作为最优特征与最优切分点。</div><div class="line">3）对两个子结点递归调用#1、#2，直至满足停止条件</div><div class="line">4）生成CART决策树</div></pre></td></tr></table></figure>
-<p>3）CART剪枝</p>
-<h2 id="1-6-决策树的剪枝"><a href="#1-6-决策树的剪枝" class="headerlink" title="1.6 决策树的剪枝"></a>1.6 决策树的剪枝</h2><blockquote>
-<p>如何判断剪枝后泛华性能提升？</p>
-<p>用<strong>留出法</strong>。将一部分训练集作为验证集。</p>
-</blockquote>
-<p>剪枝是为了解决过拟合。通过极小化决策树整体的损失函数来实现。设树T的叶结点个数为$|T|$，t是T的叶结点，该叶结点有$N<em>t$个样本点，其中k类的样本点有$N</em>{tk}$个，则损失函数定义为</p>
-<script type="math/tex; mode=display">
-C_{\alpha}(T) = \sum_{t=1}^T N_tEnt_t(T) + \alpha|T|</script><p>由于</p>
-<script type="math/tex; mode=display">
-Ent_t(T) =  - \sum_{k=1}^K \frac {N_{tk}}{N_t} log_2\frac {N_{tk}}{N_t}</script><p>则令</p>
-<script type="math/tex; mode=display">
-C(T) = - \sum_{t=1}^T\sum_{k=1}^KN_{tk}log_2\frac {N_{tk}}{N_t}</script><p>于是</p>
-<script type="math/tex; mode=display">
-C_\alpha(T) = C(T) +\alpha|T|</script><p>这里，$C(T)$表示训练数据的预测误差，$|T|$表示模型复杂度，$\alpha$控制两者影响，较大时选择较简单的树，反之亦然，等于0时就不考虑模型复杂度。</p>
-<p>两种剪枝思路</p>
-<p><strong>预剪枝（Pre-Pruning）</strong></p>
-<p>构造的同时剪枝。比如设一个阈值，熵减小的数量小于这个阈值，即使还可以继续降低熵，也停止继续创建分支。</p>
+            <p>官网：<a href="https://www.elastic.co/products/elasticsearch" target="_blank" rel="external">https://www.elastic.co/products/elasticsearch</a>    </p>
+<p>最好的教程：<a href="https://es.xiaoleilu.com/" target="_blank" rel="external">https://es.xiaoleilu.com/</a></p>
+<p>docker的ELK环境：<a href="https://hub.docker.com/r/sebp/elk/" target="_blank" rel="external">https://hub.docker.com/r/sebp/elk/</a></p>
+<p>ES 5.4中文文档   <a href="http://cwiki.apachecn.org/pages/viewpage.action?pageId=4260364" target="_blank" rel="external">http://cwiki.apachecn.org/pages/viewpage.action?pageId=4260364</a></p>
+<h1 id="0、基本概念"><a href="#0、基本概念" class="headerlink" title="0、基本概念"></a>0、基本概念</h1><p><strong>接近实时（NRT）</strong></p>
+<pre><code>Elasticsearch是一个接近实时的搜索平台。这意味着，从索引一个文档直到这个文档能够被搜索到有一个轻微的延迟（通常是1秒）。
+</code></pre><p><strong>集群（cluster）</strong><br>    一个集群就是由一个或多个节点组织在一起，它们共同持有你整个的数据，并一起提供索引和搜索功能。一个集群一个唯一的名字标识，这个名字默认就是 “elasticsearch”。这个名字是重要的，因为一个节点只能通过指定某个集群的名字，来加入这个集群。在产品环境中显式地设定这个名字是一个好 习惯，但是使用默认值来进行测试/开发也是不错的。</p>
+<p><strong>节点（node）</strong><br>    一个节点是你集群中的一个服务器，作为集群的一部分，它存储你的数据，参与集群的索引和搜索功能。和集群类似，一个节点也是由一个名字来标识的，默认情况 下，这个名字是一个随机的漫威漫画角色的名字，这个名字会在启动的时候赋予节点。这个名字对于管理工作来说挺重要的，因为在这个管理过程中，你会去确定网 络中的哪些服务器对应于Elasticsearch集群中的哪些节点。</p>
+<pre><code>一个节点可以通过配置集群名称的方式来加入一个指定的集群。默认情况下，每个节点都会被安排加入到一个叫做“elasticsearch”的集群中，这意 味着，如果你在你的网络中启动了若干个节点，并假定它们能够相互发现彼此，它们将会自动地形成并加入到一个叫做“elasticsearch”的集群中。
+
+在一个集群里，只要你想，可以拥有任意多个节点。而且，如果当前你的网络中没有运行任何Elasticsearch节点，这时启动一个节点，会默认创建并加入一个叫做“elasticsearch”的集群。
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Relational DB -&gt; Databases -&gt; Tables -&gt; Rows -&gt; Columns</div><div class="line">Elasticsearch -&gt; Indices   -&gt; Types  -&gt; Documents -&gt; Fields</div></pre></td></tr></table></figure>
+<p><strong>索引（index）</strong></p>
+<pre><code>一个索引就是一个拥有几分相似特征的文档的集合。比如说，你可以有一个客户数据的索引，另一个产品目录的索引，还有一个订单数据的索引。一个索引由一个名 字来标识（必须全部是小写字母的），并且当我们要对对应于这个索引中的文档进行索引、搜索、更新和删除的时候，都要使用到这个名字。
+
+在一个集群中，如果你想，可以定义任意多的索引。
+</code></pre><p><strong>类型（type）</strong></p>
+<pre><code>在一个索引中，你可以定义一种或多种类型。一个类型是你的索引的一个逻辑上的分类/分区，其语义完全由你来定。通常，会为具有一组共同字段的文档定义一个 类型。比如说，我们假设你运营一个博客平台并且将你所有的数据存储到一个索引中。在这个索引中，你可以为用户数据定义一个类型，为博客数据定义另一个类 型，当然，也可以为评论数据定义另一个类型。
+</code></pre><p><strong>文档（document）</strong></p>
+<pre><code>一个文档是一个可被索引的基础信息单元。比如，你可以拥有某一个客户的文档，某一个产品的一个文档，当然，也可以拥有某个订单的一个文档。文档以 JSON（Javascript Object Notation）格式来表示，而JSON是一个到处存在的互联网数据交互格式。
+
+在一个index/type里面，只要你想，你可以存储任意多的文档。注意，尽管一个文档，物理上存在于一个索引之中，文档必须被索引/赋予一个索引的type。
+</code></pre><p><strong>分片和复制（shards &amp; replicas）</strong></p>
+<pre><code>一个索引可以存储超出单个结点硬件限制的大量数据。比如，一个具有10亿文档的索引占据1TB的磁盘空间，而任一节点都没有这样大的磁盘空间；或者单个节点处理搜索请求，响应太慢。
+
+为了解决这个问题，Elasticsearch提供了将索引划分成多份的能力，这些份就叫做分片。当你创建一个索引的时候，你可以指定你想要的分片的数量。每个分片本身也是一个功能完善并且独立的“索引”，这个“索引”可以被放置到集群中的任何节点上。
+
+分片之所以重要，主要有两方面的原因：
+
+    - 允许你水平分割/扩展你的内容容量
+    - 允许你在分片（潜在地，位于多个节点上）之上进行分布式的、并行的操作，进而提高性能/吞吐量
+
+至于一个分片怎样分布，它的文档怎样聚合回搜索请求，是完全由Elasticsearch管理的，对于作为用户的你来说，这些都是透明的。
+
+在一个网络/云的环境里，失败随时都可能发生，在某个分片/节点不知怎么的就处于离线状态，或者由于任何原因消失了，这种情况下，有一个故障转移机制是非 常有用并且是强烈推荐的。为此目的，Elasticsearch允许你创建分片的一份或多份拷贝，这些拷贝叫做复制分片，或者直接叫复制。
+
+复制之所以重要，有两个主要原因：
+    - 在分片/节点失败的情况下，提供了高可用性。因为这个原因，注意到复制分片从不与原/主要（original/primary）分片置于同一节点上是非常重要的。
+    - 扩展你的搜索量/吞吐量，因为搜索可以在所有的复制上并行运行
+
+总之，每个索引可以被分成多个分片。一个索引也可以被复制0次（意思是没有复制）或多次。一旦复制了，每个索引就有了主分片（作为复制源的原来的分片）和 复制分片（主分片的拷贝）之别。分片和复制的数量可以在索引创建的时候指定。在索引创建之后，你可以在任何时候动态地改变复制的数量，但是你事后不能改变 分片的数量。
+
+默认情况下，Elasticsearch中的每个索引被分片5个主分片和1个复制，这意味着，如果你的集群中至少有两个节点，你的索引将会有5个主分片和另外5个复制分片（1个完全拷贝），这样的话每个索引总共就有10个分片。
+</code></pre><h1 id="1、安装-5-5-0"><a href="#1、安装-5-5-0" class="headerlink" title="1、安装-5.5.0"></a>1、安装-5.5.0</h1><h2 id="1-1-ElasticSearch"><a href="#1-1-ElasticSearch" class="headerlink" title="1.1 ElasticSearch"></a>1.1 ElasticSearch</h2><p>下载的</p>
+<p>elasticsearch-5.5.0.tar.gz</p>
+<p>kibana-5.5.0-linux-x86_64.tar.gz</p>
+<p>解压到/home/david/opt，在主目录直接运行</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ bin/elasticsearch</div></pre></td></tr></table></figure>
+<p>启动服务，启动后，访问localhost:9200，若出现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  &quot;name&quot; : &quot;Jr1It8C&quot;,</div><div class="line">  &quot;cluster_name&quot; : &quot;elasticsearch&quot;,</div><div class="line">  &quot;cluster_uuid&quot; : &quot;JMo_h3-USdegKS1yZ0WCnA&quot;,</div><div class="line">  &quot;version&quot; : &#123;</div><div class="line">    &quot;number&quot; : &quot;5.5.0&quot;,</div><div class="line">    &quot;build_hash&quot; : &quot;260387d&quot;,</div><div class="line">    &quot;build_date&quot; : &quot;2017-06-30T23:16:05.735Z&quot;,</div><div class="line">    &quot;build_snapshot&quot; : false,</div><div class="line">    &quot;lucene_version&quot; : &quot;6.6.0&quot;</div><div class="line">  &#125;,</div><div class="line">  &quot;tagline&quot; : &quot;You Know, for Search&quot;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>则说明安装成功。</p>
+<h2 id="1-2-Marvel"><a href="#1-2-Marvel" class="headerlink" title="1.2 Marvel"></a>1.2 Marvel</h2><p>5.0后集成到了x-pack中</p>
+<p>1）安装X-pack到elasticsearch</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ bin/elasticsearch-plugin install x-pack</div></pre></td></tr></table></figure>
+<p>2）安装到kibana</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bin/kibana-plugin install x-pack</div></pre></td></tr></table></figure>
+<p>用户名elastic</p>
+<p>密码changeme</p>
+<h2 id="1-3-关闭服务"><a href="#1-3-关闭服务" class="headerlink" title="1.3 关闭服务"></a>1.3 关闭服务</h2><p>关闭Elastic search </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ps -ef | grep elastic</div></pre></td></tr></table></figure>
+<p>关闭kibana </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fuser -n tcp 5601</div></pre></td></tr></table></figure>
+<h1 id="2、第一个例子"><a href="#2、第一个例子" class="headerlink" title="2、第一个例子"></a>2、第一个例子</h1><p>摘自教程</p>
 <blockquote>
-<p>有些分支虽然当前划分时性能下降，但后续划分有可能又会提高，仅根据当前验证集来判断是否要继续划分，往往会导致欠拟合。</p>
+<p>假设我们刚好在<strong>Megacorp</strong>工作，这时人力资源部门出于某种目的需要让我们创建一个员工目录，这个目录用于促进人文关怀和用于实时协同工作，所以它有以下不同的需求：</p>
+<ul>
+<li>数据能够包含多个值的标签、数字和纯文本。</li>
+<li>检索任何员工的所有信息。</li>
+<li>支持结构化搜索，例如查找30岁以上的员工。</li>
+<li>支持简单的全文搜索和更复杂的<strong>短语(phrase)</strong>搜索</li>
+<li>高亮搜索结果中的关键字</li>
+<li>能够利用图表管理分析这些数据</li>
+</ul>
 </blockquote>
-<p><strong>后剪枝（Post-Pruning）</strong></p>
-<p>三种主要方法</p>
-<p><strong>1）REP错误率降低剪枝</strong></p>
-<p>简单粗暴，对每个非叶结点的子树，用其替换一个叶结点，类别用子树覆盖训练样本中类最多的代替。这样产生的简化树再跟原树比较在测试数据集中的效果。若错误更少就替换。算法以Bottom-up的方式遍历所有的子树，直到没有任何改进时，终止。</p>
-<p><strong>2）PEP悲观剪枝</strong></p>
-<h2 id="1-7-连续和缺失值处理"><a href="#1-7-连续和缺失值处理" class="headerlink" title="1.7 连续和缺失值处理"></a>1.7 连续和缺失值处理</h2><p>1）连续值离散化</p>
-<p>jueceshu最简单的策略是<strong>二分法</strong>，也是C4.5采用的机制。</p>
-<p>对于连续属性a，可以考察包含n-1个元素的候选划分点集合</p>
-<script type="math/tex; mode=display">
-T_a=\left \{  \frac {a^i+a^{i+1}} {2} | 1 \leqslant i \leqslant n-1    \right \}</script><p>即把区间的中位点作为候选划分点，然后像离散值那样考察划分点，再选出最优的划分点。</p>
-<p>2）缺失值</p>
-<p>考虑：①如何在属性值缺失的情况下进行划分属性选择？②给定划分属性，若样本在该属性的值缺失，如何划分？</p>
-<p>靠<strong>权重</strong>。在判定划分时，权重相等，用已知的样本来划分属性。对于每个划分属性，若属性缺失，将缺失的记录根据属性的每个划分所占比例作为权重，分到属性的每个子结点中。</p>
-<h2 id="1-8-多变量决策树"><a href="#1-8-多变量决策树" class="headerlink" title="1.8 多变量决策树"></a>1.8 多变量决策树</h2><p>非子结点不再针对某个属性，而是多个属性的线性组合。即，每个非子结点都是一个线性分类器。</p>
-<h1 id="2、随机森林"><a href="#2、随机森林" class="headerlink" title="2、随机森林"></a>2、随机森林</h1><p>见《集成学习》</p>
-<h1 id="3、GBDT"><a href="#3、GBDT" class="headerlink" title="3、GBDT"></a>3、GBDT</h1><p>参考</p>
-<p>统计学习方法</p>
-<p><a href="http://www.jianshu.com/p/794d08199e5e" target="_blank" rel="external">决策树的剪枝问题</a></p>
+<h2 id="2-1-索引员工文档"><a href="#2-1-索引员工文档" class="headerlink" title="2.1 索引员工文档"></a>2.1 索引员工文档</h2><p><strong>索引</strong>含义的区分</p>
+<p>你可能已经注意到<strong>索引(index)</strong>这个词在Elasticsearch中有着不同的含义，所以有必要在此做一下区分:</p>
+<ul>
+<li>索引（名词） 如上文所述，一个<strong>索引(index)</strong>就像是传统关系数据库中的<strong>数据库</strong>，它是相关文档存储的地方，index的复数是<strong>indices </strong>或<strong>indexes</strong>。</li>
+<li>索引（动词） <strong>「索引一个文档」</strong>表示把一个文档存储到<strong>索引（名词）</strong>里，以便它可以被检索或者查询。这很像SQL中的<code>INSERT</code>关键字，差别是，如果文档已经存在，新的文档将覆盖旧的文档。</li>
+<li>倒排索引 传统数据库为特定列增加一个索引，例如B-Tree索引来加速检索。Elasticsearch和Lucene使用一种叫做<strong>倒排索引(inverted index)</strong>的数据结构来达到相同目的。</li>
+</ul>
+<p>创建一个员工目录</p>
+<ul>
+<li>每个文档的类型为<code>employee</code>。</li>
+<li><code>employee</code>类型归属于索引<code>megacorp</code>。</li>
+<li><code>megacorp</code>索引存储在Elasticsearch集群中。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">PUT /megacorp/employee/1</div><div class="line">&#123;</div><div class="line">    &quot;first_name&quot; : &quot;John&quot;,</div><div class="line">    &quot;last_name&quot; :  &quot;Smith&quot;,</div><div class="line">    &quot;age&quot; :        25,</div><div class="line">    &quot;about&quot; :      &quot;I love to go rock climbing&quot;,</div><div class="line">    &quot;interests&quot;: [ &quot;sports&quot;, &quot;music&quot; ]</div><div class="line">&#125;</div><div class="line"></div><div class="line">PUT /megacorp/employee/2</div><div class="line">&#123;</div><div class="line">    &quot;first_name&quot; :  &quot;Jane&quot;,</div><div class="line">    &quot;last_name&quot; :   &quot;Smith&quot;,</div><div class="line">    &quot;age&quot; :         32,</div><div class="line">    &quot;about&quot; :       &quot;I like to collect rock albums&quot;,</div><div class="line">    &quot;interests&quot;:  [ &quot;music&quot; ]</div><div class="line">&#125;</div><div class="line"></div><div class="line">PUT /megacorp/employee/3</div><div class="line">&#123;</div><div class="line">    &quot;first_name&quot; :  &quot;Douglas&quot;,</div><div class="line">    &quot;last_name&quot; :   &quot;Fir&quot;,</div><div class="line">    &quot;age&quot; :         35,</div><div class="line">    &quot;about&quot;:        &quot;I like to build cabinets&quot;,</div><div class="line">    &quot;interests&quot;:  [ &quot;forestry&quot; ]</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="2-2-检索文档"><a href="#2-2-检索文档" class="headerlink" title="2.2 检索文档"></a>2.2 检索文档</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">GET /megacorp/employee/1</div></pre></td></tr></table></figure>
+<p>响应的内容中包含一些文档的元信息，John Smith的原始JSON文档包含在<code>_source</code>字段中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">   &quot;_index&quot;: &quot;megacorp&quot;,</div><div class="line">   &quot;_type&quot;: &quot;employee&quot;,</div><div class="line">   &quot;_id&quot;: &quot;1&quot;,</div><div class="line">   &quot;_version&quot;: 1,</div><div class="line">   &quot;found&quot;: true,</div><div class="line">   &quot;_source&quot;: &#123;</div><div class="line">      &quot;first_name&quot;: &quot;John&quot;,</div><div class="line">      &quot;last_name&quot;: &quot;Smith&quot;,</div><div class="line">      &quot;age&quot;: 25,</div><div class="line">      &quot;about&quot;: &quot;I love to go rock climbing&quot;,</div><div class="line">      &quot;interests&quot;: [</div><div class="line">         &quot;sports&quot;,</div><div class="line">         &quot;music&quot;</div><div class="line">      ]</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>简单搜索</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">GET /megacorp/employee/_search</div></pre></td></tr></table></figure>
+<p>使用关键字<code>_search</code>来取代原来的文档ID。响应内容的<code>hits</code>数组中包含了我们所有的三个文档。默认情况下搜索会返回前10个结果。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">   <span class="attr">"took"</span>: <span class="number">6</span>,</div><div class="line">   <span class="attr">"timed_out"</span>: <span class="literal">false</span>,</div><div class="line">   <span class="attr">"_shards"</span>: &#123;</div><div class="line">      <span class="attr">"total"</span>: <span class="number">5</span>,</div><div class="line">      <span class="attr">"successful"</span>: <span class="number">5</span>,</div><div class="line">      <span class="attr">"failed"</span>: <span class="number">0</span></div><div class="line">   &#125;,</div><div class="line">   <span class="attr">"hits"</span>: &#123;</div><div class="line">      <span class="attr">"total"</span>: <span class="number">3</span>,</div><div class="line">      <span class="attr">"max_score"</span>: <span class="number">1</span>,</div><div class="line">      <span class="attr">"hits"</span>: [</div><div class="line">         &#123;</div><div class="line">            <span class="attr">"_index"</span>: <span class="string">"megacorp"</span>,</div><div class="line">            <span class="attr">"_type"</span>: <span class="string">"employee"</span>,</div><div class="line">            <span class="attr">"_id"</span>: <span class="string">"2"</span>,</div><div class="line">            <span class="attr">"_score"</span>: <span class="number">1</span>,</div><div class="line">            <span class="attr">"_source"</span>: &#123;</div><div class="line">               <span class="attr">"first_name"</span>: <span class="string">"Jane"</span>,</div><div class="line">               <span class="attr">"last_name"</span>: <span class="string">"Smith"</span>,</div><div class="line">               <span class="attr">"age"</span>: <span class="number">32</span>,</div><div class="line">               <span class="attr">"about"</span>: <span class="string">"I like to collect rock albums"</span>,</div><div class="line">               <span class="attr">"interests"</span>: [</div><div class="line">                  <span class="string">"music"</span></div><div class="line">               ]</div><div class="line">            &#125;</div><div class="line">         &#125;,</div><div class="line">         ......        </div><div class="line">      ]</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>接下来，让我们搜索姓氏中包含<strong>“Smith”</strong>的员工。要做到这一点，我们将在命令行中使用轻量级的搜索方法。这种方法常被称作<strong>查询字符串(query string)</strong>搜索，因为我们像传递URL参数一样去传递查询语句：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">GET /megacorp/employee/_search?q=last_name:Smith</div></pre></td></tr></table></figure>
+<h2 id="2-3-使用DSL语句查询"><a href="#2-3-使用DSL语句查询" class="headerlink" title="2.3 使用DSL语句查询"></a>2.3 使用DSL语句查询</h2><p>查询字符串搜索便于通过命令行完成<strong>特定(ad hoc)</strong>的搜索，但是它也有局限性（参阅简单搜索章节）。Elasticsearch提供丰富且灵活的查询语言叫做<strong>DSL查询(Query DSL)</strong>,它允许你构建更加复杂、强大的查询。</p>
+<p><strong>DSL(Domain Specific Language特定领域语言)</strong>以JSON请求体的形式出现。我们可以这样表示之前关于“Smith”的查询:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">GET /megacorp/employee/_search</div><div class="line">&#123;</div><div class="line">    &quot;query&quot; : &#123;</div><div class="line">        &quot;match&quot; : &#123;</div><div class="line">            &quot;last_name&quot; : &quot;Smith&quot;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="2-4-更复杂的搜索"><a href="#2-4-更复杂的搜索" class="headerlink" title="2.4 更复杂的搜索"></a>2.4 更复杂的搜索</h2><p>我们让搜索稍微再变的复杂一些。我们依旧想要找到姓氏为“Smith”的员工，但是我们只想得到年龄大于30岁的员工。我们的语句将添加<strong>过滤器(filter)</strong>,它使得我们高效率的执行一个结构化搜索：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">GET /megacorp/employee/_search</div><div class="line">&#123;</div><div class="line">    &quot;query&quot; : &#123;</div><div class="line">        &quot;filtered&quot; : &#123;</div><div class="line">            &quot;filter&quot; : &#123;</div><div class="line">                &quot;range&quot; : &#123;</div><div class="line">                    &quot;age&quot; : &#123; &quot;gt&quot; : 30 &#125; &lt;1&gt;</div><div class="line">                &#125;</div><div class="line">            &#125;,</div><div class="line">            &quot;query&quot; : &#123;</div><div class="line">                &quot;match&quot; : &#123;</div><div class="line">                    &quot;last_name&quot; : &quot;smith&quot; &lt;2&gt;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>5.0以后的DSL语法变了</p>
+<h1 id="3、数据"><a href="#3、数据" class="headerlink" title="3、数据"></a>3、数据</h1><h2 id="3-1-文档"><a href="#3-1-文档" class="headerlink" title="3.1 文档"></a>3.1 文档</h2><p>一个文档不只有数据。它还包含了<strong>元数据(metadata)</strong>——<strong>关于</strong>文档的信息。三个必须的元数据节点是：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>节点</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>_index</code></td>
+<td>文档存储的地方</td>
+</tr>
+<tr>
+<td><code>_type</code></td>
+<td>文档代表的对象的类</td>
+</tr>
+<tr>
+<td><code>_id</code></td>
+<td>文档的唯一标识</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="index"><a href="#index" class="headerlink" title="_index"></a><code>_index</code></h3><p><strong>索引(index)</strong>类似于关系型数据库里的“数据库”——它是我们存储和索引关联数据的地方。</p>
+<blockquote>
+<p>提示：</p>
+<p>事实上，我们的数据被存储和索引在<strong>分片(shards)</strong>中，索引只是一个把一个或多个分片分组在一起的逻辑空间。然而，这只是一些内部细节——我们的程序完全不用关心分片。对于我们的程序而言，文档存储在<strong>索引(index)</strong>中。剩下的细节由Elasticsearch关心既可。</p>
+</blockquote>
+<p>我们将会在《索引管理》章节中探讨如何创建并管理索引，但现在，我们将让Elasticsearch为我们创建索引。我们唯一需要做的仅仅是选择一个索引名。这个名字必须是全部小写，不能以下划线开头，不能包含逗号。让我们使用<code>website</code>做为索引名。</p>
+<h3 id="type"><a href="#type" class="headerlink" title="_type"></a><code>_type</code></h3><p>在应用中，我们使用对象表示一些“事物”，例如一个用户、一篇博客、一个评论，或者一封邮件。每个对象都属于一个<strong>类(class)</strong>，这个类定义了属性或与对象关联的数据。<code>user</code>类的对象可能包含姓名、性别、年龄和Email地址。</p>
+<p>在关系型数据库中，我们经常将相同类的对象存储在一个表里，因为它们有着相同的结构。同理，在Elasticsearch中，我们使用相同<strong>类型(type)</strong>的文档表示相同的“事物”，因为他们的数据结构也是相同的。</p>
+<p>每个<strong>类型(type)</strong>都有自己的<strong>映射(mapping)</strong>或者结构定义，就像传统数据库表中的列一样。所有类型下的文档被存储在同一个索引下，但是类型的<strong>映射(mapping)</strong>会告诉Elasticsearch不同的文档如何被索引。 我们将会在《映射》章节探讨如何定义和管理映射，但是现在我们将依赖Elasticsearch去自动处理数据结构。</p>
+<p><code>_type</code>的名字可以是大写或小写，不能包含下划线或逗号。我们将使用<code>blog</code>做为类型名。</p>
+<h3 id="id"><a href="#id" class="headerlink" title="_id"></a><code>_id</code></h3><p><strong>id</strong>仅仅是一个字符串，它与<code>_index</code>和<code>_type</code>组合时，就可以在Elasticsearch中唯一标识一个文档。当创建一个文档，你可以自定义<code>_id</code>，也可以让Elasticsearch帮你自动生成。</p>
+<h2 id="3-2-索引一个文档"><a href="#3-2-索引一个文档" class="headerlink" title="3.2 索引一个文档"></a>3.2 索引一个文档</h2><h3 id="自定义ID"><a href="#自定义ID" class="headerlink" title="自定义ID"></a><strong>自定义ID</strong></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">PUT /website/blog/123</div><div class="line">&#123;</div><div class="line">  &quot;title&quot;: &quot;My first blog entry&quot;,</div><div class="line">  &quot;text&quot;:  &quot;Just trying this out...&quot;,</div><div class="line">  &quot;date&quot;:  &quot;2014/01/01&quot;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Elasticsearch的响应：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">   &quot;_index&quot;: &quot;website&quot;,</div><div class="line">   &quot;_type&quot;: &quot;blog&quot;,</div><div class="line">   &quot;_id&quot;: &quot;123&quot;,</div><div class="line">   &quot;_version&quot;: 1,</div><div class="line">   &quot;result&quot;: &quot;created&quot;,</div><div class="line">   &quot;_shards&quot;: &#123;</div><div class="line">      &quot;total&quot;: 2,</div><div class="line">      &quot;successful&quot;: 1,</div><div class="line">      &quot;failed&quot;: 0</div><div class="line">   &#125;,</div><div class="line">   &quot;created&quot;: true</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>_version</code> ：Elasticsearch中每个文档都有版本号，每当文档变化（包括删除）都会使<code>_version</code>增加。</p>
+<h3 id="自增ID"><a href="#自增ID" class="headerlink" title="自增ID"></a>自增ID</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">POST /website/blog/</div><div class="line">&#123;</div><div class="line">  &quot;title&quot;: &quot;My second blog entry&quot;,</div><div class="line">  &quot;text&quot;:  &quot;Still trying this out...&quot;,</div><div class="line">  &quot;date&quot;:  &quot;2014/01/01&quot;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>自动生成的ID有22个字符长，URL-safe, Base64-encoded string universally unique identifiers, 或者叫 <a href="http://en.wikipedia.org/wiki/Uuid" target="_blank" rel="external">UUIDs</a>。</p>
+<h2 id="3-3-检索"><a href="#3-3-检索" class="headerlink" title="3.3 检索"></a>3.3 检索</h2><p>想要从Elasticsearch中获取文档，我们使用同样的<code>_index</code>、<code>_type</code>、<code>_id</code>，但是HTTP方法改为<code>GET</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">GET /website/blog/123?pretty</div></pre></td></tr></table></figure>
+<blockquote>
+<h3 id="pretty"><a href="#pretty" class="headerlink" title="pretty"></a><code>pretty</code></h3><p>在任意的查询字符串中增加<code>pretty</code>参数，类似于上面的例子。会让Elasticsearch<strong>美化输出(pretty-print)</strong>JSON响应以便更加容易阅读。<code>_source</code>字段不会被美化，它的样子与我们输入的一致。</p>
+</blockquote>
+<p><code>{&quot;found&quot;: true}</code>。这意味着文档已经找到。</p>
+<p>如果我们请求一个不存在的文档，依旧会得到一个JSON，不过<code>found</code>值变成了<code>false</code>。</p>
+<p>此外，HTTP响应状态码也会变成<code>&#39;404 Not Found&#39;</code>代替<code>&#39;200 OK&#39;</code>。我们可以在<code>curl</code>后加<code>-i</code>参数得到响应头：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">curl -i -XGET http://localhost:9200/website/blog/124?pretty</div></pre></td></tr></table></figure>
+<h3 id="检索文档的一部分"><a href="#检索文档的一部分" class="headerlink" title="检索文档的一部分"></a>检索文档的一部分</h3><p>通常，<code>GET</code>请求将返回文档的全部，存储在<code>_source</code>参数中。但是可能你感兴趣的字段只是<code>title</code>。请求个别字段可以使用<code>_source</code>参数。多个字段可以使用逗号分隔：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">GET /website/blog/123?_source=title,text</div></pre></td></tr></table></figure>
+<p>或者你只想得到<code>_source</code>字段而不要其他的元数据，你可以这样请求：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">GET /website/blog/123/_source</div></pre></td></tr></table></figure>
+<h2 id="3-4-更新整个文档"><a href="#3-4-更新整个文档" class="headerlink" title="3.4 更新整个文档"></a>3.4 更新整个文档</h2><p>文档在Elasticsearch中是不可变的——我们不能修改他们。如果需要更新已存在的文档，我们可以使用《索引文档》章节提到的<code>index</code> API <em>重建索引(reindex)</em> 或者替换掉它。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">PUT /website/blog/123</div><div class="line">&#123;</div><div class="line">  &quot;title&quot;: &quot;My first blog entry&quot;,</div><div class="line">  &quot;text&quot;:  &quot;I am starting to get the hang of this...&quot;,</div><div class="line">  &quot;date&quot;:  &quot;2014/01/02&quot;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在响应中，我们可以看到Elasticsearch把<code>_version</code>增加了，且<code>result</code>是updated</p>
+<p><code>update</code> API。这个API <em>似乎</em> 允许你修改文档的局部，但事实上Elasticsearch遵循与之前所说完全相同的过程，这个过程如下：</p>
+<ol>
+<li>从旧文档中检索JSON</li>
+<li>修改它</li>
+<li>删除旧文档</li>
+<li>索引新文档</li>
+</ol>
+<p>唯一的不同是<code>update</code> API完成这一过程只需要一个客户端请求既可，不再需要<code>get</code>和<code>index</code>请求了。</p>
+<h2 id="3-5-创建新文档"><a href="#3-5-创建新文档" class="headerlink" title="3.5 创建新文档"></a>3.5 创建新文档</h2><p>请记住<code>_index</code>、<code>_type</code>、<code>_id</code>三者唯一确定一个文档。所以要想保证文档是新加入的，最简单的方式是使用<code>POST</code>方法让Elasticsearch自动生成唯一<code>_id</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">POST /website/blog/</div><div class="line">&#123; ... &#125;</div></pre></td></tr></table></figure>
+<p>如果要确保是create操作</p>
+<p>1）使用<code>op_type</code>查询参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">PUT /website/blog/123?op_type=create</div><div class="line">&#123; ... &#125;</div></pre></td></tr></table></figure>
+<p>2）在URL后加<code>/_create</code>做为端点：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">PUT /website/blog/123/_create</div><div class="line">&#123; ... &#125;</div></pre></td></tr></table></figure>
+<p>如果包含相同的<code>_index</code>、<code>_type</code>和<code>_id</code>的文档已经存在，Elasticsearch将返回<code>409 Conflict</code>响应状态码</p>
+<h2 id="3-6-删除文档"><a href="#3-6-删除文档" class="headerlink" title="3.6 删除文档"></a>3.6 删除文档</h2><p>使用<code>DELETE</code>方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">DELETE /website/blog/123</div></pre></td></tr></table></figure>
+<blockquote>
+<p>删除一个文档也不会立即从磁盘上移除，它只是被标记成已删除。Elasticsearch将会在你之后添加更多索引的时候才会在后台进行删除内容的清理。</p>
+</blockquote>
+<h2 id="3-7-Mapping"><a href="#3-7-Mapping" class="headerlink" title="3.7 Mapping"></a>3.7 Mapping</h2><p><a href="http://m635674608.iteye.com/blog/2259804" target="_blank" rel="external">ElasticSearch的Mapping之字段类型</a></p>
+<p>（一）核心数据类型： </p>
+<p>（1）string： 默认会被分词，一个完整示例如下 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">&quot;status&quot;: &#123;  </div><div class="line">         &quot;type&quot;:  &quot;string&quot;, //字符串类型  </div><div class="line">         &quot;index&quot;: &quot;analyzed&quot;//分词，不分词是：not_analyzed ，设置成no，字段将不会被索引  </div><div class="line">         &quot;analyzer&quot;:&quot;ik&quot;//指定分词器  </div><div class="line">         &quot;boost&quot;:1.23//字段级别的分数加权  </div><div class="line">          &quot;doc_values&quot;:false//对not_analyzed字段，默认都是开启，分词字段不能使用，对排序和聚合能提升较大性能，节约内存  </div><div class="line">           &quot;fielddata&quot;:&#123;&quot;format&quot;:&quot;disabled&quot;&#125;//针对分词字段，参与排序或聚合时能提高性能，不分词字段统一建议使用doc_value  </div><div class="line">           &quot;fields&quot;:&#123;&quot;raw&quot;:&#123;&quot;type&quot;:&quot;string&quot;,&quot;index&quot;:&quot;not_analyzed&quot;&#125;&#125; //可以对一个字段提供多种索引模式，同一个字段的值，一个分词，一个不分词  </div><div class="line">           &quot;ignore_above&quot;:100 //超过100个字符的文本，将会被忽略，不被索引  </div><div class="line">           &quot;include_in_all&quot;:ture//设置是否此字段包含在_all字段中，默认是true，除非index设置成no选项  </div><div class="line">           &quot;index_options&quot;:&quot;docs&quot;//4个可选参数docs（索引文档号） ,freqs（文档号+词频），positions（文档号+词频+位置，通常用来距离查询），offsets（文档号+词频+位置+偏移量，通常被使用在高亮字段）分词字段默认是position，其他的默认是docs  </div><div class="line">           &quot;norms&quot;:&#123;&quot;enable&quot;:true,&quot;loading&quot;:&quot;lazy&quot;&#125;//分词字段默认配置，不分词字段：默认&#123;&quot;enable&quot;:false&#125;，存储长度因子和索引时boost，建议对需要参与评分字段使用 ，会额外增加内存消耗量  </div><div class="line">            &quot;null_value&quot;:&quot;NULL&quot;//设置一些缺失字段的初始化值，只有string可以使用，分词字段的null值也会被分词  </div><div class="line">            &quot;position_increament_gap&quot;:0//影响距离查询或近似查询，可以设置在多值字段的数据上火分词字段上，查询时可指定slop间隔，默认值是100  </div><div class="line">             &quot;store&quot;:false//是否单独设置此字段的是否存储而从_source字段中分离，默认是false，只能搜索，不能获取值  </div><div class="line">              &quot;search_analyzer&quot;:&quot;ik&quot;//设置搜索时的分词器，默认跟ananlyzer是一致的，比如index时用standard+ngram，搜索时用standard用来完成自动提示功能  </div><div class="line">               &quot;similarity&quot;:&quot;BM25&quot;//默认是TF/IDF算法，指定一个字段评分策略，仅仅对字符串型和分词类型有效  </div><div class="line">               &quot;term_vector&quot;:&quot;no&quot;//默认不存储向量信息，支持参数yes（term存储），with_positions（term+位置）,with_offsets（term+偏移量），with_positions_offsets(term+位置+偏移量) 对快速高亮fast vector highlighter能提升性能，但开启又会加大索引体积，不适合大数据量用  </div><div class="line">       &#125;</div></pre></td></tr></table></figure>
+<h1 id="4、结构化查询DSL"><a href="#4、结构化查询DSL" class="headerlink" title="4、结构化查询DSL"></a>4、结构化查询DSL</h1><p>match 相当于and</p>
+<p>should 相当于or</p>
+<p>must_not 相当于not</p>
+<h2 id="Query"><a href="#Query" class="headerlink" title="Query"></a>Query</h2><p>精确查询</p>
+<h2 id="Match"><a href="#Match" class="headerlink" title="Match"></a>Match</h2><p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html" target="_blank" rel="external">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a></p>
+<p>match查询</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">GET /_search</div><div class="line">&#123;</div><div class="line">    &quot;query&quot;: &#123;</div><div class="line">        &quot;match&quot; : &#123;</div><div class="line">            &quot;message&quot; : &quot;this is a test&quot;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="Filter"><a href="#Filter" class="headerlink" title="Filter"></a>Filter</h2><p>判断某个字段不为空</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&quot;filter&quot;: [</div><div class="line">        &#123; &quot;script&quot;:&#123;&quot;script&quot;:&quot;doc[&apos;interests&apos;].values.length==60&quot;&#125; &#125;  </div><div class="line">      ]</div></pre></td></tr></table></figure>
+<h2 id="should"><a href="#should" class="headerlink" title="should"></a>should</h2><h1 id="5、聚合统计"><a href="#5、聚合统计" class="headerlink" title="5、聚合统计"></a>5、聚合统计</h1><h2 id="对查询的结果聚合"><a href="#对查询的结果聚合" class="headerlink" title="对查询的结果聚合"></a>对查询的结果聚合</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">GET iclick_persona/iclick/_search</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123; </div><div class="line">    &quot;bool&quot;: &#123; </div><div class="line">      &quot;must&quot;: [</div><div class="line">        &#123; &quot;term&quot;: &#123; &quot;articles.domains&quot;:   &quot;www.baby-kingdom.com&quot;        &#125;&#125;, </div><div class="line">        &#123; &quot;match&quot;: &#123; &quot;province&quot;: &quot;HK&quot; &#125;&#125;,</div><div class="line">        &#123;&quot;match&quot;: &#123;&quot;interests&quot;: &quot;20&quot;&#125;&#125;</div><div class="line">      ]</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;interests&quot;: &#123;</div><div class="line">      &quot;terms&quot;: &#123;&quot;field&quot;: &quot;interests&quot;,</div><div class="line">        &quot;size&quot;: 50</div><div class="line">      &#125; </div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>统计月活跃度</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">GET iclick_persona/iclick/_search</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123; </div><div class="line">    &quot;bool&quot;: &#123; </div><div class="line">      &quot;must&quot;: [</div><div class="line">        &#123; &quot;term&quot;: &#123; &quot;articles.domains&quot;:   &quot;www.baby-kingdom.com&quot; &#125;&#125;, </div><div class="line">        &#123; &quot;term&quot;: &#123; &quot;province&quot;: &quot;HK&quot; &#125;&#125;</div><div class="line">      ],</div><div class="line">      &quot;filter&quot;: &#123;</div><div class="line">        &quot;range&quot;: &#123;</div><div class="line">          &quot;create_time&quot;: &#123;&quot;gte&quot; : &quot;2017-08-10&quot;&#125;</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;create_time&quot;: &#123;</div><div class="line">      &quot;terms&quot;: &#123;&quot;field&quot;: &quot;create_time&quot;,&quot;size&quot;: 50,&quot;order&quot;: &#123;</div><div class="line">        &quot;_term&quot;: &quot;asc&quot;</div><div class="line">      &#125;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>看香港的人群每天有多少</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">GET iclick_persona/iclick/_search?size=0</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123; </div><div class="line">    &quot;bool&quot;: &#123; </div><div class="line">      &quot;must&quot;: [</div><div class="line">        &#123; &quot;match&quot;: &#123; &quot;province&quot;: &quot;HK&quot; &#125;&#125;</div><div class="line">      ]</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;dates&quot;: &#123;</div><div class="line">      &quot;terms&quot;: &#123;</div><div class="line">        &quot;field&quot;: &quot;create_time&quot;,</div><div class="line">        &quot;size&quot;: 100,</div><div class="line">        &quot;order&quot;: &#123;</div><div class="line">          &quot;_term&quot;: &quot;asc&quot;</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="DELETE"><a href="#DELETE" class="headerlink" title="DELETE"></a>DELETE</h2><p>按条件删除</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">POST iclick_persona/iclick/_delete_by_query</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;bool&quot;: &#123;</div><div class="line">      &quot;must&quot;: [</div><div class="line">        &#123;</div><div class="line">          &quot;term&quot;: &#123;</div><div class="line">            &quot;create_time&quot;: &#123;</div><div class="line">              &quot;value&quot;: &quot;2017-07-15&quot;</div><div class="line">            &#125;</div><div class="line">          &#125;</div><div class="line">        &#125;,</div><div class="line">        &#123;</div><div class="line">          &quot;term&quot;: &#123;</div><div class="line">            &quot;province&quot;: &#123;</div><div class="line">              &quot;value&quot;: &quot;HK&quot;</div><div class="line">            &#125;</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">      ]</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 
           
         
@@ -1574,7 +1671,7 @@ T_a=\left \{  \frac {a^i+a^{i+1}} {2} | 1 \leqslant i \leqslant n-1    \right \}
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/人群地理信息分析/">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/Docker-配置和使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -1596,152 +1693,8 @@ T_a=\left \{  \frac {a^i+a^{i+1}} {2} | 1 \leqslant i \leqslant n-1    \right \}
             
               
                 
-                <a class="post-title-link" href="/2017/07/12/人群地理信息分析/" itemprop="url">
-                  人群地理信息分析
-                </a>
-              
-            
-          </h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">
-                2017-07-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/算法/" itemprop="url" rel="index">
-                    <span itemprop="name">算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>数据源</p>
-<p>移动端的request中</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/利率计算/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/07/12/利率计算/" itemprop="url">
-                  利率计算
+                <a class="post-title-link" href="/2017/07/12/Docker-配置和使用/" itemprop="url">
+                  Docker 配置和使用
                 </a>
               
             
@@ -1817,15 +1770,272 @@ T_a=\left \{  \frac {a^i+a^{i+1}} {2} | 1 \leqslant i \leqslant n-1    \right \}
       
         
           
-            <p>等额本息</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">每月月供额=〔贷款本金×月利率×(1＋月利率)＾还款月数〕÷〔(1＋月利率)＾还款月数-1〕</div><div class="line">每月应还利息=贷款本金×月利率×〔(1+月利率)^还款月数-(1+月利率)^(还款月序号-1)〕÷〔(1+月利率)^还款月数-1〕</div><div class="line">每月应还本金=贷款本金×月利率×(1+月利率)^(还款月序号-1)÷〔(1+月利率)^还款月数-1〕</div><div class="line">总利息=还款月数×每月月供额-贷款本金</div></pre></td></tr></table></figure>
-<p>等额本金</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">每月月供额=(贷款本金÷还款月数)+(贷款本金-已归还本金累计额)×月利率</div><div class="line">每月应还本金=贷款本金÷还款月数</div><div class="line">每月应还利息=剩余本金×月利率=(贷款本金-已归还本金累计额)×月利率</div><div class="line">每月月供递减额=每月应还本金×月利率=贷款本金÷还款月数×月利率</div><div class="line">总利息=还款月数×(总贷款额×月利率-月利率×(总贷款额÷还款月数)*(还款月数-1)÷2+总贷款额÷还款月数)</div></pre></td></tr></table></figure>
-<p><a href="https://zhuanlan.zhihu.com/p/22920169" target="_blank" rel="external">信用卡账单分期真实年化利率</a></p>
-<p><img src="https://pic4.zhimg.com/v2-177bf28088e8ef5462e3b5cc3d1ab2eb_b.png" alt=""></p>
-<h1 id="年利率"><a href="#年利率" class="headerlink" title="年利率"></a>年利率</h1><p>利息率=利息量÷本金÷时间×100%</p>
-<h1 id="IRR"><a href="#IRR" class="headerlink" title="IRR"></a>IRR</h1><p><strong>内部收益率 (IRR) 的定义是：净现值 (NPV) 为零时的折现率。</strong></p>
-<p>综合考虑了每期的流入流出现金的量和时间，加权出来的结果。<br>IRR实质上是一个折现率，用IRR折现时会达到该项目的净现值NPV为0的状态。也可以理解为一个项目的预期收益率。<br>举例来说，如IRR为8%，可以简单解释为以8%的利率借钱投资于此项目，刚好可以不赚不赔。</p>
+            <h1 id="0、基本概念"><a href="#0、基本概念" class="headerlink" title="0、基本概念"></a>0、基本概念</h1><p>镜像</p>
+<blockquote>
+<p>Docker镜像通过镜像ID进行识别。镜像ID是一个64字符的十六进制的字符串。但是当我们运行镜像时，通常我们不会使用镜像ID来引用镜像，而是使用镜像名来引用。要列出本地所有有效的镜像，可以使用命令</p>
+<p>$ docker images</p>
+<p>镜像可以发布为不同版本，这种机制我们称之为标签（Tag）。 </p>
+</blockquote>
+<p>容器</p>
+<blockquote>
+<p>Docker容器可以使用命令创建：</p>
+<p>$ docker run imagename</p>
+<p>它会在所有的镜像层之上增加一个<strong>可写层</strong>。这个可写层有运行在CPU上的进程，而且有两个不同的状态：运行态（Running）和退出态（Exited）。这就是Docker容器。当我们使用docker run启动容器，Docker容器就进入运行态，当我们停止Docker容器时，它就进入退出态。</p>
+<p>对容器的变更是<strong>写入到容器的文件系统的，而不是写入到Docker镜像</strong>中的。</p>
+<p>用同一个镜像启动多个Docker容器，这些容器启动后都是活动的，彼此还是相互隔离的。我们对其中一个容器所做的变更只会局限于那个容器本身。</p>
+<p>如果对容器的底层镜像进行修改，那么当前正在运行的容器是不受影响的，不会发生自动更新现象。</p>
+</blockquote>
+<h1 id="1、配置"><a href="#1、配置" class="headerlink" title="1、配置"></a>1、配置</h1><h2 id="1-1-安装"><a href="#1-1-安装" class="headerlink" title="1.1 安装"></a>1.1 安装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ sudo apt-get update</div><div class="line">$ sudo apt-get install docker</div></pre></td></tr></table></figure>
+<p>编辑/etc/default/docker增加如下配置，自定义docker镜像存放路径</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">DOCKER_OPTS=&quot;--graph=/home/david/opt/docker&quot;</div></pre></td></tr></table></figure>
+<p>sudo service docker start    #启动<br>sudo service docker stop    #关闭<br>sudo service docker restart #重启 </p>
+<h2 id="1-2-pull一个镜像"><a href="#1-2-pull一个镜像" class="headerlink" title="1.2 pull一个镜像"></a>1.2 pull一个镜像</h2><p>查看镜像：此时应该没有镜像<br>docker images</p>
+<p>下载镜像</p>
+<p>sudo docker pull ubuntu</p>
+<h2 id="1-3-创建容器"><a href="#1-3-创建容器" class="headerlink" title="1.3 创建容器"></a>1.3 创建容器</h2><p>docker ps命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ sudo docker ps #列出当前所有正在运行的container</div><div class="line">$ sudo docker ps -l #列出最近一次启动的，且正在运行的container</div><div class="line">$ sudo docker ps -a #列出所有的container</div></pre></td></tr></table></figure>
+<p>启动容器，并且进入到Ubuntu容器的bash命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo docker run -itv /home/david/docker:/home/davida/gitlab  ubuntu  /bin/bash</div></pre></td></tr></table></figure>
+<p>其中，</p>
+<h2 id="1-4-提交容器"><a href="#1-4-提交容器" class="headerlink" title="1.4 提交容器"></a>1.4 提交容器</h2><p>退出容器，使用 docker commit 命令来提交更新后的副本。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> sudo docker commit -m 'xmo run evn' -a 'david' bde4f2f2db5f  ubuntu-ruby:v1</div></pre></td></tr></table></figure>
+<p>其中，-m 来指定提交的说明信息，跟我们使用的版本控制工具一样；-a 可以指定更新的作者信息；之后是用来创建镜像的容器的ID；最后指定目标镜像的仓库名和 tag 信息。创建成功后会返回这个镜像的 ID 信息。v1是tag（版本号）</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo docker inspect ubuntu-ruby</div></pre></td></tr></table></figure>
+<p>查看详细信息</p>
+<h2 id="1-5-Dockerfile提交容器"><a href="#1-5-Dockerfile提交容器" class="headerlink" title="1.5 Dockerfile提交容器"></a>1.5 Dockerfile提交容器</h2><p>Dockerfile的指令是忽略大小写的，建议使用大写，使用 # 作为注释，每一行只支持一条指令，每条指令可以携带多个参数。<br>Dockerfile的指令根据作用可以分为两种，<strong>构建指令和设置指令</strong>。构建指令用于构建image，其指定的操作不会在运行image的容器上执行；设置指令用于设置image的属性，其指定的操作将在运行image的容器中执行。</p>
+<p>1）FROM 基础image</p>
+<p>基础image可以是官方远程仓库中的，也可以位于本地仓库。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FROM &lt;image&gt;</div></pre></td></tr></table></figure>
+<p>或者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FROM &lt;image&gt;:&lt;tag&gt;</div></pre></td></tr></table></figure>
+<p>制定某个tag版本</p>
+<h2 id="1-4-用SSH访问容器"><a href="#1-4-用SSH访问容器" class="headerlink" title="1.4 用SSH访问容器"></a>1.4 用SSH访问容器</h2><p>先安装ssh</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">apt-get update</div><div class="line">apt-get install openssh-server</div></pre></td></tr></table></figure>
+<p>需要修改/etc/ssh/sshd_config文件中内容  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">RSAAuthentication yes #启用 RSA 认证</div><div class="line">PubkeyAuthentication yes #启用公钥私钥配对认证方式</div><div class="line">AuthorizedKeysFile .ssh/authorized_keys #公钥文件路径（和上面生成的文件同）</div><div class="line">PermitRootLogin yes #root能使用ssh登录</div></pre></td></tr></table></figure>
+<p>重启sshd服务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">/etc/init.d/ssh stop</div><div class="line">/etc/init.d/ssh start</div></pre></td></tr></table></figure>
+<h1 id="2、常用命令"><a href="#2、常用命令" class="headerlink" title="2、常用命令"></a>2、常用命令</h1><h3 id="docker-start和docker-run"><a href="#docker-start和docker-run" class="headerlink" title="docker start和docker run"></a>docker start和docker run</h3><p><img src="http://static.open-open.com/lib/uploadImg/20151105/20151105115304_352.png?_=5942369" alt=""></p>
+<p>从图片可以看出，docker run 命令先是利用镜像创建了一个容器，然后运行这个容器。</p>
+<p>docker run命令类似于git pull命令。git pull命令就是git fetch 和 git merge两个命令的组合，同样的，docker run就是docker create和docker start两个命令的组合。 </p>
+<h3 id="docker-ps"><a href="#docker-ps" class="headerlink" title="docker ps"></a><strong>docker ps</strong></h3><p>docker ps 命令会列出所有运行中的容器。这隐藏了非运行态容器的存在，如果想要找出这些容器，我们需要使用docker ps -a</p>
+<h3 id="docker-images"><a href="#docker-images" class="headerlink" title="docker images"></a>docker images</h3><p>docker images命令会列出了所有顶层（top-level）镜像。实际上，在这里我们没有办法区分一个镜像和一个只读层，所以我们提出了top-level 镜像。只有创建容器时使用的镜像或者是直接pull下来的镜像能被称为顶层（top-level）镜像，并且每一个顶层镜像下面都隐藏了多个镜像层。 </p>
+<p>docker images -a</p>
+<p>docker images –a命令列出了所有的镜像，也可以说是列出了所有的可读层。如果你想要查看某一个image-id下的所有层，可以使用docker history来查看。 </p>
+<h3 id="docker-stop"><a href="#docker-stop" class="headerlink" title="docker stop "></a>docker stop <container-id></container-id></h3><p>docker stop命令会向运行中的容器发送一个SIGTERM的信号，然后停止所有的进程。 </p>
+<h3 id="docker-commit"><a href="#docker-commit" class="headerlink" title="docker commit "></a>docker commit <container-id></container-id></h3><p>docker commit命令将容器的可读写层转换为一个只读层，这样就把一个容器转换成了不可变的镜像。 </p>
+<h3 id="dockesr-exec"><a href="#dockesr-exec" class="headerlink" title="dockesr exec "></a>dockesr exec <running-container-id></running-container-id></h3><p>docker exec 命令会在运行中的容器执行一个新进程。 </p>
+<h3 id="docker-save"><a href="#docker-save" class="headerlink" title="docker save "></a>docker save <image-id></image-id></h3><p>docker save命令会创建一个镜像的压缩文件，这个文件能够在另外一个主机的Docker上使用。和export命令不同，这个命令为每一个层都保存了它们的元数据。这个命令只能对镜像生效。 </p>
+<h3 id="docker-export"><a href="#docker-export" class="headerlink" title="docker export "></a>docker export <container-id></container-id></h3><p>docker export命令创建一个tar文件，并且移除了元数据和不必要的层，将多个层整合成了一个层，只保存了当前统一视角看到的内容（expoxt后 的容器再import到Docker中，通过docker images –tree命令只能看到一个镜像；而save后的镜像则不同，它能够看到这个镜像的历史镜像）。 </p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.linuxidc.com/Linux/2015-07/120444.htm" target="_blank" rel="external">Ubuntu 15.04下安装Docker</a></p>
+<p><a href="http://blog.csdn.net/chszs/article/details/48252799" target="_blank" rel="external">Docker的镜像和容器的区别</a></p>
+<p><a href="http://www.cnblogs.com/bethal/p/5942369.html" target="_blank" rel="external">Docker容器和镜像区别</a></p>
+<p><a href="http://blog.csdn.net/qinyushuang/article/details/43342553" target="_blank" rel="external">Docker学习笔记（3）— 如何使用Dockerfile构建镜像</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/Hexo + Github 搭建博客入门/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/07/12/Hexo + Github 搭建博客入门/" itemprop="url">
+                  Hexo + Github 搭建博客入门
+                </a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">
+                2017-07-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/hexo美化/" itemprop="url" rel="index">
+                    <span itemprop="name">hexo美化</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1、安装node-js"><a href="#1、安装node-js" class="headerlink" title="1、安装node.js"></a>1、安装node.js</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo add-apt-repository ppa:chris-lea/node.js</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></div><div class="line"><span class="meta">#</span><span class="bash">原方法没有这一步，但是后面的操作会提示npm <span class="built_in">command</span> not found</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install npm</span></div></pre></td></tr></table></figure>
+<h1 id="2、安装hexo"><a href="#2、安装hexo" class="headerlink" title="2、安装hexo"></a>2、安装hexo</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo npm install hexo -g</span></div></pre></td></tr></table></figure>
+<h1 id="3、初始博客的根目录"><a href="#3、初始博客的根目录" class="headerlink" title="3、初始博客的根目录"></a>3、初始博客的根目录</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> ~/myblog</span></div><div class="line"><span class="meta">$</span><span class="bash"> hexo init</span></div></pre></td></tr></table></figure>
+<p>mac的根目录在</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/Users/david/david/myblog</div></pre></td></tr></table></figure>
+<h1 id="4、在github上新建仓库"><a href="#4、在github上新建仓库" class="headerlink" title="4、在github上新建仓库"></a>4、在github上新建仓库</h1><p>名称必须是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gitusername.github.io</div></pre></td></tr></table></figure>
+<p>我的就是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Schwimmer.github.io</div></pre></td></tr></table></figure>
+<p>并将本地的SSH KEY添加到git上（略）</p>
+<h1 id="5、让博客可以发布到git"><a href="#5、让博客可以发布到git" class="headerlink" title="5、让博客可以发布到git"></a>5、让博客可以发布到git</h1><p>1）安装hexo-deployer-Git（不然会出现ERROR Deployer not found: git）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-deployer-git --save</div></pre></td></tr></table></figure>
+<p>2） 配置你hexo博客根目录下的_config.yml文件(应该是最下面一行，修改成你的github)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: git@github.com:Schwimmer/Schwimmer.github.io.git</div><div class="line">  branch: master</div></pre></td></tr></table></figure>
+<blockquote>
+<p> tips</p>
+<p> 冒号后面一定要跟空格</p>
+</blockquote>
+<h1 id="6、hexo常用命令"><a href="#6、hexo常用命令" class="headerlink" title="6、hexo常用命令"></a>6、hexo常用命令</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">hexo clean #清除缓存</div><div class="line">hexo new &quot;title&quot; #新建文章</div><div class="line">hexo g #生成html，或hexo generate</div><div class="line">hexo s #在本地启动服务，启动后访问localhost:4000就可以打开，或hexo server</div><div class="line">hexo d #发布到git，发布后访问https://schwimmer.github.io/就可以打开，或hexo deploy</div></pre></td></tr></table></figure>
+<blockquote>
+<p> tips</p>
+<p> 我目前用的新建文章的方法，就是直接在source/_posts/下面新建md文件</p>
+<p> 可以偷懒写成</p>
+<p> cd ~/myblog</p>
+<p> hexo clean;hexo g;hexo s</p>
+<p> 或</p>
+<p> hexo clean;hexo g;hexo d</p>
+</blockquote>
+<h1 id="7、支持数学公式"><a href="#7、支持数学公式" class="headerlink" title="7、支持数学公式"></a>7、支持数学公式</h1><p>更新：</p>
+<p>现在用</p>
+<p><a href="http://blog.csdn.net/u014630987/article/details/78670258" target="_blank" rel="external">如何在 hexo 中支持 Mathjax？</a></p>
+<p><a href="http://blog.csdn.net/emptyset110/article/details/50123231" target="_blank" rel="external">搭建一个支持LaTEX的hexo博客</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-math --save</div></pre></td></tr></table></figure>
+<p>这时如果你会发现出了一些问题，原因是hexo先用marked.<a href="http://lib.csdn.net/base/javascript" target="_blank" rel="external">js</a>渲染，然后再交给MathJax渲染。在marked.js渲染的时候下划线<code>_</code>是被escape掉并且换成了<code>&lt;em&gt;</code>标签，即斜体字，另外LaTeX中的<code>\\</code>也会被转义成一个<code>\</code>，这样会导致MathJax渲染时不认为它是一个换行符了。</p>
+<p>为了使Marked.js与MathJax共存，打开node_modules/marked/lib/marked.js并做如下改动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Step 1:</div><div class="line">  escape: /^\\([\\`*&#123;&#125;\[\]()# +\-.!_&gt;])/,11替换成</div><div class="line">  escape: /^\\([`*\[\]()# +\-.!_&gt;])/,11这一步是在原基础上取消了对\\,\&#123;,\&#125;的转义(escape)</div><div class="line">Step 2:</div><div class="line">  em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,11替换成</div><div class="line">  em:/^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML&quot;&gt;&lt;/script&gt;</div></pre></td></tr></table></figure>
+<h1 id="8、安装主题"><a href="#8、安装主题" class="headerlink" title="8、安装主题"></a>8、安装主题</h1><p>转自：<a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="external">NexT主题安装教程</a></p>
+<h1 id="9、文章阅读计数"><a href="#9、文章阅读计数" class="headerlink" title="9、文章阅读计数"></a>9、文章阅读计数</h1><p>转自：<a href="http://www.jianshu.com/p/702a7aec4d00" target="_blank" rel="external">Hexo添加不蒜子和LeanCloud统计无标题文章</a></p>
+<p>找到站点的<code>themes/next/layout/_partials</code>目录下的<code>footer.swig</code>文件。插入代码如下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&#123;% if theme.copyright %&#125;</div><div class="line">&lt;div class=&quot;powered-by&quot;&gt;</div><div class="line">  &#123;&#123; __(&apos;footer.powered&apos;, &apos;&lt;a class=&quot;theme-link&quot; href=&quot;https://hexo.io&quot;&gt;Hexo&lt;/a&gt;&apos;) &#125;&#125;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">&lt;div class=&quot;theme-info&quot;&gt;</div><div class="line">  &#123;&#123; __(&apos;footer.theme&apos;) &#125;&#125; -</div><div class="line">  &lt;a class=&quot;theme-link&quot; href=&quot;https://github.com/iissnan/hexo-theme-next&quot;&gt;</div><div class="line">    NexT.&#123;&#123; theme.scheme &#125;&#125;</div><div class="line">  &lt;/a&gt;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line"># 此位置插入以下代码</div><div class="line">&lt;div&gt;</div><div class="line">&lt;script async src=&quot;https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js&quot;&gt;&lt;/script&gt;</div><div class="line"></div><div class="line">本站总访问量 &lt;span id=&quot;busuanzi_value_site_pv&quot;&gt;&lt;/span&gt; 次&amp;nbsp&amp;nbsp&amp;nbsp</div><div class="line">本站访客数&lt;span id=&quot;busuanzi_value_site_uv&quot;&gt;&lt;/span&gt;人次</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">&#123;% endif %&#125;</div></pre></td></tr></table></figure>
+<h1 id="10、增加图片"><a href="#10、增加图片" class="headerlink" title="10、增加图片"></a>10、增加图片</h1><p>1 把主页配置文件<code>_config.yml</code> 里的<code>post_asset_folder:</code>这个选项设置为<code>true</code></p>
+<p>2 在你的hexo目录下执行这样一句话<code>npm install hexo-asset-image --save</code>，这是下载安装一个可以上传本地图片的插件，来自dalao：<a href="https://github.com/CodeFalling/hexo-asset-image" target="_blank" rel="external">dalao的git</a></p>
+<p>3 等待一小段时间后，再运行<code>hexo n &quot;xxxx&quot;</code>来生成md博文时，<code>/source/_posts</code>文件夹内除了<code>xxxx.md</code>文件还有一个<strong>同名的文件夹</strong></p>
+<p>4 最后在<code>xxxx.md</code>中想引入图片时，先把图片复制到xxxx这个文件夹中，然后只需要在xxxx.md中按照markdown的格式引入图片：</p>
+<p><code>![你想输入的替代文字](xxxx/图片名.jpg)</code></p>
+<p><strong>注意：</strong>xxxx是这个md文件的名字，也是同名文件夹的名字，你想引入的图片就只需要放入xxxx这个文件夹内就好了，很像引用相对路径。</p>
+<p>5 最后检查一下，<code>hexo g</code>生成页面后，进入<code>public\2017\02\26\index.html</code>文件中查看相关字段，可以发现，html标签内的语句是<code>&lt;img src=&quot;2017/02/26/xxxx/图片名.jpg&quot;&gt;</code>，而不是<code>&lt;img src=&quot;xxxx/图片名.jpg&gt;</code>。这很重要，关乎你的网页是否可以真正加载你想插入的图片。</p>
+<h1 id="11、sitemap-插件"><a href="#11、sitemap-插件" class="headerlink" title="11、sitemap 插件"></a>11、sitemap 插件</h1><p><a href="https://www.jianshu.com/p/86557c34b671" target="_blank" rel="external">Hexo Seo优化让你的博客在google搜索排名第一</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;meta name=&quot;google-site-verification&quot; content=&quot;Mx7Ikp0IpBtTbSpHDTBV0_CMJA-E8CLn8NRIrwyq5m4&quot; /&gt;</div><div class="line">&lt;meta name=&quot;baidu-site-verification&quot; content=&quot;ZBTsWx4NdC&quot; /&gt;</div></pre></td></tr></table></figure>
+<p>谷歌与百度的站点地图，前者适用于其他搜索引擎，用来手动提交以增加收录</p>
+<p>安装：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">npm install hexo-generator-sitemap@1 --save</div><div class="line">npm install hexo-generator-baidu-sitemap@0.1.1 --save</div></pre></td></tr></table></figure>
+<p><code>_config.yml</code>添加代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">baidusitemap:</div><div class="line">  path: baidusitemap.xml</div></pre></td></tr></table></figure>
+<p>谷歌的<code>sitemap.xml</code>不需要写到配置文件中，自动生效。</p>
+<p>在主页后面加<code>/baidusitemap.xml</code>可以看到baidusitemap（谷歌同理），将该网址它提交给百度搜索：<a href="http://zhanzhang.baidu.com/?castk=LTE%3D" target="_blank" rel="external">百度站长平台</a>，贴吧账号无法在这里使用。</p>
+<p>不过由于Github禁止了百度爬虫，百度无法抓取其中的URL：</p>
+<h1 id="踩过的坑"><a href="#踩过的坑" class="headerlink" title="踩过的坑"></a>踩过的坑</h1><p>1）若启动时报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> Error: Warning: Permanently added &apos;github.com,192.30.253.112&apos; (RSA) to the list of known hosts.</div><div class="line">sign_and_send_pubkey: signing failed: agent refused operation</div><div class="line">Permission denied (publickey).</div><div class="line">fatal: Could not read from remote repository.</div></pre></td></tr></table></figure>
+<p>处理是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ eval &quot;$(ssh-agent -s)&quot;</div><div class="line">$ ssh-add</div></pre></td></tr></table></figure>
+<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><p><a href="http://blog.csdn.net/kesarchen/article/details/50579550" target="_blank" rel="external">ubuntu下使用hexo搭建博客</a> </p>
 
           
         
