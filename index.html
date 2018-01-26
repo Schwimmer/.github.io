@@ -347,57 +347,17 @@
       
         
           
-            <h1 id="pandas"><a href="#pandas" class="headerlink" title="pandas"></a>pandas</h1><h1 id="1、DataFrame"><a href="#1、DataFrame" class="headerlink" title="1、DataFrame"></a>1、DataFrame</h1><h2 id="1-1-创建随机"><a href="#1-1-创建随机" class="headerlink" title="1.1 创建随机"></a>1.1 创建随机</h2><p>引入pandas包</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">In [1]: import pandas as pd</div><div class="line"></div><div class="line">In [2]: import numpy as np</div><div class="line"></div><div class="line">In [3]: import matplotlib.pyplot as plt</div></pre></td></tr></table></figure>
-<p>创建一个Series，pandas可以生成一个默认的索引</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">s = pd.Series([1,3,5,np.nan,6,8])</div></pre></td></tr></table></figure>
-<p>通过numpy创建DataFrame，包含一个日期索引，以及标记的列</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">dates = pd.date_range(&apos;20170101&apos;, periods=6)</div><div class="line">df = pd.DataFrame(np.random.randn(6,4), index=dates, columns=list(&apos;ABCD&apos;))</div><div class="line"></div><div class="line">df</div><div class="line">Out[4]: </div><div class="line">                   A         B         C         D</div><div class="line">2016-10-10  0.630275  1.081899 -1.594402 -2.571683</div><div class="line">2016-10-11 -0.211379 -0.166089 -0.480015 -0.346706</div><div class="line">2016-10-12 -0.416171 -0.640860  0.944614 -0.756651</div><div class="line">2016-10-13  0.652248  0.186364  0.943509  0.053282</div><div class="line">2016-10-14 -0.430867 -0.494919 -0.280717 -1.327491</div><div class="line">2016-10-15  0.306519 -2.103769 -0.019832  0.035211</div></pre></td></tr></table></figure>
-<p>其中，<code>np.random.randn</code>可以返回一个随机数组</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">np.random.randn(1,2)</div><div class="line"></div><div class="line">Out[11]: array([[-2.67809797,  1.49728361]])</div></pre></td></tr></table></figure>
-<ul>
-<li>np.random.rand  随机样本位于[0,1)中</li>
-<li>np.random.randn 从标准正态分布$N=(\mu , \sigma ^2)$中返回样本，默认的范围是$N(0,1)$，等价于np.random.standard_normal</li>
-</ul>
-<blockquote>
-<p>如果要返回2*4的$N(3,6.25)$的随机分布，可知均值是3，标准差是2.5，则</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; 3+2.5*np.random.randn(2,4)</div><div class="line">&gt;</div></pre></td></tr></table></figure>
-</blockquote>
-<p>如果在matlib模块中使用，则返回的是matrix而不是array</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> numpy.matlib</div><div class="line">np.matlib.randn(<span class="number">1</span>,<span class="number">2</span>)</div><div class="line"></div><div class="line">Out[<span class="number">13</span>]: matrix([[ <span class="number">0.13107513</span>, <span class="number">-0.87977247</span>]])</div></pre></td></tr></table></figure>
-<h2 id="1-2-通过dict创建"><a href="#1-2-通过dict创建" class="headerlink" title="1.2 通过dict创建"></a>1.2 通过dict创建</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">df2 = pd.DataFrame(&#123; &apos;A&apos; : 1.,</div><div class="line">                     &apos;B&apos; : pd.Timestamp(&apos;20130102&apos;),</div><div class="line">                     &apos;C&apos; : pd.Series(1,index=list(range(4)),dtype=&apos;float32&apos;),</div><div class="line">                     &apos;D&apos; : np.array([3] * 4,dtype=&apos;int32&apos;),</div><div class="line">                     &apos;E&apos; : pd.Categorical([&quot;test&quot;,&quot;train&quot;,&quot;test&quot;,&quot;train&quot;]),</div><div class="line">                     &apos;F&apos; : &apos;foo&apos; &#125;)</div><div class="line">                     </div><div class="line">Out[20]: </div><div class="line">     A          B    C  D      E    F</div><div class="line">0  1.0 2013-01-02  1.0  3   test  foo</div><div class="line">1  1.0 2013-01-02  1.0  3  train  foo</div><div class="line">2  1.0 2013-01-02  1.0  3   test  foo</div><div class="line">3  1.0 2013-01-02  1.0  3  train  foo</div></pre></td></tr></table></figure>
-<p>有几个方法可以构造一个Timestamp对象</p>
-<ul>
-<li>pd.Timestamp</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">import pandas as pd</div><div class="line">from datetime import datetime as dt</div><div class="line">p1=pd.Timestamp(2017,6,19)</div><div class="line">p2=pd.Timestamp(dt(2017,6,19,hour=9,minute=13,second=45))</div><div class="line">p3=pd.Timestamp(&quot;2017-6-19 9:13:45&quot;)</div><div class="line"></div><div class="line">print(&quot;type of p1:&quot;,type(p1))</div><div class="line">print(p1)</div><div class="line">print(&quot;type of p2:&quot;,type(p2))</div><div class="line">print(p2)</div><div class="line">print(&quot;type of p3:&quot;,type(p3))</div><div class="line">print(p3)</div><div class="line"></div><div class="line"></div><div class="line">(&apos;type of p1:&apos;, &lt;class &apos;pandas.tslib.Timestamp&apos;&gt;)</div><div class="line">2017-06-19 00:00:00</div><div class="line">(&apos;type of p2:&apos;, &lt;class &apos;pandas.tslib.Timestamp&apos;&gt;)</div><div class="line">2017-06-19 09:13:45</div><div class="line">(&apos;type of p3:&apos;, &lt;class &apos;pandas.tslib.Timestamp&apos;&gt;)</div><div class="line">2017-06-19 09:13:45</div></pre></td></tr></table></figure>
-<ul>
-<li>to_datetime()</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">import pandas as pd</div><div class="line">from datetime import datetime as dt</div><div class="line"></div><div class="line">p4=pd.to_datetime(&quot;2017-6-19 9:13:45&quot;)</div><div class="line">p5=pd.to_datetime(dt(2017,6,19,hour=9,minute=13,second=45))</div><div class="line"></div><div class="line">print(&quot;type of p4:&quot;,type(p4))</div><div class="line">print(p4)</div><div class="line">print(&quot;type of p5:&quot;,type(p5))</div><div class="line">print(p5)</div><div class="line"></div><div class="line">(&apos;type of p4:&apos;, &lt;class &apos;pandas.tslib.Timestamp&apos;&gt;)</div><div class="line">2017-06-19 09:13:45</div><div class="line">(&apos;type of p5:&apos;, &lt;class &apos;pandas.tslib.Timestamp&apos;&gt;)</div><div class="line">2017-06-19 09:13:45</div></pre></td></tr></table></figure>
-<p>在df2对象中，每一列都有对应的dtypes</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">df2.dtypes</div><div class="line"></div><div class="line">Out[30]: </div><div class="line">A           float64</div><div class="line">B    datetime64[ns]</div><div class="line">C           float32</div><div class="line">D             int32</div><div class="line">E          category</div><div class="line">F            object</div><div class="line">dtype: object</div></pre></td></tr></table></figure>
-<h2 id="1-3-查看数据"><a href="#1-3-查看数据" class="headerlink" title="1.3 查看数据"></a>1.3 查看数据</h2><p>参考<a href="http://pandas.pydata.org/pandas-docs/stable/basics.html#basics" target="_blank" rel="external">Basics section</a></p>
-<p>查看head和tail</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">df.head(1)</div><div class="line">df.tail(3)</div></pre></td></tr></table></figure>
-<p>查看index、column和数据</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">df.index</div><div class="line">df.columns</div><div class="line">df.values</div></pre></td></tr></table></figure>
-<p>显示数据的快速统计</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">df.describe()</div><div class="line">Out[19]: </div><div class="line">              A         B         C         D</div><div class="line">count  6.000000  6.000000  6.000000  6.000000</div><div class="line">mean   0.073711 -0.431125 -0.687758 -0.233103</div><div class="line">std    0.843157  0.922818  0.779887  0.973118</div><div class="line">min   -0.861849 -2.104569 -1.509059 -1.135632</div><div class="line">25%   -0.611510 -0.600794 -1.368714 -1.076610</div><div class="line">50%    0.022070 -0.228039 -0.767252 -0.386188</div><div class="line">75%    0.658444  0.041933 -0.034326  0.461706</div><div class="line">max    1.212112  0.567020  0.276232  1.071804</div></pre></td></tr></table></figure>
-<p>转置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">df.T</div></pre></td></tr></table></figure>
-<p>通过列名来排序</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#对于矩阵，axis=0表示行，1表示列</div><div class="line">df.sort_index(axis=1, ascending=False)</div></pre></td></tr></table></figure>
-<p>通过某一列的数值排序</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">df.sort_values(by=&apos;B&apos;)</div></pre></td></tr></table></figure>
-<h2 id="1-4-选择"><a href="#1-4-选择" class="headerlink" title="1.4 选择"></a>1.4 选择</h2><p>选择某一列</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">df[&apos;A&apos;]</div></pre></td></tr></table></figure>
-<p>选择某几行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">df[0:3]</div><div class="line">#也可以通过行的索引来选择，但是不能单独写某一行</div><div class="line">df[&apos;20130102&apos;:&apos;20130104&apos;]</div></pre></td></tr></table></figure>
-<h1 id="2、Series"><a href="#2、Series" class="headerlink" title="2、Series"></a>2、Series</h1><h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://pandas.pydata.org/pandas-docs/stable/10min.html#minutes-to-pandas" target="_blank" rel="external">10 Minutes to pandas</a></p>
-<p><a href="http://blog.csdn.net/csdn15698845876/article/details/73456967" target="_blank" rel="external">pandas中Timestamp类用法讲解</a></p>
-
-          
+          pandas1、DataFrame1.1 创建随机引入pandas包
+12345In [1]: import pandas as pdIn [2]: import numpy as npIn [3]: import matplotlib.pyplot as plt
+创建一个Series，pandas
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/01/25/pandas/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -516,11 +476,18 @@
       
         
           
-            <hr>
-<hr>
-<h1 id="中文文本聚类"><a href="#中文文本聚类" class="headerlink" title="中文文本聚类"></a>中文文本聚类</h1><p>1、处理掉英文、数字、字符等，只保留中文</p>
+          
+
+中文文本聚类1、处理掉英文、数字、字符等，只保留中文
 
           
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/01/25/中文文本聚类/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -639,83 +606,17 @@
       
         
           
-            <h1 id="Gensim-LDA"><a href="#Gensim-LDA" class="headerlink" title="Gensim-LDA"></a>Gensim-LDA</h1><p><a href="http://blog.csdn.net/whzhcahzxh/article/details/17528261" target="_blank" rel="external">http://blog.csdn.net/whzhcahzxh/article/details/17528261</a></p>
-<p>首先，引用gensim包，gensim包中引用corpora,models, similarities，分别做语料库建立，模型库和相似度比较库，后面可以看到例子</p>
-<p>from gensim import corpora, models, similarities</p>
-<p>我调用了结巴分词做中文处理，所以同样</p>
-<p>import jieba</p>
-<p>手工写个文本列表</p>
-<p>sentences = [“我喜欢吃土豆”,”土豆是个百搭的东西”,”我不喜欢今天雾霾的北京”]</p>
-<p>用结巴分词后待用，因为gensim包做主题模型，在意的是语料库，所以，中文英文，one-term，two-term都是无所谓的，如果有已经生成好的语料库，那么可以考虑直接跳到建模环节</p>
-<p>官方提供的语料库范例是这样的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">corpus = [[(0, 1.0), (1, 1.0), (2, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(2, 1.0), (3, 1.0), (4, 1.0), (5, 1.0), (6, 1.0), (8, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(1, 1.0), (3, 1.0), (4, 1.0), (7, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(0, 1.0), (4, 2.0), (7, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(3, 1.0), (5, 1.0), (6, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(9, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(9, 1.0), (10, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(9, 1.0), (10, 1.0), (11, 1.0)],</div><div class="line">&gt;&gt;&gt;           [(8, 1.0), (10, 1.0), (11, 1.0)]]</div></pre></td></tr></table></figure>
-<p>每个中括号代表一句话，用逗号隔开，（0，1.0）代表词典中编号为0的词出现了一次，以此类推，很好理解</p>
-<p>回到过程中来，将范例的语句分词</p>
-<p>words=[]<br>for doc in sentences:<br>​    words.append(list(jieba.cut(doc)))<br>print words</p>
-<p>输出：</p>
-<p>[[u’\u6211’, u’\u559c\u6b22’, u’\u5403’, u’\u571f\u8c46’], [u’\u571f\u8c46’, u’\u662f’, u’\u4e2a’, u’\u767e’, u’\u642d’, u’\u7684’, u’\u4e1c\u897f’], [u’\u6211’, u’\u4e0d’, u’\u559c\u6b22’, u’\u4eca\u5929’, u’\u96fe’, u’\u973e’, u’\u7684’, u’\u5317\u4eac’]]</p>
-<p>此时输出的格式为unicode，不影响后期运算，因此我保留不变，如果想看分词结果可以用循环输出jieba分词结果</p>
-<p>得到的分词结果构造词典</p>
-<p>dic = corpora.Dictionary(words)<br>print dic<br>print dic.token2id</p>
-<p>输出：</p>
-<p>Dictionary(15 unique tokens)<br>{‘\xe5\x8c\x97\xe4\xba\xac’: 12, ‘\xe6\x90\xad’: 6, ‘\xe7\x9a\x84’: 9, ‘\xe5\x96\x9c\xe6\xac\xa2’: 1, ‘\xe4\xb8\x8d’: 10, ‘\xe4\xb8\x9c\xe8\xa5\xbf’: 4, ‘\xe5\x9c\x9f\xe8\xb1\x86’: 2, ‘\xe9\x9c\xbe’: 14, ‘\xe6\x98\xaf’: 7, ‘\xe4\xb8\xaa’: 5, ‘\xe9\x9b\xbe’: 13, ‘\xe7\x99\xbe’: 8, ‘\xe4\xbb\x8a\xe5\xa4\xa9’: 11, ‘\xe6\x88\x91’: 3, ‘\xe5\x90\x83’: 0}<br>可以看到各个词或词组在字典中的编号</p>
-<p>为了方便看，我给了个循环输出：</p>
-<p>for word,index in dic.token2id.iteritems():<br>​    print word +” 编号为:”+ str(index)</p>
-<p>输出：</p>
-<p>北京 编号为:12<br>搭 编号为:6<br>的 编号为:9<br>喜欢 编号为:1<br>不 编号为:10<br>东西 编号为:4<br>土豆 编号为:2<br>霾 编号为:14<br>是 编号为:7<br>个 编号为:5<br>雾 编号为:13<br>百 编号为:8<br>今天 编号为:11<br>我 编号为:3<br>吃 编号为:0</p>
-<p>为什么是乱序，我也不知道</p>
-<p>词典生成好之后，就开始生成语料库了</p>
-<p>corpus = [dic.doc2bow(text) for text in words]<br>print corpus</p>
-<p>输出：</p>
-<p>[[(0, 1), (1, 1), (2, 1), (3, 1)], [(2, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1), (9, 1)], [(1, 1), (3, 1), (9, 1), (10, 1), (11, 1), (12, 1), (13, 1), (14, 1)]]</p>
-<p>语料库的官方描述写的是向量空间模型格式的语料库，<em>Corpus</em> is simply an object which, when iterated over, returns its documents represented as sparse vectors.</p>
-<p>官方说明给了一个tips：</p>
-<p>In this example, the whole corpus is stored in memory, as a Python list. However,the corpus interface only dictates that a corpus must support iteration over its constituent documents. For very large corpora, it is advantageous to keep the corpus on disk, and access its documents sequentially, one at a time. All the operations and transformations are implemented in such a way that makes them independent of the size of the corpus, memory-wise.</p>
-<p>大概意思就是说范例中的语料库是存在内存中的一个列表格式，但是接口对语料库的要求只是，支持在构建文本文件中可循环即可，因此对于很大的语料库，最好还是存在硬盘上，然后依次访问文件。这样可以不用考虑语料库的size，也避免了内存占用太多</p>
-<p>此时，得到了语料库，接下来做一个TF-IDF变换</p>
-<p>可以理解成 将用词频向量表示一句话 变换成为用 词的重要性向量表示一句话</p>
-<p>（TF-IDF变换：评估一字词对于一个文件集或一个语料库中的其中一份文件的重要程度。字词的重要性随着它在文件中出现的次数成正比增加，但同时会随着它在<a href="http://baike.baidu.com/view/686705.htm" target="_blank" rel="external">语料库</a>中出现的频率成反比下降。）</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#通过语料库得到tfidf模型</span></div><div class="line">tfidf = models.TfidfModel(corpus)</div><div class="line">vec = [(<span class="number">0</span>, <span class="number">1</span>), (<span class="number">4</span>, <span class="number">1</span>)]</div><div class="line"><span class="keyword">print</span> tfidf[vec]</div><div class="line"><span class="comment">#对corpus的每个文档中的每个词计算tfidf，得到的结果是，每个文档的每个词都是一个元组，包括id和tfidf值</span></div><div class="line">corpus_tfidf = tfidf[corpus]</div><div class="line"><span class="keyword">for</span> doc <span class="keyword">in</span> corpus_tfidf:</div><div class="line">    <span class="keyword">print</span> doc</div></pre></td></tr></table></figure>
-<p>输出：</p>
-<p>[(0, 0.7071067811865475), (4, 0.7071067811865475)]<br>[(0, 0.8425587958192721), (1, 0.3109633824035548), (2, 0.3109633824035548), (3, 0.3109633824035548)]<br>[(2, 0.16073253746956623), (4, 0.4355066251613605), (5, 0.4355066251613605), (6, 0.4355066251613605), (7, 0.4355066251613605), (8, 0.4355066251613605), (9, 0.16073253746956623)]<br>[(1, 0.1586956620869655), (3, 0.1586956620869655), (9, 0.1586956620869655), (10, 0.42998768831312806), (11, 0.42998768831312806), (12, 0.42998768831312806), (13, 0.42998768831312806), (14, 0.42998768831312806)]</p>
-<p>vec是查询文本向量，比较vec和训练中的三句话相似度</p>
-<p>index = similarities.SparseMatrixSimilarity(tfidf[corpus], num_features=14)<br>sims = index[tfidf[vec]]<br>print list(enumerate(sims))</p>
-<p>输出：</p>
-<p>[(0, 0.59577906), (1, 0.30794966), (2, 0.0)]</p>
-<p>表示和第1句话相似度为59.578%，和第二句话的相似度位30.79%，第三句没有相似度，</p>
-<p>我们看看vec这句话是什么：0为吃，4为东西，所以vec这句话可以是[“吃东西”]或者[“东西吃”]</p>
-<p>而第一句话”我喜欢吃土豆”,”土豆是个百搭的东西”明显有相似度，而第三句话”我不喜欢今天雾霾的北京”，相似度几乎为0，至于为什么第一句比第二句更相似，就需要考虑TfIdf document representation和cosine similarity measure了</p>
-<p>回到tfidf转换，接着训练LSI模型，假定三句话属于2个主题，</p>
-<p>lsi = models.LsiModel(corpus_tfidf, id2word=dic, num_topics=2)<br>lsiout=lsi.print_topics(2)<br>print lsiout[0]<br>print lsiout[1]</p>
-<p>输出：</p>
-<p>0.532<em>“吃” + 0.290</em>“喜欢” + 0.290<em>“我” + 0.258</em>“土豆” + 0.253<em>“霾” + 0.253</em>“雾” + 0.253<em>“北京” + 0.253</em>“今天” + 0.253<em>“不” + 0.166</em>“东西”<br>0.393<em>“百” + 0.393</em>“搭” + 0.393<em>“东西” + 0.393</em>“是” + 0.393<em>“个” + -0.184</em>“霾” + -0.184<em>“雾” + -0.184</em>“北京” + -0.184<em>“今天” + -0.184</em>“不”</p>
-<p>这就是基于SVD建立的两个主题模型内容</p>
-<p>将文章投影到主题空间中</p>
-<p>corpus_lsi = lsi[corpus_tfidf]<br>for doc in corpus_lsi:<br>​    print doc</p>
-<p>输出：</p>
-<p>[(0, -0.70861576320682107), (1, 0.1431958007198823)]<br>[(0, -0.42764142348481798), (1, -0.88527674470703799)]<br>[(0, -0.66124862582594512), (1, 0.4190711252114323)]</p>
-<p>因此第一三两句和主题一相似，第二句和主题二相似</p>
-<p>同理做个LDA</p>
-<p>lda = models.LdaModel(corpus_tfidf, id2word=dic, num_topics=2)<br>ldaOut=lda.print_topics(2)<br>print ldaOut[0]<br>print ldaOut[1]<br>corpus_lda = lda[corpus_tfidf]<br>for doc in corpus_lda:<br>​    print doc</p>
-<p>得到的结果每次都变，给一次的输出：</p>
-<p>0.077<em>吃 + 0.075</em>北京 + 0.075<em>雾 + 0.074</em>今天 + 0.073<em>不 + 0.072</em>霾 + 0.070<em>喜欢 + 0.068</em>我 + 0.062<em>的 + 0.061</em>土豆<br>0.091<em>吃 + 0.073</em>搭 + 0.073<em>土豆 + 0.073</em>个 + 0.073<em>是 + 0.072</em>百 + 0.071<em>东西 + 0.066</em>我 + 0.065<em>喜欢 + 0.059</em>霾<br>[(0, 0.31271095988105352), (1, 0.68728904011894654)]<br>[(0, 0.19957991735916861), (1, 0.80042008264083142)]<br>[(0, 0.80940337254233863), (1, 0.19059662745766134)]</p>
-<p>第一二句和主题二相似，第三句和主题一相似</p>
-<p>结论和LSI不一样，我估计这和样本数目太少，区别度不高有关，毕竟让我来区分把第一句和哪一句分在一个主题，我也不确定</p>
-<p>输入一句话，查询属于LSI得到的哪个主题类型，先建立索引：</p>
-<p>index = similarities.MatrixSimilarity(lsi[corpus])<br>query = “雾霾”<br>query_bow = dic.doc2bow(list(jieba.cut(query)))<br>print query_bow<br>query_lsi = lsi[query_bow]<br>print query_lsi</p>
-<p>输出:</p>
-<p>[(13, 1), (14, 1)]<br>[(0, 0.50670602027401368), (1, -0.3678056037187441)]</p>
-<p>与第一个主题相似</p>
-<p>比较和第几句话相似，用LSI得到的索引接着做，并排序输出</p>
-<p>sims = index[query_lsi]<br>print list(enumerate(sims))<br>sort_sims = sorted(enumerate(sims), key=lambda item: -item[1])<br>print sort_sims</p>
-<p>输出：</p>
-<p>[(0, 0.90161765), (1, -0.10271341), (2, 0.99058259)]<br>[(2, 0.99058259), (0, 0.90161765), (1, -0.10271341)]</p>
-<p>可见和第二句话相似度很高，因为只有第二句话出现了雾霾两个词，可是惊讶的是和第一句话的相似度也很高，这得益于LSI模型的算法：<strong>在A和C共现，B和C共现的同时，可以找到A和B的相似度</strong></p>
-<h1 id="Gensim-Tutorials"><a href="#Gensim-Tutorials" class="headerlink" title="Gensim-Tutorials"></a>Gensim-Tutorials</h1><p><a href="http://radimrehurek.com/gensim/tutorial.html" target="_blank" rel="external">http://radimrehurek.com/gensim/tutorial.html</a></p>
-<p>Gensim 使用Python标准logging模块来记录log，使用方法是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">import logging</div><div class="line">logging.basicConfig(format=&apos;%(asctime)s : %(levelname)s : %(message)s&apos;, level=logging.INFO)</div></pre></td></tr></table></figure>
-<h1 id="快速示例"><a href="#快速示例" class="headerlink" title="快速示例"></a>快速示例</h1>
-          
+          Gensim-LDAhttp://blog.csdn.net/whzhcahzxh/article/details/17528261
+首先，引用gensim包，gensim包中引用corpora,models, similarities，分别做语料库建立，模型库和相似度比较库，后面可以看到例子
+fr
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/01/25/Gensim-LDA/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -834,43 +735,41 @@
       
         
           
-            <hr>
-<h2 id="OpenRTB笔记"><a href="#OpenRTB笔记" class="headerlink" title="OpenRTB笔记"></a>OpenRTB笔记</h2><p><a href="https://github.com/leeowenowen/OpenRTB" target="_blank" rel="external">文档的中文翻译</a></p>
-<p>1 术语</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>名称</th>
-<th>解释</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Seat</td>
-<td>期望获取展示并使用竞拍者代表他们进行竞拍的实体</td>
-</tr>
-<tr>
-<td>Publisher</td>
-<td>操作一个或者多个网站的实体</td>
-</tr>
-<tr>
-<td>Site</td>
-<td>如果没有特殊说明，指的是一个支持广告内容的网页或者应用</td>
-</tr>
-<tr>
-<td>Deal ID</td>
-<td>标识在特定场景下Publisher与Seat之间预先安排用于购买展示的协议</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>2、对象模型</p>
-<p>2.1 BidRequest</p>
-<p>在它的直属子对象中，只有<code>Imp</code>是技术上必须的，因为它是描述一次展示的基础信息，必须使用<code>Banner</code>, <code>Video</code>以及<code>Native</code>中的至少一个来定义展示的类型（例如， 无论一个或者多个展示者想要接收；尽管一次竞价是这些指明类型中的明确的一种）。一个展示对象可能包含一组私有市场。</p>
-<p><img src="https://raw.githubusercontent.com/leeowenowen/OpenRTB_API_Specification-/master/res/bid_request_object_model.png" alt=""></p>
-<h1 id="iAB标签体系"><a href="#iAB标签体系" class="headerlink" title="iAB标签体系"></a>iAB标签体系</h1>
           
+OpenRTB笔记文档的中文翻译
+1 术语
+
+
+
+
+名称
+解释
+
+
+
+
+Seat
+期望获取展示并使用竞拍者代表他们进行竞拍的实体
+
+
+Publisher
+操作一个或者多个网站的实体
+
+
+Site
+如果没有特殊说明，指的是一个支持广告内容的网页或者应用
+
+
+Deal ID
+标识在特定场景下Publi
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/01/25/OpenRTB笔记/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -989,9 +888,16 @@
       
         
           
-            <hr>
-<h2 id="网页中可以提取什么"><a href="#网页中可以提取什么" class="headerlink" title="网页中可以提取什么"></a>网页中可以提取什么</h2>
           
+网页中可以提取什么
+          
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/01/25/网页中可以提取什么/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1110,14 +1016,15 @@
       
         
           
-            <h1 id="gensim处理中文word2vec"><a href="#gensim处理中文word2vec" class="headerlink" title="gensim处理中文word2vec"></a>gensim处理中文word2vec</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> gensim.models <span class="keyword">import</span> KeyedVectors  </div><div class="line"></div><div class="line">model = KeyedVectors.load_word2vec_format(<span class="string">'/home/david/00projects/00user-gene/model_20150427'</span>, binary=<span class="keyword">True</span>)  </div><div class="line">a = model.similarity(<span class="string">'refreshed'</span>, <span class="string">'Refreshed'</span>)</div></pre></td></tr></table></figure>
-<p>这是用中文训练出来的模型，会报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">UnicodeDecodeError: &apos;utf8&apos; codec can&apos;t decode byte 0x9b in position 2: invalid start byte</div></pre></td></tr></table></figure>
-<p>官网的FAQ是这样的</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">Q10: Loading a word2vec model fails with UnicodeDecodeError: &apos;utf-8&apos; codec can&apos;t decode bytes in position ...</div><div class="line"></div><div class="line">A: The strings (words) stored in your model are not valid utf8. By default, gensim decodes the words using the strict encoding settings, which results in the above exception whenever an invalid utf8 sequence is encountered.</div><div class="line"></div><div class="line">The fix is on your side and it is to either:</div><div class="line"></div><div class="line">a) Store your model using a program that understands unicode and utf8 (such as gensim). Some C and Java word2vec tools are known to truncate the strings at byte boundaries, which can result in cutting a multi-byte utf8 character in half, making it non-valid utf8, leading to this error.</div><div class="line"></div><div class="line">b) Set the unicode_errors flag when running load_word2vec_model, e.g. load_word2vec_model(..., unicode_errors=&apos;ignore&apos;). Note that this silences the error, but the utf8 problem is still there -- invalid utf8 characters will just be ignored in this case.</div></pre></td></tr></table></figure>
-<p>然并卵。</p>
-
-          
+          gensim处理中文word2vec1234from gensim.models import KeyedVectors  model = KeyedVectors.load_word2vec_format('/home/david/00projects/00user-gene/model_2015
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/01/25/gensim处理中文word2vec/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1258,34 +1165,17 @@
       
         
           
-            <h1 id="Python编码问题"><a href="#Python编码问题" class="headerlink" title="Python编码问题"></a>Python编码问题</h1><p>困扰了很长时间的问题，找到一篇解释不错的文章，转载并整理之。</p>
-<p><a href="http://www.jianshu.com/p/5017d8342dd2" target="_blank" rel="external">‘ascii’ codec can’t decode byte 0xe4 in position 0: ordinal not in range(128)</a></p>
-<p><strong>python的编码是<code>unicode -&gt; str</code>，解码是<code>str -&gt; unicode</code></strong></p>
-<p>关于文件开头的”编码指示”，也就是<code>-*- coding: -*-</code>这个语句。Python 默认脚本文件都是 UTF-8 编码的，当文件中有非 UTF-8 编码范围内的字符的时候就要使用”编码指示”来修正. 关于 sys.defaultencoding，这个在解码没有明确指明解码方式的时候使用。比如我有如下代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#! /usr/bin/env python   </div><div class="line"># -*- coding: utf-8 -*-   </div><div class="line">s = &apos;中文&apos;  # 注意这里的 str 是 str 类型的，而不是 unicode   </div><div class="line">s.encode(&apos;gb18030&apos;)</div></pre></td></tr></table></figure>
-<p>这句代码将 s 重新编码为<code>gb18030</code>的格式，即进行<code>unicode -&gt; str</code>的转换。因为 s 本身就是 str类型的，因此 Python 会自动的先将 s 解码为<code>unicode</code>，然后再编码成 <code>gb18030</code>。因为解码是python自动进行的，我们没有指明解码方式，python 就会使用<code>sys.defaultencoding</code>指明的方式来解码。很多情况下 <code>sys.defaultencoding</code> 是<code>ANSCII</code>，如果 s 不是这个类型就会出错。</p>
-<p>拿上面的情况来说，我的 <code>sys.defaultencoding</code>是<code>anscii</code>，而 s 的编码方式和文件的编码方式一致，是 utf8 的，所以出错了:<code>UnicodeDecodeError: &#39;ascii&#39; codec can&#39;t decode byte 0xe4 in position 0: ordinal not in range(128)</code> </p>
-<h2 id="Unicode和UTF8的区别"><a href="#Unicode和UTF8的区别" class="headerlink" title="Unicode和UTF8的区别"></a>Unicode和UTF8的区别</h2><ol>
-<li><p><code>unicode</code>指的是万国码，是一种“字码表”。而utf-8是这种字码表储存的编码方法。unicode不一定要由utf-8这种方式编成<code>bytecode</code>储存，也可以使用utf-16,utf-7等其他方式。目前大多都以utf-8的方式来变成<code>bytecode</code>。</p>
-</li>
-<li><p><code>python</code>中字符串类型分为<code>byte string</code> 和<code>unicode string</code>两种。</p>
-</li>
-<li><p>如果在python文件中指定编码方式为<code>utf-8(#coding=utf-8)</code>，那么所有带中文的字符串都会被认为是utf-8编码的byte string（例如：mystr=”你好”），但是在函数中所产生的字符串则被认为是unicode string<br>问题就出在这边，unicode string 和byte string是不可以混合使用的，一旦混合使用了，就会产生这样的错误。例如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">self.response.out.write(&quot;你好&quot;+self.request.get(&quot;argu&quot;))</div></pre></td></tr></table></figure>
-<p>​</p>
-</li>
-</ol>
-<p><strong>以下有两个解决方法：</strong>      </p>
-<ul>
-<li><p>第一种,是明确的指示出 s 的编码方式 </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#! /usr/bin/env python </div><div class="line"># -*- coding: utf-8 -*- </div><div class="line">s = &apos;中文&apos; </div><div class="line">s.decode(&apos;utf-8&apos;).encode(&apos;gb18030&apos;)</div></pre></td></tr></table></figure>
-</li>
-<li><p>第二种,更改<code>sys.defaultencoding</code>为文件的编码方式 </p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">#! /usr/bin/env python </div><div class="line"># -*- coding: utf-8 -*- </div><div class="line">import sys #要重新载入sys。因为 Python 初始化后会删除 sys.setdefaultencoding 这个方 法</div><div class="line">reload(sys) </div><div class="line">sys.setdefaultencoding(&apos;utf-8&apos;)</div></pre></td></tr></table></figure>
-
-          
+          Python编码问题困扰了很长时间的问题，找到一篇解释不错的文章，转载并整理之。
+‘ascii’ codec can’t decode byte 0xe4 in position 0: ordinal not in range(128)
+python的编码是unicode -&gt; str，解码是
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/11/09/Python编码问题/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1426,32 +1316,20 @@
       
         
           
-            <p>个体学习器一般是弱学习器。</p>
-<blockquote>
-<p> 弱学习器是指泛华性能略优于随机猜测的学习器，例如二分上略高于50%的学习器。</p>
-</blockquote>
-<p>要获得好的集成，个体学习器应“好而不同”，即个体学习器要有一定的<strong>准确性和多样性</strong>（学习器之间有差异）。</p>
-<p>理论上，假设个体学习器的误差是相互独立，那么随着学习器数量增大，集成的错误率将指数下降，最终趋向于零。</p>
-<p>但实际上不可能相互独立。且<strong>准确性和多样性本身就是矛盾的</strong>，追求准确性就要牺牲多样性。所以<strong>如何产生并结合“好而不同”的学习器，是集成学习研究的核心</strong>。</p>
-<p>根据集成的方式不同，</p>
-<p>1）个体学习器存在强依赖性，必须串行生成，如Boosting；</p>
-<p>2）个体学习器间不存在强依赖关系，可同时并行生成，如Bagging和随机森林。</p>
-<h1 id="1、Boosting"><a href="#1、Boosting" class="headerlink" title="1、Boosting"></a>1、Boosting</h1><p>工作机制：</p>
-<p>先从初始训练集训练出一个基学习器，再根据基学习器的表现对训练样本分布进行调整，使前一个做错的样本在后续得到更多关注，然后基于调整后的样本分布来训练下一个基学习器；重复迭代s达到T。</p>
-<p>代表是AdaBoost.</p>
-<h2 id="1-1-算法描述"><a href="#1-1-算法描述" class="headerlink" title="1.1  算法描述"></a>1.1  算法描述</h2><p>假设$y_i \in {-1,+1}$</p>
-<p><img src="/2017/07/12/集成学习/home/david/myblog/source/_posts/集成学习/adaboost.png" alt="adaboost"></p>
-<p>AdsBoost有多种推广方式，一般的是基于加性模型（additive model），即用基学习器的线性组合</p>
-<script type="math/tex; mode=display">
-H(x) = \sum_{t=1}^T a_th_t(x)</script><p>来最小化指数损失函数</p>
-<script type="math/tex; mode=display">
-l_{exp}(H|D) =E_{x \sim D}[e^{-f(x)H(x)}]</script><p>求偏导</p>
-<script type="math/tex; mode=display">
-\frac {\partial l_{exp(H|D)}} {\partial H(x)} =</script><p>后面看不懂了。。。</p>
-<p>2、Bagging</p>
-<p>3、随机森林</p>
+          个体学习器一般是弱学习器。
 
-          
+ 弱学习器是指泛华性能略优于随机猜测的学习器，例如二分上略高于50%的学习器。
+
+要获得好的集成，个体学习器应“好而不同”，即个体学习器要有一定的准确性和多样性（学习器之间有差异）。
+理论上，假设个体学习器的误差是相互独立，那么随着学习器数量增大，集成的错误率将指数下降
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/07/12/集成学习/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1592,69 +1470,19 @@ l_{exp}(H|D) =E_{x \sim D}[e^{-f(x)H(x)}]</script><p>求偏导</p>
       
         
           
-            <h1 id="0、基本概念"><a href="#0、基本概念" class="headerlink" title="0、基本概念"></a>0、基本概念</h1><p>镜像</p>
-<blockquote>
-<p>Docker镜像通过镜像ID进行识别。镜像ID是一个64字符的十六进制的字符串。但是当我们运行镜像时，通常我们不会使用镜像ID来引用镜像，而是使用镜像名来引用。要列出本地所有有效的镜像，可以使用命令</p>
-<p>$ docker images</p>
-<p>镜像可以发布为不同版本，这种机制我们称之为标签（Tag）。 </p>
-</blockquote>
-<p>容器</p>
-<blockquote>
-<p>Docker容器可以使用命令创建：</p>
-<p>$ docker run imagename</p>
-<p>它会在所有的镜像层之上增加一个<strong>可写层</strong>。这个可写层有运行在CPU上的进程，而且有两个不同的状态：运行态（Running）和退出态（Exited）。这就是Docker容器。当我们使用docker run启动容器，Docker容器就进入运行态，当我们停止Docker容器时，它就进入退出态。</p>
-<p>对容器的变更是<strong>写入到容器的文件系统的，而不是写入到Docker镜像</strong>中的。</p>
-<p>用同一个镜像启动多个Docker容器，这些容器启动后都是活动的，彼此还是相互隔离的。我们对其中一个容器所做的变更只会局限于那个容器本身。</p>
-<p>如果对容器的底层镜像进行修改，那么当前正在运行的容器是不受影响的，不会发生自动更新现象。</p>
-</blockquote>
-<h1 id="1、配置"><a href="#1、配置" class="headerlink" title="1、配置"></a>1、配置</h1><h2 id="1-1-安装"><a href="#1-1-安装" class="headerlink" title="1.1 安装"></a>1.1 安装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ sudo apt-get update</div><div class="line">$ sudo apt-get install docker</div></pre></td></tr></table></figure>
-<p>编辑/etc/default/docker增加如下配置，自定义docker镜像存放路径</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">DOCKER_OPTS=&quot;--graph=/home/david/opt/docker&quot;</div></pre></td></tr></table></figure>
-<p>sudo service docker start    #启动<br>sudo service docker stop    #关闭<br>sudo service docker restart #重启 </p>
-<h2 id="1-2-pull一个镜像"><a href="#1-2-pull一个镜像" class="headerlink" title="1.2 pull一个镜像"></a>1.2 pull一个镜像</h2><p>查看镜像：此时应该没有镜像<br>docker images</p>
-<p>下载镜像</p>
-<p>sudo docker pull ubuntu</p>
-<h2 id="1-3-创建容器"><a href="#1-3-创建容器" class="headerlink" title="1.3 创建容器"></a>1.3 创建容器</h2><p>docker ps命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ sudo docker ps #列出当前所有正在运行的container</div><div class="line">$ sudo docker ps -l #列出最近一次启动的，且正在运行的container</div><div class="line">$ sudo docker ps -a #列出所有的container</div></pre></td></tr></table></figure>
-<p>启动容器，并且进入到Ubuntu容器的bash命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo docker run -itv /home/david/docker:/home/davida/gitlab  ubuntu  /bin/bash</div></pre></td></tr></table></figure>
-<p>其中，</p>
-<h2 id="1-4-提交容器"><a href="#1-4-提交容器" class="headerlink" title="1.4 提交容器"></a>1.4 提交容器</h2><p>退出容器，使用 docker commit 命令来提交更新后的副本。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> sudo docker commit -m 'xmo run evn' -a 'david' bde4f2f2db5f  ubuntu-ruby:v1</div></pre></td></tr></table></figure>
-<p>其中，-m 来指定提交的说明信息，跟我们使用的版本控制工具一样；-a 可以指定更新的作者信息；之后是用来创建镜像的容器的ID；最后指定目标镜像的仓库名和 tag 信息。创建成功后会返回这个镜像的 ID 信息。v1是tag（版本号）</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo docker inspect ubuntu-ruby</div></pre></td></tr></table></figure>
-<p>查看详细信息</p>
-<h2 id="1-5-Dockerfile提交容器"><a href="#1-5-Dockerfile提交容器" class="headerlink" title="1.5 Dockerfile提交容器"></a>1.5 Dockerfile提交容器</h2><p>Dockerfile的指令是忽略大小写的，建议使用大写，使用 # 作为注释，每一行只支持一条指令，每条指令可以携带多个参数。<br>Dockerfile的指令根据作用可以分为两种，<strong>构建指令和设置指令</strong>。构建指令用于构建image，其指定的操作不会在运行image的容器上执行；设置指令用于设置image的属性，其指定的操作将在运行image的容器中执行。</p>
-<p>1）FROM 基础image</p>
-<p>基础image可以是官方远程仓库中的，也可以位于本地仓库。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FROM &lt;image&gt;</div></pre></td></tr></table></figure>
-<p>或者</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FROM &lt;image&gt;:&lt;tag&gt;</div></pre></td></tr></table></figure>
-<p>制定某个tag版本</p>
-<h2 id="1-4-用SSH访问容器"><a href="#1-4-用SSH访问容器" class="headerlink" title="1.4 用SSH访问容器"></a>1.4 用SSH访问容器</h2><p>先安装ssh</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">apt-get update</div><div class="line">apt-get install openssh-server</div></pre></td></tr></table></figure>
-<p>需要修改/etc/ssh/sshd_config文件中内容  </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">RSAAuthentication yes #启用 RSA 认证</div><div class="line">PubkeyAuthentication yes #启用公钥私钥配对认证方式</div><div class="line">AuthorizedKeysFile .ssh/authorized_keys #公钥文件路径（和上面生成的文件同）</div><div class="line">PermitRootLogin yes #root能使用ssh登录</div></pre></td></tr></table></figure>
-<p>重启sshd服务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">/etc/init.d/ssh stop</div><div class="line">/etc/init.d/ssh start</div></pre></td></tr></table></figure>
-<h1 id="2、常用命令"><a href="#2、常用命令" class="headerlink" title="2、常用命令"></a>2、常用命令</h1><h3 id="docker-start和docker-run"><a href="#docker-start和docker-run" class="headerlink" title="docker start和docker run"></a>docker start和docker run</h3><p><img src="http://static.open-open.com/lib/uploadImg/20151105/20151105115304_352.png?_=5942369" alt=""></p>
-<p>从图片可以看出，docker run 命令先是利用镜像创建了一个容器，然后运行这个容器。</p>
-<p>docker run命令类似于git pull命令。git pull命令就是git fetch 和 git merge两个命令的组合，同样的，docker run就是docker create和docker start两个命令的组合。 </p>
-<h3 id="docker-ps"><a href="#docker-ps" class="headerlink" title="docker ps"></a><strong>docker ps</strong></h3><p>docker ps 命令会列出所有运行中的容器。这隐藏了非运行态容器的存在，如果想要找出这些容器，我们需要使用docker ps -a</p>
-<h3 id="docker-images"><a href="#docker-images" class="headerlink" title="docker images"></a>docker images</h3><p>docker images命令会列出了所有顶层（top-level）镜像。实际上，在这里我们没有办法区分一个镜像和一个只读层，所以我们提出了top-level 镜像。只有创建容器时使用的镜像或者是直接pull下来的镜像能被称为顶层（top-level）镜像，并且每一个顶层镜像下面都隐藏了多个镜像层。 </p>
-<p>docker images -a</p>
-<p>docker images –a命令列出了所有的镜像，也可以说是列出了所有的可读层。如果你想要查看某一个image-id下的所有层，可以使用docker history来查看。 </p>
-<h3 id="docker-stop"><a href="#docker-stop" class="headerlink" title="docker stop "></a>docker stop <container-id></container-id></h3><p>docker stop命令会向运行中的容器发送一个SIGTERM的信号，然后停止所有的进程。 </p>
-<h3 id="docker-commit"><a href="#docker-commit" class="headerlink" title="docker commit "></a>docker commit <container-id></container-id></h3><p>docker commit命令将容器的可读写层转换为一个只读层，这样就把一个容器转换成了不可变的镜像。 </p>
-<h3 id="dockesr-exec"><a href="#dockesr-exec" class="headerlink" title="dockesr exec "></a>dockesr exec <running-container-id></running-container-id></h3><p>docker exec 命令会在运行中的容器执行一个新进程。 </p>
-<h3 id="docker-save"><a href="#docker-save" class="headerlink" title="docker save "></a>docker save <image-id></image-id></h3><p>docker save命令会创建一个镜像的压缩文件，这个文件能够在另外一个主机的Docker上使用。和export命令不同，这个命令为每一个层都保存了它们的元数据。这个命令只能对镜像生效。 </p>
-<h3 id="docker-export"><a href="#docker-export" class="headerlink" title="docker export "></a>docker export <container-id></container-id></h3><p>docker export命令创建一个tar文件，并且移除了元数据和不必要的层，将多个层整合成了一个层，只保存了当前统一视角看到的内容（expoxt后 的容器再import到Docker中，通过docker images –tree命令只能看到一个镜像；而save后的镜像则不同，它能够看到这个镜像的历史镜像）。 </p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.linuxidc.com/Linux/2015-07/120444.htm" target="_blank" rel="external">Ubuntu 15.04下安装Docker</a></p>
-<p><a href="http://blog.csdn.net/chszs/article/details/48252799" target="_blank" rel="external">Docker的镜像和容器的区别</a></p>
-<p><a href="http://www.cnblogs.com/bethal/p/5942369.html" target="_blank" rel="external">Docker容器和镜像区别</a></p>
-<p><a href="http://blog.csdn.net/qinyushuang/article/details/43342553" target="_blank" rel="external">Docker学习笔记（3）— 如何使用Dockerfile构建镜像</a></p>
+          0、基本概念镜像
 
-          
+Docker镜像通过镜像ID进行识别。镜像ID是一个64字符的十六进制的字符串。但是当我们运行镜像时，通常我们不会使用镜像ID来引用镜像，而是使用镜像名来引用。要列出本地所有有效的镜像，可以使用命令
+$ docker images
+镜像可以发布为不同版本，这种机制我们称之为标签（
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/07/12/Docker-配置和使用/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1795,81 +1623,15 @@ l_{exp}(H|D) =E_{x \sim D}[e^{-f(x)H(x)}]</script><p>求偏导</p>
       
         
           
-            <h1 id="1、安装node-js"><a href="#1、安装node-js" class="headerlink" title="1、安装node.js"></a>1、安装node.js</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo add-apt-repository ppa:chris-lea/node.js</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></div><div class="line"><span class="meta">#</span><span class="bash">原方法没有这一步，但是后面的操作会提示npm <span class="built_in">command</span> not found</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install npm</span></div></pre></td></tr></table></figure>
-<h1 id="2、安装hexo"><a href="#2、安装hexo" class="headerlink" title="2、安装hexo"></a>2、安装hexo</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo npm install hexo -g</span></div></pre></td></tr></table></figure>
-<h1 id="3、初始博客的根目录"><a href="#3、初始博客的根目录" class="headerlink" title="3、初始博客的根目录"></a>3、初始博客的根目录</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> ~/myblog</span></div><div class="line"><span class="meta">$</span><span class="bash"> hexo init</span></div></pre></td></tr></table></figure>
-<p>mac的根目录在</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/Users/david/david/myblog</div></pre></td></tr></table></figure>
-<h1 id="4、在github上新建仓库"><a href="#4、在github上新建仓库" class="headerlink" title="4、在github上新建仓库"></a>4、在github上新建仓库</h1><p>名称必须是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gitusername.github.io</div></pre></td></tr></table></figure>
-<p>我的就是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Schwimmer.github.io</div></pre></td></tr></table></figure>
-<p>并将本地的SSH KEY添加到git上（略）</p>
-<h1 id="5、让博客可以发布到git"><a href="#5、让博客可以发布到git" class="headerlink" title="5、让博客可以发布到git"></a>5、让博客可以发布到git</h1><p>1）安装hexo-deployer-Git（不然会出现ERROR Deployer not found: git）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-deployer-git --save</div></pre></td></tr></table></figure>
-<p>2） 配置你hexo博客根目录下的_config.yml文件(应该是最下面一行，修改成你的github)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: git@github.com:Schwimmer/Schwimmer.github.io.git</div><div class="line">  branch: master</div></pre></td></tr></table></figure>
-<blockquote>
-<p> tips</p>
-<p> 冒号后面一定要跟空格</p>
-</blockquote>
-<h1 id="6、hexo常用命令"><a href="#6、hexo常用命令" class="headerlink" title="6、hexo常用命令"></a>6、hexo常用命令</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">hexo clean #清除缓存</div><div class="line">hexo new &quot;title&quot; #新建文章</div><div class="line">hexo g #生成html，或hexo generate</div><div class="line">hexo s #在本地启动服务，启动后访问localhost:4000就可以打开，或hexo server</div><div class="line">hexo d #发布到git，发布后访问https://schwimmer.github.io/就可以打开，或hexo deploy</div></pre></td></tr></table></figure>
-<blockquote>
-<p> tips</p>
-<p> 我目前用的新建文章的方法，就是直接在source/_posts/下面新建md文件</p>
-<p> 可以偷懒写成</p>
-<p> cd ~/myblog</p>
-<p> hexo clean;hexo g;hexo s</p>
-<p> 或</p>
-<p> hexo clean;hexo g;hexo d</p>
-</blockquote>
-<h1 id="7、支持数学公式"><a href="#7、支持数学公式" class="headerlink" title="7、支持数学公式"></a>7、支持数学公式</h1><p>更新：</p>
-<p>现在用</p>
-<p><a href="http://blog.csdn.net/u014630987/article/details/78670258" target="_blank" rel="external">如何在 hexo 中支持 Mathjax？</a></p>
-<p><a href="http://blog.csdn.net/emptyset110/article/details/50123231" target="_blank" rel="external">搭建一个支持LaTEX的hexo博客</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-math --save</div></pre></td></tr></table></figure>
-<p>这时如果你会发现出了一些问题，原因是hexo先用marked.<a href="http://lib.csdn.net/base/javascript" target="_blank" rel="external">js</a>渲染，然后再交给MathJax渲染。在marked.js渲染的时候下划线<code>_</code>是被escape掉并且换成了<code>&lt;em&gt;</code>标签，即斜体字，另外LaTeX中的<code>\\</code>也会被转义成一个<code>\</code>，这样会导致MathJax渲染时不认为它是一个换行符了。</p>
-<p>为了使Marked.js与MathJax共存，打开node_modules/marked/lib/marked.js并做如下改动</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Step 1:</div><div class="line">  escape: /^\\([\\`*&#123;&#125;\[\]()# +\-.!_&gt;])/,11替换成</div><div class="line">  escape: /^\\([`*\[\]()# +\-.!_&gt;])/,11这一步是在原基础上取消了对\\,\&#123;,\&#125;的转义(escape)</div><div class="line">Step 2:</div><div class="line">  em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,11替换成</div><div class="line">  em:/^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML&quot;&gt;&lt;/script&gt;</div></pre></td></tr></table></figure>
-<h1 id="8、安装主题"><a href="#8、安装主题" class="headerlink" title="8、安装主题"></a>8、安装主题</h1><p>转自：<a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="external">NexT主题安装教程</a></p>
-<h1 id="9、文章阅读计数"><a href="#9、文章阅读计数" class="headerlink" title="9、文章阅读计数"></a>9、文章阅读计数</h1><p>转自：<a href="http://www.jianshu.com/p/702a7aec4d00" target="_blank" rel="external">Hexo添加不蒜子和LeanCloud统计无标题文章</a></p>
-<p>找到站点的<code>themes/next/layout/_partials</code>目录下的<code>footer.swig</code>文件。插入代码如下。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&#123;% if theme.copyright %&#125;</div><div class="line">&lt;div class=&quot;powered-by&quot;&gt;</div><div class="line">  &#123;&#123; __(&apos;footer.powered&apos;, &apos;&lt;a class=&quot;theme-link&quot; href=&quot;https://hexo.io&quot;&gt;Hexo&lt;/a&gt;&apos;) &#125;&#125;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">&lt;div class=&quot;theme-info&quot;&gt;</div><div class="line">  &#123;&#123; __(&apos;footer.theme&apos;) &#125;&#125; -</div><div class="line">  &lt;a class=&quot;theme-link&quot; href=&quot;https://github.com/iissnan/hexo-theme-next&quot;&gt;</div><div class="line">    NexT.&#123;&#123; theme.scheme &#125;&#125;</div><div class="line">  &lt;/a&gt;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line"># 此位置插入以下代码</div><div class="line">&lt;div&gt;</div><div class="line">&lt;script async src=&quot;https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js&quot;&gt;&lt;/script&gt;</div><div class="line"></div><div class="line">本站总访问量 &lt;span id=&quot;busuanzi_value_site_pv&quot;&gt;&lt;/span&gt; 次&amp;nbsp&amp;nbsp&amp;nbsp</div><div class="line">本站访客数&lt;span id=&quot;busuanzi_value_site_uv&quot;&gt;&lt;/span&gt;人次</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">&#123;% endif %&#125;</div></pre></td></tr></table></figure>
-<h1 id="10、增加图片"><a href="#10、增加图片" class="headerlink" title="10、增加图片"></a>10、增加图片</h1><p>1 把主页配置文件<code>_config.yml</code> 里的<code>post_asset_folder:</code>这个选项设置为<code>true</code></p>
-<p>2 在你的hexo目录下执行这样一句话<code>npm install hexo-asset-image --save</code>，这是下载安装一个可以上传本地图片的插件，来自dalao：<a href="https://github.com/CodeFalling/hexo-asset-image" target="_blank" rel="external">dalao的git</a></p>
-<p>3 等待一小段时间后，再运行<code>hexo n &quot;xxxx&quot;</code>来生成md博文时，<code>/source/_posts</code>文件夹内除了<code>xxxx.md</code>文件还有一个<strong>同名的文件夹</strong></p>
-<p>4 最后在<code>xxxx.md</code>中想引入图片时，先把图片复制到xxxx这个文件夹中，然后只需要在xxxx.md中按照markdown的格式引入图片：</p>
-<p><code>![你想输入的替代文字](xxxx/图片名.jpg)</code></p>
-<p><strong>注意：</strong>xxxx是这个md文件的名字，也是同名文件夹的名字，你想引入的图片就只需要放入xxxx这个文件夹内就好了，很像引用相对路径。</p>
-<p>5 最后检查一下，<code>hexo g</code>生成页面后，进入<code>public\2017\02\26\index.html</code>文件中查看相关字段，可以发现，html标签内的语句是<code>&lt;img src=&quot;2017/02/26/xxxx/图片名.jpg&quot;&gt;</code>，而不是<code>&lt;img src=&quot;xxxx/图片名.jpg&gt;</code>。这很重要，关乎你的网页是否可以真正加载你想插入的图片。</p>
-<h1 id="11、sitemap-插件"><a href="#11、sitemap-插件" class="headerlink" title="11、sitemap 插件"></a>11、sitemap 插件</h1><p><a href="https://www.jianshu.com/p/86557c34b671" target="_blank" rel="external">Hexo Seo优化让你的博客在google搜索排名第一</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;meta name=&quot;google-site-verification&quot; content=&quot;Mx7Ikp0IpBtTbSpHDTBV0_CMJA-E8CLn8NRIrwyq5m4&quot; /&gt;</div><div class="line">&lt;meta name=&quot;baidu-site-verification&quot; content=&quot;ZBTsWx4NdC&quot; /&gt;</div></pre></td></tr></table></figure>
-<p>谷歌与百度的站点地图，前者适用于其他搜索引擎，用来手动提交以增加收录</p>
-<p>安装：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">npm install hexo-generator-sitemap@1 --save</div><div class="line">npm install hexo-generator-baidu-sitemap@0.1.1 --save</div></pre></td></tr></table></figure>
-<p><code>_config.yml</code>添加代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">baidusitemap:</div><div class="line">  path: baidusitemap.xml</div></pre></td></tr></table></figure>
-<p>谷歌的<code>sitemap.xml</code>不需要写到配置文件中，自动生效。</p>
-<p>在主页后面加<code>/baidusitemap.xml</code>可以看到baidusitemap（谷歌同理），将该网址它提交给百度搜索：<a href="http://zhanzhang.baidu.com/?castk=LTE%3D" target="_blank" rel="external">百度站长平台</a>，贴吧账号无法在这里使用。</p>
-<p>不过由于Github禁止了百度爬虫，百度无法抓取其中的URL：</p>
-<h1 id="绑定代码到Coding"><a href="#绑定代码到Coding" class="headerlink" title="绑定代码到Coding"></a>绑定代码到Coding</h1><p>创建coding仓库</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/4093388-383ab28e2c2b2e84.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt=""></p>
-<p>上传公钥</p>
-<p><a href="https://coding.net/user/account/setting/keys" target="_blank" rel="external">https://coding.net/user/account/setting/keys</a></p>
-<p>测试SSH Key 是否配置成功</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ssh -T git@git.coding.net</div></pre></td></tr></table></figure>
-<p>用来部署Hexo博客的Coding项目地址为：<code>git@git.coding.net:ddxy1986/DavidXu-Blog</code></p>
-<p>deploy的配置改为</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: </div><div class="line">    github: git@github.com:Schwimmer/Schwimmer.github.io.git</div><div class="line">    coding: git@git.coding.net:ddxy1986/DavidXu-Blog</div><div class="line">  branch: master</div></pre></td></tr></table></figure>
-<h2 id="配置Coding项目的Pages服务"><a href="#配置Coding项目的Pages服务" class="headerlink" title="配置Coding项目的Pages服务"></a>配置Coding项目的Pages服务</h2><h3 id="开启Coding项目的Pages服务"><a href="#开启Coding项目的Pages服务" class="headerlink" title="开启Coding项目的Pages服务"></a>开启Coding项目的Pages服务</h3><p><img src="https://upload-images.jianshu.io/upload_images/4093388-1ab23c0ef7e753ea.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt=""></p>
-<h1 id="踩过的坑"><a href="#踩过的坑" class="headerlink" title="踩过的坑"></a>踩过的坑</h1><p>1）若启动时报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> Error: Warning: Permanently added &apos;github.com,192.30.253.112&apos; (RSA) to the list of known hosts.</div><div class="line">sign_and_send_pubkey: signing failed: agent refused operation</div><div class="line">Permission denied (publickey).</div><div class="line">fatal: Could not read from remote repository.</div></pre></td></tr></table></figure>
-<p>处理是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ eval &quot;$(ssh-agent -s)&quot;</div><div class="line">$ ssh-add</div></pre></td></tr></table></figure>
-<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><p><a href="http://blog.csdn.net/kesarchen/article/details/50579550" target="_blank" rel="external">ubuntu下使用hexo搭建博客</a> </p>
-
-          
+          1、安装node.js12345$ sudo add-apt-repository ppa:chris-lea/node.js$ sudo apt-get update$ sudo apt-get install nodejs#原方法没有这一步，但是后面的操作会提示npm command not f
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/07/12/Hexo + Github 搭建博客入门/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
