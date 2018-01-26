@@ -437,6 +437,243 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2018/01/25/机器学习笔记-最大熵/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2018/01/25/机器学习笔记-最大熵/" itemprop="url">
+                  未命名
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-25T17:02:30+08:00">
+                2018-01-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="机器学习笔记-最大熵"><a href="#机器学习笔记-最大熵" class="headerlink" title="机器学习笔记-最大熵"></a>机器学习笔记-最大熵</h1><h1 id="1、最大熵原理"><a href="#1、最大熵原理" class="headerlink" title="1、最大熵原理"></a>1、最大熵原理</h1><p>日常生活中，很多事情的发生表现出一定的随机性，试验的结果往往是不确定的，也不知道这个随机现象所服从的概率分布。<strong>最大熵的实质</strong>就是，在已知部分知识的前提下，关于未知分布最合理的推断就是符合已知知识最不确定或者最随机的推断。任何其他的选择都意味着我们增加了其他的约束和假设。</p>
+<p>将最大熵应用到分类，就是最大熵模型。给定一个训练集：</p>
+<script type="math/tex; mode=display">
+T = \{  (x_1,y_1),  (x_2,y_2),..., (x_N,y_N)\}</script><p>其中$x_i \in X$是输入，$y_i \in Y$是输出，X和Y表示输入和输出空间。N为样本数。<strong>目标是</strong>，利用最大熵原理选出一个最好的分类模型，即对于任意给定的输入$x \in X$，可以以概率$p(y|x)$输出$y \in Y$ 。</p>
+<p>按照最大熵原理，应该<strong>优先保证模型满足已知的所有约束</strong>。思路是，从训练数据T中抽取若干有用的特征，要求这些特征在T上关于经验分布$\tilde{p}(x,y)$的数学期望与它们在模型中关于$p(x,y)$的数学期望相等。这样，一个特征就是一个约束了。</p>
+<p>这里就涉及到，<strong>特征如何刻画？经验分布如何表示？</strong></p>
+<h1 id="2、特征函数"><a href="#2、特征函数" class="headerlink" title="2、特征函数"></a>2、特征函数</h1><p>假设通过特征选择，抽取若干特征。特征通常由特征函数来表示。例如</p>
+<script type="math/tex; mode=display">
+f(x,y) =\left\{\begin{matrix}
+\begin{aligned}
+& 1，若x,y满足某个事实 \\ 
+& 0，否则
+\end{aligned}
+\end{matrix}\right.</script><p>这里的特征不是指输入的某个特征，而是指输入和输出共同的特征。</p>
+<blockquote>
+<p>例如，假设我们需要判断“打”是动词还是量词，已知的训练数据有</p>
+<p>(x1,y1)=(一打火柴，量词);</p>
+<p>(x2,y2)=(三打啤酒，量词);</p>
+<p>(x3,y3)=(打电话，动词);</p>
+<p>(x4,y4)=(打篮球，动词);</p>
+<p>通过观察，发现“打”前面是数字时，是量词，“打”后面是名词时，是动词。这就是从训练数据中提取的两个特征，可分别用特征函数表示为</p>
+</blockquote>
+<h1 id="3、经验分布"><a href="#3、经验分布" class="headerlink" title="3、经验分布"></a>3、经验分布</h1><p>经验（概率）分布就是通过对训练集T进行统计得到的分布，用$\tilde p$表示。这里列举两个经验分布</p>
+<script type="math/tex; mode=display">
+\tilde p(x,y) = \frac {count(x,y)} {N} , \tilde p(x)=\frac {count(x)} {N}</script><p>其中，count表示出现的次数。</p>
+<h1 id="4、约束条件"><a href="#4、约束条件" class="headerlink" title="4、约束条件"></a>4、约束条件</h1><p>对于任意一个特征函数f，$E<em>{\tilde p}f$ 表示f在训练数据T上关于$\tilde p(x,y)$的数学期望， $E</em>{p}f$ 表示f在训练数据T上关于$p(x,y)$的数学期望。按照期望的定义，我们有</p>
+<script type="math/tex; mode=display">
+E_{\tilde p}f=\sum_{x,y}\tilde p(x,y)f(x,y)</script><script type="math/tex; mode=display">
+E_{ p}f=\sum_{x,y} p(x,y)f(x,y)</script><p>其中，p(x,y)是未知的，而建模的目标是生成$p(y|x)$，因此，根据Bayes定理，$p(x,y)=p(x)p(y|x)$。在样本数量足够的条件下，$p(x)$可以用$\tilde p(x)$近似表示。这样</p>
+<script type="math/tex; mode=display">
+E_{ p}f=\sum_{x,y} \tilde p(x)p(y|x)f(x,y)</script><p>对于概率分布$p(y|x)$，我们希望特征f的期望值应该和从训练集中得到的特征期望值是一致的，因此，<strong>增加约束</strong></p>
+<script type="math/tex; mode=display">
+E_{ p}f=E_{\tilde p}f</script><p>假设我们从训练集中抽取了n个特征，相应的，便有n个特征函数$f_i(i=1,2,…,n)$以及n个约束条件</p>
+<script type="math/tex; mode=display">
+C_i:E_{ p}(f_i)=E_{\tilde p}(f_i) \tag {3-1}</script><blockquote>
+<p>关于约束条件的几何解释</p>
+<p><img src="/2018/01/25/机器学习笔记-最大熵/home/david/00projects/00markdown/public_for_git/Algorithm/机器学习笔记-最大熵/最大熵1.png" alt="最大熵1"></p>
+<p>（a）：P是所有可能的概率空间，此时没有约束条件，所有的概率模型$p(y|x)$都是允许的；</p>
+<p>（b）：增加了一个线性约束条件$C_1$，此时，目标分布$p(y|x)$只能落在由$C_1$定义的线段上；</p>
+<p>（c）：在（b）的基础上增加了另一个约束条件$C_2$ ，且$C_1 \cap C_2  \neq \varnothing$。此时，目标分布只能落在交点上，即被唯一确定；</p>
+<p>（d）：在（b）基础上增加了另一个约束$C_3$，且$C_1 \cap C_2  = \varnothing$，此时不存在能够同时满足$C_1$和$C_3$的$p(y|x)$。</p>
+</blockquote>
+<p>利用（3-1）定义的约束条件，我们定义P的一个子空间</p>
+<script type="math/tex; mode=display">
+C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><h1 id="5、最大熵模型"><a href="#5、最大熵模型" class="headerlink" title="5、最大熵模型"></a>5、最大熵模型</h1><p>由于我们的目标是获得一个条件分布，因此这里也采用相应的条件熵</p>
+<script type="math/tex; mode=display">
+H(p(y|x))=-\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)</script><p>可以看出这里也是用$\tilde p(x)$来近似$p(x)$。以下将$H(p(y|x))$简记为$H(p)$。至此，可以给出最大熵模型的完整描述。</p>
+<p>对于给定的训练集T，特征函数$f_i(x,y), i=1,2,…n$，最大熵模型就是求解</p>
+<script type="math/tex; mode=display">
+\underset {p \in C} {max} \ \  H(p) = \begin{pmatrix}
+-\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)
+\end{pmatrix}, \\
+s.t. \sum_y p(y|x)=1 \tag {5-1} \\
+s.t. \ C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><p>其中的s.t.是为了保证$p(y|x)$是一个（合法的）条件概率分布。</p>
+<p>等价于一个求极小值问题</p>
+<script type="math/tex; mode=display">
+\underset {p \in C} {min} \ \  -H(p) = \begin{pmatrix}
+\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)
+\end{pmatrix}, \\
+s.t. \sum_y p(y|x)=1 \tag {5-2} \\
+s.t. \ C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><h1 id="6、模型求解"><a href="#6、模型求解" class="headerlink" title="6、模型求解"></a>6、模型求解</h1><p>对于5-1的求解，主要思路和步骤如下：</p>
+<ol>
+<li>利用Lagrange乘子将最大熵模型由一个带约束的最优化问题转为无约束的最优化问题，这是一个<strong>极小极大问题（min max）</strong>。</li>
+<li>利用对偶问题等价性，转化为求解上一步得到的极大/极小问题的对偶问题，也是一个极大极小问题。</li>
+</ol>
+<h2 id="6-1-原始问题和对偶问题"><a href="#6-1-原始问题和对偶问题" class="headerlink" title="6.1 原始问题和对偶问题"></a>6.1 原始问题和对偶问题</h2><p>根据（5-2），引入拉格朗日乘子$\lambda=(\lambda_0,\lambda_1,…,\lambda_n)^T$，定义拉格朗日函数</p>
+<script type="math/tex; mode=display">
+L(p,\lambda) = -H(p) + \lambda_0(1-\sum_y p(y|x))+\sum_{i=1}^n\lambda_i(\tau_i-E_p(f_i))  \tag{6-1}</script><p>利用对偶性，求解（6-1）的<strong>原始问题</strong>表示为：</p>
+<script type="math/tex; mode=display">
+\underset {p \in C} {min}\  \underset {\lambda} {max}\ L(p,\lambda) \tag{6-2}</script><p><strong>对偶问题</strong>为：</p>
+<script type="math/tex; mode=display">
+\underset {\lambda} {max}\ \underset {p \in C} {min}\  L(p,\lambda) \tag{6-3}</script><p>由于$H(p)$是关于p的凸函数，因此要求解最大熵模型，只需求解对偶问题（6-3）即可。</p>
+<h3 id="6-1-1-指数形式的解"><a href="#6-1-1-指数形式的解" class="headerlink" title="6.1.1 指数形式的解"></a>6.1.1 指数形式的解</h3><p>首先求解内部的极小问题。由于$\underset {p \in C} {min}\  L(p,\lambda)$是关于$\lambda$的函数，将其记做：</p>
+<script type="math/tex; mode=display">
+\Psi (\lambda) =\underset {p \in C} {min}\  L(p,\lambda) = L(p_{\lambda}, \lambda) \tag {6-4}</script><p>其中</p>
+<script type="math/tex; mode=display">
+p_{\lambda}=\underset {p \in C} {argmin}\ L(p,\lambda)=p_{\lambda}(y|x) \tag {6-5}</script><p>根据拉格朗日乘子法，求$L(p,\lambda)$对$p(y|x)$的偏导，得（求解过程略）：</p>
+<script type="math/tex; mode=display">
+p_{\lambda}=\frac {1} {Z_{\lambda}(x)} \ \exp(\sum_{i=1}^n \lambda_i f_i(x,y)) \tag{6-6}</script><p>其中，</p>
+<script type="math/tex; mode=display">
+Z_{\lambda}(x)=\sum_y \exp(\sum_{i=1}^n \lambda_i f_i(x,y)) \tag{6-7}</script><p>称为<strong>规范化因子</strong>（normalizing factor）。注意，此时已经没有$\lambda_0$了。</p>
+<p>由（6-6）定义的$p_{\lambda}$就是最大熵模型的解，它具有<strong>指数形式</strong>。其中，$\lambda_i$就是特征$f_i$的权重，越大表示特征越重要。</p>
+<h3 id="6-1-2-最大似然估计"><a href="#6-1-2-最大似然估计" class="headerlink" title="6.1.2 最大似然估计"></a>6.1.2 最大似然估计</h3><p>得到对偶问题的内层极小值问题的解之后，接着求解外层的极大值问题$\underset {\lambda} {max} \ \Psi(\lambda)$。</p>
+<p>设其解为</p>
+<script type="math/tex; mode=display">
+\lambda^* = \underset {\lambda} {argmax} \ \Psi(\lambda) \tag{6-8}</script><p>则最大熵模型的解为</p>
+<script type="math/tex; mode=display">
+p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$与最大似然估计是等价的！</p>
+<h1 id="7、最优化方法"><a href="#7、最优化方法" class="headerlink" title="7、最优化方法"></a>7、最优化方法</h1><p>通用的方法有梯度下降，拟牛顿法等，最大熵模型有两个量身定做的方法：通用迭代尺度法（Generalized Iterative Scaling，GIS）和改进的迭代尺度法（Impoved Iterative Scaling，IIS）。</p>
+<h2 id="7-1-GIS算法"><a href="#7-1-GIS算法" class="headerlink" title="7.1 GIS算法"></a>7.1 GIS算法</h2><blockquote>
+<p>算法1：</p>
+<p>S1：初始化参数，令$\lambda=0$</p>
+<p>S2：计算$E_{\tilde p}(f_i),\ i=1,2,…,n$</p>
+<p>S3：执行一次迭代，对参数做一次刷新。</p>
+<p>​    计算$E<em>{p</em>{\lambda}}(f_i)$</p>
+<p>​    FOR i=1,2,…,n DO {</p>
+<p>​        $\lambda<em>i\  += \ \eta \log\frac {E</em>{\tilde p}(f<em>i)} {E</em>{p_{\lambda}}(f_i)}$</p>
+<p>​    }</p>
+<p>S4：检查是否收敛，若未收敛则继续S3</p>
+</blockquote>
+<p>其中，$\eta$是学习率，在实际中取$\frac {1} {C}$，$$，表示训练数据中包含特征最多的那个样本所包含的特征个数。</p>
+<script type="math/tex; mode=display">
+\Delta\lambda_i=\eta \log\frac {E_{\tilde p}(f_i)} {E_{p_{\lambda}}(f_i)}</script><p>是校正量。</p>
+<p>每次迭代，先用当前的权重估算每个特征$f<em>i$在训练数据中的概率分布的期望，然后逐个与相应的经验分布的期望比较，其偏差程度通过$\log\frac {E</em>{\tilde p}(f<em>i)} {E</em>{p_{\lambda}}(f_i)}$来进行刻画。</p>
+<p>收敛条件就是当两次迭代的$\lambda$在一个较小的范围。</p>
+<p>GIS每次迭代时间很长，不太稳定，容易溢出，一般不会使用。</p>
+<h2 id="7-2-IIS算法"><a href="#7-2-IIS算法" class="headerlink" title="7.2 IIS算法"></a>7.2 IIS算法</h2><p>与GIS的不同主要在$\Delta\lambda_i$的计算上。IIS通过求解方程</p>
+<script type="math/tex; mode=display">
+\sum_{x,y} \tilde p(x)p(y|x)f_i(x,y)\exp(\Delta\lambda_i\sum_{i=1}^nf_i(x,y))=\tilde p(f_i)</script><p>1）若$\sum<em>{i=1}^nf_i(x,y)$为常数，即对任意样本(x,y)，都有$\sum</em>{i=1}^nf_i(x,y)=C$，则</p>
+<script type="math/tex; mode=display">
+\Delta\lambda_i=\frac {1} {C} \log\frac {E_{\tilde p}(f_i)} {E_{p_{\lambda}}(f_i)}</script><p>此时，IIS可以看做是GIS的一种推广。</p>
+<p>2）若$\sum_{i=1}^nf_i(x,y)$不是常数，则需要通过数值方式来求解$\Delta\lambda_i$，如牛顿法。</p>
+<h1 id="8、优缺点"><a href="#8、优缺点" class="headerlink" title="8、优缺点"></a>8、优缺点</h1><p>优点是：在建模时，只需要集中精力选取特征，不需要花费精力考虑如何使用这些特征，可以灵活使用不同类型的特征。</p>
+<p>缺点是计算量大。</p>
+<p>参考</p>
+<p>【1】 <a href="http://blog.csdn.net/itplus/article/details/26550273" target="_blank" rel="external">最大熵学习笔记</a></p>
+<p>【2】统计学习方法</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2018/01/25/Gensim-LDA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -632,127 +869,6 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2018/01/25/网页中可以提取什么/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2018/01/25/网页中可以提取什么/" itemprop="url">
-                  未命名
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-25T17:02:30+08:00">
-                2018-01-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <hr>
-<h2 id="网页中可以提取什么"><a href="#网页中可以提取什么" class="headerlink" title="网页中可以提取什么"></a>网页中可以提取什么</h2>
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2018/01/25/OpenRTB笔记/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -833,6 +949,7 @@
             <hr>
 <h2 id="OpenRTB笔记"><a href="#OpenRTB笔记" class="headerlink" title="OpenRTB笔记"></a>OpenRTB笔记</h2><p><a href="https://github.com/leeowenowen/OpenRTB" target="_blank" rel="external">文档的中文翻译</a></p>
 <p>1 术语</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -859,6 +976,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p>2、对象模型</p>
 <p>2.1 BidRequest</p>
 <p>在它的直属子对象中，只有<code>Imp</code>是技术上必须的，因为它是描述一次展示的基础信息，必须使用<code>Banner</code>, <code>Video</code>以及<code>Native</code>中的至少一个来定义展示的类型（例如， 无论一个或者多个展示者想要接收；尽管一次竞价是这些指明类型中的明确的一种）。一个展示对象可能包含一组私有市场。</p>
@@ -906,7 +1024,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2018/01/25/gensim处理中文word2vec/">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2018/01/25/网页中可以提取什么/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -928,7 +1046,7 @@
             
               
                 
-                <a class="post-title-link" href="/2018/01/25/gensim处理中文word2vec/" itemprop="url">
+                <a class="post-title-link" href="/2018/01/25/网页中可以提取什么/" itemprop="url">
                   未命名
                 </a>
               
@@ -983,13 +1101,8 @@
       
         
           
-            <h1 id="gensim处理中文word2vec"><a href="#gensim处理中文word2vec" class="headerlink" title="gensim处理中文word2vec"></a>gensim处理中文word2vec</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> gensim.models <span class="keyword">import</span> KeyedVectors  </div><div class="line"></div><div class="line">model = KeyedVectors.load_word2vec_format(<span class="string">'/home/david/00projects/00user-gene/model_20150427'</span>, binary=<span class="keyword">True</span>)  </div><div class="line">a = model.similarity(<span class="string">'refreshed'</span>, <span class="string">'Refreshed'</span>)</div></pre></td></tr></table></figure>
-<p>这是用中文训练出来的模型，会报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">UnicodeDecodeError: &apos;utf8&apos; codec can&apos;t decode byte 0x9b in position 2: invalid start byte</div></pre></td></tr></table></figure>
-<p>官网的FAQ是这样的</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">Q10: Loading a word2vec model fails with UnicodeDecodeError: &apos;utf-8&apos; codec can&apos;t decode bytes in position ...</div><div class="line"></div><div class="line">A: The strings (words) stored in your model are not valid utf8. By default, gensim decodes the words using the strict encoding settings, which results in the above exception whenever an invalid utf8 sequence is encountered.</div><div class="line"></div><div class="line">The fix is on your side and it is to either:</div><div class="line"></div><div class="line">a) Store your model using a program that understands unicode and utf8 (such as gensim). Some C and Java word2vec tools are known to truncate the strings at byte boundaries, which can result in cutting a multi-byte utf8 character in half, making it non-valid utf8, leading to this error.</div><div class="line"></div><div class="line">b) Set the unicode_errors flag when running load_word2vec_model, e.g. load_word2vec_model(..., unicode_errors=&apos;ignore&apos;). Note that this silences the error, but the utf8 problem is still there -- invalid utf8 characters will just be ignored in this case.</div></pre></td></tr></table></figure>
-<p>然并卵。</p>
-
+            <hr>
+<h2 id="网页中可以提取什么"><a href="#网页中可以提取什么" class="headerlink" title="网页中可以提取什么"></a>网页中可以提取什么</h2>
           
         
       
@@ -1155,7 +1268,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2018/01/25/机器学习笔记-最大熵/">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2018/01/25/gensim处理中文word2vec/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -1177,7 +1290,7 @@
             
               
                 
-                <a class="post-title-link" href="/2018/01/25/机器学习笔记-最大熵/" itemprop="url">
+                <a class="post-title-link" href="/2018/01/25/gensim处理中文word2vec/" itemprop="url">
                   未命名
                 </a>
               
@@ -1232,69 +1345,12 @@
       
         
           
-            <h1 id="机器学习笔记-最大熵"><a href="#机器学习笔记-最大熵" class="headerlink" title="机器学习笔记-最大熵"></a>机器学习笔记-最大熵</h1><h1 id="1、最大熵原理"><a href="#1、最大熵原理" class="headerlink" title="1、最大熵原理"></a>1、最大熵原理</h1><p>日常生活中，很多事情的发生表现出一定的随机性，试验的结果往往是不确定的，也不知道这个随机现象所服从的概率分布。<strong>最大熵的实质</strong>就是，在已知部分知识的前提下，关于未知分布最合理的推断就是符合已知知识最不确定或者最随机的推断。任何其他的选择都意味着我们增加了其他的约束和假设。</p>
-<p>将最大熵应用到分类，就是最大熵模型。给定一个训练集：<br>$$<br>T = \{  (x_1,y_1),  (x_2,y_2),…, (x_N,y_N)\}<br>$$<br>其中$x_i \in X$是输入，$y_i \in Y$是输出，X和Y表示输入和输出空间。N为样本数。<strong>目标是</strong>，利用最大熵原理选出一个最好的分类模型，即对于任意给定的输入$x \in X$，可以以概率$p(y|x)$输出$y \in Y$ 。</p>
-<p>按照最大熵原理，应该<strong>优先保证模型满足已知的所有约束</strong>。思路是，从训练数据T中抽取若干有用的特征，要求这些特征在T上关于经验分布$\tilde{p}(x,y)$的数学期望与它们在模型中关于$p(x,y)$的数学期望相等。这样，一个特征就是一个约束了。</p>
-<p>这里就涉及到，<strong>特征如何刻画？经验分布如何表示？</strong></p>
-<h1 id="2、特征函数"><a href="#2、特征函数" class="headerlink" title="2、特征函数"></a>2、特征函数</h1><p>假设通过特征选择，抽取若干特征。特征通常由特征函数来表示。例如<br>$$<br>f(x,y) =\left\{\begin{matrix}<br>\begin{aligned}<br>&amp; 1，若x,y满足某个事实 \ <br>&amp; 0，否则<br>\end{aligned}<br>\end{matrix}\right.<br>$$<br>这里的特征不是指输入的某个特征，而是指输入和输出共同的特征。</p>
-<blockquote>
-<p>例如，假设我们需要判断“打”是动词还是量词，已知的训练数据有</p>
-<p>(x1,y1)=(一打火柴，量词);</p>
-<p>(x2,y2)=(三打啤酒，量词);</p>
-<p>(x3,y3)=(打电话，动词);</p>
-<p>(x4,y4)=(打篮球，动词);</p>
-<p>通过观察，发现“打”前面是数字时，是量词，“打”后面是名词时，是动词。这就是从训练数据中提取的两个特征，可分别用特征函数表示为</p>
-</blockquote>
-<h1 id="3、经验分布"><a href="#3、经验分布" class="headerlink" title="3、经验分布"></a>3、经验分布</h1><p>经验（概率）分布就是通过对训练集T进行统计得到的分布，用$\tilde p$表示。这里列举两个经验分布<br>$$<br>\tilde p(x,y) = \frac {count(x,y)} {N} , \tilde p(x)=\frac {count(x)} {N}<br>$$<br>其中，count表示出现的次数。</p>
-<h1 id="4、约束条件"><a href="#4、约束条件" class="headerlink" title="4、约束条件"></a>4、约束条件</h1><p>对于任意一个特征函数f，$E_{\tilde p}f$ 表示f在训练数据T上关于$\tilde p(x,y)$的数学期望， $E_{p}f$ 表示f在训练数据T上关于$p(x,y)$的数学期望。按照期望的定义，我们有<br>$$<br>E_{\tilde p}f=\sum_{x,y}\tilde p(x,y)f(x,y)<br>$$</p>
-<p>$$<br>E_{ p}f=\sum_{x,y} p(x,y)f(x,y)<br>$$</p>
-<p>其中，p(x,y)是未知的，而建模的目标是生成$p(y|x)$，因此，根据Bayes定理，$p(x,y)=p(x)p(y|x)$。在样本数量足够的条件下，$p(x)$可以用$\tilde p(x)$近似表示。这样<br>$$<br>E_{ p}f=\sum_{x,y} \tilde p(x)p(y|x)f(x,y)<br>$$<br>对于概率分布$p(y|x)$，我们希望特征f的期望值应该和从训练集中得到的特征期望值是一致的，因此，<strong>增加约束</strong><br>$$<br>E_{ p}f=E_{\tilde p}f<br>$$<br>假设我们从训练集中抽取了n个特征，相应的，便有n个特征函数$f_i(i=1,2,…,n)$以及n个约束条件<br>$$<br>C_i:E_{ p}(f_i)=E_{\tilde p}(f_i) \tag {3-1}<br>$$</p>
-<blockquote>
-<p>关于约束条件的几何解释</p>
-<p><img src="/2018/01/25/机器学习笔记-最大熵/home/david/00projects/00markdown/public_for_git/Algorithm/机器学习笔记-最大熵/最大熵1.png" alt="最大熵1"></p>
-<p>（a）：P是所有可能的概率空间，此时没有约束条件，所有的概率模型$p(y|x)$都是允许的；</p>
-<p>（b）：增加了一个线性约束条件$C_1$，此时，目标分布$p(y|x)$只能落在由$C_1$定义的线段上；</p>
-<p>（c）：在（b）的基础上增加了另一个约束条件$C_2$ ，且$C_1 \cap C_2  \neq \varnothing$。此时，目标分布只能落在交点上，即被唯一确定；</p>
-<p>（d）：在（b）基础上增加了另一个约束$C_3$，且$C_1 \cap C_2  = \varnothing$，此时不存在能够同时满足$C_1$和$C_3$的$p(y|x)$。</p>
-</blockquote>
-<p>利用（3-1）定义的约束条件，我们定义P的一个子空间<br>$$<br>C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,…,n\}<br>$$</p>
-<h1 id="5、最大熵模型"><a href="#5、最大熵模型" class="headerlink" title="5、最大熵模型"></a>5、最大熵模型</h1><p>由于我们的目标是获得一个条件分布，因此这里也采用相应的条件熵<br>$$<br>H(p(y|x))=-\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)<br>$$<br>可以看出这里也是用$\tilde p(x)$来近似$p(x)$。以下将$H(p(y|x))$简记为$H(p)$。至此，可以给出最大熵模型的完整描述。</p>
-<p>对于给定的训练集T，特征函数$f_i(x,y), i=1,2,…n$，最大熵模型就是求解<br>$$<br>\underset {p \in C} {max}    H(p) = \begin{pmatrix}<br>-\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)<br>\end{pmatrix}, \\<br>s.t. \sum_y p(y|x)=1 \tag {5-1} \\<br>s.t.  C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,…,n\}<br>$$<br>其中的s.t.是为了保证$p(y|x)$是一个（合法的）条件概率分布。</p>
-<p>等价于一个求极小值问题<br>$$<br>\underset {p \in C} {min}    -H(p) = \begin{pmatrix}<br>\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)<br>\end{pmatrix}, \\<br>s.t. \sum_y p(y|x)=1 \tag {5-2} \\<br>s.t.  C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,…,n\}<br>$$</p>
-<h1 id="6、模型求解"><a href="#6、模型求解" class="headerlink" title="6、模型求解"></a>6、模型求解</h1><p>对于5-1的求解，主要思路和步骤如下：</p>
-<ol>
-<li>利用Lagrange乘子将最大熵模型由一个带约束的最优化问题转为无约束的最优化问题，这是一个<strong>极小极大问题（min max）</strong>。</li>
-<li>利用对偶问题等价性，转化为求解上一步得到的极大/极小问题的对偶问题，也是一个极大极小问题。</li>
-</ol>
-<h2 id="6-1-原始问题和对偶问题"><a href="#6-1-原始问题和对偶问题" class="headerlink" title="6.1 原始问题和对偶问题"></a>6.1 原始问题和对偶问题</h2><p>根据（5-2），引入拉格朗日乘子$\lambda=(\lambda_0,\lambda_1,…,\lambda_n)^T$，定义拉格朗日函数<br>$$<br>L(p,\lambda) = -H(p) + \lambda_0(1-\sum_y p(y|x))+\sum_{i=1}^n\lambda_i(\tau_i-E_p(f_i))  \tag{6-1}<br>$$<br>利用对偶性，求解（6-1）的<strong>原始问题</strong>表示为：<br>$$<br>\underset {p \in C} {min}  \underset {\lambda} {max} L(p,\lambda) \tag{6-2}<br>$$<br><strong>对偶问题</strong>为：<br>$$<br>\underset {\lambda} {max} \underset {p \in C} {min}  L(p,\lambda) \tag{6-3}<br>$$<br>由于$H(p)$是关于p的凸函数，因此要求解最大熵模型，只需求解对偶问题（6-3）即可。</p>
-<h3 id="6-1-1-指数形式的解"><a href="#6-1-1-指数形式的解" class="headerlink" title="6.1.1 指数形式的解"></a>6.1.1 指数形式的解</h3><p>首先求解内部的极小问题。由于$\underset {p \in C} {min}  L(p,\lambda)$是关于$\lambda$的函数，将其记做：<br>$$<br>\Psi (\lambda) =\underset {p \in C} {min}  L(p,\lambda) = L(p_{\lambda}, \lambda) \tag {6-4}<br>$$<br>其中<br>$$<br>p_{\lambda}=\underset {p \in C} {argmin} L(p,\lambda)=p_{\lambda}(y|x) \tag {6-5}<br>$$<br>根据拉格朗日乘子法，求$L(p,\lambda)$对$p(y|x)$的偏导，得（求解过程略）：<br>$$<br>p_{\lambda}=\frac {1} {Z_{\lambda}(x)}  \exp(\sum_{i=1}^n \lambda_i f_i(x,y)) \tag{6-6}<br>$$<br>其中，<br>$$<br>Z_{\lambda}(x)=\sum_y \exp(\sum_{i=1}^n \lambda_i f_i(x,y)) \tag{6-7}<br>$$<br>称为<strong>规范化因子</strong>（normalizing factor）。注意，此时已经没有$\lambda_0$了。</p>
-<p>由（6-6）定义的$p_{\lambda}$就是最大熵模型的解，它具有<strong>指数形式</strong>。其中，$\lambda_i$就是特征$f_i$的权重，越大表示特征越重要。</p>
-<h3 id="6-1-2-最大似然估计"><a href="#6-1-2-最大似然估计" class="headerlink" title="6.1.2 最大似然估计"></a>6.1.2 最大似然估计</h3><p>得到对偶问题的内层极小值问题的解之后，接着求解外层的极大值问题$\underset {\lambda} {max}  \Psi(\lambda)$。</p>
-<p>设其解为<br>$$<br>\lambda^<em> = \underset {\lambda} {argmax}  \Psi(\lambda) \tag{6-8}<br>$$<br>则最大熵模型的解为<br>$$<br>p^</em>=p_{\lambda^*} \tag{6-9}<br>$$</p>
-<p>根据推导，最大化$\Psi(\lambda)$与最大似然估计是等价的！</p>
-<h1 id="7、最优化方法"><a href="#7、最优化方法" class="headerlink" title="7、最优化方法"></a>7、最优化方法</h1><p>通用的方法有梯度下降，拟牛顿法等，最大熵模型有两个量身定做的方法：通用迭代尺度法（Generalized Iterative Scaling，GIS）和改进的迭代尺度法（Impoved Iterative Scaling，IIS）。</p>
-<h2 id="7-1-GIS算法"><a href="#7-1-GIS算法" class="headerlink" title="7.1 GIS算法"></a>7.1 GIS算法</h2><blockquote>
-<p>算法1：</p>
-<p>S1：初始化参数，令$\lambda=0$</p>
-<p>S2：计算$E_{\tilde p}(f_i), i=1,2,…,n$</p>
-<p>S3：执行一次迭代，对参数做一次刷新。</p>
-<p>​    计算$E_{p_{\lambda}}(f_i)$</p>
-<p>​    FOR i=1,2,…,n DO {</p>
-<p>​        $\lambda_i  +=  \eta \log\frac {E_{\tilde p}(f_i)} {E_{p_{\lambda}}(f_i)}$</p>
-<p>​    }</p>
-<p>S4：检查是否收敛，若未收敛则继续S3</p>
-</blockquote>
-<p>其中，$\eta$是学习率，在实际中取$\frac {1} {C}$，$$，表示训练数据中包含特征最多的那个样本所包含的特征个数。<br>$$<br>\Delta\lambda_i=\eta \log\frac {E_{\tilde p}(f_i)} {E_{p_{\lambda}}(f_i)}<br>$$<br>是校正量。</p>
-<p>每次迭代，先用当前的权重估算每个特征$f_i$在训练数据中的概率分布的期望，然后逐个与相应的经验分布的期望比较，其偏差程度通过$\log\frac {E_{\tilde p}(f_i)} {E_{p_{\lambda}}(f_i)}$来进行刻画。</p>
-<p>收敛条件就是当两次迭代的$\lambda$在一个较小的范围。</p>
-<p>GIS每次迭代时间很长，不太稳定，容易溢出，一般不会使用。</p>
-<h2 id="7-2-IIS算法"><a href="#7-2-IIS算法" class="headerlink" title="7.2 IIS算法"></a>7.2 IIS算法</h2><p>与GIS的不同主要在$\Delta\lambda_i$的计算上。IIS通过求解方程<br>$$<br>\sum_{x,y} \tilde p(x)p(y|x)f_i(x,y)\exp(\Delta\lambda_i\sum_{i=1}^nf_i(x,y))=\tilde p(f_i)<br>$$<br>1）若$\sum_{i=1}^nf_i(x,y)$为常数，即对任意样本(x,y)，都有$\sum_{i=1}^nf_i(x,y)=C$，则<br>$$<br>\Delta\lambda_i=\frac {1} {C} \log\frac {E_{\tilde p}(f_i)} {E_{p_{\lambda}}(f_i)}<br>$$<br>此时，IIS可以看做是GIS的一种推广。</p>
-<p>2）若$\sum_{i=1}^nf_i(x,y)$不是常数，则需要通过数值方式来求解$\Delta\lambda_i$，如牛顿法。</p>
-<h1 id="8、优缺点"><a href="#8、优缺点" class="headerlink" title="8、优缺点"></a>8、优缺点</h1><p>优点是：在建模时，只需要集中精力选取特征，不需要花费精力考虑如何使用这些特征，可以灵活使用不同类型的特征。</p>
-<p>缺点是计算量大。</p>
-<p>参考</p>
-<p>【1】 <a href="http://blog.csdn.net/itplus/article/details/26550273" target="_blank" rel="external">最大熵学习笔记</a></p>
-<p>【2】统计学习方法</p>
+            <h1 id="gensim处理中文word2vec"><a href="#gensim处理中文word2vec" class="headerlink" title="gensim处理中文word2vec"></a>gensim处理中文word2vec</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> gensim.models <span class="keyword">import</span> KeyedVectors  </div><div class="line"></div><div class="line">model = KeyedVectors.load_word2vec_format(<span class="string">'/home/david/00projects/00user-gene/model_20150427'</span>, binary=<span class="keyword">True</span>)  </div><div class="line">a = model.similarity(<span class="string">'refreshed'</span>, <span class="string">'Refreshed'</span>)</div></pre></td></tr></table></figure>
+<p>这是用中文训练出来的模型，会报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">UnicodeDecodeError: &apos;utf8&apos; codec can&apos;t decode byte 0x9b in position 2: invalid start byte</div></pre></td></tr></table></figure>
+<p>官网的FAQ是这样的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">Q10: Loading a word2vec model fails with UnicodeDecodeError: &apos;utf-8&apos; codec can&apos;t decode bytes in position ...</div><div class="line"></div><div class="line">A: The strings (words) stored in your model are not valid utf8. By default, gensim decodes the words using the strict encoding settings, which results in the above exception whenever an invalid utf8 sequence is encountered.</div><div class="line"></div><div class="line">The fix is on your side and it is to either:</div><div class="line"></div><div class="line">a) Store your model using a program that understands unicode and utf8 (such as gensim). Some C and Java word2vec tools are known to truncate the strings at byte boundaries, which can result in cutting a multi-byte utf8 character in half, making it non-valid utf8, leading to this error.</div><div class="line"></div><div class="line">b) Set the unicode_errors flag when running load_word2vec_model, e.g. load_word2vec_model(..., unicode_errors=&apos;ignore&apos;). Note that this silences the error, but the utf8 problem is still there -- invalid utf8 characters will just be ignored in this case.</div></pre></td></tr></table></figure>
+<p>然并卵。</p>
 
           
         
@@ -1506,7 +1562,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/人群地理信息分析/">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/决策树/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -1528,152 +1584,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/07/12/人群地理信息分析/" itemprop="url">
-                  人群地理信息分析
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">
-                2017-07-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/算法/" itemprop="url" rel="index">
-                    <span itemprop="name">算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>数据源</p>
-<p>移动端的request中</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/" itemprop="url">
-                  浅谈在线最优化求解算法-以CTR预测模型为例
+                <a class="post-title-link" href="/2017/07/12/决策树/" itemprop="url">
+                  决策树
                 </a>
               
             
@@ -1749,180 +1661,277 @@
       
         
           
-            <p>[TOC]</p>
-<h1 id="1、最优化求解问题"><a href="#1、最优化求解问题" class="headerlink" title="1、最优化求解问题"></a>1、最优化求解问题</h1><p>通常，我们需要求解的最优化问题有如下三类：</p>
-<p><strong>（1）无约束优化问题</strong>：<br>$$<br>X=\arg \underset{X}{min}f(X)<br>$$<br>含义是求解X，令目标函数$f(X)$最小。</p>
-<p>对于这类问题，在$f(X)$ 是凸函数的前提下，通常做法就是对$f(X)$ 求导，并令$\frac {\partial} {\partial X} f(X) =0$ ，求解可以得到最优值。</p>
-<blockquote>
-<p> <strong>凸函数</strong></p>
-<p> 如果$f(x)$是定义在N维向量空间上的实变量函数，对于在$f(x)$的定义域C上的任意两个点$x_1$和$x_2$，以及任意[0,1]之间的值t都有：<br> $$<br> f(tX_1 + (1-t)X_2) \leq tf(X_1)+(1-t)f(X_2)\\<br> \forall X_1,X_2 \in C,  0 \leq t \leq 1<br> $$<br> 则称$f(x)$是凸函数。一个函数是凸函数是其存在最优解的充要条件。</p>
-<p> 此外，如果$f(x)$满足<br> $$<br> f(tX_1 + (1-t)X_2)&lt; tf(X_1)+(1-t)f(X_2)\\<br> \forall X_1,X_2 \in C,  0 \leq t \leq 1<br> $$<br> 则$f(x)$为严格凸函数。如下图所示，左边是严格凸函数，右边是凸函数</p>
-<p> <img src="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/凸函数.png" alt="凸函数"></p>
+            <h1 id="1-决策树"><a href="#1-决策树" class="headerlink" title="1 决策树"></a>1 决策树</h1><p>公式符号</p>
+<script type="math/tex; mode=display">
+\begin{align}
+&Ent(X)\ \ \ 熵 \\
+&Gain(X)\ \ \ 信息增益\\
+&Gini(X)\ \ \ 基尼指数\\
+&D\ \ \ 训练集\\
+&A\ \ \ 训练集的某个特征\\
+&N\ \ \ 特征A的类别总数\\
+&K\ \ \ 标签分类的数量\\
+\end{align}</script><h2 id="1-1-关键步骤-python实现"><a href="#1-1-关键步骤-python实现" class="headerlink" title="1.1 关键步骤-python实现"></a>1.1 关键步骤-python实现</h2><p>创建决策树分支的createBranch()伪代码函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">检查数据集中每个子项是否属于同一个分类：</div><div class="line">	IF YES return 类标签；</div><div class="line">	ELSE </div><div class="line">		寻找划分数据集的最好特征；</div><div class="line">		划分数据集；</div><div class="line">		创建分支节点；</div><div class="line">			for 每个划分的子集</div><div class="line">				递归调用createBranch()并增加返回结果到分支节点中</div><div class="line">        return 分支节点</div></pre></td></tr></table></figure>
+<p>对label的分类计算熵</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">calcEnt</span><span class="params">(dataSet)</span>:</span></div><div class="line">	labelNum = len(dataSet)</div><div class="line">    ent = <span class="number">0.0</span></div><div class="line">	<span class="comment">#定义字典存放每个类别的count统计</span></div><div class="line">	labelCounts = &#123;&#125;</div><div class="line">    <span class="comment">#统计每个label的个数</span></div><div class="line">	<span class="keyword">for</span> featureVec <span class="keyword">in</span> dataSet:</div><div class="line">        <span class="comment">#最后一列是label</span></div><div class="line">		label = featureVec[<span class="number">-1</span>]</div><div class="line">        <span class="keyword">if</span> label <span class="keyword">not</span> <span class="keyword">in</span> labelCounts.keys(): labelCounts[label] = <span class="number">0</span></div><div class="line">        labelCounts[label] += <span class="number">1</span></div><div class="line">    <span class="comment">#计算概率以及熵</span></div><div class="line">    <span class="keyword">for</span> key <span class="keyword">in</span> labelCounts:</div><div class="line">        prob = float(labelCounts[key]) / labelNum</div><div class="line">        ent -= prob * log(<span class="number">2</span>, prob)</div><div class="line">    <span class="keyword">return</span> ent</div></pre></td></tr></table></figure>
+<p>对数据集进行划分</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">splitDataSet</span><span class="params">(dataSet, axis, value)</span>:</span></div><div class="line">    subDataSet = []</div><div class="line">    <span class="keyword">for</span> featureVec <span class="keyword">in</span> dataSet:</div><div class="line">        <span class="keyword">if</span> featureVec[axis] == value:</div><div class="line">            reducedFeatVec = featureVec[:axis]</div><div class="line">            reducedFeatVec.extend(featureVec[axis+<span class="number">1</span>:])</div><div class="line">    		resDataSet.append(reducedFeatVec)</div><div class="line">    <span class="keyword">return</span> subDataSet</div></pre></td></tr></table></figure>
+<p>选出最好的数据集划分方式</p>
+<p><strong>信息增益</strong></p>
+<p><strong>熵</strong>的定义是</p>
+<script type="math/tex; mode=display">
+Ent(X) = -\sum_{i=1}^{n}p(x_i)log_2p(x_i)</script><p>n是类别总数。</p>
+<p><strong>条件熵</strong>$Ent(Y|X)$表示在已知X的条件下Y的不确定性，定义为给定X时Y的条件概率分布的熵对X的期望</p>
+<script type="math/tex; mode=display">
+Ent(Y|X)=\sum_{i=1}^np_iEnt(Y|X=x_i)</script><p>对于训练集D以及其中的特征A，熵就是</p>
+<script type="math/tex; mode=display">
+Ent(D) = -\sum_{k=1}^K \frac {|C_k|}{|D|} log_2\frac{|C_k|}{|D|}</script><p>其中，K是标签分类的数量，$C_k$是每个分类的样本数</p>
+<p>条件熵就是</p>
+<script type="math/tex; mode=display">
+\begin{aligned} 
+Ent(D|A) &=\sum_{i=1}^N\frac{|D_i|}{|D|}Ent(D_i) \\
+&=\sum_{i=1}^N\frac{|D_i|}{|D|}(-\sum_{k=1}^K \frac {|D_{ik}|}{|D_i|} log_2\frac{|D_{ik}|}{|D_i|})
+\end{aligned}</script><p>其中，N是特征A的类别总数，$D_i$是特征A的每种类别的数量。</p>
+<p>信息增益就是两者之差</p>
+<script type="math/tex; mode=display">
+Gain(D,A)=Ent(D)-Ent(D|A)</script><p>信息增益也称为<strong>互信息</strong>。</p>
+<p>找出信息增益最大的来划分数据集</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">chooseBestFeature</span><span class="params">(dataSet)</span>:</span></div><div class="line">	<span class="comment">#feature数量，最后一列是label</span></div><div class="line">	numFeature = len(dataSet[<span class="number">0</span>]<span class="number">-1</span>)</div><div class="line">    bestInfoGain = <span class="number">0.0</span></div><div class="line">    bestFeature = <span class="number">-1</span></div><div class="line">	<span class="comment">#先计算熵</span></div><div class="line">	baseEntropy = calcEnt(dataSet)</div><div class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> range(numFeature):</div><div class="line">		<span class="comment">#首先需要知道该特征有几个值</span></div><div class="line">		uniqueValue = set([sample[i] <span class="keyword">for</span> sample <span class="keyword">in</span> dataSet]) <span class="comment">#用set去重是最快方法</span></div><div class="line">		newEntropy = <span class="number">0.0</span></div><div class="line">        <span class="comment">#对于每个特征，计算条件熵</span></div><div class="line">        <span class="keyword">for</span> value <span class="keyword">in</span> uniqueValue:</div><div class="line">            <span class="comment">#用这个特征划分数据集</span></div><div class="line">            subDataSet = splitDataSet(dataSet, i, value)</div><div class="line">            newEntropy += calcEnt(subDataSet)</div><div class="line">        <span class="comment">#计算信息增益</span></div><div class="line">        infoGain = baseEntropy-newEntropy</div><div class="line">        <span class="keyword">if</span> infoGain &gt; bestInfoGain:</div><div class="line">            bestInfoGain = infoGain</div><div class="line">            bestFeature = i</div><div class="line"><span class="keyword">return</span> bestFeature</div></pre></td></tr></table></figure>
+<p>如果所有特征都处理过了，但是类标签依然不是唯一的，用投票决定</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">majorityCnt</span><span class="params">(classList)</span>:</span></div><div class="line">	classCount=&#123;&#125;</div><div class="line">    <span class="keyword">for</span> vote <span class="keyword">in</span> classList:</div><div class="line">        <span class="keyword">if</span> vote <span class="keyword">not</span> <span class="keyword">in</span> classCount.keys() classCount[vote] = <span class="number">0</span></div><div class="line">        classCount[vote] += <span class="number">1</span></div><div class="line">    sortedClassCount = sorted(classCount, key = operator.itemgetter(<span class="number">1</span>), reverse = <span class="keyword">True</span>)</div><div class="line">    <span class="keyword">return</span> sortedClassCount[<span class="number">0</span>][<span class="number">0</span>]</div></pre></td></tr></table></figure>
+<h2 id="1-2-ID3算法"><a href="#1-2-ID3算法" class="headerlink" title="1.2 ID3算法"></a>1.2 ID3算法</h2><p>与上面的步骤类似。但是ID3只有树的生成，容易过拟合。</p>
+<h2 id="1-3-C4-5算法"><a href="#1-3-C4-5算法" class="headerlink" title="1.3 C4.5算法"></a>1.3 C4.5算法</h2><p>与ID3相比，C4.5用信息增益比来选择特征。</p>
+<p><strong>信息增益比</strong></p>
+<p>在面对类别比较少的离散数据时，两者差不多。但如果面对连续的数据（如体重、身高、年龄、距离等），或者每列数据没有明显的类别之分（最极端的例子的该列所有数据都独一无二）。</p>
+<p>那么根据信息增益公式，$Ent(D)$不变，当数据独一无二时，</p>
+<script type="math/tex; mode=display">
+Ent(D|A)=\sum_{i=1}^n \frac {1}{n}Ent(D_i)</script><p>这样$Ent(D|A)$最小，程序会倾向于这种划分，导致划分效果差。</p>
+<p>信息增益比的公式为</p>
+<script type="math/tex; mode=display">
+Gain_R(D,A)=\frac {Gain(D,A)}{Ent(D)}</script><p>可以理解成对分支数目的惩罚项。</p>
+<h2 id="1-5-CART算法"><a href="#1-5-CART算法" class="headerlink" title="1.5 CART算法"></a>1.5 CART算法</h2><p>CART是分类与回归树，由特征选择、树的生成和剪枝组成。</p>
+<p>CART是在给定输入变量X条件下输出随机变量Y的条件概率分布的方法。CART假设决策树是<strong>二叉树</strong>，内部结点特征的取值为是和否，约定左是右否。</p>
+<p>决策树等价于递归的二分每个特征，将输入空间即特征空间划分为有限个单元，并在这些单元上确定预测的概率分布，也就是在输入给定的条件下输出的条件概率分布。</p>
+<p>1.5.1 CART的生成</p>
+<p>递归构建二叉树的过程。回归树用<strong>最小二乘</strong>，分类树用<strong>基尼指数</strong>。</p>
+<p>1）回归树</p>
+<p>2）分类树</p>
+<p>假设有K个类，样本点属于第k类的概率是$p_k$，则基尼指数定义为</p>
+<script type="math/tex; mode=display">
+Gini(p) = \sum_{k=1}^K p_k(1-p_k) = 1-\sum_{k=1}^K p_k^2=1-\sum_{k=1}^K(\frac{|C_k|}{|D|})^2</script><p>如果是两分类问题，则概率分布的基尼指数为</p>
+<script type="math/tex; mode=display">
+Gini(P)=2p(1-p)</script><p>若样本集合D根据特征A是否取某一值a被划分为$D_1$和$D_2$两部分，即</p>
+<script type="math/tex; mode=display">
+D_1=\{(x,y)\in D | A(x)=a\}, D_2=D-D_1</script><p>则在特征A的条件下，集合D的基尼指数为</p>
+<script type="math/tex; mode=display">
+Gini(D,A)=\frac {|D_1|}{|D|}Gini(D_1)+\frac {|D_2|}{|D|}Gini(D_2)</script><p>Gini越大，样本集合的不确定性越大，与熵相似。</p>
+<p><strong>算法过程</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">输入：训练集D，停止条件</div><div class="line">输出：CART决策树</div><div class="line"></div><div class="line">从根结点递归对每个结点进行以下操作，构建二叉树：</div><div class="line">1）对每个特征和可能的取值a，根据A=a的为是或否，将D分割成D1和D2，计算基尼指数</div><div class="line">2）选出基尼指数最小的特征及其对应的切分点作为最优特征与最优切分点。</div><div class="line">3）对两个子结点递归调用#1、#2，直至满足停止条件</div><div class="line">4）生成CART决策树</div></pre></td></tr></table></figure>
+<p>3）CART剪枝</p>
+<h2 id="1-6-决策树的剪枝"><a href="#1-6-决策树的剪枝" class="headerlink" title="1.6 决策树的剪枝"></a>1.6 决策树的剪枝</h2><blockquote>
+<p>如何判断剪枝后泛华性能提升？</p>
+<p>用<strong>留出法</strong>。将一部分训练集作为验证集。</p>
 </blockquote>
-<p><strong>（2）有等式约束的最优化问题</strong>：<br>$$<br>X=\arg \underset{X}{min}f(X)\\<br>s.t. h_k(X)=0;k=1,2,…,n<br>$$<br>含义是在n个等式约束$h_k(X)$ 的条件下求解X，另目标函数$f(X)$最小。</p>
-<p>针对有等式的最优化问题，采用<strong>拉格朗日乘数法</strong>进行求解，通过拉格朗日系数$A=[a_1,a_2,…,a_n]^T$ 把等式约束和目标函数组合成一个式子<br>$$<br>X=\arg \underset{X}{min}[f(X)+ A^TH(X)]<br>$$<br>相当于转化成无约束最优化求解问题，解决方法是分别对X，A求偏导并令其等于0。</p>
-<p><strong>（3）不等式约束的优化问题求解</strong> ：<br>$$<br>X=\arg \underset{X}{min}f(X)\\<br>s.t. h_k(X)=0;k=1,2,…,n\\<br>g_l(X)\leq 0;l=1,2,…,m<br>$$</p>
-<p>对于不等式约束，通过KKT条件求解。将所有的约束和目标函数写为一个式子<br>$$<br>L(X,A,B)=f(X)+A^TH(X)+B^TG(X)<br>$$<br>KKT条件是说最优值必须满足以下条件：<br>$$<br>\frac \partial {\partial X} L(X,A,B)=0\\<br>H(X)=0\\<br>B^TG(X)=0<br>$$<br>KKT条件是求解最优值的必要条件，要使其成为充要条件，还需要f(x)为凸函数。</p>
-<h1 id="2、批量最优化求解算法"><a href="#2、批量最优化求解算法" class="headerlink" title="2、批量最优化求解算法"></a>2、批量最优化求解算法</h1><p>一些定义：</p>
-<p>$i=1,2,…,N$表示向量维度</p>
-<p>$j=1,2,…,M$表示样本个数</p>
-<p>$t=1,2,…$表示迭代次数</p>
-<h2 id="2-1-批量和随机求解"><a href="#2-1-批量和随机求解" class="headerlink" title="2.1 批量和随机求解"></a>2.1 批量和随机求解</h2><p>我们面对的最优化问题都是无约束的最优化问题（有约束的也可以转成无约束的），因此通常可以将其描述为<br>$$<br>W=\arg \underset{W}{min}   l(W,Z)\\<br>Z=\{ (X_j,y_j) | j=1,2,…,M  \}\\<br>y_j=h(W,X_j)<br>\tag {2-1-1}<br>$$<br>就是<strong>在已知训练集的情况下，求使得目标函数最小的权重矩阵</strong>。其中，$Z$是训练集，$\mathbf{X}$是特征向量，$X_j$是其中一个样本，$Y$是预测值，$y_j$是其中一个样本对应的预测值。一共有M个样本。$h(W,X_j)$ 是特征向量到预测值的<strong>映射函数</strong>，$ l(W,Z)$ 最优化求解的目标函数，也称为<strong>损失函数</strong>，$W$ 为特征权重，也就是在损失函数中需要求解的参数。</p>
+<p>剪枝是为了解决过拟合。通过极小化决策树整体的损失函数来实现。设树T的叶结点个数为$|T|$，t是T的叶结点，该叶结点有$N<em>t$个样本点，其中k类的样本点有$N</em>{tk}$个，则损失函数定义为</p>
+<script type="math/tex; mode=display">
+C_{\alpha}(T) = \sum_{t=1}^T N_tEnt_t(T) + \alpha|T|</script><p>由于</p>
+<script type="math/tex; mode=display">
+Ent_t(T) =  - \sum_{k=1}^K \frac {N_{tk}}{N_t} log_2\frac {N_{tk}}{N_t}</script><p>则令</p>
+<script type="math/tex; mode=display">
+C(T) = - \sum_{t=1}^T\sum_{k=1}^KN_{tk}log_2\frac {N_{tk}}{N_t}</script><p>于是</p>
+<script type="math/tex; mode=display">
+C_\alpha(T) = C(T) +\alpha|T|</script><p>这里，$C(T)$表示训练数据的预测误差，$|T|$表示模型复杂度，$\alpha$控制两者影响，较大时选择较简单的树，反之亦然，等于0时就不考虑模型复杂度。</p>
+<p>两种剪枝思路</p>
+<p><strong>预剪枝（Pre-Pruning）</strong></p>
+<p>构造的同时剪枝。比如设一个阈值，熵减小的数量小于这个阈值，即使还可以继续降低熵，也停止继续创建分支。</p>
 <blockquote>
-<p> 损失函数一般包括损失项和正则项</p>
+<p>有些分支虽然当前划分时性能下降，但后续划分有可能又会提高，仅根据当前验证集来判断是否要继续划分，往往会导致欠拟合。</p>
 </blockquote>
-<p>常用的损失函数有：</p>
-<p>（1）<strong>平方损失函数</strong>（线性回归）</p>
-<p>最小二乘法（Ordinary Least Squares）是常用的一种平方损失函数，最小二乘的基本原理是：最优拟合直线应该是使各点到回归直线的距离和最小的直线，即平方和最小。</p>
-<p>线性回归的映射函数为：<br>$$<br>h(W,X_j)=W^TX_j<br>$$<br>损失函数可以表示为<br>$$<br>l(W,Z)=\sum_{j=1}^M (y_j-W^TX_j)^2<br>$$<br>（2）<strong>Logistics损失函数</strong>（逻辑回归）</p>
-<p>逻辑回归的映射函数为：<br>$$<br>h(W,X_j)=\frac 1 {1+e^{-W^TX_j}}<br>$$</p>
-<blockquote>
-<p>logistic函数的优点是：</p>
-<p>1、他的输入范围是$-\infty \rightarrow  + \infty $ ，<strong>输出范围是(0,1)，正好满足概率分布为（0，1）的要求</strong>。我们用概率去描述分类器，自然比单纯的某个阈值要方便很多； </p>
-<p>2、是一个单调上升的函数，具有良好的连续性，<strong>不存在不连续点</strong>。</p>
+<p><strong>后剪枝（Post-Pruning）</strong></p>
+<p>三种主要方法</p>
+<p><strong>1）REP错误率降低剪枝</strong></p>
+<p>简单粗暴，对每个非叶结点的子树，用其替换一个叶结点，类别用子树覆盖训练样本中类最多的代替。这样产生的简化树再跟原树比较在测试数据集中的效果。若错误更少就替换。算法以Bottom-up的方式遍历所有的子树，直到没有任何改进时，终止。</p>
+<p><strong>2）PEP悲观剪枝</strong></p>
+<h2 id="1-7-连续和缺失值处理"><a href="#1-7-连续和缺失值处理" class="headerlink" title="1.7 连续和缺失值处理"></a>1.7 连续和缺失值处理</h2><p>1）连续值离散化</p>
+<p>jueceshu最简单的策略是<strong>二分法</strong>，也是C4.5采用的机制。</p>
+<p>对于连续属性a，可以考察包含n-1个元素的候选划分点集合</p>
+<script type="math/tex; mode=display">
+T_a=\left \{  \frac {a^i+a^{i+1}} {2} | 1 \leqslant i \leqslant n-1    \right \}</script><p>即把区间的中位点作为候选划分点，然后像离散值那样考察划分点，再选出最优的划分点。</p>
+<p>2）缺失值</p>
+<p>考虑：①如何在属性值缺失的情况下进行划分属性选择？②给定划分属性，若样本在该属性的值缺失，如何划分？</p>
+<p>靠<strong>权重</strong>。在判定划分时，权重相等，用已知的样本来划分属性。对于每个划分属性，若属性缺失，将缺失的记录根据属性的每个划分所占比例作为权重，分到属性的每个子结点中。</p>
+<h2 id="1-8-多变量决策树"><a href="#1-8-多变量决策树" class="headerlink" title="1.8 多变量决策树"></a>1.8 多变量决策树</h2><p>非子结点不再针对某个属性，而是多个属性的线性组合。即，每个非子结点都是一个线性分类器。</p>
+<h1 id="2、随机森林"><a href="#2、随机森林" class="headerlink" title="2、随机森林"></a>2、随机森林</h1><p>见《集成学习》</p>
+<h1 id="3、GBDT"><a href="#3、GBDT" class="headerlink" title="3、GBDT"></a>3、GBDT</h1><p>参考</p>
+<p>统计学习方法</p>
+<p><a href="http://www.jianshu.com/p/794d08199e5e" target="_blank" rel="external">决策树的剪枝问题</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/模型评估与选择/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/07/12/模型评估与选择/" itemprop="url">
+                  模型评估与选择
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">
+                2017-07-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习算法/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1、模型评估方法"><a href="#1、模型评估方法" class="headerlink" title="1、模型评估方法"></a>1、模型评估方法</h1><blockquote>
+<p>可重复采样：<strong>在训练集小</strong>，难以划分训练/测试集是有用。此外，能产生多个不同训练集，对<strong>集成学习</strong>等方法有很大的好处。但是会改变初始数据集分布。</p>
+<p>在<strong>初始数据量足够</strong>时，用留出法或者交叉验证法。</p>
 </blockquote>
-<p>由于该函数服从伯努利分布（0-1分布），通过最大似然估计，对于每一维的权重W，损失函数可以表示为<br>$$<br>l(W,Z)=(Y-h_W(\mathbf X))X<br>$$</p>
-<blockquote>
-<p><strong>推导过程</strong></p>
-<p>令<br>$$<br>h_W(X) = \frac 1 {1+e^{-W^T\mathbf X}}<br>$$<br>该函数服从伯努利分布（一次点击要么成功，要么失败，通过训练集可以知道不同特征组合下成功和失败的概率）<br>$$<br>P(Y=1 | \mathbf X;W) = h_W(\mathbf X)\\<br>P(Y=0 | \mathbf X;W) = 1-h_W(\mathbf X)<br>$$<br>则概率分布函数为<br>$$<br>P(Y|\mathbf X;W) = (h_W(\mathbf X))^Y<em>(1-h_W(\mathbf X))^{1-Y}<br>$$<br>（<em>*也就是说，我们有样本，通过样本能知道概率分布，那么我们需要知道得到这个概率分布的最有可能的参数W。即我们通过样本知道一些特征组合下的点击率，现在需要求概率函数中的系数。</em></em>）</p>
-<p>我们假设样本数据相互独立，所以它们的联合分布可以表示为各边际分布的乘积，用似然函数表示为：<br>$$<br>\begin{aligned}<br>L(W)=P(Y|\mathbf X;W) &amp;= (h_W(\mathbf X))^Y(1-h_W(\mathbf X))^{1-Y}\\<br>&amp;=\prod_{j=1}^M(h_W(X_j))^{y_j}(1-h_W(X_j))^{1-y_j}<br>\end{aligned}<br>\tag {2-1-2}<br>$$<br>从而，损失函数的求解，可以转化为求最有可能导致这样概率分布的W，也就是求L(W)的最大值。最简单的方法就是对W求偏导，并令导数为零。</p>
-<p>在多数情况下，直接对变量进行求导反而会使得计算式子更加的复杂，此时可以借用对数函数。由于对数函数是单调增函数，因此与（2-1-2）具有相同的最大值，上式变为<br>$$<br>\begin{aligned}<br>l(W) &amp;= Log L(W)\\<br>&amp;=\sum_{j=1}^M(y_jln h(X_j)+(1-y_j)ln (1-h(X_j)))<br>\end{aligned}<br>$$<br>对其求关于W的偏导</p>
-<p>首先求logistic函数的导数，得（最后一个X是对$W^TX$的求导）<br>$$<br>h_W^{‘}(\mathbf X) = h_W(\mathbf X)(1-h_W(\mathbf X))X<br>$$</p>
-<blockquote>
-<p><strong>推导过程如下</strong></p>
-<p><img src="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/求导的推导.jpg" alt="求导的推导"></p>
+<h2 id="1-1-留出法Hold-out"><a href="#1-1-留出法Hold-out" class="headerlink" title="1.1 留出法Hold-out"></a>1.1 留出法Hold-out</h2><p>将数据集D分成两个互斥的集合。</p>
+<p>训练/测试集尽量保证数据一致性，用分层采样，正负样本同比例。</p>
+<p>由于单次估计结果往往不可靠，使用留出法时，一般要采用若干次随机划分，重复进行实验后取平均值作为评估值。      ‘</p>
+<h2 id="1-2-交叉验证法"><a href="#1-2-交叉验证法" class="headerlink" title="1.2 交叉验证法"></a>1.2 交叉验证法</h2><p>将D分成k个大小相似的互斥子集，每个子集用分层采样得到。</p>
+<p>每次用k-1个子集的并集作为训练集，余下的子集作为测试集。这样获得k组训练/测试集。最终返回是k个测试结果的均值。</p>
+<p>常用10折交叉验证。</p>
+<h2 id="1-3-可重复采样"><a href="#1-3-可重复采样" class="headerlink" title="1.3 可重复采样"></a>1.3 可重复采样</h2><p>bootstrapping sampling：给定包含m个样本的数据集D，我们进行采样产生数据集$D’$，每次随机从D中挑选一个样本，将其拷贝放入$D’$，再将样本放回D。重复m次，得到包含m个样本的$D’$。</p>
+<p>样本在m次采样中始终不被采到的概率是$(1-\frac 1 m)^m$，取极限得到</p>
+<script type="math/tex; mode=display">
+{\lim_{m \mapsto \infty  }}(1-\frac 1 m)^m  \mapsto \frac 1 e\approx0.368</script><p>即通过bootstrapping，D中有36.8%的样本未出现在$D’$中，于是可以将$D’$作为训练集，$D-D’$作为测试集，这样可以有1/3个未出现在训练集的样本用于测试。测试结果称为“包外估计”（out-of-bag estimate）。</p>
+<h2 id="1-4-调参"><a href="#1-4-调参" class="headerlink" title="1.4 调参"></a>1.4 调参</h2><blockquote>
+<p>我们在模型评估时往往用来确定算法和参数。当这些确定后，要用所有的D再训练一次，才是最终的模型。</p>
 </blockquote>
-<p>为了求解方便，将l(W)转为（其实1/M没用，完全可以去掉，不懂为何要加上）<br>$$<br>J(W) = -\frac {1}{M} l(W)<br>$$<br>则就变成求J(W)的最小值。求偏导的过程如下：</p>
-<p><img src="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/最大似然估计求偏导.png" alt="最大似然估计求偏导"></p>
-<p>最后得到目标函数（损失函数）为：<br>$$<br>\frac {\partial }{\partial W}J(W) =-\frac{1}{M} (Y-h_W(\mathbf X))X<br>$$</p>
-</blockquote>
-<p>对于损失函数的求解，一个典型的方法就是梯度下降法，由于损失函数是凸函数，因此沿着梯度下降的方向找到最小点。</p>
-<p>假设样本总数为n，<strong>批量梯度下降</strong>是：<br>$$<br>Repeat until convergence \{ \\<br>W^{(t+1)} := W^t - \eta^t\triangledown  _{W}l(W^{t},Z) \\<br>\}\\<br> \tag{1-2}<br>$$<br>而<strong>随机梯度下降（SGD）</strong>是：<br>$$<br>Repeat until convergence \{ \\<br>      for j=1 to M, \{ \\<br>          W^{(t+1)} := W^t - \eta^t\triangledown  _{W}l(W^{t},Z_j) \\<br>\}<br>$$<br>两者的区别是：</p>
-<p>前者每次更新$W$都需要遍历一次整个样本集合；而后者在遍历样本集合的时候，每个样本都能改变$W$ ，有更快的收敛速度 。由于SGD针对观测到的随机一条数据进行权重的更新，很适合进行增量计算，实现梯度下降的online模式。</p>
-<h2 id="2-2-正则化"><a href="#2-2-正则化" class="headerlink" title="2.2 正则化"></a>2.2 正则化</h2><p>正则化的主要目的是防止过拟合。对于损失函数构成的模型，可能会出现有些权重很大，有些权重很小的情况，导致过拟合，使得模型的复杂度提高，泛化能力较差（对未知数据的预测能力）。</p>
-<p> <img src="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/过拟合1.png" alt="过拟合1"></p>
-<p>而正则化就是对损失函数中权重的限制，限制其模不要太大：<br>$$<br>W=\arg \underset{W}{min}   l(W,Z)\\<br>s.t. \Psi(W)&lt;\delta<br>$$</p>
-<p>其中，$\Psi(W)$称为正则化因子，是一个关于W求模的函数，常用的正则化因子有L1和L2正则化。<br>$$<br>L1 Regularization         \Psi(W)=||W||_1=\sum_{i=1}^N|w_i|\\<br>L2  Regularization       \Psi(W)=||W||_2^2=\sum_{i=1}^N(w_i)^2=W^TW<br>$$<br>L1和L2的主要区别有两个：</p>
-<p>（1）L1在0处不可导，而L2可导。</p>
-<p>（2）L1通常能产生更稀疏的模型，也就是W的更多维度是0。这些为0的权重就代表了不是很重要的维度，所以能起到特征选择的目的。</p>
-<p>（3）L2能限制特征权重各个维度的模不要太大，解决过拟合。</p>
-<blockquote>
-<p><img src="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/正则化解空间.png" alt="正则化解空间"><br> 其中，左图的圆形区域是L2正则化的单位圆，右图的方形区域是L1正则化的单位圆。<br><strong>单位圆</strong></p>
-<p>使$||X||_p=1$的图形，当p=1和2时，单位圆分别为$|x|+|y|=1$和$x^2+y^2=1$。</p>
-</blockquote>
-<p>但是在SGD中，由于每次W的更新并不是沿着全局梯度进行下降，而是沿着某个样本产生的梯度方向进行下降，这样即使采用L1的方式也很难产生稀疏解。因此在接下来的在线最优化求解算法中，稀疏性是一个主要的追求目标。</p>
-<p>参考：</p>
-<p><a href="http://www.mamicode.com/info-detail-517504.html【正则化方法：L1和L2" target="_blank" rel="external">http://www.mamicode.com/info-detail-517504.html【正则化方法：L1和L2</a> regularization、数据集扩增、dropout】</p>
-<p><a href="http://blog.csdn.net/zouxy09/article/details/24971995/【机器学习中的范数规则化之（一）L0、L1与L2范数】" target="_blank" rel="external">http://blog.csdn.net/zouxy09/article/details/24971995/【机器学习中的范数规则化之（一）L0、L1与L2范数】</a></p>
-<h1 id="3、在线最优化求解算法"><a href="#3、在线最优化求解算法" class="headerlink" title="3、在线最优化求解算法"></a>3、在线最优化求解算法</h1><h2 id="3-1-截断梯度法TG"><a href="#3-1-截断梯度法TG" class="headerlink" title="3.1 截断梯度法TG"></a>3.1 截断梯度法TG</h2><p>为了使特征权重W有更多的0，最简单的方法就是设一个阈值，当W的某个维度值小于这个阈值的时候置为0，这个称为<strong>简单截断法</strong>。但实际中W的某个系数比较小可能是由于该维度训练不足引起，所以这么做会导致这部分特征的丢失。于是又改进为<strong>截断梯度法Truncated Gradient</strong>。</p>
-<h3 id="3-1-1-简单截断法"><a href="#3-1-1-简单截断法" class="headerlink" title="3.1.1 简单截断法"></a>3.1.1 简单截断法</h3><p>以$k$为窗口，当$t/k$不为整数时，采用标准的SGD；否则，采用如下的权重更新方式：<br>$$<br>W^{t+1}=T_0(W^t - \eta^tG^t,\theta) \\<br>T_0(v_i,\theta) = \begin{Bmatrix}<br>0 if |v_i|\leqslant \theta\ <br>v_i otherwise<br>\end{Bmatrix}<br>$$</p>
-<p>其中，$G^t=\triangledown  _{W}l(W^{t},Z^{t})$ 代表第t次迭代中损失函数的梯度，$\eta^{t}$ 是学习率，通常将其设置为 $1/\sqrt{t}$ 的函数。可以看出，简单截断法的思路是，如果某个维度的权重变化小于设定的$\theta$ ，则直接置为0。</p>
-<h3 id="3-1-2-截断梯度法"><a href="#3-1-2-截断梯度法" class="headerlink" title="3.1.2 截断梯度法"></a>3.1.2 截断梯度法</h3><p>在前一种方法上的改进。加入了L1正则化项$\eta^{t}\lambda sgn(W^{t})$ 。</p>
-<p>$$<br>W^{t+1}=W^t-\eta ^tG^t-\eta^t\lambda sgn(W^t)<br>$$<br>其中$sgn(v)$是符号函数。由于每次仅根据一个样本进行更新，因此也不再使用区分样本的下表$j$。</p>
-<p>采用类似的方式表示为：<br>$$<br>W^{t+1}=T_1(W^t - \eta^tG^t,\eta^t\lambda^t,\theta) \\<br>T_1(v_i,\alpha,\theta) = \begin{Bmatrix}<br>\begin{aligned}<br>&amp; max(0,v_i-\alpha) if v_i\in [0,\theta]\ <br>&amp; min(0,v_i+\alpha) if v_i\in [-\theta,0]\\<br>&amp; v_i otherwise<br>\end{aligned}<br>\end{Bmatrix}<br>$$<br>其中，$\lambda^{t} \in \mathbb{R}$且$\lambda^{t}\geqslant0 $ 。同样以k为窗口，每k步进行一次截断。当t/k不为整数时，$\lambda^{t}=0$， 否则，$\lambda^{t}=k\lambda$。可以看出，$\lambda$和$\theta$决定了权重的稀疏程度，这两个值越大越稀疏。</p>
-<h2 id="3-2-前向后向切分FOBOS"><a href="#3-2-前向后向切分FOBOS" class="headerlink" title="3.2 前向后向切分FOBOS"></a>3.2 前向后向切分FOBOS</h2><h3 id="3-2-1-FOBOS算法原理"><a href="#3-2-1-FOBOS算法原理" class="headerlink" title="3.2.1 FOBOS算法原理"></a>3.2.1 FOBOS算法原理</h3><p>在FOBOS（Forward-backward Splitting）中，将权重的更新分为两个步骤：<br>$$<br>W^{t+\frac{1}{2}} = W^t-\eta^tG^{t}\\<br>W^{t+1}=\arg \underset{W}{min} \{\frac {1} {2} ||W- W^{t+\frac{1}{2}}||_2^2+\eta^{t+\frac {1}{2}}\Psi (W)\}<br>\tag {3-2-1}<br>$$<br>前一个步骤还是标准的梯度下降，后一个步骤可以理解为对梯度下降的结果进行微调，其中第一项是L2正则化，表示不能离损失迭代结果太远，第二项$\Psi (W)$是正则化项。</p>
-<p>将上面两个式子合并，有<br>$$<br>W^{t+1}=\arg \underset{W}{min} \{\frac {1} {2} ||W- W^{t}-\eta^{t}G^{t}||_2^2+\eta^{t+\frac {1}{2}}\Psi (W)\}<br>$$<br>令<br>$$<br>F(W)=\frac {1} {2} ||W- W^{t}-\eta^{t}G^{t}||_2^2+\eta^{t+\frac {1}{2}}\Psi (W)<br>$$<br>如果$W^{t+1}$存在一个最优解，<strong><em>那么可以推断0向量一定属于$F(W)$的一维次梯度集合</em>。</strong><br>$$<br>0 \in \partial F(W)=W-W^{t}+\eta^{t}G^{t}+\eta^{t+\frac 1 2}\partial \Psi(W)<br>$$</p>
-<blockquote>
-<p><strong>次导数和次梯度</strong></p>
-<p>参考SubGradient.pdf</p>
-<p>次导数是一个区间，一维次梯度就是次导数</p>
-</blockquote>
-<p>由于$W^{t+1}=\arg \underset{x}{min} F(W)$，则有：<br>$$<br>0=\left \{ W-W^{t} - \eta^{t}G^{t}+\eta^{t+\frac {1}{2}}\partial\Psi(W) \right \}|_{W=W^{t+1}}<br>$$</p>
-<p>便可以得到另一种更新权重的方式<br>$$<br>W^{t+1}=W^{t}+ \eta^{t}G^{t}-\eta^{t+\frac {1}{2}}\partial\Psi(W^{t+1})<br>$$<br>从上式可以看到权重的更新不仅与迭代前的状态有关，也与迭代后的$W^{t+1}$有关。</p>
-<h3 id="3-2-2-L1-FOBOS"><a href="#3-2-2-L1-FOBOS" class="headerlink" title="3.2.2 L1-FOBOS"></a>3.2.2 L1-FOBOS</h3><p>在L1正则化下，有$\Psi (W)=\lambda||w||_1$ 。对于（2-3-1），<br>$$<br>W^{t+1}=\arg \underset{W}{min} \{\frac {1} {2} ||W- W^{t+\frac{1}{2}}||_2^2+\eta^{t+\frac {1}{2}}\Psi (W)\}<br>$$<br>用向量V来表示$W^{t+\frac 1 2}$ ，用标量$\tilde{\lambda} \in \mathbb{R}$来表示$\eta^{t+\frac 1 2}\lambda$ ，将公式展开，并改写为<br>$$<br>W^{t+1}=\arg \underset{W}{min}\sum_{i=1}^N (\frac {1} {2}(w_i-v_i)^2+ \tilde{\lambda}|w_i|)<br>\tag {3-2-2}<br>$$<br>可以看到，在求和公式中的每一项都是大于0的，所以公式（3-2-2）可以拆解成对特征权重W的每一维度单独求解<br>$$<br>w_i^{t+1}=\arg \underset{w_i}{min}(\frac {1} {2}(w_i-v_i)^2+ \tilde{\lambda}|w_i|)<br>\tag {3-2-3}<br>$$<br>假设$w_i^<em>$是一个维度上的最优解，通过反证法证明$w_i^</em>v_i\geq0$（证明略）。再分$v_i\geq0$和$v_i&lt;0$来讨论。</p>
-<p><strong>（1）当$v_i\geq0$时</strong>，</p>
-<p>由于$w_i^<em>v_i\geq0$，所以$w_i^</em> \geq0$ 。相当于给（2-3-3）增加了一个不等式约束条件：<br>$$<br>w_i^{t+1}=\arg \underset{w_i}{min}(\frac {1} {2}(w_i-v_i)^2+ \tilde{\lambda}|w_i|)\\<br>s.t. -w_i\leq 0<br>$$<br>通过拉格朗日乘子求解这个含不等式的约束问题。</p>
-<p>引入拉格朗日系数$\beta \geq 0$ ，由KKT条件，有<br>$$<br>\frac \partial {\partial w_i}\left ( \frac {1} {2}(w_i-v_i)^2+ \tilde{\lambda}|w_i|-\beta w_i \right )|_{w_i=w_i^<em>}=0 \\<br>\beta w_i^</em>=0<br>$$<br>根据上面的求导可得<br>$$<br>w_i^*=v_i-\tilde{\lambda}+\beta<br>$$<br>再分为两种情况</p>
-<p>① 当$w_i^<em> &gt; 0$ 时，由于$\beta w_i^</em>=0$ 所以$\beta=0$，此时有$w_i^*=v_i-\tilde{\lambda}$ ，从而$v_i-\tilde{\lambda} &gt; 0$ 。</p>
-<p>② 当$w_i^* = 0$ 时，有$v_i-\tilde{\lambda}+\beta=0$ 。由于$\beta \geq 0$ ，所以$v_i-\tilde{\lambda} \leq 0$  。</p>
-<p>可以得出，当$v_i\geq0$ 时，<br>$$<br>w_i^<em> = max(0, v_i-\tilde{\lambda})<br>$$<br><em>*（2）当$v_i&lt;0$时</em></em>，</p>
-<p>采用同样的分析方法，得到<br>$$<br>w_i^* =- max(0, -v_i-\tilde{\lambda})<br>$$<br>综上，可得FOBOS在L1正则化条件下，特征权重各个维度的更新方式为：<br>$$<br>\begin{aligned}<br>w_i^{t+1} &amp;= sgn(v_i)max(0,|v_i|-\tilde{\lambda})\\<br>&amp; = sgn(w_i^{t}-\eta^{t}g_i^{t})max \left \{ 0, |w_i^{t}-\eta^{t}g_i^{t}|-\eta^{t+ \frac {1} {2}} \lambda \right \}<br> \end{aligned}<br> \tag{3-2-4}<br>$$<br>其中，$g_i^{t}$就是梯度在维度i上的取值。</p>
-<p><strong>从公式（3-2-4）可以看出，L1-FOBOS每次更新W的时候，对W的每个维度都会进行判定，当$|w_i^{t}-\eta^{t}g_i^{t}|-\eta^{t+ \frac {1} {2}} \lambda&lt;0$的时候对齐进行截断，即权重置为0。</strong></p>
-<p>换一种写法，<br>$$<br>|w_i^{t}-\eta^{t}g_i^{t}|&lt;\eta^{t+ \frac {1} {2}} \lambda<br>\tag {3-2-5}<br>$$<br>可以看出截断的意义是，<strong>当一条样本产生的梯度不足以令对应维度上的权重值发生足够大的变大（$\eta^{t+ \frac {1} {2}} \lambda$ ），则认为在本次更新过程中该维度不重要，令其权重为0</strong>。</p>
-<p>若对L1-FOBOS进行适当的变换，可以发现，L1-FOBOS就是TG在特定条件下的特殊形式。</p>
-<h2 id="3-3-RDA"><a href="#3-3-RDA" class="headerlink" title="3.3 RDA"></a>3.3 RDA</h2><h3 id="3-3-1-RDA算法原理"><a href="#3-3-1-RDA算法原理" class="headerlink" title="3.3.1 RDA算法原理"></a>3.3.1 RDA算法原理</h3><p>TG和FOBOS都是建立在SGD的基础之上，属于梯度下降类型的方法，这类型方法的优点就是精度比较高，并且 TG、 FOBOS 也都能在稀疏性上得到提升。 但是有些其它类型的算法，例如 RDA，是从另一个方面来求解 Online Optimization 并且更有效地提升了特征权重的稀疏性。 </p>
-<p>正则对偶平均（ RDA, Regularized Dual Averaging） 是微软十年的研究成果， RDA 是 Simple Dual Averaging Scheme 的一个扩展， 由 Lin Xiao 发表于 2010 年 。</p>
-<p>在 RDA 中， 特征权重的更新策略为：<br>$$<br>W^{t+1} = \arg \underset{W}{min} \left \{ \frac 1 t \sum_{r=1}^t \left \langle G^r,W \right \rangle  +\Psi(W)+\frac {\beta^{t}}{t}h(W) \right \}<br>\tag {3-3-1}<br>$$<br>本质上，公式（3-3-1）包括了3个部分：</p>
-<p>（1）线性函数$\frac 1 t \sum_{r=1}^t \left \langle G^r,W \right \rangle$ 包含了之前所有梯度（或次梯度）的平均值（dual average），$G^r$ 是梯度；</p>
-<p>（2）$\Psi(W)$ 为正则项；</p>
-<p>（3）额外正则项$\frac {\beta^{t}}{t}h(W)$。其中$h(W)$是一个辅助的严格凸函数。$\{\beta^{t}|t\geq 1\}$ 是一个非负且非自减序列。</p>
-<h3 id="3-3-2-L1-RDA"><a href="#3-3-2-L1-RDA" class="headerlink" title="3.3.2 L1-RDA"></a>3.3.2 L1-RDA</h3><p>在L1正则化下，有$\Psi (W)=\lambda||w||_1$，并且由于$h(W)$是一个关于W的严格凸函数，就令$h(W)=\frac {1} {2} ||W||_2^2 $ 。此外，将$\{\beta^{t}|t\geq 1\}$定义为$\beta^{t}=\gamma \sqrt t $ 。再代入（2-4-1），有<br>$$<br>W^{t+1} = \arg \underset{W}{min} \left \{ \frac 1 t \sum_{r=1}^t \left \langle G^r,W \right \rangle  +\lambda||w||_1+\frac {\gamma} {2\sqrt t}||W||_2^2 \right \}<br>\tag {3-3-2}<br>$$<br>分解到每一个权重的维度上<br>$$<br>w_i^{t+1} = \arg \underset{w_i}{min} \left \{ \bar{g_i}^{t}w_i +\lambda|w_i|+\frac {\gamma} {2\sqrt t}w_i^2 \right \}<br>\tag {3-3-3}<br>$$<br>这里$\lambda &gt;0, \frac {\gamma} {\sqrt t}&gt;0,  \bar{g_i}^{t} = \frac 1 t \sum_{r=1}^t g_i^{(r)}$ 。公式（2-4-3）就是一个无约束的非平滑最优化问题（因为第二项$\lambda|w_i|$ 在0处不可导）。所以用次导数求解。</p>
-<p>假设$w_i^<em>$ 是其最优解，并且定义$\xi \in \partial  |w_i|$为$|w_i|$ 在$w_i^</em>$ 的次导数，则有<br>$$<br>\partial |w_i^<em>| =  \left\{\begin{matrix}<br>-1&lt;\xi&lt;1  &amp; if w_i^</em>=0\ <br>1 &amp; if w_i^<em>&gt;0\ <br>-1 &amp; if w_i^</em><0 \end{matrix}\right.="" $$="" 对公式（3-3-3）求次导数，并令其为0，则有="" \bar{g_i}^{t}="" +="" \lambda\xi="" \frac="" {\gamma}="" {\sqrt="" t}="" w_i="0" 由于$\lambda="">0$，再分情况讨论（略），可以得到L1-RDA特征权重的各个维度更新的方式为：<br>$$<br>w_i^{t+1}=\begin{Bmatrix}<br>0 &amp; if |\bar{g_i}^{t}|&lt;\lambda\ <br>-\frac {\sqrt t}{\gamma}\left (\bar{g_i}^{t}-\lambda sgn(\bar{g_i}^{t})  \right ) &amp; otherwise<br>\end{Bmatrix}<br>\tag {3-3-4}<br>$$<br><strong>这里可以看出，当某个维度上累积梯度平均值的绝对值小于阈值$\lambda$ 时，产生截断</strong>。</0></p>
-<h3 id="3-3-3-L1-RDA和L1-FOBOS的比较"><a href="#3-3-3-L1-RDA和L1-FOBOS的比较" class="headerlink" title="3.3.3 L1-RDA和L1-FOBOS的比较"></a>3.3.3 L1-RDA和L1-FOBOS的比较</h3><p>在L1-FOBOS中，进行截断的条件是<br>$$<br>|w_i^{t}-\eta^{t}g_i^{t}|&lt;\eta^{t+ \frac {1} {2}} \lambda<br>$$<br>通常会定义$\eta$为与$\frac 1 {\sqrt t}$ 正相关的函数$\eta=\Theta \left ( \frac {1} {\sqrt t} \right )$ 。因此L1-FOBOS的<strong>截断阈值为$\Theta \left ( \frac {1} {\sqrt t} \right )\lambda$  ，</strong>随着**t的增加，这个阈值会逐渐降低。</p>
-<p>相比较而言，L1-RDA的<strong>截断阈值是$\lambda$ </strong>。是一个常数，并不随着t变化，因此相对于L1-FOBOS更简单粗暴。这种性质使得L1-RDA更容易产生稀疏性。此外， RDA 中判定截断的对象是梯度的累加平均值$\bar{g_i}^{t} $ ， 不同于 TG或L1-FOBOS 中针对单次梯度计算的结果进行判定，避免了由于某些维度由于训练不足导致截断的问题。 并且通过调节一个参数$\lambda$，很容易在精度和稀疏性上进行权衡 。</p>
-<h2 id="3-4-FTRL"><a href="#3-4-FTRL" class="headerlink" title="3.4 FTRL"></a>3.4 FTRL</h2><p>有实验证明， <strong>L1-FOBOS 这一类基于梯度下降的方法有比较高的精度，但是 L1-RDA 却能在损失一定精度的情况下产生更好的稀疏性。 FTRL则是结合了两者的优点</strong>。</p>
-<h3 id="3-4-1-L1-FOBOS和L1-RDA在形式上的统一"><a href="#3-4-1-L1-FOBOS和L1-RDA在形式上的统一" class="headerlink" title="3.4.1 L1-FOBOS和L1-RDA在形式上的统一"></a>3.4.1 L1-FOBOS和L1-RDA在形式上的统一</h3><p>之前提到，L1-FOBOS可以表示为（这里令$\eta^{t+\frac 1 2}=\eta^t=\Theta(\frac 1 {\sqrt t})$  是一个随t变化的非增正序列）<br>$$<br>W^{t+1}=\arg \underset{W}{min} \{\frac {1} {2} ||W- W^t-\eta^tG^t||^2+\eta^{t}\lambda||w||_1\}<br>$$<br>将其按W的维度分解为N个独立的最优化步骤<br>$$<br>\underset{w_i}{minimize} \left \{  \frac 1 2 (w_i-w_i^t+\eta^tg_i^t)^2+\eta^t\lambda|w_i| \right \}\\<br>=\underset{w_i}{minimize}\left \{  \frac 1 2 (w_i-w_i^t)^2 + \frac 1 2(\eta^tg_i^t)^2+w_i\eta^tg_i^t- w_i^t\eta^tg_i^t+    \eta^t\lambda|w_i| \right \}\\<br>$$<br>同时除以$\eta^t$ ，得到<br>$$<br>\underset{w_i}{minimize}\left \{ w_ig_i^t+\lambda|w_i|+\frac 1 {2\eta^t}(w_i-w_i^t)^2 + [\frac {\eta^t}{2}(g_i^t)2+w_i^tg_i^t] \right \}<br>$$<br>由于$\frac {\eta^t}{2}(g_i^t)2+w_i^tg_i^t$ 与变量$w_i$ 无关，因此上式可以等价于<br>$$<br>\underset{w_i}{minimize}\left \{ w_ig_i^t+\lambda|w_i|+\frac 1 {2\eta^t}(w_i-w_i^t)^2 +  \right \}<br>$$<br>再将这N个独立的合并，则L1-FOBOS可以写成<br>$$<br>W^{t+1} = \arg \underset{W}{min} \left \{ G^t\cdot W+\lambda||W||_1+\frac 1 {2\eta^t}||W-W^t||_2^2 \right \}<br>$$<br>而对于L1-RDA的公式（3-3-2）<br>$$<br>W^{t+1} = \arg \underset{W}{min} \left \{ \frac 1 t \sum_{r=1}^t \left \langle G^r,W \right \rangle  +\lambda||w||_1+\frac {\gamma} {2\sqrt t}||W||_2^2 \right \} \\<br>$$<br>同时乘以t，得到<br>$$<br>\begin{aligned}<br>W^{t+1} &amp; = \arg \underset{W}{min} \left \{ \sum_{r=1}^t  G^r \cdot W  +t\lambda||w||_1+\frac {1} {2\eta^t}||W-0||_2^2 \right \}\\<br>&amp; =\arg \underset{W}{min} \left \{  G^{1:t} \cdot W  +t\lambda||w||_1+\frac {1} {2\eta^t}||W-0||_2^2 \right \}<br>\end{aligned}<br>$$<br>如果令$\sigma ^s = \frac 1 {\eta^s}-\frac 1 {\eta^{s-1}}$  ，则$\sigma^{1:t} = \frac 1 {\eta^t}$ 。L1-FOBOS和L1-RDA的公式可以写成<br>$$<br>W^{t+1} = \arg \underset{W}{min} \left \{ G^t\cdot W+\lambda||W||_1+\frac 1 2\sigma^{1:t}||W-W^t||_2^2 \right \}\\<br>W^{t+1} =\arg \underset{W}{min} \left \{  G^{1:t} \cdot W  +t\lambda||W||_1+\frac 1 2\sigma^{1:t}||W-0||_2^2 \right \}<br>\tag {3-4-1}<br>$$<br>比较这两个公式，可以看出L1-FOBOS和L1-RDA的区别在于：</p>
-<p>（1）前者对梯度只考虑当前的状态，而后者的梯度是累加的形式；</p>
-<p>（2）前者的第三项限制了W的变化不能离已经迭代过的解太远，后者限制W不能离0太远。</p>
-<h3 id="3-4-2-FTRL算法原理"><a href="#3-4-2-FTRL算法原理" class="headerlink" title="3.4.2 FTRL算法原理"></a>3.4.2 FTRL算法原理</h3><p>FTRL综合考虑了L1-FOBOS和L1-RDA中对正则项和W限制的区别，其特征权重的更新公式为<br>$$<br>W^{t+1} =\arg \underset{W}{min} \left \{  G^{1:t} \cdot W  +\lambda_1||W||_1+\lambda_2||W||_2^2+\frac 1 2\sum_{s=1}^t \sigma^s ||W-W^s||_2^2 \right \}<br>\tag {3-4-2}<br>$$<br>其中L2的正则项在论文中并没有出现，但是2013年的FTRL工程化实现的论文却使用。事实上该项的引入并不影响FRTL<br>的稀疏性， 后面的推导过程会显示这一点。 L2正则项的引入仅仅相当于对最优化过程多了一个约束，使得结果求解结果更加“平滑”。 </p>
-<p>对（3-4-2）进行变换，将其的最后一项展开<br>$$<br>W^{t+1} =\arg \underset{W}{min} \left \{  (G^{1:t}-\sum_{s=1}^t\sigma^sW^s) \cdot W  +\lambda_1||W||_1+\frac 1 2 (\lambda_2+\sum_{s=1}^t\sigma^s)||W||_2^2+\frac 1 2\sum_{s=1}^t \sigma^s ||W^s||_2^2 \right \}<br>$$<br>其中，由于$\frac 1 2\sum_{s=1}^t \sigma^s ||W^s||_2^2$ 相对于W是常数项，再令<br>$$<br>Z^{t} =G^{1:t}-\sum_{s=1}^t\sigma^sW^s<br>\tag {3-4-3}<br>$$<br>上式等价于<br>$$<br>W^{t+1} =\arg \underset{W}{min} \left \{  Z^t \cdot W  +\lambda_1||W||_1+\frac 1 2 (\lambda_2+\sum_{s=1}^t\sigma^s)||W||_2^2 \right \}<br>$$<br>再针对每个维度将其拆解成N个独立的标量最小化问题<br>$$<br> \underset{w_i}{minimize} \left \{  z_i^tw_i  +\lambda_1|w_i|+\frac 1 2 (\lambda_2+\sum_{s=1}^t\sigma^s)w_i^2 \right \}<br>$$<br>到这里，遇到了与L1-RDA的（3-3-3）类似的优化问题，用相同的分析方法可以得到<br>$$<br>w_i^{t+1}=\left\{\begin{matrix}<br>0 &amp; if |z_i^t|&lt;\lambda_1\ <br>-\left ( \lambda_2+\sum_{s=1}^t\sigma^s \right )^{-1} \left ( z_i^t-\lambda_1 sgn(z_i^t) \right ) &amp; otherwise<br>\end{matrix} \right.<br>\tag {3-4-4}<br>$$<br>可以看出，引入L2并没有对FTRL结果的稀疏性产生影响。</p>
-<h3 id="3-4-3-学习率"><a href="#3-4-3-学习率" class="headerlink" title="3.4.3 学习率"></a>3.4.3 学习率</h3><p>前面的推导中，学习率的选择和计算没有被提及。事实上在FTRL中，每个维度的学习率都是单独考虑的。</p>
-<p>考虑特征维度的变化率：如果特征 1 比特征 2 的变化更快，那么在维度 1 上的学习率应该下降得更快。我们很容易就可以想到可以用某个维度上梯度分量来反映这种变化率。在FTRL 中，维度 i上的学习率是这样计算的<strong>（原作者没有推导过程）</strong>：<br>$$<br>\eta_i^t=\frac {\alpha}{\beta + \sqrt {\sum_{s=1}^t (g_i^s)^2}}<br>$$<br>由于$\sum_{s=1}^t\sigma^s=\frac 1 {\eta^t}$ ，因此（3-4-4）就变成<br>$$<br>w_i^{t+1}=\left\{\begin{matrix}<br>0 &amp; if |z_i^t|&lt;\lambda_1\ <br>-\left ( \lambda_2 + \frac {\beta + \sqrt {\sum_{s=1}^t (g_i^s)^2}}{\alpha}  \right )^{-1} \left ( z_i^t-\lambda_1 sgn(z_i^t) \right ) &amp; otherwise<br>\end{matrix} \right.<br>\tag {3-4-5}<br>$$<br>这里的$\alpha, \beta$ 都是要输入的参数。</p>
-<h3 id="2-5-4-伪代码解读"><a href="#2-5-4-伪代码解读" class="headerlink" title="2.5.4 伪代码解读"></a>2.5.4 伪代码解读</h3><p> <img src="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/FTRL伪代码.png" alt="FTRL伪代码"></p>
-<p>首先设置各个参数的初始值，包括</p>
-<ul>
-<li>更新学习率的$\alpha,\beta$。</li>
-<li>L1和L2正则化的参数$\lambda_1, \lambda_2$ </li>
-<li>更新权重时用到的$z_i$ 一维数组（数组的长度是特征项个数），初始值是0</li>
-<li>存放梯度累加的$n_i$ 一维数组（数组的长度是特征项个数），初始值是0</li>
-</ul>
-<p>算法步骤中：</p>
-<p>（1）第一阶段，计算第t次迭代的预测值</p>
-<p><strong>S1</strong>：用给定的初始值计算权重$w_{t,i}$，并计算出预测值$p_t$ 。见①</p>
-<p>（2）第二阶段，更新第t+1次的权重，对当前样本不为0的每个特征项都要进行一次更新。在第i个特征项中，</p>
-<p><strong>S1</strong>：采用logloss计算损失函数的梯度$g_{t+1}$，见②</p>
-<p><strong>S2</strong>：可以看出①里面还需要计算$n_i$  和$z_i$ 在第t+1次的值。</p>
-<p>对于$z_i$，根据公式（2-5-3）<br>$$<br>Z^{t} =G^{1:t}-\sum_{s=1}^t\sigma^sW^s<br>$$<br>可以看出z的更新可以通过下式计算<br>$$<br>\begin {aligned}<br>Z^{t+1}&amp; =G^{1:t+1}-\sum_{s=1}^{t+1}\sigma^sW^s\\<br>&amp;=G^{1:t}-\sum_{s=1}^t\sigma^sW^s + G^{t+1} - \sigma^{t+1}W^{t+1}\\<br>&amp;=Z^t + G^{t+1} - \sigma^{t+1}W^{t+1}<br> \end{aligned}<br> \tag {3-4-6}<br>$$<br>则需要计算$\sigma^{t+1}$ 的值。而根据上文的推导<br>$$<br>\sigma ^s = \frac 1 {\eta^s}-\frac 1 {\eta^{s-1}}<br>$$<br>又<br>$$<br>\eta_i^t=\frac {\alpha}{\beta + \sqrt {\sum_{s=1}^t (g_i^s)^2}}<br>$$<br>则<br>$$<br>\begin {aligned}<br>\sigma ^{t+1}&amp; = \frac 1 {\eta^{t+1}}-\frac 1 {\eta^t}\\<br>&amp;=\frac {\beta + \sqrt {\sum_{s=1}^{t+1} (g_i^s)^2}}{\alpha}-\frac {\beta + \sqrt {\sum_{s=1}^t (g_i^s)^2}}{\alpha}\\<br>&amp;=\frac 1 \alpha \left ( \sqrt {\sum_{s=1}^{t+1} (g_i^s)^2}- \sqrt {\sum_{s=1}^t (g_i^s)^2}\right )<br> \end{aligned}<br>$$<br>由于用$n_i$ 记录$g_i$ 的累加和，上式可以变成<br>$$<br>\sigma ^{t+1} = \sqrt {n^t+(g^{t+1})^2}-\sqrt {n^t}<br>\tag {3-4-7}<br>$$<br>见③。再根据公式（3-4-6），计算$z_i$ 的值，见④。</p>
-<p><strong>S3</strong>：对于$n_i$ ，根据公式（3-4-7），<br>$$<br>n^{t+1} = n^t +(g^{t+1})^2<br>$$<br>见⑤。</p>
-<h3 id="2-5-5-实现代码"><a href="#2-5-5-实现代码" class="headerlink" title="2.5.5 实现代码"></a>2.5.5 实现代码</h3><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">predict</span></span>(x: <span class="type">Array</span>[<span class="type">Int</span>]): <span class="type">Double</span> = &#123;</div><div class="line">  <span class="keyword">var</span> wTx = <span class="number">0.0</span></div><div class="line"></div><div class="line">  x foreach &#123; x =&gt;</div><div class="line">    <span class="keyword">val</span> sign = <span class="keyword">if</span> (z(x) &lt; <span class="number">0</span>) <span class="number">-1.0</span> <span class="keyword">else</span> <span class="number">1.0</span></div><div class="line"></div><div class="line">    <span class="keyword">if</span> (sign * z(x) &lt;= <span class="type">L1</span>)</div><div class="line">      w(x) = <span class="number">0.0</span></div><div class="line">    <span class="keyword">else</span></div><div class="line">      w(x) = (sign * <span class="type">L1</span> - z(x)) / ((beta + math.sqrt(n(x))) / alpha + <span class="type">L2</span>)</div><div class="line"></div><div class="line">    wTx = wTx + w(x)</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> <span class="number">1.0</span> / (<span class="number">1.0</span> + math.exp(-math.max(math.min(wTx, <span class="number">35.0</span>), <span class="number">-35.0</span>)))</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">update</span></span>(x: <span class="type">Array</span>[<span class="type">Int</span>], p: <span class="type">Double</span>, y: <span class="type">Int</span>): <span class="type">Unit</span> = &#123;</div><div class="line">  <span class="keyword">val</span> g = p - y</div><div class="line"></div><div class="line">  x foreach &#123; x =&gt;</div><div class="line">    <span class="keyword">val</span> sigma = (math.sqrt(n(x) + g * g) - math.sqrt(n(x))) / alpha</div><div class="line">    z(x) = z(x) + g - sigma * w(x)</div><div class="line">    n(x) = n(x) + g * g</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>从代码可以看出，在更新权重时，SGD和FTRL的区别在于：</p>
-<p><del>SGD在遍历每个样本的时候，都会更新所有维度的权重，而FTRL在遍历每个样本的时候只会更新样本对应维度的权重。从而可以节省训练的时间</del></p>
-<p>并不是节省时间。SGD也可以用于在线学习，过拟合的限制上没有FTRL好。参数太多，会导致模型复杂度上升，容易过拟合。</p>
-<h3 id="3-4-6-实验及结论"><a href="#3-4-6-实验及结论" class="headerlink" title="3.4.6 实验及结论"></a>3.4.6 实验及结论</h3><p>1、</p>
-<p>训练：16-10-22的前7天数据</p>
-<p>预测：16-10-22当天数据</p>
-<p>维度：1048576</p>
-<p>参数：默认</p>
-<p> <img src="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/roc3.png" alt="roc3"></p>
-<p>logloss：</p>
-<p>线上方法：0.274321867859</p>
-<p>FRTL：0.0326626593411</p>
-<p>2、</p>
-<p>训练：16-10-22的前7天数据</p>
-<p>预测：16-10-22当天数据，其中每9条用于在线学习，预测第10条</p>
-<p>维度：1048576</p>
-<p>参数：默认</p>
-<p>训练时间：11:54-12:18</p>
-<p> <img src="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/roc1.png" alt="roc1"></p>
-<p>logloss：</p>
-<p>线上方法：0.275704770725</p>
-<p>FRTL：0.032281346379</p>
-<p>3、</p>
-<p>训练集：16-10-18的前10天数据</p>
-<p>预测：16-10-18当天数据，其中每9条用于在线学习，预测第10条</p>
-<p>维度：4194304</p>
-<p>参数：默认</p>
-<p>训练时间：13:50-14:19</p>
-<p> <img src="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/roc2.png" alt="roc2"></p>
-<p>logloss</p>
-<p>线上方法：0.073087783303</p>
-<p>FTRL：0.022967801811</p>
-<p>4、</p>
-<p>训练集：16-10-18的前10天数据</p>
-<p>预测：16-10-18当天数据，其中每9条用于在线学习，预测第10条</p>
-<p>维度：4194304</p>
-<p>参数：训练的特征项改为1-10</p>
-<p>训练时间：17:07-17:45</p>
-<p> <img src="/2017/07/12/浅谈在线最优化求解算法-以CTR预测模型为例/roc4.png" alt="roc4"></p>
-<p>logloss</p>
-<p>线上方法：0.073087783303</p>
-<p>FTRL：0.0221369813697</p>
-<p>特征权重不为0的维度有11301个</p>
-<h2 id="观点"><a href="#观点" class="headerlink" title="观点"></a>观点</h2><p>FTRL在线训练时间长了效果往往会下降，因为学习率会逐渐降低，必须要offline结合online。</p>
-<h1 id="主要参考资料"><a href="#主要参考资料" class="headerlink" title="主要参考资料"></a>主要参考资料</h1><p>【在线最优化求解(Online Optimization)-冯扬】</p>
-<p>【逻辑回归从入门到精通-腾讯柳超】</p>
-<p>【FTRL的理论论文】Factorization machines with follow-the-regularized-leader for CTR prediction in display advertising  <a href="http://www0.cs.ucl.ac.uk/staff/w.zhang/rtb-papers/fm-ftrl.pdf" target="_blank" rel="external">http://www0.cs.ucl.ac.uk/staff/w.zhang/rtb-papers/fm-ftrl.pdf</a></p>
-<p>【FTRL的工程实现论文】<a href="https://www.eecs.tufts.edu/~dsculley/papers/ad-click-prediction.pdf" target="_blank" rel="external">https://www.eecs.tufts.edu/~dsculley/papers/ad-click-prediction.pdf</a> </p>
+<h1 id="2、性能度量"><a href="#2、性能度量" class="headerlink" title="2、性能度量"></a>2、性能度量</h1><p>回归最常用的是“均方误差”（mean squared error）</p>
+<script type="math/tex; mode=display">
+E(f;D) = \frac 1 m \sum_{i=1}^m(f(x_i)-y_i )^2</script><p>更一般的，对于数据分布D和概率密度函数$p(\cdot )$，均方误差可描述为</p>
+<script type="math/tex; mode=display">
+E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复杂</p>
+<h2 id="2-1-错误率和精度"><a href="#2-1-错误率和精度" class="headerlink" title="2.1 错误率和精度"></a>2.1 错误率和精度</h2><p>错误率：分类错误的样本占总样本的比例</p>
+<p>精度：分类正确的样本占总样本的比例</p>
 
           
         
@@ -2173,24 +2182,7 @@
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
 
 
 
@@ -2238,6 +2230,28 @@
   
 
   
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
 
   
 
