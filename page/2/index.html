@@ -268,504 +268,6 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/Docker-配置和使用/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/07/12/Docker-配置和使用/" itemprop="url">
-                  Docker 配置和使用
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">
-                2017-07-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/系统工具/" itemprop="url" rel="index">
-                    <span itemprop="name">系统工具</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="0、基本概念"><a href="#0、基本概念" class="headerlink" title="0、基本概念"></a>0、基本概念</h1><p>镜像</p>
-<blockquote>
-<p>Docker镜像通过镜像ID进行识别。镜像ID是一个64字符的十六进制的字符串。但是当我们运行镜像时，通常我们不会使用镜像ID来引用镜像，而是使用镜像名来引用。要列出本地所有有效的镜像，可以使用命令</p>
-<p>$ docker images</p>
-<p>镜像可以发布为不同版本，这种机制我们称之为标签（Tag）。 </p>
-</blockquote>
-<p>容器</p>
-<blockquote>
-<p>Docker容器可以使用命令创建：</p>
-<p>$ docker run imagename</p>
-<p>它会在所有的镜像层之上增加一个<strong>可写层</strong>。这个可写层有运行在CPU上的进程，而且有两个不同的状态：运行态（Running）和退出态（Exited）。这就是Docker容器。当我们使用docker run启动容器，Docker容器就进入运行态，当我们停止Docker容器时，它就进入退出态。</p>
-<p>对容器的变更是<strong>写入到容器的文件系统的，而不是写入到Docker镜像</strong>中的。</p>
-<p>用同一个镜像启动多个Docker容器，这些容器启动后都是活动的，彼此还是相互隔离的。我们对其中一个容器所做的变更只会局限于那个容器本身。</p>
-<p>如果对容器的底层镜像进行修改，那么当前正在运行的容器是不受影响的，不会发生自动更新现象。</p>
-</blockquote>
-<h1 id="1、配置"><a href="#1、配置" class="headerlink" title="1、配置"></a>1、配置</h1><h2 id="1-1-安装"><a href="#1-1-安装" class="headerlink" title="1.1 安装"></a>1.1 安装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ sudo apt-get update</div><div class="line">$ sudo apt-get install docker</div></pre></td></tr></table></figure>
-<p>编辑/etc/default/docker增加如下配置，自定义docker镜像存放路径</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">DOCKER_OPTS=&quot;--graph=/home/david/opt/docker&quot;</div></pre></td></tr></table></figure>
-<p>sudo service docker start    #启动<br>sudo service docker stop    #关闭<br>sudo service docker restart #重启 </p>
-<h2 id="1-2-pull一个镜像"><a href="#1-2-pull一个镜像" class="headerlink" title="1.2 pull一个镜像"></a>1.2 pull一个镜像</h2><p>查看镜像：此时应该没有镜像<br>docker images</p>
-<p>下载镜像</p>
-<p>sudo docker pull ubuntu</p>
-<h2 id="1-3-创建容器"><a href="#1-3-创建容器" class="headerlink" title="1.3 创建容器"></a>1.3 创建容器</h2><p>docker ps命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ sudo docker ps #列出当前所有正在运行的container</div><div class="line">$ sudo docker ps -l #列出最近一次启动的，且正在运行的container</div><div class="line">$ sudo docker ps -a #列出所有的container</div></pre></td></tr></table></figure>
-<p>启动容器，并且进入到Ubuntu容器的bash命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo docker run -itv /home/david/docker:/home/davida/gitlab  ubuntu  /bin/bash</div></pre></td></tr></table></figure>
-<p>其中，</p>
-<h2 id="1-4-提交容器"><a href="#1-4-提交容器" class="headerlink" title="1.4 提交容器"></a>1.4 提交容器</h2><p>退出容器，使用 docker commit 命令来提交更新后的副本。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> sudo docker commit -m 'xmo run evn' -a 'david' bde4f2f2db5f  ubuntu-ruby:v1</div></pre></td></tr></table></figure>
-<p>其中，-m 来指定提交的说明信息，跟我们使用的版本控制工具一样；-a 可以指定更新的作者信息；之后是用来创建镜像的容器的ID；最后指定目标镜像的仓库名和 tag 信息。创建成功后会返回这个镜像的 ID 信息。v1是tag（版本号）</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo docker inspect ubuntu-ruby</div></pre></td></tr></table></figure>
-<p>查看详细信息</p>
-<h2 id="1-5-Dockerfile提交容器"><a href="#1-5-Dockerfile提交容器" class="headerlink" title="1.5 Dockerfile提交容器"></a>1.5 Dockerfile提交容器</h2><p>Dockerfile的指令是忽略大小写的，建议使用大写，使用 # 作为注释，每一行只支持一条指令，每条指令可以携带多个参数。<br>Dockerfile的指令根据作用可以分为两种，<strong>构建指令和设置指令</strong>。构建指令用于构建image，其指定的操作不会在运行image的容器上执行；设置指令用于设置image的属性，其指定的操作将在运行image的容器中执行。</p>
-<p>1）FROM 基础image</p>
-<p>基础image可以是官方远程仓库中的，也可以位于本地仓库。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FROM &lt;image&gt;</div></pre></td></tr></table></figure>
-<p>或者</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FROM &lt;image&gt;:&lt;tag&gt;</div></pre></td></tr></table></figure>
-<p>制定某个tag版本</p>
-<h2 id="1-4-用SSH访问容器"><a href="#1-4-用SSH访问容器" class="headerlink" title="1.4 用SSH访问容器"></a>1.4 用SSH访问容器</h2><p>先安装ssh</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">apt-get update</div><div class="line">apt-get install openssh-server</div></pre></td></tr></table></figure>
-<p>需要修改/etc/ssh/sshd_config文件中内容  </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">RSAAuthentication yes #启用 RSA 认证</div><div class="line">PubkeyAuthentication yes #启用公钥私钥配对认证方式</div><div class="line">AuthorizedKeysFile .ssh/authorized_keys #公钥文件路径（和上面生成的文件同）</div><div class="line">PermitRootLogin yes #root能使用ssh登录</div></pre></td></tr></table></figure>
-<p>重启sshd服务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">/etc/init.d/ssh stop</div><div class="line">/etc/init.d/ssh start</div></pre></td></tr></table></figure>
-<h1 id="2、常用命令"><a href="#2、常用命令" class="headerlink" title="2、常用命令"></a>2、常用命令</h1><h3 id="docker-start和docker-run"><a href="#docker-start和docker-run" class="headerlink" title="docker start和docker run"></a>docker start和docker run</h3><p><img src="http://static.open-open.com/lib/uploadImg/20151105/20151105115304_352.png?_=5942369" alt=""></p>
-<p>从图片可以看出，docker run 命令先是利用镜像创建了一个容器，然后运行这个容器。</p>
-<p>docker run命令类似于git pull命令。git pull命令就是git fetch 和 git merge两个命令的组合，同样的，docker run就是docker create和docker start两个命令的组合。 </p>
-<h3 id="docker-ps"><a href="#docker-ps" class="headerlink" title="docker ps"></a><strong>docker ps</strong></h3><p>docker ps 命令会列出所有运行中的容器。这隐藏了非运行态容器的存在，如果想要找出这些容器，我们需要使用docker ps -a</p>
-<h3 id="docker-images"><a href="#docker-images" class="headerlink" title="docker images"></a>docker images</h3><p>docker images命令会列出了所有顶层（top-level）镜像。实际上，在这里我们没有办法区分一个镜像和一个只读层，所以我们提出了top-level 镜像。只有创建容器时使用的镜像或者是直接pull下来的镜像能被称为顶层（top-level）镜像，并且每一个顶层镜像下面都隐藏了多个镜像层。 </p>
-<p>docker images -a</p>
-<p>docker images –a命令列出了所有的镜像，也可以说是列出了所有的可读层。如果你想要查看某一个image-id下的所有层，可以使用docker history来查看。 </p>
-<h3 id="docker-stop"><a href="#docker-stop" class="headerlink" title="docker stop "></a>docker stop <container-id></container-id></h3><p>docker stop命令会向运行中的容器发送一个SIGTERM的信号，然后停止所有的进程。 </p>
-<h3 id="docker-commit"><a href="#docker-commit" class="headerlink" title="docker commit "></a>docker commit <container-id></container-id></h3><p>docker commit命令将容器的可读写层转换为一个只读层，这样就把一个容器转换成了不可变的镜像。 </p>
-<h3 id="dockesr-exec"><a href="#dockesr-exec" class="headerlink" title="dockesr exec "></a>dockesr exec <running-container-id></running-container-id></h3><p>docker exec 命令会在运行中的容器执行一个新进程。 </p>
-<h3 id="docker-save"><a href="#docker-save" class="headerlink" title="docker save "></a>docker save <image-id></image-id></h3><p>docker save命令会创建一个镜像的压缩文件，这个文件能够在另外一个主机的Docker上使用。和export命令不同，这个命令为每一个层都保存了它们的元数据。这个命令只能对镜像生效。 </p>
-<h3 id="docker-export"><a href="#docker-export" class="headerlink" title="docker export "></a>docker export <container-id></container-id></h3><p>docker export命令创建一个tar文件，并且移除了元数据和不必要的层，将多个层整合成了一个层，只保存了当前统一视角看到的内容（expoxt后 的容器再import到Docker中，通过docker images –tree命令只能看到一个镜像；而save后的镜像则不同，它能够看到这个镜像的历史镜像）。 </p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.linuxidc.com/Linux/2015-07/120444.htm" target="_blank" rel="external">Ubuntu 15.04下安装Docker</a></p>
-<p><a href="http://blog.csdn.net/chszs/article/details/48252799" target="_blank" rel="external">Docker的镜像和容器的区别</a></p>
-<p><a href="http://www.cnblogs.com/bethal/p/5942369.html" target="_blank" rel="external">Docker容器和镜像区别</a></p>
-<p><a href="http://blog.csdn.net/qinyushuang/article/details/43342553" target="_blank" rel="external">Docker学习笔记（3）— 如何使用Dockerfile构建镜像</a></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/利率计算/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/07/12/利率计算/" itemprop="url">
-                  利率计算
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">
-                2017-07-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/系统工具/" itemprop="url" rel="index">
-                    <span itemprop="name">系统工具</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>等额本息</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">每月月供额=〔贷款本金×月利率×(1＋月利率)＾还款月数〕÷〔(1＋月利率)＾还款月数-1〕</div><div class="line">每月应还利息=贷款本金×月利率×〔(1+月利率)^还款月数-(1+月利率)^(还款月序号-1)〕÷〔(1+月利率)^还款月数-1〕</div><div class="line">每月应还本金=贷款本金×月利率×(1+月利率)^(还款月序号-1)÷〔(1+月利率)^还款月数-1〕</div><div class="line">总利息=还款月数×每月月供额-贷款本金</div></pre></td></tr></table></figure>
-<p>等额本金</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">每月月供额=(贷款本金÷还款月数)+(贷款本金-已归还本金累计额)×月利率</div><div class="line">每月应还本金=贷款本金÷还款月数</div><div class="line">每月应还利息=剩余本金×月利率=(贷款本金-已归还本金累计额)×月利率</div><div class="line">每月月供递减额=每月应还本金×月利率=贷款本金÷还款月数×月利率</div><div class="line">总利息=还款月数×(总贷款额×月利率-月利率×(总贷款额÷还款月数)*(还款月数-1)÷2+总贷款额÷还款月数)</div></pre></td></tr></table></figure>
-<p><a href="https://zhuanlan.zhihu.com/p/22920169" target="_blank" rel="external">信用卡账单分期真实年化利率</a></p>
-<p><img src="https://pic4.zhimg.com/v2-177bf28088e8ef5462e3b5cc3d1ab2eb_b.png" alt=""></p>
-<h1 id="年利率"><a href="#年利率" class="headerlink" title="年利率"></a>年利率</h1><p>利息率=利息量÷本金÷时间×100%</p>
-<h1 id="IRR"><a href="#IRR" class="headerlink" title="IRR"></a>IRR</h1><p><strong>内部收益率 (IRR) 的定义是：净现值 (NPV) 为零时的折现率。</strong></p>
-<p>综合考虑了每期的流入流出现金的量和时间，加权出来的结果。<br>IRR实质上是一个折现率，用IRR折现时会达到该项目的净现值NPV为0的状态。也可以理解为一个项目的预期收益率。<br>举例来说，如IRR为8%，可以简单解释为以8%的利率借钱投资于此项目，刚好可以不赚不赔。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/人群地理信息分析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/07/12/人群地理信息分析/" itemprop="url">
-                  人群地理信息分析
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">
-                2017-07-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/算法/" itemprop="url" rel="index">
-                    <span itemprop="name">算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>数据源</p>
-<p>移动端的request中</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/Elastic Search 配置和使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1067,6 +569,607 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">GET iclick_persona/iclick/_search?size=0</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123; </div><div class="line">    &quot;bool&quot;: &#123; </div><div class="line">      &quot;must&quot;: [</div><div class="line">        &#123; &quot;match&quot;: &#123; &quot;province&quot;: &quot;HK&quot; &#125;&#125;</div><div class="line">      ]</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;dates&quot;: &#123;</div><div class="line">      &quot;terms&quot;: &#123;</div><div class="line">        &quot;field&quot;: &quot;create_time&quot;,</div><div class="line">        &quot;size&quot;: 100,</div><div class="line">        &quot;order&quot;: &#123;</div><div class="line">          &quot;_term&quot;: &quot;asc&quot;</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <h2 id="DELETE"><a href="#DELETE" class="headerlink" title="DELETE"></a>DELETE</h2><p>按条件删除</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">POST iclick_persona/iclick/_delete_by_query</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;bool&quot;: &#123;</div><div class="line">      &quot;must&quot;: [</div><div class="line">        &#123;</div><div class="line">          &quot;term&quot;: &#123;</div><div class="line">            &quot;create_time&quot;: &#123;</div><div class="line">              &quot;value&quot;: &quot;2017-07-15&quot;</div><div class="line">            &#125;</div><div class="line">          &#125;</div><div class="line">        &#125;,</div><div class="line">        &#123;</div><div class="line">          &quot;term&quot;: &#123;</div><div class="line">            &quot;province&quot;: &#123;</div><div class="line">              &quot;value&quot;: &quot;HK&quot;</div><div class="line">            &#125;</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">      ]</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/决策树/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/07/12/决策树/" itemprop="url">
+                  决策树
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">
+                2017-07-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习算法推导/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习算法推导</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1-决策树"><a href="#1-决策树" class="headerlink" title="1 决策树"></a>1 决策树</h1><p>公式符号</p>
+<script type="math/tex; mode=display">
+\begin{align}
+&Ent(X)\ \ \ 熵 \\
+&Gain(X)\ \ \ 信息增益\\
+&Gini(X)\ \ \ 基尼指数\\
+&D\ \ \ 训练集\\
+&A\ \ \ 训练集的某个特征\\
+&N\ \ \ 特征A的类别总数\\
+&K\ \ \ 标签分类的数量\\
+\end{align}</script><h2 id="1-1-关键步骤-python实现"><a href="#1-1-关键步骤-python实现" class="headerlink" title="1.1 关键步骤-python实现"></a>1.1 关键步骤-python实现</h2><p>创建决策树分支的createBranch()伪代码函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">检查数据集中每个子项是否属于同一个分类：</div><div class="line">	IF YES return 类标签；</div><div class="line">	ELSE </div><div class="line">		寻找划分数据集的最好特征；</div><div class="line">		划分数据集；</div><div class="line">		创建分支节点；</div><div class="line">			for 每个划分的子集</div><div class="line">				递归调用createBranch()并增加返回结果到分支节点中</div><div class="line">        return 分支节点</div></pre></td></tr></table></figure>
+<p>对label的分类计算熵</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">calcEnt</span><span class="params">(dataSet)</span>:</span></div><div class="line">	labelNum = len(dataSet)</div><div class="line">    ent = <span class="number">0.0</span></div><div class="line">	<span class="comment">#定义字典存放每个类别的count统计</span></div><div class="line">	labelCounts = &#123;&#125;</div><div class="line">    <span class="comment">#统计每个label的个数</span></div><div class="line">	<span class="keyword">for</span> featureVec <span class="keyword">in</span> dataSet:</div><div class="line">        <span class="comment">#最后一列是label</span></div><div class="line">		label = featureVec[<span class="number">-1</span>]</div><div class="line">        <span class="keyword">if</span> label <span class="keyword">not</span> <span class="keyword">in</span> labelCounts.keys(): labelCounts[label] = <span class="number">0</span></div><div class="line">        labelCounts[label] += <span class="number">1</span></div><div class="line">    <span class="comment">#计算概率以及熵</span></div><div class="line">    <span class="keyword">for</span> key <span class="keyword">in</span> labelCounts:</div><div class="line">        prob = float(labelCounts[key]) / labelNum</div><div class="line">        ent -= prob * log(<span class="number">2</span>, prob)</div><div class="line">    <span class="keyword">return</span> ent</div></pre></td></tr></table></figure>
+<p>对数据集进行划分</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">splitDataSet</span><span class="params">(dataSet, axis, value)</span>:</span></div><div class="line">    subDataSet = []</div><div class="line">    <span class="keyword">for</span> featureVec <span class="keyword">in</span> dataSet:</div><div class="line">        <span class="keyword">if</span> featureVec[axis] == value:</div><div class="line">            reducedFeatVec = featureVec[:axis]</div><div class="line">            reducedFeatVec.extend(featureVec[axis+<span class="number">1</span>:])</div><div class="line">    		resDataSet.append(reducedFeatVec)</div><div class="line">    <span class="keyword">return</span> subDataSet</div></pre></td></tr></table></figure>
+<p>选出最好的数据集划分方式</p>
+<p><strong>信息增益</strong></p>
+<p><strong>熵</strong>的定义是</p>
+<script type="math/tex; mode=display">
+Ent(X) = -\sum_{i=1}^{n}p(x_i)log_2p(x_i)</script><p>n是类别总数。</p>
+<p><strong>条件熵</strong>$Ent(Y|X)$表示在已知X的条件下Y的不确定性，定义为给定X时Y的条件概率分布的熵对X的期望</p>
+<script type="math/tex; mode=display">
+Ent(Y|X)=\sum_{i=1}^np_iEnt(Y|X=x_i)</script><p>对于训练集D以及其中的特征A，熵就是</p>
+<script type="math/tex; mode=display">
+Ent(D) = -\sum_{k=1}^K \frac {|C_k|}{|D|} log_2\frac{|C_k|}{|D|}</script><p>其中，K是标签分类的数量，$C_k$是每个分类的样本数</p>
+<p>条件熵就是</p>
+<script type="math/tex; mode=display">
+\begin{aligned} 
+Ent(D|A) &=\sum_{i=1}^N\frac{|D_i|}{|D|}Ent(D_i) \\
+&=\sum_{i=1}^N\frac{|D_i|}{|D|}(-\sum_{k=1}^K \frac {|D_{ik}|}{|D_i|} log_2\frac{|D_{ik}|}{|D_i|})
+\end{aligned}</script><p>其中，N是特征A的类别总数，$D_i$是特征A的每种类别的数量。</p>
+<p>信息增益就是两者之差</p>
+<script type="math/tex; mode=display">
+Gain(D,A)=Ent(D)-Ent(D|A)</script><p>信息增益也称为<strong>互信息</strong>。</p>
+<p>找出信息增益最大的来划分数据集</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">chooseBestFeature</span><span class="params">(dataSet)</span>:</span></div><div class="line">	<span class="comment">#feature数量，最后一列是label</span></div><div class="line">	numFeature = len(dataSet[<span class="number">0</span>]<span class="number">-1</span>)</div><div class="line">    bestInfoGain = <span class="number">0.0</span></div><div class="line">    bestFeature = <span class="number">-1</span></div><div class="line">	<span class="comment">#先计算熵</span></div><div class="line">	baseEntropy = calcEnt(dataSet)</div><div class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> range(numFeature):</div><div class="line">		<span class="comment">#首先需要知道该特征有几个值</span></div><div class="line">		uniqueValue = set([sample[i] <span class="keyword">for</span> sample <span class="keyword">in</span> dataSet]) <span class="comment">#用set去重是最快方法</span></div><div class="line">		newEntropy = <span class="number">0.0</span></div><div class="line">        <span class="comment">#对于每个特征，计算条件熵</span></div><div class="line">        <span class="keyword">for</span> value <span class="keyword">in</span> uniqueValue:</div><div class="line">            <span class="comment">#用这个特征划分数据集</span></div><div class="line">            subDataSet = splitDataSet(dataSet, i, value)</div><div class="line">            newEntropy += calcEnt(subDataSet)</div><div class="line">        <span class="comment">#计算信息增益</span></div><div class="line">        infoGain = baseEntropy-newEntropy</div><div class="line">        <span class="keyword">if</span> infoGain &gt; bestInfoGain:</div><div class="line">            bestInfoGain = infoGain</div><div class="line">            bestFeature = i</div><div class="line"><span class="keyword">return</span> bestFeature</div></pre></td></tr></table></figure>
+<p>如果所有特征都处理过了，但是类标签依然不是唯一的，用投票决定</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">majorityCnt</span><span class="params">(classList)</span>:</span></div><div class="line">	classCount=&#123;&#125;</div><div class="line">    <span class="keyword">for</span> vote <span class="keyword">in</span> classList:</div><div class="line">        <span class="keyword">if</span> vote <span class="keyword">not</span> <span class="keyword">in</span> classCount.keys() classCount[vote] = <span class="number">0</span></div><div class="line">        classCount[vote] += <span class="number">1</span></div><div class="line">    sortedClassCount = sorted(classCount, key = operator.itemgetter(<span class="number">1</span>), reverse = <span class="keyword">True</span>)</div><div class="line">    <span class="keyword">return</span> sortedClassCount[<span class="number">0</span>][<span class="number">0</span>]</div></pre></td></tr></table></figure>
+<h2 id="1-2-ID3算法"><a href="#1-2-ID3算法" class="headerlink" title="1.2 ID3算法"></a>1.2 ID3算法</h2><p>与上面的步骤类似。但是ID3只有树的生成，容易过拟合。</p>
+<h2 id="1-3-C4-5算法"><a href="#1-3-C4-5算法" class="headerlink" title="1.3 C4.5算法"></a>1.3 C4.5算法</h2><p>与ID3相比，C4.5用信息增益比来选择特征。</p>
+<p><strong>信息增益比</strong></p>
+<p>在面对类别比较少的离散数据时，两者差不多。但如果面对连续的数据（如体重、身高、年龄、距离等），或者每列数据没有明显的类别之分（最极端的例子的该列所有数据都独一无二）。</p>
+<p>那么根据信息增益公式，$Ent(D)$不变，当数据独一无二时，</p>
+<script type="math/tex; mode=display">
+Ent(D|A)=\sum_{i=1}^n \frac {1}{n}Ent(D_i)</script><p>这样$Ent(D|A)$最小，程序会倾向于这种划分，导致划分效果差。</p>
+<p>信息增益比的公式为</p>
+<script type="math/tex; mode=display">
+Gain_R(D,A)=\frac {Gain(D,A)}{Ent(D)}</script><p>可以理解成对分支数目的惩罚项。</p>
+<h2 id="1-5-CART算法"><a href="#1-5-CART算法" class="headerlink" title="1.5 CART算法"></a>1.5 CART算法</h2><p>CART是分类与回归树，由特征选择、树的生成和剪枝组成。</p>
+<p>CART是在给定输入变量X条件下输出随机变量Y的条件概率分布的方法。CART假设决策树是<strong>二叉树</strong>，内部结点特征的取值为是和否，约定左是右否。</p>
+<p>决策树等价于递归的二分每个特征，将输入空间即特征空间划分为有限个单元，并在这些单元上确定预测的概率分布，也就是在输入给定的条件下输出的条件概率分布。</p>
+<p>1.5.1 CART的生成</p>
+<p>递归构建二叉树的过程。回归树用<strong>最小二乘</strong>，分类树用<strong>基尼指数</strong>。</p>
+<p>1）回归树</p>
+<p>2）分类树</p>
+<p>假设有K个类，样本点属于第k类的概率是$p_k$，则基尼指数定义为</p>
+<script type="math/tex; mode=display">
+Gini(p) = \sum_{k=1}^K p_k(1-p_k) = 1-\sum_{k=1}^K p_k^2=1-\sum_{k=1}^K(\frac{|C_k|}{|D|})^2</script><p>如果是两分类问题，则概率分布的基尼指数为</p>
+<script type="math/tex; mode=display">
+Gini(P)=2p(1-p)</script><p>若样本集合D根据特征A是否取某一值a被划分为$D_1$和$D_2$两部分，即</p>
+<script type="math/tex; mode=display">
+D_1=\{(x,y)\in D | A(x)=a\}, D_2=D-D_1</script><p>则在特征A的条件下，集合D的基尼指数为</p>
+<script type="math/tex; mode=display">
+Gini(D,A)=\frac {|D_1|}{|D|}Gini(D_1)+\frac {|D_2|}{|D|}Gini(D_2)</script><p>Gini越大，样本集合的不确定性越大，与熵相似。</p>
+<p><strong>算法过程</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">输入：训练集D，停止条件</div><div class="line">输出：CART决策树</div><div class="line"></div><div class="line">从根结点递归对每个结点进行以下操作，构建二叉树：</div><div class="line">1）对每个特征和可能的取值a，根据A=a的为是或否，将D分割成D1和D2，计算基尼指数</div><div class="line">2）选出基尼指数最小的特征及其对应的切分点作为最优特征与最优切分点。</div><div class="line">3）对两个子结点递归调用#1、#2，直至满足停止条件</div><div class="line">4）生成CART决策树</div></pre></td></tr></table></figure>
+<p>3）CART剪枝</p>
+<h2 id="1-6-决策树的剪枝"><a href="#1-6-决策树的剪枝" class="headerlink" title="1.6 决策树的剪枝"></a>1.6 决策树的剪枝</h2><blockquote>
+<p>如何判断剪枝后泛华性能提升？</p>
+<p>用<strong>留出法</strong>。将一部分训练集作为验证集。</p>
+</blockquote>
+<p>剪枝是为了解决过拟合。通过极小化决策树整体的损失函数来实现。设树T的叶结点个数为$|T|$，t是T的叶结点，该叶结点有$N<em>t$个样本点，其中k类的样本点有$N</em>{tk}$个，则损失函数定义为</p>
+<script type="math/tex; mode=display">
+C_{\alpha}(T) = \sum_{t=1}^T N_tEnt_t(T) + \alpha|T|</script><p>由于</p>
+<script type="math/tex; mode=display">
+Ent_t(T) =  - \sum_{k=1}^K \frac {N_{tk}}{N_t} log_2\frac {N_{tk}}{N_t}</script><p>则令</p>
+<script type="math/tex; mode=display">
+C(T) = - \sum_{t=1}^T\sum_{k=1}^KN_{tk}log_2\frac {N_{tk}}{N_t}</script><p>于是</p>
+<script type="math/tex; mode=display">
+C_\alpha(T) = C(T) +\alpha|T|</script><p>这里，$C(T)$表示训练数据的预测误差，$|T|$表示模型复杂度，$\alpha$控制两者影响，较大时选择较简单的树，反之亦然，等于0时就不考虑模型复杂度。</p>
+<p>两种剪枝思路</p>
+<p><strong>预剪枝（Pre-Pruning）</strong></p>
+<p>构造的同时剪枝。比如设一个阈值，熵减小的数量小于这个阈值，即使还可以继续降低熵，也停止继续创建分支。</p>
+<blockquote>
+<p>有些分支虽然当前划分时性能下降，但后续划分有可能又会提高，仅根据当前验证集来判断是否要继续划分，往往会导致欠拟合。</p>
+</blockquote>
+<p><strong>后剪枝（Post-Pruning）</strong></p>
+<p>三种主要方法</p>
+<p><strong>1）REP错误率降低剪枝</strong></p>
+<p>简单粗暴，对每个非叶结点的子树，用其替换一个叶结点，类别用子树覆盖训练样本中类最多的代替。这样产生的简化树再跟原树比较在测试数据集中的效果。若错误更少就替换。算法以Bottom-up的方式遍历所有的子树，直到没有任何改进时，终止。</p>
+<p><strong>2）PEP悲观剪枝</strong></p>
+<h2 id="1-7-连续和缺失值处理"><a href="#1-7-连续和缺失值处理" class="headerlink" title="1.7 连续和缺失值处理"></a>1.7 连续和缺失值处理</h2><p>1）连续值离散化</p>
+<p>jueceshu最简单的策略是<strong>二分法</strong>，也是C4.5采用的机制。</p>
+<p>对于连续属性a，可以考察包含n-1个元素的候选划分点集合</p>
+<script type="math/tex; mode=display">
+T_a=\left \{  \frac {a^i+a^{i+1}} {2} | 1 \leqslant i \leqslant n-1    \right \}</script><p>即把区间的中位点作为候选划分点，然后像离散值那样考察划分点，再选出最优的划分点。</p>
+<p>2）缺失值</p>
+<p>考虑：①如何在属性值缺失的情况下进行划分属性选择？②给定划分属性，若样本在该属性的值缺失，如何划分？</p>
+<p>靠<strong>权重</strong>。在判定划分时，权重相等，用已知的样本来划分属性。对于每个划分属性，若属性缺失，将缺失的记录根据属性的每个划分所占比例作为权重，分到属性的每个子结点中。</p>
+<h2 id="1-8-多变量决策树"><a href="#1-8-多变量决策树" class="headerlink" title="1.8 多变量决策树"></a>1.8 多变量决策树</h2><p>非子结点不再针对某个属性，而是多个属性的线性组合。即，每个非子结点都是一个线性分类器。</p>
+<h1 id="2、随机森林"><a href="#2、随机森林" class="headerlink" title="2、随机森林"></a>2、随机森林</h1><p>见《集成学习》</p>
+<h1 id="3、GBDT"><a href="#3、GBDT" class="headerlink" title="3、GBDT"></a>3、GBDT</h1><p>参考</p>
+<p>统计学习方法</p>
+<p><a href="http://www.jianshu.com/p/794d08199e5e" target="_blank" rel="external">决策树的剪枝问题</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/Hexo + Github 搭建博客入门/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/07/12/Hexo + Github 搭建博客入门/" itemprop="url">
+                  Hexo + Github 搭建博客入门
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">
+                2017-07-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/hexo美化/" itemprop="url" rel="index">
+                    <span itemprop="name">hexo美化</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1、安装node-js"><a href="#1、安装node-js" class="headerlink" title="1、安装node.js"></a>1、安装node.js</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo add-apt-repository ppa:chris-lea/node.js</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></div><div class="line"><span class="meta">#</span><span class="bash">原方法没有这一步，但是后面的操作会提示npm <span class="built_in">command</span> not found</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install npm</span></div></pre></td></tr></table></figure>
+<h1 id="2、安装hexo"><a href="#2、安装hexo" class="headerlink" title="2、安装hexo"></a>2、安装hexo</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo npm install hexo -g</span></div></pre></td></tr></table></figure>
+<h1 id="3、初始博客的根目录"><a href="#3、初始博客的根目录" class="headerlink" title="3、初始博客的根目录"></a>3、初始博客的根目录</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> ~/myblog</span></div><div class="line"><span class="meta">$</span><span class="bash"> hexo init</span></div></pre></td></tr></table></figure>
+<p>mac的根目录在</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/Users/david/david/myblog</div></pre></td></tr></table></figure>
+<h1 id="4、在github上新建仓库"><a href="#4、在github上新建仓库" class="headerlink" title="4、在github上新建仓库"></a>4、在github上新建仓库</h1><p>名称必须是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gitusername.github.io</div></pre></td></tr></table></figure>
+<p>我的就是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Schwimmer.github.io</div></pre></td></tr></table></figure>
+<p>并将本地的SSH KEY添加到git上（略）</p>
+<h1 id="5、让博客可以发布到git"><a href="#5、让博客可以发布到git" class="headerlink" title="5、让博客可以发布到git"></a>5、让博客可以发布到git</h1><p>1）安装hexo-deployer-Git（不然会出现ERROR Deployer not found: git）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-deployer-git --save</div></pre></td></tr></table></figure>
+<p>2） 配置你hexo博客根目录下的_config.yml文件(应该是最下面一行，修改成你的github)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: git@github.com:Schwimmer/Schwimmer.github.io.git</div><div class="line">  branch: master</div></pre></td></tr></table></figure>
+<blockquote>
+<p> tips</p>
+<p> 冒号后面一定要跟空格</p>
+</blockquote>
+<h1 id="6、hexo常用命令"><a href="#6、hexo常用命令" class="headerlink" title="6、hexo常用命令"></a>6、hexo常用命令</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">hexo clean #清除缓存</div><div class="line">hexo new &quot;title&quot; #新建文章</div><div class="line">hexo g #生成html，或hexo generate</div><div class="line">hexo s #在本地启动服务，启动后访问localhost:4000就可以打开，或hexo server</div><div class="line">hexo d #发布到git，发布后访问https://schwimmer.github.io/就可以打开，或hexo deploy</div></pre></td></tr></table></figure>
+<blockquote>
+<p> tips</p>
+<p> 我目前用的新建文章的方法，就是直接在source/_posts/下面新建md文件</p>
+<p> 可以偷懒写成</p>
+<p> cd ~/myblog</p>
+<p> hexo clean;hexo g;hexo s</p>
+<p> 或</p>
+<p> hexo clean;hexo g;hexo d</p>
+</blockquote>
+<h1 id="7、支持数学公式"><a href="#7、支持数学公式" class="headerlink" title="7、支持数学公式"></a>7、支持数学公式</h1><p>更新：</p>
+<p>现在用</p>
+<p><a href="http://blog.csdn.net/u014630987/article/details/78670258" target="_blank" rel="external">如何在 hexo 中支持 Mathjax？</a></p>
+<p><a href="http://blog.csdn.net/emptyset110/article/details/50123231" target="_blank" rel="external">搭建一个支持LaTEX的hexo博客</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-math --save</div></pre></td></tr></table></figure>
+<p>这时如果你会发现出了一些问题，原因是hexo先用marked.<a href="http://lib.csdn.net/base/javascript" target="_blank" rel="external">js</a>渲染，然后再交给MathJax渲染。在marked.js渲染的时候下划线<code>_</code>是被escape掉并且换成了<code>&lt;em&gt;</code>标签，即斜体字，另外LaTeX中的<code>\\</code>也会被转义成一个<code>\</code>，这样会导致MathJax渲染时不认为它是一个换行符了。</p>
+<p>为了使Marked.js与MathJax共存，打开node_modules/marked/lib/marked.js并做如下改动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Step 1:</div><div class="line">  escape: /^\\([\\`*&#123;&#125;\[\]()# +\-.!_&gt;])/,11替换成</div><div class="line">  escape: /^\\([`*\[\]()# +\-.!_&gt;])/,11这一步是在原基础上取消了对\\,\&#123;,\&#125;的转义(escape)</div><div class="line">Step 2:</div><div class="line">  em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,11替换成</div><div class="line">  em:/^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https:///cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML&quot;&gt;&lt;/script&gt;</div></pre></td></tr></table></figure>
+<h1 id="8、安装主题"><a href="#8、安装主题" class="headerlink" title="8、安装主题"></a>8、安装主题</h1><p>转自：<a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="external">NexT主题安装教程</a></p>
+<h1 id="9、文章阅读计数"><a href="#9、文章阅读计数" class="headerlink" title="9、文章阅读计数"></a>9、文章阅读计数</h1><p>转自：<a href="http://www.jianshu.com/p/702a7aec4d00" target="_blank" rel="external">Hexo添加不蒜子和LeanCloud统计无标题文章</a></p>
+<p>找到站点的<code>themes/next/layout/_partials</code>目录下的<code>footer.swig</code>文件。插入代码如下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&#123;% if theme.copyright %&#125;</div><div class="line">&lt;div class=&quot;powered-by&quot;&gt;</div><div class="line">  &#123;&#123; __(&apos;footer.powered&apos;, &apos;&lt;a class=&quot;theme-link&quot; href=&quot;https://hexo.io&quot;&gt;Hexo&lt;/a&gt;&apos;) &#125;&#125;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">&lt;div class=&quot;theme-info&quot;&gt;</div><div class="line">  &#123;&#123; __(&apos;footer.theme&apos;) &#125;&#125; -</div><div class="line">  &lt;a class=&quot;theme-link&quot; href=&quot;https://github.com/iissnan/hexo-theme-next&quot;&gt;</div><div class="line">    NexT.&#123;&#123; theme.scheme &#125;&#125;</div><div class="line">  &lt;/a&gt;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line"># 此位置插入以下代码</div><div class="line">&lt;div&gt;</div><div class="line">&lt;script async src=&quot;https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js&quot;&gt;&lt;/script&gt;</div><div class="line"></div><div class="line">本站总访问量 &lt;span id=&quot;busuanzi_value_site_pv&quot;&gt;&lt;/span&gt; 次&amp;nbsp&amp;nbsp&amp;nbsp</div><div class="line">本站访客数&lt;span id=&quot;busuanzi_value_site_uv&quot;&gt;&lt;/span&gt;人次</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">&#123;% endif %&#125;</div></pre></td></tr></table></figure>
+<h1 id="10、增加图片"><a href="#10、增加图片" class="headerlink" title="10、增加图片"></a>10、增加图片</h1><p>1 把主页配置文件<code>_config.yml</code> 里的<code>post_asset_folder:</code>这个选项设置为<code>true</code></p>
+<p>2 在你的hexo目录下执行这样一句话<code>npm install hexo-asset-image --save</code>，这是下载安装一个可以上传本地图片的插件，来自dalao：<a href="https://github.com/CodeFalling/hexo-asset-image" target="_blank" rel="external">dalao的git</a></p>
+<p>3 等待一小段时间后，再运行<code>hexo n &quot;xxxx&quot;</code>来生成md博文时，<code>/source/_posts</code>文件夹内除了<code>xxxx.md</code>文件还有一个<strong>同名的文件夹</strong></p>
+<p>4 最后在<code>xxxx.md</code>中想引入图片时，先把图片复制到xxxx这个文件夹中，然后只需要在xxxx.md中按照markdown的格式引入图片：</p>
+<p><code>![你想输入的替代文字](xxxx/图片名.jpg)</code></p>
+<p><strong>注意：</strong>xxxx是这个md文件的名字，也是同名文件夹的名字，你想引入的图片就只需要放入xxxx这个文件夹内就好了，很像引用相对路径。</p>
+<p>5 最后检查一下，<code>hexo g</code>生成页面后，进入<code>public\2017\02\26\index.html</code>文件中查看相关字段，可以发现，html标签内的语句是<code>&lt;img src=&quot;2017/02/26/xxxx/图片名.jpg&quot;&gt;</code>，而不是<code>&lt;img src=&quot;xxxx/图片名.jpg&gt;</code>。这很重要，关乎你的网页是否可以真正加载你想插入的图片。</p>
+<h1 id="11、sitemap-插件"><a href="#11、sitemap-插件" class="headerlink" title="11、sitemap 插件"></a>11、sitemap 插件</h1><p>谷歌与百度的站点地图，前者适用于其他搜索引擎，用来手动提交以增加收录</p>
+<p>安装：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">npm install hexo-generator-sitemap@1 --save</div><div class="line">npm install hexo-generator-baidu-sitemap@0.1.1 --save</div></pre></td></tr></table></figure>
+<p><code>_config.yml</code>添加代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">baidusitemap:</div><div class="line">  path: baidusitemap.xml</div></pre></td></tr></table></figure>
+<p>谷歌的<code>sitemap.xml</code>不需要写到配置文件中，自动生效。</p>
+<p>在主页后面加<code>/baidusitemap.xml</code>可以看到baidusitemap（谷歌同理），将该网址它提交给百度搜索：<a href="http://zhanzhang.baidu.com/?castk=LTE%3D" target="_blank" rel="external">百度站长平台</a>，贴吧账号无法在这里使用。</p>
+<p>不过由于Github禁止了百度爬虫，百度无法抓取其中的URL：</p>
+<h1 id="踩过的坑"><a href="#踩过的坑" class="headerlink" title="踩过的坑"></a>踩过的坑</h1><p>1）若启动时报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> Error: Warning: Permanently added &apos;github.com,192.30.253.112&apos; (RSA) to the list of known hosts.</div><div class="line">sign_and_send_pubkey: signing failed: agent refused operation</div><div class="line">Permission denied (publickey).</div><div class="line">fatal: Could not read from remote repository.</div></pre></td></tr></table></figure>
+<p>处理是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ eval &quot;$(ssh-agent -s)&quot;</div><div class="line">$ ssh-add</div></pre></td></tr></table></figure>
+<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><p><a href="http://blog.csdn.net/kesarchen/article/details/50579550" target="_blank" rel="external">ubuntu下使用hexo搭建博客</a> </p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/利率计算/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/07/12/利率计算/" itemprop="url">
+                  利率计算
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">
+                2017-07-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/系统工具/" itemprop="url" rel="index">
+                    <span itemprop="name">系统工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>等额本息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">每月月供额=〔贷款本金×月利率×(1＋月利率)＾还款月数〕÷〔(1＋月利率)＾还款月数-1〕</div><div class="line">每月应还利息=贷款本金×月利率×〔(1+月利率)^还款月数-(1+月利率)^(还款月序号-1)〕÷〔(1+月利率)^还款月数-1〕</div><div class="line">每月应还本金=贷款本金×月利率×(1+月利率)^(还款月序号-1)÷〔(1+月利率)^还款月数-1〕</div><div class="line">总利息=还款月数×每月月供额-贷款本金</div></pre></td></tr></table></figure>
+<p>等额本金</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">每月月供额=(贷款本金÷还款月数)+(贷款本金-已归还本金累计额)×月利率</div><div class="line">每月应还本金=贷款本金÷还款月数</div><div class="line">每月应还利息=剩余本金×月利率=(贷款本金-已归还本金累计额)×月利率</div><div class="line">每月月供递减额=每月应还本金×月利率=贷款本金÷还款月数×月利率</div><div class="line">总利息=还款月数×(总贷款额×月利率-月利率×(总贷款额÷还款月数)*(还款月数-1)÷2+总贷款额÷还款月数)</div></pre></td></tr></table></figure>
+<p><a href="https://zhuanlan.zhihu.com/p/22920169" target="_blank" rel="external">信用卡账单分期真实年化利率</a></p>
+<p><img src="https://pic4.zhimg.com/v2-177bf28088e8ef5462e3b5cc3d1ab2eb_b.png" alt=""></p>
+<h1 id="年利率"><a href="#年利率" class="headerlink" title="年利率"></a>年利率</h1><p>利息率=利息量÷本金÷时间×100%</p>
+<h1 id="IRR"><a href="#IRR" class="headerlink" title="IRR"></a>IRR</h1><p><strong>内部收益率 (IRR) 的定义是：净现值 (NPV) 为零时的折现率。</strong></p>
+<p>综合考虑了每期的流入流出现金的量和时间，加权出来的结果。<br>IRR实质上是一个折现率，用IRR折现时会达到该项目的净现值NPV为0的状态。也可以理解为一个项目的预期收益率。<br>举例来说，如IRR为8%，可以简单解释为以8%的利率借钱投资于此项目，刚好可以不赚不赔。</p>
 
           
         
@@ -1649,6 +1752,172 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/模型评估与选择/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/07/12/模型评估与选择/" itemprop="url">
+                  模型评估与选择
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">
+                2017-07-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习算法/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1、模型评估方法"><a href="#1、模型评估方法" class="headerlink" title="1、模型评估方法"></a>1、模型评估方法</h1><blockquote>
+<p>可重复采样：<strong>在训练集小</strong>，难以划分训练/测试集是有用。此外，能产生多个不同训练集，对<strong>集成学习</strong>等方法有很大的好处。但是会改变初始数据集分布。</p>
+<p>在<strong>初始数据量足够</strong>时，用留出法或者交叉验证法。</p>
+</blockquote>
+<h2 id="1-1-留出法Hold-out"><a href="#1-1-留出法Hold-out" class="headerlink" title="1.1 留出法Hold-out"></a>1.1 留出法Hold-out</h2><p>将数据集D分成两个互斥的集合。</p>
+<p>训练/测试集尽量保证数据一致性，用分层采样，正负样本同比例。</p>
+<p>由于单次估计结果往往不可靠，使用留出法时，一般要采用若干次随机划分，重复进行实验后取平均值作为评估值。      ‘</p>
+<h2 id="1-2-交叉验证法"><a href="#1-2-交叉验证法" class="headerlink" title="1.2 交叉验证法"></a>1.2 交叉验证法</h2><p>将D分成k个大小相似的互斥子集，每个子集用分层采样得到。</p>
+<p>每次用k-1个子集的并集作为训练集，余下的子集作为测试集。这样获得k组训练/测试集。最终返回是k个测试结果的均值。</p>
+<p>常用10折交叉验证。</p>
+<h2 id="1-3-可重复采样"><a href="#1-3-可重复采样" class="headerlink" title="1.3 可重复采样"></a>1.3 可重复采样</h2><p>bootstrapping sampling：给定包含m个样本的数据集D，我们进行采样产生数据集$D’$，每次随机从D中挑选一个样本，将其拷贝放入$D’$，再将样本放回D。重复m次，得到包含m个样本的$D’$。</p>
+<p>样本在m次采样中始终不被采到的概率是$(1-\frac 1 m)^m$，取极限得到</p>
+<script type="math/tex; mode=display">
+{\lim_{m \mapsto \infty  }}(1-\frac 1 m)^m  \mapsto \frac 1 e\approx0.368</script><p>即通过bootstrapping，D中有36.8%的样本未出现在$D’$中，于是可以将$D’$作为训练集，$D-D’$作为测试集，这样可以有1/3个未出现在训练集的样本用于测试。测试结果称为“包外估计”（out-of-bag estimate）。</p>
+<h2 id="1-4-调参"><a href="#1-4-调参" class="headerlink" title="1.4 调参"></a>1.4 调参</h2><blockquote>
+<p>我们在模型评估时往往用来确定算法和参数。当这些确定后，要用所有的D再训练一次，才是最终的模型。</p>
+</blockquote>
+<h1 id="2、性能度量"><a href="#2、性能度量" class="headerlink" title="2、性能度量"></a>2、性能度量</h1><p>回归最常用的是“均方误差”（mean squared error）</p>
+<script type="math/tex; mode=display">
+E(f;D) = \frac 1 m \sum_{i=1}^m(f(x_i)-y_i )^2</script><p>更一般的，对于数据分布D和概率密度函数$p(\cdot )$，均方误差可描述为</p>
+<script type="math/tex; mode=display">
+E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复杂</p>
+<h2 id="2-1-错误率和精度"><a href="#2-1-错误率和精度" class="headerlink" title="2.1 错误率和精度"></a>2.1 错误率和精度</h2><p>错误率：分类错误的样本占总样本的比例</p>
+<p>精度：分类正确的样本占总样本的比例</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/查找树/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1955,209 +2224,6 @@ l_{exp}(H|D) =E_{x \sim D}[e^{-f(x)H(x)}]</script><p>求偏导</p>
 \frac {\partial l_{exp(H|D)}} {\partial H(x)} =</script><p>后面看不懂了。。。</p>
 <p>2、Bagging</p>
 <p>3、随机森林</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://Schwimmer.github.io/2017/07/12/Hexo + Github 搭建博客入门/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/07/12/Hexo + Github 搭建博客入门/" itemprop="url">
-                  Hexo + Github 搭建博客入门
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">
-                2017-07-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/hexo美化/" itemprop="url" rel="index">
-                    <span itemprop="name">hexo美化</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="1、安装node-js"><a href="#1、安装node-js" class="headerlink" title="1、安装node.js"></a>1、安装node.js</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> sudo add-apt-repository ppa:chris-lea/node.js</div><div class="line"><span class="meta">$</span> sudo apt-get update</div><div class="line"><span class="meta">$</span> sudo apt-get install nodejs</div><div class="line"><span class="meta">#</span>原方法没有这一步，但是后面的操作会提示npm command not found</div><div class="line"><span class="meta">$</span> sudo apt-get install npm</div></pre></td></tr></table></figure>
-<h1 id="2、安装hexo"><a href="#2、安装hexo" class="headerlink" title="2、安装hexo"></a>2、安装hexo</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> sudo npm install hexo -g</div></pre></td></tr></table></figure>
-<h1 id="3、初始博客的根目录"><a href="#3、初始博客的根目录" class="headerlink" title="3、初始博客的根目录"></a>3、初始博客的根目录</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> cd ~/myblog</div><div class="line"><span class="meta">$</span> hexo init</div></pre></td></tr></table></figure>
-<p>mac的根目录在</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/Users/david/david/myblog</div></pre></td></tr></table></figure>
-<h1 id="4、在github上新建仓库"><a href="#4、在github上新建仓库" class="headerlink" title="4、在github上新建仓库"></a>4、在github上新建仓库</h1><p>名称必须是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gitusername.github.io</div></pre></td></tr></table></figure>
-<p>我的就是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Schwimmer.github.io</div></pre></td></tr></table></figure>
-<p>并将本地的SSH KEY添加到git上（略）</p>
-<h1 id="5、让博客可以发布到git"><a href="#5、让博客可以发布到git" class="headerlink" title="5、让博客可以发布到git"></a>5、让博客可以发布到git</h1><p>1）安装hexo-deployer-Git（不然会出现ERROR Deployer not found: git）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-deployer-git --save</div></pre></td></tr></table></figure>
-<p>2） 配置你hexo博客根目录下的_config.yml文件(应该是最下面一行，修改成你的github)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: git@github.com:Schwimmer/Schwimmer.github.io.git</div><div class="line">  branch: master</div></pre></td></tr></table></figure>
-<blockquote>
-<p> tips</p>
-<p> 冒号后面一定要跟空格</p>
-</blockquote>
-<h1 id="6、hexo常用命令"><a href="#6、hexo常用命令" class="headerlink" title="6、hexo常用命令"></a>6、hexo常用命令</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">hexo clean #清除缓存</div><div class="line">hexo new &quot;title&quot; #新建文章</div><div class="line">hexo g #生成html，或hexo generate</div><div class="line">hexo s #在本地启动服务，启动后访问localhost:4000就可以打开，或hexo server</div><div class="line">hexo d #发布到git，发布后访问https://schwimmer.github.io/就可以打开，或hexo deploy</div></pre></td></tr></table></figure>
-<blockquote>
-<p> tips</p>
-<p> 我目前用的新建文章的方法，就是直接在source/_posts/下面新建md文件</p>
-<p> 可以偷懒写成</p>
-<p> cd ~/myblog</p>
-<p> hexo clean;hexo g;hexo s</p>
-<p> 或</p>
-<p> hexo clean;hexo g;hexo d</p>
-</blockquote>
-<h1 id="7、支持数学公式"><a href="#7、支持数学公式" class="headerlink" title="7、支持数学公式"></a>7、支持数学公式</h1><p>更新：</p>
-<p>现在用</p>
-<p><a href="http://blog.csdn.net/u014630987/article/details/78670258" target="_blank" rel="external">如何在 hexo 中支持 Mathjax？</a></p>
-<p><a href="http://blog.csdn.net/emptyset110/article/details/50123231" target="_blank" rel="external">搭建一个支持LaTEX的hexo博客</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-math --save</div></pre></td></tr></table></figure>
-<p>这时如果你会发现出了一些问题，原因是hexo先用marked.<a href="http://lib.csdn.net/base/javascript" target="_blank" rel="external">js</a>渲染，然后再交给MathJax渲染。在marked.js渲染的时候下划线<code>_</code>是被escape掉并且换成了<code>&lt;em&gt;</code>标签，即斜体字，另外LaTeX中的<code>\\</code>也会被转义成一个<code>\</code>，这样会导致MathJax渲染时不认为它是一个换行符了。</p>
-<p>为了使Marked.js与MathJax共存，打开node_modules/marked/lib/marked.js并做如下改动</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Step 1:</div><div class="line">  escape: /^\\([\\`*&#123;&#125;\[\]()# +\-.!_&gt;])/,11替换成</div><div class="line">  escape: /^\\([`*\[\]()# +\-.!_&gt;])/,11这一步是在原基础上取消了对\\,\&#123;,\&#125;的转义(escape)</div><div class="line">Step 2:</div><div class="line">  em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,11替换成</div><div class="line">  em:/^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https:///cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML&quot;&gt;&lt;/script&gt;</div></pre></td></tr></table></figure>
-<h1 id="8、安装主题"><a href="#8、安装主题" class="headerlink" title="8、安装主题"></a>8、安装主题</h1><p>转自：<a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="external">NexT主题安装教程</a></p>
-<h1 id="9、文章阅读计数"><a href="#9、文章阅读计数" class="headerlink" title="9、文章阅读计数"></a>9、文章阅读计数</h1><p>转自：<a href="http://www.jianshu.com/p/702a7aec4d00" target="_blank" rel="external">Hexo添加不蒜子和LeanCloud统计无标题文章</a></p>
-<p>找到站点的<code>themes/next/layout/_partials</code>目录下的<code>footer.swig</code>文件。插入代码如下。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&#123;% if theme.copyright %&#125;</div><div class="line">&lt;div class=&quot;powered-by&quot;&gt;</div><div class="line">  &#123;&#123; __(&apos;footer.powered&apos;, &apos;&lt;a class=&quot;theme-link&quot; href=&quot;https://hexo.io&quot;&gt;Hexo&lt;/a&gt;&apos;) &#125;&#125;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">&lt;div class=&quot;theme-info&quot;&gt;</div><div class="line">  &#123;&#123; __(&apos;footer.theme&apos;) &#125;&#125; -</div><div class="line">  &lt;a class=&quot;theme-link&quot; href=&quot;https://github.com/iissnan/hexo-theme-next&quot;&gt;</div><div class="line">    NexT.&#123;&#123; theme.scheme &#125;&#125;</div><div class="line">  &lt;/a&gt;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line"># 此位置插入以下代码</div><div class="line">&lt;div&gt;</div><div class="line">&lt;script async src=&quot;https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js&quot;&gt;&lt;/script&gt;</div><div class="line"></div><div class="line">本站总访问量 &lt;span id=&quot;busuanzi_value_site_pv&quot;&gt;&lt;/span&gt; 次&amp;nbsp&amp;nbsp&amp;nbsp</div><div class="line">本站访客数&lt;span id=&quot;busuanzi_value_site_uv&quot;&gt;&lt;/span&gt;人次</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">&#123;% endif %&#125;</div></pre></td></tr></table></figure>
-<h1 id="10、增加图片"><a href="#10、增加图片" class="headerlink" title="10、增加图片"></a>10、增加图片</h1><p>1 把主页配置文件<code>_config.yml</code> 里的<code>post_asset_folder:</code>这个选项设置为<code>true</code></p>
-<p>2 在你的hexo目录下执行这样一句话<code>npm install hexo-asset-image --save</code>，这是下载安装一个可以上传本地图片的插件，来自dalao：<a href="https://github.com/CodeFalling/hexo-asset-image" target="_blank" rel="external">dalao的git</a></p>
-<p>3 等待一小段时间后，再运行<code>hexo n &quot;xxxx&quot;</code>来生成md博文时，<code>/source/_posts</code>文件夹内除了<code>xxxx.md</code>文件还有一个<strong>同名的文件夹</strong></p>
-<p>4 最后在<code>xxxx.md</code>中想引入图片时，先把图片复制到xxxx这个文件夹中，然后只需要在xxxx.md中按照markdown的格式引入图片：</p>
-<p><code>![你想输入的替代文字](xxxx/图片名.jpg)</code></p>
-<p><strong>注意：</strong>xxxx是这个md文件的名字，也是同名文件夹的名字，你想引入的图片就只需要放入xxxx这个文件夹内就好了，很像引用相对路径。</p>
-<p>5 最后检查一下，<code>hexo g</code>生成页面后，进入<code>public\2017\02\26\index.html</code>文件中查看相关字段，可以发现，html标签内的语句是<code>&lt;img src=&quot;2017/02/26/xxxx/图片名.jpg&quot;&gt;</code>，而不是<code>&lt;img src=&quot;xxxx/图片名.jpg&gt;</code>。这很重要，关乎你的网页是否可以真正加载你想插入的图片。</p>
-<h1 id="11、sitemap-插件"><a href="#11、sitemap-插件" class="headerlink" title="11、sitemap 插件"></a>11、sitemap 插件</h1><p>谷歌与百度的站点地图，前者适用于其他搜索引擎，用来手动提交以增加收录</p>
-<p>安装：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">npm install hexo-generator-sitemap@1 --save</div><div class="line">npm install hexo-generator-baidu-sitemap@0.1.1 --save</div></pre></td></tr></table></figure>
-<p><code>_config.yml</code>添加代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">baidusitemap:</div><div class="line">  path: baidusitemap.xml</div></pre></td></tr></table></figure>
-<p>谷歌的<code>sitemap.xml</code>不需要写到配置文件中，自动生效。</p>
-<p>在主页后面加<code>/baidusitemap.xml</code>可以看到baidusitemap（谷歌同理），将该网址它提交给百度搜索：<a href="http://zhanzhang.baidu.com/?castk=LTE%3D" target="_blank" rel="external">百度站长平台</a>，贴吧账号无法在这里使用。</p>
-<p>不过由于Github禁止了百度爬虫，百度无法抓取其中的URL：</p>
-<h1 id="踩过的坑"><a href="#踩过的坑" class="headerlink" title="踩过的坑"></a>踩过的坑</h1><p>1）若启动时报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> Error: Warning: Permanently added &apos;github.com,192.30.253.112&apos; (RSA) to the list of known hosts.</div><div class="line">sign_and_send_pubkey: signing failed: agent refused operation</div><div class="line">Permission denied (publickey).</div><div class="line">fatal: Could not read from remote repository.</div></pre></td></tr></table></figure>
-<p>处理是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ eval &quot;$(ssh-agent -s)&quot;</div><div class="line">$ ssh-add</div></pre></td></tr></table></figure>
-<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><p><a href="http://blog.csdn.net/kesarchen/article/details/50579550" target="_blank" rel="external">ubuntu下使用hexo搭建博客</a> </p>
 
           
         
