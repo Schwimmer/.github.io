@@ -114,7 +114,7 @@
 <meta property="og:url" content="https://schwimmer.github.io/2017/09/11/机器学习/贝叶斯网络/index.html">
 <meta property="og:site_name" content="Schwimmer&#39;s Blog">
 <meta property="og:description" content="贝叶斯判定准则（Bayes decision rule）：为最小化总体风险，只需在每个样本上选择那个能使条件风险$R(c|x)$最小的类别标记。   我定义了一个条件风险和一个判断分类的准则，如果这个准则能使条件风险最小，也就能使总体风险最小。  朴素贝叶斯假设数据是独立分布的，即属性条件独立性假设 （attribute conditional independence assumption）。对">
-<meta property="og:updated_time" content="2018-01-30T14:56:31.481Z">
+<meta property="og:updated_time" content="2018-01-31T10:02:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="贝叶斯分类器">
 <meta name="twitter:description" content="贝叶斯判定准则（Bayes decision rule）：为最小化总体风险，只需在每个样本上选择那个能使条件风险$R(c|x)$最小的类别标记。   我定义了一个条件风险和一个判断分类的准则，如果这个准则能使条件风险最小，也就能使总体风险最小。  朴素贝叶斯假设数据是独立分布的，即属性条件独立性假设 （attribute conditional independence assumption）。对">
@@ -426,7 +426,20 @@
 </blockquote>
 <p>朴素贝叶斯假设数据是<strong>独立分布</strong>的，即<strong>属性条件独立性假设</strong> （attribute conditional independence assumption）。对已知类别，假定所有属性相互独立。这一假设使朴素贝叶斯变得简单，但会牺牲一定的分类准确度。</p>
 <p>然后，如果属性中有连续值的属性，在计算概率时又<strong>假定数据符合正态分布</strong>。</p>
-<p>朴素贝叶斯和极大似然估计的关系，极大似然仅仅为了解决连续值的问题？</p>
+<p>贝叶斯分类器有两种实现方式，</p>
+<ul>
+<li>基于伯努利模型，不考虑样本中特征出现的次数，只考虑出不出现，相当于假设每个特征是同等权重的。</li>
+<li>基于多项式模型，也考虑出现次数</li>
+</ul>
+<p>机器学习实战的代码</p>
+<p>从文档中创建词典</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">createVocabList</span><span class="params">(dataSet)</span>:</span></div><div class="line">    vocabSet = set([])  <span class="comment">#create empty set</span></div><div class="line">    <span class="keyword">for</span> document <span class="keyword">in</span> dataSet:</div><div class="line">        vocabSet = vocabSet | set(document) <span class="comment">#union of the two sets</span></div><div class="line">    <span class="keyword">return</span> list(vocabSet)</div></pre></td></tr></table></figure>
+<p>给定一个词典和输入文档，如果某个词出现，就给词典的下标置1，就是创建词袋</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">setOfWords2Vec</span><span class="params">(vocabList, inputSet)</span>:</span></div><div class="line">    returnVec = [<span class="number">0</span>]*len(vocabList)</div><div class="line">    <span class="keyword">for</span> word <span class="keyword">in</span> inputSet:</div><div class="line">        <span class="keyword">if</span> word <span class="keyword">in</span> vocabList:</div><div class="line">            returnVec[vocabList.index(word)] = <span class="number">1</span></div><div class="line">        <span class="keyword">else</span>: <span class="keyword">print</span> <span class="string">"the word: %s is not in my Vocabulary!"</span> % word</div><div class="line">    <span class="keyword">return</span> returnVec</div></pre></td></tr></table></figure>
+<p>训练朴素贝叶斯分类器</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">trainNB0</span><span class="params">(trainMatrix,trainCategory)</span>:</span></div><div class="line">    numTrainDocs = len(trainMatrix)</div><div class="line">    numWords = len(trainMatrix[<span class="number">0</span>])</div><div class="line">    <span class="comment"># 计算分为第一类的概率p(c)，分类是0和1所以就直接相加</span></div><div class="line">    pAbusive = sum(trainCategory)/float(numTrainDocs)</div><div class="line">    <span class="comment"># 防止最后某一个的概率是0</span></div><div class="line">    p0Num = ones(numWords); p1Num = ones(numWords)      <span class="comment">#change to ones() </span></div><div class="line">    p0Denom = <span class="number">2.0</span>; p1Denom = <span class="number">2.0</span>                        <span class="comment">#change to 2.0</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(numTrainDocs):</div><div class="line">        <span class="keyword">if</span> trainCategory[i] == <span class="number">1</span>:</div><div class="line">          <span class="comment"># 矩阵粒度的加法，对应位置相加</span></div><div class="line">            p1Num += trainMatrix[i]</div><div class="line">            <span class="comment"># 这里为何是所有特征相加，回去再看看</span></div><div class="line">            p1Denom += sum(trainMatrix[i])</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            p0Num += trainMatrix[i]</div><div class="line">            p0Denom += sum(trainMatrix[i])</div><div class="line">    p1Vect = log(p1Num/p1Denom)          <span class="comment">#change to log()</span></div><div class="line">    p0Vect = log(p0Num/p0Denom)          <span class="comment">#change to log()</span></div><div class="line">    <span class="keyword">return</span> p0Vect,p1Vect,pAbusive</div></pre></td></tr></table></figure>
+<p>预测</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">classifyNB</span><span class="params">(vec2Classify, p0Vec, p1Vec, pClass1)</span>:</span></div><div class="line">  <span class="comment"># 之前用了log，于是概率相乘就转化为相加，最后再加上p(c)</span></div><div class="line">    p1 = sum(vec2Classify * p1Vec) + log(pClass1)    <span class="comment">#element-wise mult</span></div><div class="line">    p0 = sum(vec2Classify * p0Vec) + log(<span class="number">1.0</span> - pClass1)</div><div class="line">    <span class="keyword">if</span> p1 &gt; p0:</div><div class="line">        <span class="keyword">return</span> <span class="number">1</span></div><div class="line">    <span class="keyword">else</span>: </div><div class="line">        <span class="keyword">return</span> <span class="number">0</span></div></pre></td></tr></table></figure>
 
       
     </div>
@@ -548,7 +561,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
