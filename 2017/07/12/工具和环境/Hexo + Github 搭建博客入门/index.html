@@ -114,6 +114,7 @@
 <meta property="og:url" content="https://schwimmer.github.io/2017/07/12/工具和环境/Hexo + Github 搭建博客入门/index.html">
 <meta property="og:site_name" content="Schwimmer&#39;s Blog">
 <meta property="og:description" content="1、安装node.js12345$ sudo add-apt-repository ppa:chris-lea/node.js$ sudo apt-get update$ sudo apt-get install nodejs#原方法没有这一步，但是后面的操作会提示npm command not found$ sudo apt-get install npm 2、安装hexo1$ sudo npm">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4093388-383ab28e2c2b2e84.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700">
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4093388-1ab23c0ef7e753ea.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700">
 <meta property="og:updated_time" content="2018-01-30T06:51:50.000Z">
@@ -453,25 +454,25 @@
 </blockquote>
 <h1 id="7、支持数学公式"><a href="#7、支持数学公式" class="headerlink" title="7、支持数学公式"></a>7、支持数学公式</h1><p>更新：</p>
 <p>现在用</p>
-<p><a href="http://blog.csdn.net/u014630987/article/details/78670258" target="_blank" rel="external">如何在 hexo 中支持 Mathjax？</a></p>
-<p><a href="http://blog.csdn.net/emptyset110/article/details/50123231" target="_blank" rel="external">搭建一个支持LaTEX的hexo博客</a></p>
+<p><a href="http://blog.csdn.net/u014630987/article/details/78670258" target="_blank" rel="noopener">如何在 hexo 中支持 Mathjax？</a></p>
+<p><a href="http://blog.csdn.net/emptyset110/article/details/50123231" target="_blank" rel="noopener">搭建一个支持LaTEX的hexo博客</a></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-math --save</div></pre></td></tr></table></figure>
-<p>这时如果你会发现出了一些问题，原因是hexo先用marked.<a href="http://lib.csdn.net/base/javascript" target="_blank" rel="external">js</a>渲染，然后再交给MathJax渲染。在marked.js渲染的时候下划线<code>_</code>是被escape掉并且换成了<code>&lt;em&gt;</code>标签，即斜体字，另外LaTeX中的<code>\\</code>也会被转义成一个<code>\</code>，这样会导致MathJax渲染时不认为它是一个换行符了。</p>
+<p>这时如果你会发现出了一些问题，原因是hexo先用marked.<a href="http://lib.csdn.net/base/javascript" target="_blank" rel="noopener">js</a>渲染，然后再交给MathJax渲染。在marked.js渲染的时候下划线<code>_</code>是被escape掉并且换成了<code>&lt;em&gt;</code>标签，即斜体字，另外LaTeX中的<code>\\</code>也会被转义成一个<code>\</code>，这样会导致MathJax渲染时不认为它是一个换行符了。</p>
 <p>为了使Marked.js与MathJax共存，打开node_modules/marked/lib/marked.js并做如下改动</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Step 1:</div><div class="line">  escape: /^\\([\\`*&#123;&#125;\[\]()# +\-.!_&gt;])/,11替换成</div><div class="line">  escape: /^\\([`*\[\]()# +\-.!_&gt;])/,11这一步是在原基础上取消了对\\,\&#123;,\&#125;的转义(escape)</div><div class="line">Step 2:</div><div class="line">  em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,11替换成</div><div class="line">  em:/^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</div></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML&quot;&gt;&lt;/script&gt;</div></pre></td></tr></table></figure>
-<h1 id="8、安装主题"><a href="#8、安装主题" class="headerlink" title="8、安装主题"></a>8、安装主题</h1><p>转自：<a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="external">NexT主题安装教程</a></p>
-<h1 id="9、文章阅读计数"><a href="#9、文章阅读计数" class="headerlink" title="9、文章阅读计数"></a>9、文章阅读计数</h1><p>转自：<a href="http://www.jianshu.com/p/702a7aec4d00" target="_blank" rel="external">Hexo添加不蒜子和LeanCloud统计无标题文章</a></p>
+<h1 id="8、安装主题"><a href="#8、安装主题" class="headerlink" title="8、安装主题"></a>8、安装主题</h1><p>转自：<a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="noopener">NexT主题安装教程</a></p>
+<h1 id="9、文章阅读计数"><a href="#9、文章阅读计数" class="headerlink" title="9、文章阅读计数"></a>9、文章阅读计数</h1><p>转自：<a href="http://www.jianshu.com/p/702a7aec4d00" target="_blank" rel="noopener">Hexo添加不蒜子和LeanCloud统计无标题文章</a></p>
 <p>找到站点的<code>themes/next/layout/_partials</code>目录下的<code>footer.swig</code>文件。插入代码如下。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&#123;% if theme.copyright %&#125;</div><div class="line">&lt;div class=&quot;powered-by&quot;&gt;</div><div class="line">  &#123;&#123; __(&apos;footer.powered&apos;, &apos;&lt;a class=&quot;theme-link&quot; href=&quot;https://hexo.io&quot;&gt;Hexo&lt;/a&gt;&apos;) &#125;&#125;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">&lt;div class=&quot;theme-info&quot;&gt;</div><div class="line">  &#123;&#123; __(&apos;footer.theme&apos;) &#125;&#125; -</div><div class="line">  &lt;a class=&quot;theme-link&quot; href=&quot;https://github.com/iissnan/hexo-theme-next&quot;&gt;</div><div class="line">    NexT.&#123;&#123; theme.scheme &#125;&#125;</div><div class="line">  &lt;/a&gt;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line"># 此位置插入以下代码</div><div class="line">&lt;div&gt;</div><div class="line">&lt;script async src=&quot;https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js&quot;&gt;&lt;/script&gt;</div><div class="line"></div><div class="line">本站总访问量 &lt;span id=&quot;busuanzi_value_site_pv&quot;&gt;&lt;/span&gt; 次&amp;nbsp&amp;nbsp&amp;nbsp</div><div class="line">本站访客数&lt;span id=&quot;busuanzi_value_site_uv&quot;&gt;&lt;/span&gt;人次</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">&#123;% endif %&#125;</div></pre></td></tr></table></figure>
 <h1 id="10、增加图片"><a href="#10、增加图片" class="headerlink" title="10、增加图片"></a>10、增加图片</h1><p>1 把主页配置文件<code>_config.yml</code> 里的<code>post_asset_folder:</code>这个选项设置为<code>true</code></p>
-<p>2 在你的hexo目录下执行这样一句话<code>npm install hexo-asset-image --save</code>，这是下载安装一个可以上传本地图片的插件，来自dalao：<a href="https://github.com/CodeFalling/hexo-asset-image" target="_blank" rel="external">dalao的git</a></p>
+<p>2 在你的hexo目录下执行这样一句话<code>npm install hexo-asset-image --save</code>，这是下载安装一个可以上传本地图片的插件，来自dalao：<a href="https://github.com/CodeFalling/hexo-asset-image" target="_blank" rel="noopener">dalao的git</a></p>
 <p>3 等待一小段时间后，再运行<code>hexo n &quot;xxxx&quot;</code>来生成md博文时，<code>/source/_posts</code>文件夹内除了<code>xxxx.md</code>文件还有一个<strong>同名的文件夹</strong></p>
 <p>4 最后在<code>xxxx.md</code>中想引入图片时，先把图片复制到xxxx这个文件夹中，然后只需要在xxxx.md中按照markdown的格式引入图片：</p>
 <p><code>![你想输入的替代文字](xxxx/图片名.jpg)</code></p>
 <p><strong>注意：</strong>xxxx是这个md文件的名字，也是同名文件夹的名字，你想引入的图片就只需要放入xxxx这个文件夹内就好了，很像引用相对路径。</p>
 <p>5 最后检查一下，<code>hexo g</code>生成页面后，进入<code>public\2017\02\26\index.html</code>文件中查看相关字段，可以发现，html标签内的语句是<code>&lt;img src=&quot;2017/02/26/xxxx/图片名.jpg&quot;&gt;</code>，而不是<code>&lt;img src=&quot;xxxx/图片名.jpg&gt;</code>。这很重要，关乎你的网页是否可以真正加载你想插入的图片。</p>
-<h1 id="11、sitemap-插件"><a href="#11、sitemap-插件" class="headerlink" title="11、sitemap 插件"></a>11、sitemap 插件</h1><p><a href="https://www.jianshu.com/p/86557c34b671" target="_blank" rel="external">Hexo Seo优化让你的博客在google搜索排名第一</a></p>
+<h1 id="11、sitemap-插件"><a href="#11、sitemap-插件" class="headerlink" title="11、sitemap 插件"></a>11、sitemap 插件</h1><p><a href="https://www.jianshu.com/p/86557c34b671" target="_blank" rel="noopener">Hexo Seo优化让你的博客在google搜索排名第一</a></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;meta name=&quot;google-site-verification&quot; content=&quot;Mx7Ikp0IpBtTbSpHDTBV0_CMJA-E8CLn8NRIrwyq5m4&quot; /&gt;</div><div class="line">&lt;meta name=&quot;baidu-site-verification&quot; content=&quot;ZBTsWx4NdC&quot; /&gt;</div></pre></td></tr></table></figure>
 <h1 id="12、首页显示文章摘要"><a href="#12、首页显示文章摘要" class="headerlink" title="12、首页显示文章摘要"></a>12、首页显示文章摘要</h1><ul>
 <li>进入hexo博客项目的themes/next目录</li>
@@ -501,12 +502,12 @@
 <p><code>_config.yml</code>添加代码：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">baidusitemap:</div><div class="line">  path: baidusitemap.xml</div></pre></td></tr></table></figure>
 <p>谷歌的<code>sitemap.xml</code>不需要写到配置文件中，自动生效。</p>
-<p>在主页后面加<code>/baidusitemap.xml</code>可以看到baidusitemap（谷歌同理），将该网址它提交给百度搜索：<a href="http://zhanzhang.baidu.com/?castk=LTE%3D" target="_blank" rel="external">百度站长平台</a>，贴吧账号无法在这里使用。</p>
+<p>在主页后面加<code>/baidusitemap.xml</code>可以看到baidusitemap（谷歌同理），将该网址它提交给百度搜索：<a href="http://zhanzhang.baidu.com/?castk=LTE%3D" target="_blank" rel="noopener">百度站长平台</a>，贴吧账号无法在这里使用。</p>
 <p>不过由于Github禁止了百度爬虫，百度无法抓取其中的URL：</p>
 <h1 id="绑定代码到Coding"><a href="#绑定代码到Coding" class="headerlink" title="绑定代码到Coding"></a>绑定代码到Coding</h1><p>创建coding仓库</p>
 <p><img src="https://upload-images.jianshu.io/upload_images/4093388-383ab28e2c2b2e84.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt=""></p>
 <p>上传公钥</p>
-<p><a href="https://coding.net/user/account/setting/keys" target="_blank" rel="external">https://coding.net/user/account/setting/keys</a></p>
+<p><a href="https://coding.net/user/account/setting/keys" target="_blank" rel="noopener">https://coding.net/user/account/setting/keys</a></p>
 <p>测试SSH Key 是否配置成功</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ssh -T git@git.coding.net</div></pre></td></tr></table></figure>
 <p>用来部署Hexo博客的Coding项目地址为：<code>git@git.coding.net:ddxy1986/DavidXu-Blog</code></p>
@@ -517,7 +518,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> Error: Warning: Permanently added &apos;github.com,192.30.253.112&apos; (RSA) to the list of known hosts.</div><div class="line">sign_and_send_pubkey: signing failed: agent refused operation</div><div class="line">Permission denied (publickey).</div><div class="line">fatal: Could not read from remote repository.</div></pre></td></tr></table></figure>
 <p>处理是</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ eval &quot;$(ssh-agent -s)&quot;</div><div class="line">$ ssh-add</div></pre></td></tr></table></figure>
-<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><p><a href="http://blog.csdn.net/kesarchen/article/details/50579550" target="_blank" rel="external">ubuntu下使用hexo搭建博客</a> </p>
+<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><p><a href="http://blog.csdn.net/kesarchen/article/details/50579550" target="_blank" rel="noopener">ubuntu下使用hexo搭建博客</a> </p>
 
       
     </div>
