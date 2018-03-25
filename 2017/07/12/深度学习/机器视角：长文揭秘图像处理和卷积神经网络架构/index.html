@@ -1,0 +1,1139 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="Mx7Ikp0IpBtTbSpHDTBV0_CMJA-E8CLn8NRIrwyq5m4" />
+
+
+
+
+
+
+<meta name="baidu-site-verification" content="ZBTsWx4NdC" />
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="笔记," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&amp;amp;mid=2650728746&amp;amp;idx=1&amp;amp;sn=61e9cb824501ec7c505eb464e8317915&amp;amp;chksm=871b2d54b06ca442bc049e97c97e117455fd31bd0fb0619be4592eebd0958c26e3c223b">
+<meta name="keywords" content="笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="（转）机器视角：长文揭秘图像处理和卷积神经网络架构">
+<meta property="og:url" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&amp;amp;mid=2650728746&amp;amp;idx=1&amp;amp;sn=61e9cb824501ec7c505eb464e8317915&amp;amp;chksm=871b2d54b06ca442bc049e97c97e117455fd31bd0fb0619be4592eebd0958c26e3c223b">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+<meta property="og:updated_time" content="2018-02-11T01:26:22.590Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="（转）机器视角：长文揭秘图像处理和卷积神经网络架构">
+<meta name="twitter:description" content="https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&amp;amp;mid=2650728746&amp;amp;idx=1&amp;amp;sn=61e9cb824501ec7c505eb464e8317915&amp;amp;chksm=871b2d54b06ca442bc049e97c97e117455fd31bd0fb0619be4592eebd0958c26e3c223b">
+<meta name="twitter:image" content="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"always","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/"/>
+
+
+
+
+
+  <title> （转）机器视角：长文揭秘图像处理和卷积神经网络架构 | Schwimmer's Blog </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocapitalize="off" autocomplete="off" autocorrect="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                （转）机器视角：长文揭秘图像处理和卷积神经网络架构
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">
+                2017-07-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            <!--noindex-->
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count hc-comment-count" data-xid="2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+              <!--/noindex-->
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&amp;mid=2650728746&amp;idx=1&amp;sn=61e9cb824501ec7c505eb464e8317915&amp;chksm=871b2d54b06ca442bc049e97c97e117455fd31bd0fb0619be4592eebd0958c26e3c223bfbfe5&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&amp;mid=2650728746&amp;idx=1&amp;sn=61e9cb824501ec7c505eb464e8317915&amp;chksm=871b2d54b06ca442bc049e97c97e117455fd31bd0fb0619be4592eebd0958c26e3c223bfbfe5&amp;scene=21#wechat_redirect</a></p>
+<p><em>2017-07-06</em> <a href="https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&amp;mid=2650728746&amp;idx=1&amp;sn=61e9cb824501ec7c505eb464e8317915&amp;chksm=871b2d54b06ca442bc049e97c97e117455fd31bd0fb0619be4592eebd0958c26e3c223bfbfe5&amp;scene=21##" target="_blank" rel="noopener">机器之心</a></p>
+<p>选自 Analyticsvidhya**</p>
+<p><strong>机器之心编译</strong></p>
+<p><strong>作者：DISHASHREE GUPTA</strong></p>
+<p>**</p>
+<blockquote>
+<p><em>近日，Dishashree Gupta 在 Analyticsvidhya 上发表了一篇题为《Architecture of Convolutional Neural Networks (CNNs) demystified》的文章，对用于图像识别和分类的卷积神经网络架构作了深度揭秘；作者在文中还作了通盘演示，期望对 CNN 的工作机制有一个深入的剖析。机器之心对本文进行了编译，原文链接见文末。</em></p>
+</blockquote>
+<h3 id=""><a href="#" class="headerlink" title=" "></a> </h3><h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><p>先坦白地说，有一段时间我无法真正理解深度学习。我查看相关研究论文和文章，感觉深度学习异常复杂。我尝试去理解神经网络及其变体，但依然感到困难。</p>
+<p>接着有一天，我决定一步一步，从基础开始。我把技术操作的步骤分解开来，并手动执行这些步骤（和计算），直到我理解它们如何工作。这相当费时，且令人紧张，但是结果非凡。</p>
+<p>现在，我不仅对深度学习有了全面的理解，还在此基础上有了好想法，因为我的基础很扎实。随意地应用神经网络是一回事，理解它是什么以及背后的发生机制是另外一回事。</p>
+<p>今天，我将与你共享我的心得，展示我如何上手卷积神经网络并最终弄明白了它。我将做一个通盘的展示，从而使你对 CNN 的工作机制有一个深入的了解。</p>
+<p>在本文中，我将会讨论 CNN 背后的架构，其设计初衷在于解决图像识别和分类问题。同时我也会假设你对神经网络已经有了初步了解。</p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a><strong>目录</strong></h3><p>1.机器如何看图？</p>
+<p>2.如何帮助神经网络识别图像？</p>
+<p>3.定义卷积神经网络</p>
+<ul>
+<li>卷积层</li>
+<li>池化层</li>
+<li>输出层</li>
+</ul>
+<p>4.小结</p>
+<p>5.使用 CNN 分类图像</p>
+<h3 id="1-机器如何看图？"><a href="#1-机器如何看图？" class="headerlink" title="1. 机器如何看图？"></a>1. 机器如何看图？</h3><p>人类大脑是一非常强大的机器，每秒内能看（捕捉）多张图，并在意识不到的情况下就完成了对这些图的处理。但机器并非如此。机器处理图像的第一步是理解，理解如何表达一张图像，进而读取图片。</p>
+<p>简单来说，每个图像都是一系列特定排序的图点（像素）。如果你改变像素的顺序或颜色，图像也随之改变。举个例子，存储并读取一张上面写着数字 4 的图像。</p>
+<p>基本上，机器会把图像打碎成像素矩阵，存储每个表示位置像素的颜色码。在下图的表示中，数值 1 是白色，256 是最深的绿色（为了简化，我们示例限制到了一种颜色）。</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<p>一旦你以这种格式存储完图像信息，下一步就是让神经网络理解这种排序与模式。</p>
+<h3 id="2-如何帮助神经网络识别图像？"><a href="#2-如何帮助神经网络识别图像？" class="headerlink" title="2. 如何帮助神经网络识别图像？"></a>2. 如何帮助神经网络识别图像？</h3><p>表征像素的数值是以特定的方式排序的。</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<p>假设我们尝试使用全连接网络识别图像，该如何做？</p>
+<p>全连接网络可以通过平化它，把图像当作一个数组，并把像素值当作预测图像中数值的特征。明确地说，让网络理解理解下面图中发生了什么，非常的艰难。</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<p>即使人类也很难理解上图中表达的含义是数字 4。我们完全丢失了像素的空间排列。</p>
+<p>我们能做什么呢？可以尝试从原图像中提取特征，从而保留空间排列。</p>
+<h4 id="案例-1"><a href="#案例-1" class="headerlink" title="案例 1"></a>案例 1</h4><p>这里我们使用一个权重乘以初始像素值。</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<p>现在裸眼识别出这是「4」就变得更简单了。但把它交给全连接网络之前，还需要平整化（flatten) 它，要让我们能够保留图像的空间排列。</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<h4 id="案例-2"><a href="#案例-2" class="headerlink" title="案例 2"></a>案例 2</h4><p>现在我们可以看到，把图像平整化完全破坏了它的排列。我们需要想出一种方式在没有平整化的情况下把图片馈送给网络，并且还要保留空间排列特征，也就是需要馈送像素值的 2D/3D 排列。</p>
+<p>我们可以尝试一次采用图像的两个像素值，而非一个。这能给网络很好的洞见，观察邻近像素的特征。既然一次采用两个像素，那也就需要一次采用两个权重值了。</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<p>希望你能注意到图像从之前的 4 列数值变成了 3 列。因为我们现在一次移用两个像素（在每次移动中像素被共享），图像变的更小了。虽然图像变小了，我们仍能在很大程度上理解这是「4」。而且，要意识到的一个重点是，我们采用的是两个连贯的水平像素，因此只会考虑水平的排列。</p>
+<p>这是我们从图像中提取特征的一种方式。我们可以看到左边和中间部分，但右边部分看起来不那么清楚。主要是因为两个问题：</p>
+<ol>
+<li><p>图片角落左边和右边是权重相乘一次得到的。</p>
+</li>
+<li><p>左边仍旧保留，因为权重值高；右边因为略低的权重，有些丢失。</p>
+</li>
+</ol>
+<p>现在我们有两个问题，需要两个解决方案。</p>
+<h4 id="案例-3"><a href="#案例-3" class="headerlink" title="案例 3"></a>案例 3</h4><p>遇到的问题是图像左右两角只被权重通过一次。我们需要做的是让网络像考虑其他像素一样考虑角落。我们有一个简单的方法解决这一问题：把零放在权重运动的两边。</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<p>你可以看到通过添加零，来自角落的信息被再训练。图像也变得更大。这可被用于我们不想要缩小图像的情况下。</p>
+<h4 id="案例-4"><a href="#案例-4" class="headerlink" title="案例 4"></a>案例 4</h4><p>这里我们试图解决的问题是右侧角落更小的权重值正在降低像素值，因此使其难以被我们识别。我们所能做的是采取多个权重值并将其结合起来。</p>
+<p>(1,0.3) 的权重值给了我们一个输出表格</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<p>同时表格 (0.1,5) 的权重值也将给我们一个输出表格。</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<p>两张图像的结合版本将会给我们一个清晰的图片。因此，我们所做的是简单地使用多个权重而不是一个，从而再训练图像的更多信息。最终结果将是上述两张图像的一个结合版本。</p>
+<h4 id="案例-5"><a href="#案例-5" class="headerlink" title="案例 5"></a>案例 5</h4><p>我们到现在通过使用权重，试图把水平像素（horizontal pixel）结合起来。但是大多数情况下我们需要在水平和垂直方向上保持空间布局。我们采取 2D 矩阵权重，把像素在水平和垂直方向上结合起来。同样，记住已经有了水平和垂直方向的权重运动，输出会在水平和垂直方向上低一个像素。</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<p>特别感谢 Jeremy Howard 启发我创作了这些图像。</p>
+<h4 id="因此我们做了什么？"><a href="#因此我们做了什么？" class="headerlink" title="因此我们做了什么？"></a>因此我们做了什么？</h4><p>上面我们所做的事是试图通过使用图像的空间的安排从图像中提取特征。为了理解图像，理解像素如何安排对于一个网络极其重要。上面我们所做的也恰恰是一个卷积网络所做的。我们可以采用输入图像，定义权重矩阵，并且输入被卷积以从图像中提取特殊特征而无需损失其有关空间安排的信息。</p>
+<p>这个方法的另一个重大好处是它可以减少图像的参数数量。正如所见，卷积图像相比于原始图像有更少的像素。</p>
+<h3 id="3-定义一个卷积神经网络"><a href="#3-定义一个卷积神经网络" class="headerlink" title="3.定义一个卷积神经网络"></a>3.定义一个卷积神经网络</h3><p>我们需要三个基本的元素来定义一个基本的卷积网络</p>
+<ol>
+<li><p>卷积层</p>
+</li>
+<li><p>池化层（可选）</p>
+</li>
+<li><p>输出层</p>
+</li>
+</ol>
+<h4 id="卷积层"><a href="#卷积层" class="headerlink" title="卷积层"></a>卷积层</h4><p>在这一层中，实际所发生的就像我们在上述案例 5 中见到的一样。假设我们有一个 6*6 的图像。我们定义一个权值矩阵，用来从图像中提取一定的特征。</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<p>我们把权值初始化成一个 3<em>3 的矩阵。这个权值现在应该与图像结合，所有的像素都被覆盖至少一次，从而来产生一个卷积化的输出。上述的 429，是通过计算权值矩阵和输入图像的 3</em>3 高亮部分以元素方式进行的乘积的值而得到的。</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<p>现在 6<em>6 的图像转换成了 4</em>4 的图像。想象一下权值矩阵就像用来刷墙的刷子。首先在水平方向上用这个刷子进行刷墙，然后再向下移，对下一行进行水平粉刷。当权值矩阵沿着图像移动的时候，像素值再一次被使用。实际上，这样可以使参数在卷积神经网络中被共享。</p>
+<p>下面我们以一个真实图像为例。</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<p>权值矩阵在图像里表现的像一个从原始图像矩阵中提取特定信息的过滤器。一个权值组合可能用来提取边缘（edge）信息，另一个可能是用来提取一个特定颜色，下一个就可能就是对不需要的噪点进行模糊化。</p>
+<p>先对权值进行学习，然后损失函数可以被最小化，类似于多层感知机（MLP）。因此需要通过对参数进行学习来从原始图像中提取信息，从而来帮助网络进行正确的预测。当我们有多个卷积层的时候，初始层往往提取较多的一般特征，随着网络结构变得更深，权值矩阵提取的特征越来越复杂，并且越来越适用于眼前的问题。</p>
+<h4 id="步长（stride）和边界（padding）的概念"><a href="#步长（stride）和边界（padding）的概念" class="headerlink" title="步长（stride）和边界（padding）的概念"></a>步长（stride）和边界（padding）的概念</h4><p>像我们在上面看到的一样，过滤器或者说权值矩阵，在整个图像范围内一次移动一个像素。我们可以把它定义成一个超参数（hyperparameter），从而来表示我们想让权值矩阵在图像内如何移动。如果权值矩阵一次移动一个像素，我们称其步长为 1。下面我们看一下步长为 2 时的情况。</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<p>你可以看见当我们增加步长值的时候，图像的规格持续变小。在输入图像四周填充 0 边界可以解决这个问题。我们也可以在高步长值的情况下在图像四周填加不只一层的 0 边界。</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<p>我们可以看见在我们给图像填加一层 0 边界后，图像的原始形状是如何被保持的。由于输出图像和输入图像是大小相同的，所以这被称为 same padding。</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<p>这就是 same padding（意味着我们仅考虑输入图像的有效像素）。中间的 4*4 像素是相同的。这里我们已经利用边界保留了更多信息，并且也已经保留了图像的原大小。</p>
+<h4 id="多过滤与激活图"><a href="#多过滤与激活图" class="headerlink" title="多过滤与激活图"></a>多过滤与激活图</h4><p>需要记住的是权值的纵深维度（depth dimension）和输入图像的纵深维度是相同的。权值会延伸到输入图像的整个深度。因此，和一个单一权值矩阵进行卷积会产生一个单一纵深维度的卷积化输出。大多数情况下都不使用单一过滤器（权值矩阵），而是应用维度相同的多个过滤器。</p>
+<p>每一个过滤器的输出被堆叠在一起，形成卷积图像的纵深维度。假设我们有一个 32<em>32</em>3 的输入。我们使用 5<em>5</em>3，带有 valid padding 的 10 个过滤器。输出的维度将会是 28<em>28</em>10。</p>
+<p>如下图所示：</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<p>激活图是卷积层的输出。</p>
+<h4 id="池化层"><a href="#池化层" class="headerlink" title="池化层"></a>池化层</h4><p>有时图像太大，我们需要减少训练参数的数量，它被要求在随后的卷积层之间周期性地引进池化层。池化的唯一目的是减少图像的空间大小。池化在每一个纵深维度上独自完成，因此图像的纵深保持不变。池化层的最常见形式是最大池化。</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<p>在这里，我们把步幅定为 2，池化尺寸也为 2。最大化执行也应用在每个卷机输出的深度尺寸中。正如你所看到的，最大池化操作后，4<em>4 卷积的输出变成了 2</em>2。</p>
+<p>让我们看看最大池化在真实图片中的效果如何。</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<p>正如你看到的，我们卷积了图像，并最大池化了它。最大池化图像仍然保留了汽车在街上的信息。如果你仔细观察的话，你会发现图像的尺寸已经减半。这可以很大程度上减少参数。</p>
+<p>同样，其他形式的池化也可以在系统中应用，如平均池化和 L2 规范池化。</p>
+<h4 id="输出维度"><a href="#输出维度" class="headerlink" title="输出维度"></a>输出维度</h4><p>理解每个卷积层输入和输出的尺寸可能会有点难度。以下三点或许可以让你了解输出尺寸的问题。有三个超参数可以控制输出卷的大小。</p>
+<ol>
+<li><p>过滤器数量-输出卷的深度与过滤器的数量成正比。请记住该如何堆叠每个过滤器的输出以形成激活映射。激活图的深度等于过滤器的数量。</p>
+</li>
+<li><p>步幅（Stride）-如果步幅是 1，那么我们处理图片的精细度就进入单像素级别了。更高的步幅意味着同时处理更多的像素，从而产生较小的输出量。</p>
+</li>
+<li><p>零填充（zero padding）-这有助于我们保留输入图像的尺寸。如果添加了单零填充，则单步幅过滤器的运动会保持在原图尺寸。</p>
+</li>
+</ol>
+<p>我们可以应用一个简单的公式来计算输出尺寸。输出图像的空间尺寸可以计算为（[W-F + 2P] / S）+1。在这里，W 是输入尺寸，F 是过滤器的尺寸，P 是填充数量，S 是步幅数字。假如我们有一张 32<em>32</em>3 的输入图像，我们使用 10 个尺寸为 3<em>3</em>3 的过滤器，单步幅和零填充。</p>
+<p>那么 W=32，F=3，P=0，S=1。输出深度等于应用的滤波器的数量，即 10，输出尺寸大小为 ([32-3+0]/1)+1 = 30。因此输出尺寸是 30<em>30</em>10。</p>
+<h4 id="输出层"><a href="#输出层" class="headerlink" title="输出层"></a>输出层</h4><p>在多层卷积和填充后，我们需要以类的形式输出。卷积和池化层只会提取特征，并减少原始图像带来的参数。然而，为了生成最终的输出，我们需要应用全连接层来生成一个等于我们需要的类的数量的输出。仅仅依靠卷积层是难以达到这个要求的。卷积层可以生成 3D 激活图，而我们只需要图像是否属于一个特定的类这样的内容。输出层具有类似分类交叉熵的损失函数，用于计算预测误差。一旦前向传播完成，反向传播就会开始更新权重与偏差，以减少误差和损失。</p>
+<h3 id="4-小结"><a href="#4-小结" class="headerlink" title="4. 小结"></a><strong>4. 小结</strong></h3><p>正如你所看到的，CNN 由不同的卷积层和池化层组成。让我们看看整个网络是什么样子：</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<ul>
+<li>我们将输入图像传递到第一个卷积层中，卷积后以激活图形式输出。图片在卷积层中过滤后的特征会被输出，并传递下去。</li>
+<li>每个过滤器都会给出不同的特征，以帮助进行正确的类预测。因为我们需要保证图像大小的一致，所以我们使用同样的填充（零填充），否则填充会被使用，因为它可以帮助减少特征的数量。</li>
+<li>随后加入池化层进一步减少参数的数量。</li>
+<li>在预测最终提出前，数据会经过多个卷积和池化层的处理。卷积层会帮助提取特征，越深的卷积神经网络会提取越具体的特征，越浅的网络提取越浅显的特征。</li>
+<li>如前所述，CNN 中的输出层是全连接层，其中来自其他层的输入在这里被平化和发送，以便将输出转换为网络所需的参数。</li>
+<li>随后输出层会产生输出，这些信息会互相比较排除错误。损失函数是全连接输出层计算的均方根损失。随后我们会计算梯度错误。</li>
+<li>错误会进行反向传播，以不断改进过滤器（权重）和偏差值。</li>
+<li>一个训练周期由单次正向和反向传递完成。</li>
+</ul>
+<h3 id="5-在-KERAS-中使用-CNN-对图像进行分类"><a href="#5-在-KERAS-中使用-CNN-对图像进行分类" class="headerlink" title="5. 在 KERAS 中使用 CNN 对图像进行分类"></a>5. 在 KERAS 中使用 CNN 对图像进行分类</h3><p>让我们尝试一下，输入猫和狗的图片，让计算机识别它们。这是图像识别和分类的经典问题，机器在这里需要做的是看到图像，并理解猫与狗的不同外形特征。这些特征可以是外形轮廓，也可以是猫的胡须之类，卷积层会攫取这些特征。让我们把数据集拿来试验一下吧。</p>
+<p>以下这些图片均来自数据集。</p>
+<p><img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img"></p>
+<p>我们首先需要调整这些图像的大小，让它们形状相同。这是处理图像之前通常需要做的，因为在拍照时，让照下的图像都大小相同几乎不可能。</p>
+<p>为了简化理解，我们在这里只用一个卷积层和一个池化层。注意：在 CNN 的应用阶段，这种简单的情况是不会发生的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line">#import various packagesimport osimport numpy as npimport pandas as pdimport scipyimport sklearnimport kerasfrom keras.models import Sequentialimport cv2from skimage import io</div><div class="line">%matplotlib inline</div><div class="line"></div><div class="line">#Defining the File Path</div><div class="line"></div><div class="line">cat=os.listdir(&quot;/mnt/hdd/datasets/dogs_cats/train/cat&quot;)</div><div class="line">dog=os.listdir(&quot;/mnt/hdd/datasets/dogs_cats/train/dog&quot;)</div><div class="line">filepath=&quot;/mnt/hdd/datasets/dogs_cats/train/cat/&quot;filepath2=&quot;/mnt/hdd/datasets/dogs_cats/train/dog/&quot;#Loading the Images</div><div class="line"></div><div class="line">images=[]</div><div class="line">label = []for i in cat:</div><div class="line">image = scipy.misc.imread(filepath+i)</div><div class="line">images.append(image)</div><div class="line">label.append(0) #for cat imagesfor i in dog:</div><div class="line">image = scipy.misc.imread(filepath2+i)</div><div class="line">images.append(image)</div><div class="line">label.append(1) #for dog images</div><div class="line"></div><div class="line">#resizing all the imagesfor i in range(0,23000):</div><div class="line">images[i]=cv2.resize(images[i],(300,300))</div><div class="line"></div><div class="line">#converting images to arrays</div><div class="line"></div><div class="line">images=np.array(images)</div><div class="line">label=np.array(label)</div><div class="line"></div><div class="line"># Defining the hyperparameters</div><div class="line"></div><div class="line">filters=10filtersize=(5,5)</div><div class="line"></div><div class="line">epochs =5batchsize=128input_shape=(300,300,3)</div><div class="line"></div><div class="line">#Converting the target variable to the required sizefrom keras.utils.np_utils import to_categorical</div><div class="line">label = to_categorical(label)</div><div class="line"></div><div class="line">#Defining the model</div><div class="line"></div><div class="line">model = Sequential()</div><div class="line"></div><div class="line">model.add(keras.layers.InputLayer(input_shape=input_shape))</div><div class="line"></div><div class="line">model.add(keras.layers.convolutional.Conv2D(filters, filtersize, strides=(1, 1), padding=&apos;valid&apos;, data_format=&quot;channels_last&quot;, activation=&apos;relu&apos;))</div><div class="line">model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))</div><div class="line">model.add(keras.layers.Flatten())</div><div class="line"></div><div class="line">model.add(keras.layers.Dense(units=2, input_dim=50,activation=&apos;softmax&apos;))</div><div class="line"></div><div class="line">model.compile(loss=&apos;categorical_crossentropy&apos;, optimizer=&apos;adam&apos;, metrics=[&apos;accuracy&apos;])</div><div class="line">model.fit(images, label, epochs=epochs, batch_size=batchsize,validation_split=0.3)</div><div class="line"></div><div class="line">model.summary()</div></pre></td></tr></table></figure>
+<p>在这一模型中，我只使用了单一卷积和池化层，可训练参数是 219,801。很好奇如果我在这种情况使用了 MLP 会有多少参数。通过增加更多的卷积和池化层，你可以进一步降低参数的数量。我们添加的卷积层越多，被提取的特征就会更具体和复杂。</p>
+<p>在该模型中，我只使用了一个卷积层和池化层，可训练参数量为 219,801。如果想知道使用 MLP 在这种情况下会得到多少，你可以通过加入更多卷积和池化层来减少参数的数量。越多的卷积层意味着提取出来的特征更加具体，更加复杂。</p>
+<h3 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h3><p>希望本文能够让你认识卷积神经网络，这篇文章没有深入 CNN 的复杂数学原理。如果希望增进了解，你可以尝试构建自己的卷积神经网络，借此来了解它运行和预测的原理。<strong>*<img src="/2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="img">*</strong></p>
+<p><em>原文链接：<a href="https://www.analyticsvidhya.com/blog/2017/06/architecture-of-convolutional-neural-networks-simplified-demystified/" target="_blank" rel="noopener">https://www.analyticsvidhya.com/blog/2017/06/architecture-of-convolutional-neural-networks-simplified-demystified/</a></em></p>
+<p><strong>本文为机器之心编译，转载请联系本公众号获得授权。</strong></p>
+<p>✄————————————————————————</p>
+<p><strong>加入机器之心（全职记者/实习生）：hr@jiqizhixin.com</strong></p>
+<p><strong>投稿或寻求报道：editor@jiqizhixin.com</strong></p>
+<p><strong>广告&amp;商务合作：bd@jiqizhixin.com</strong></p>
+<p><strong>点击阅读原文，查看机器之心官网↓↓↓</strong></p>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&amp;mid=2650728746&amp;idx=1&amp;sn=61e9cb824501ec7c505eb464e8317915&amp;chksm=871b2d54b06ca442bc049e97c97e117455fd31bd0fb0619be4592eebd0958c26e3c223bfbfe5&amp;scene=21##" target="_blank" rel="noopener">阅读原文</a></p>
+<p>微信扫一扫<br>关注该公众号</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/笔记/" rel="tag"># 笔记</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/12/深度学习/深度 | 理解深度学习中的卷积/" rel="next" title="（转）深度 | 理解深度学习中的卷积">
+                <i class="fa fa-chevron-left"></i> （转）深度 | 理解深度学习中的卷积
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/12/深度学习/从入门到精通：卷积神经网络初学者指南/" rel="prev" title="（转）从入门到精通：卷积神经网络初学者指南">
+                （转）从入门到精通：卷积神经网络初学者指南 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="hypercomments_widget"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Schwimmer" />
+          <p class="site-author-name" itemprop="name">Schwimmer</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">114</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text"> </span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#引言"><span class="nav-number">2.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录"><span class="nav-number">3.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-机器如何看图？"><span class="nav-number">4.</span> <span class="nav-text">1. 机器如何看图？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-如何帮助神经网络识别图像？"><span class="nav-number">5.</span> <span class="nav-text">2. 如何帮助神经网络识别图像？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#案例-1"><span class="nav-number">5.1.</span> <span class="nav-text">案例 1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#案例-2"><span class="nav-number">5.2.</span> <span class="nav-text">案例 2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#案例-3"><span class="nav-number">5.3.</span> <span class="nav-text">案例 3</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#案例-4"><span class="nav-number">5.4.</span> <span class="nav-text">案例 4</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#案例-5"><span class="nav-number">5.5.</span> <span class="nav-text">案例 5</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#因此我们做了什么？"><span class="nav-number">5.6.</span> <span class="nav-text">因此我们做了什么？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-定义一个卷积神经网络"><span class="nav-number">6.</span> <span class="nav-text">3.定义一个卷积神经网络</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#卷积层"><span class="nav-number">6.1.</span> <span class="nav-text">卷积层</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#步长（stride）和边界（padding）的概念"><span class="nav-number">6.2.</span> <span class="nav-text">步长（stride）和边界（padding）的概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#多过滤与激活图"><span class="nav-number">6.3.</span> <span class="nav-text">多过滤与激活图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#池化层"><span class="nav-number">6.4.</span> <span class="nav-text">池化层</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#输出维度"><span class="nav-number">6.5.</span> <span class="nav-text">输出维度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#输出层"><span class="nav-number">6.6.</span> <span class="nav-text">输出层</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-小结"><span class="nav-number">7.</span> <span class="nav-text">4. 小结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-在-KERAS-中使用-CNN-对图像进行分类"><span class="nav-number">8.</span> <span class="nav-text">5. 在 KERAS 中使用 CNN 对图像进行分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#结语"><span class="nav-number">9.</span> <span class="nav-text">结语</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+<div>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+本站总访问量 <span id="busuanzi_value_site_pv"></span> 次&nbsp&nbsp&nbsp
+本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</div>
+
+
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+		<script type="text/javascript">
+		_hcwp = window._hcwp || [];
+
+		_hcwp.push({widget:"Bloggerstream", widget_id: 100710, selector:".hc-comment-count", label: "{\%COUNT%\}" });
+
+		
+		_hcwp.push({widget:"Stream", widget_id: 100710, xid: "2017/07/12/深度学习/机器视角：长文揭秘图像处理和卷积神经网络架构/"});
+		
+
+		(function() {
+		if("HC_LOAD_INIT" in window)return;
+		HC_LOAD_INIT = true;
+		var lang = (navigator.language || navigator.systemLanguage || navigator.userLanguage || "en").substr(0, 2).toLowerCase();
+		var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
+		hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://w.hypercomments.com/widget/hc/100710/"+lang+"/widget.js";
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(hcc, s.nextSibling);
+		})();
+		</script>
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+</body>
+</html>

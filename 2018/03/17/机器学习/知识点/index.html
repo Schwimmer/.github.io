@@ -1,0 +1,1140 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="Mx7Ikp0IpBtTbSpHDTBV0_CMJA-E8CLn8NRIrwyq5m4" />
+
+
+
+
+
+
+<meta name="baidu-site-verification" content="ZBTsWx4NdC" />
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="记录笔记的地方" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="特征选择经典算法LR线性回归模型的映射函数是一个线性方程。逻辑回归要解决分类问题，用logistic function代替线性方程，通过y的取值判断类别，y的取值是一个概率。 优点是，输出是0,1满足概率分布的要求。函数可微。 LR的L2正则 BFGS 贝叶斯在多项式模型中：  在多项式模型中， 设某文档d=(t1,t2,…,tk)，tk是该文档中出现过的单词，允许重复，则 先验概率P(c)= 类">
+<meta property="og:type" content="article">
+<meta property="og:title" content="知识点">
+<meta property="og:url" content="https://schwimmer.github.io/2018/03/17/机器学习/知识点/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="特征选择经典算法LR线性回归模型的映射函数是一个线性方程。逻辑回归要解决分类问题，用logistic function代替线性方程，通过y的取值判断类别，y的取值是一个概率。 优点是，输出是0,1满足概率分布的要求。函数可微。 LR的L2正则 BFGS 贝叶斯在多项式模型中：  在多项式模型中， 设某文档d=(t1,t2,…,tk)，tk是该文档中出现过的单词，允许重复，则 先验概率P(c)= 类">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://images2015.cnblogs.com/blog/890966/201611/890966-20161123134503362-571302342.png">
+<meta property="og:image" content="https://images2015.cnblogs.com/blog/890966/201611/890966-20161123150431143-1520224794.png">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-7a75ba913f11b4fb483228f70172003a_hd.jpg">
+<meta property="og:updated_time" content="2018-03-17T12:50:31.542Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="知识点">
+<meta name="twitter:description" content="特征选择经典算法LR线性回归模型的映射函数是一个线性方程。逻辑回归要解决分类问题，用logistic function代替线性方程，通过y的取值判断类别，y的取值是一个概率。 优点是，输出是0,1满足概率分布的要求。函数可微。 LR的L2正则 BFGS 贝叶斯在多项式模型中：  在多项式模型中， 设某文档d=(t1,t2,…,tk)，tk是该文档中出现过的单词，允许重复，则 先验概率P(c)= 类">
+<meta name="twitter:image" content="https://images2015.cnblogs.com/blog/890966/201611/890966-20161123134503362-571302342.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"always","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://schwimmer.github.io/2018/03/17/机器学习/知识点/"/>
+
+
+
+
+
+  <title> 知识点 | Schwimmer's Blog </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocapitalize="off" autocomplete="off" autocorrect="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/知识点/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                知识点
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-17T20:50:31+08:00">
+                2018-03-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            <!--noindex-->
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/03/17/机器学习/知识点/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count hc-comment-count" data-xid="2018/03/17/机器学习/知识点/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+              <!--/noindex-->
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="特征选择"><a href="#特征选择" class="headerlink" title="特征选择"></a>特征选择</h3><h1 id="经典算法"><a href="#经典算法" class="headerlink" title="经典算法"></a>经典算法</h1><h2 id="LR"><a href="#LR" class="headerlink" title="LR"></a>LR</h2><p>线性回归模型的映射函数是一个线性方程。逻辑回归要解决分类问题，用logistic function代替线性方程，通过y的取值判断类别，y的取值是一个概率。</p>
+<p>优点是，输出是0,1满足概率分布的要求。函数可微。</p>
+<p>LR的L2正则</p>
+<p>BFGS</p>
+<h2 id="贝叶斯"><a href="#贝叶斯" class="headerlink" title="贝叶斯"></a>贝叶斯</h2><p>在多项式模型中：</p>
+<blockquote>
+<p>在多项式模型中， 设某文档d=(t1,t2,…,tk)，tk是该文档中出现过的单词，允许重复，则</p>
+<p>先验概率P(c)= 类c下单词总数（包括重复的）/整个训练样本的单词总数</p>
+<p>类条件概率P(tk|c)=(类c下单词tk在各个文档中出现过的次数之和+1)/(类c下单词总数+|V|)</p>
+<p>V是训练样本的单词表（即抽取单词，单词出现多次，只算一个），|V|则表示训练样本包含多少种单词。 P(tk|c)可以看作是单词tk在证明d属于类c上提供了多大的证据，而P(c)则可以认为是类别c在整体上占多大比例(有多大可能性)。</p>
+</blockquote>
+<p>在伯努利模型中：</p>
+<blockquote>
+<p>P(c)= 类c下文件总数/整个训练样本的文件总数</p>
+<p>P(tk|c)=(类c下包含单词tk的文件数+1)/(类c下文件总数+2)</p>
+</blockquote>
+<p>平滑项是应对没有特征的情况。</p>
+<p><a href="http://blog.sina.com.cn/s/blog_15183f5750102vr62.html" target="_blank" rel="noopener">朴素贝叶斯算法的12条建议</a></p>
+<h2 id="SVM"><a href="#SVM" class="headerlink" title="SVM"></a>SVM</h2><p>SVM在哪个地方引入的核函数?如果用高斯核可以升到多少维?</p>
+<h2 id="BP的推导"><a href="#BP的推导" class="headerlink" title="BP的推导"></a>BP的推导</h2><p>反向传播的原理</p>
+<h2 id="随机森林"><a href="#随机森林" class="headerlink" title="随机森林"></a>随机森林</h2><p>解决决策树容易过拟合的缺点。采用多个决策树的投票机制来改善决策树。RF有多个决策树，不能用全样本去训练，要用到采样方法。</p>
+<p>1、每棵树选择样本时，通过重采样产生n个样本</p>
+<p>2、从m个特征中随机选择k个特征，构建决策树。</p>
+<p>3、多数投票制预测</p>
+<h2 id="决策树"><a href="#决策树" class="headerlink" title="决策树"></a>决策树</h2><p>IC3，用信息增益找分裂特征。</p>
+<p>C4.5，用信息增益比找特征。</p>
+<h2 id="GBDT"><a href="#GBDT" class="headerlink" title="GBDT"></a>GBDT</h2><p><a href="http://www.cnblogs.com/ModifyRong/p/7744987.html" target="_blank" rel="noopener">机器学习算法GBDT的面试要点总结-上篇</a></p>
+<p><a href="https://www.zhihu.com/question/41354392" target="_blank" rel="noopener">机器学习算法中GBDT和XGBOOST的区别有哪些？</a></p>
+<p>推荐系统稍微看看</p>
+<p>k折交叉验证中k取值多少有什么关系, 和bias和variance有关系吗?</p>
+<p>翻转二叉树</p>
+<p>平衡二叉树</p>
+<p>hadoop和spark的应用场景</p>
+<h3 id="样本倾斜的处理"><a href="#样本倾斜的处理" class="headerlink" title="样本倾斜的处理"></a>样本倾斜的处理</h3><p>样本不均衡的情况下，用AUC会偏高。</p>
+<h6 id="分类算法的比较"><a href="#分类算法的比较" class="headerlink" title="分类算法的比较"></a>分类算法的比较</h6><p><a href="https://www.zhihu.com/question/24169940#answer-6100729" target="_blank" rel="noopener">用于数据挖掘的分类算法有哪些，各有何优劣？</a></p>
+<h3 id="预测的评价指标"><a href="#预测的评价指标" class="headerlink" title="预测的评价指标"></a>预测的评价指标</h3><p><a href="https://www.zhihu.com/question/30643044" target="_blank" rel="noopener">精确率、召回率、F1 值、ROC、AUC 各自的优缺点是什么？</a></p>
+<h4 id="ROC和AUC"><a href="#ROC和AUC" class="headerlink" title="ROC和AUC"></a>ROC和AUC</h4><p>构建一个混淆矩阵</p>
+<p>TP FP</p>
+<p>FN TN</p>
+<p>精确率<code>(tp+tn)/(tp+fp+fn+tn)</code> 分类器对整个样本分类能力，正为正，负为负</p>
+<p>准确率 TP/TP+FP 分类器判定为正例中，真正的正例样本比重。</p>
+<p>召回率 tp/tp+fn 判定为正例在所有正例的比重</p>
+<p>word2vec的原理</p>
+<p>如何增量训练</p>
+<p>是一个词转向量的工具，语料是收集的百万篇的url。</p>
+<p>如何将词转成向量表达的？</p>
+<p>模型的目标函数是什么</p>
+<script type="math/tex; mode=display">
+L=\sum_{w \in C} \log p(w|Context(w))</script><p> 如何推导的？</p>
+<blockquote>
+<p>ngram模型+对数似然函数</p>
+</blockquote>
+<p>基于神经网络的模型是如何做的</p>
+<blockquote>
+<p>输入层是(Context(w),w)的训练样本。输入的时候是n-1个词向量首尾拼接。（词向量还没训练呢是怎么得到的？在[0,1]之间随机取值初始化）</p>
+<p>输入层到隐藏层用双曲正切函数作为激活函数。</p>
+<p>隐藏层到输出层再用一个线性函数。这样输出的y只是一个普通向量，需要用softmax再做一个归一化处理。</p>
+</blockquote>
+<p>有了目标函数后，如何构建CBOW网络结构？</p>
+<blockquote>
+<p>网络结构：</p>
+<p>输入层：前后各c个词，共2c个词的词向量。</p>
+<p>投影层：向量做sum再取平均。</p>
+<p>输出层：输出到Huffman树。每个叶子节点是一个词典中的词。</p>
+<p>与神经网络模型的区别：</p>
+<p>1）前者是拼接，后者是累加。2）后者没有隐藏层。3）前者是线性结构；后者是树形结构。</p>
+</blockquote>
+<p>如何利用Huffman树来定义目标函数？</p>
+<blockquote>
+<p>对于每个词，都存在一个路径，路径上存在分支，将每个分支看成一个二分类，每次分类产生一个概率。将这些概率连乘，就是目标函数。</p>
+<p>公式见《NLP/Word2Vec原理》</p>
+<p>权重初始化为0，词向量初始化为[0-1]的随机数。权重向量的长度就是所有词*词向量的长度。因为每层都有一个权重。</p>
+<p>用了多线程方法加速训练。</p>
+</blockquote>
+<p>为什么叫层次softmax？</p>
+<blockquote>
+<p>每层都是一个二分类问题</p>
+</blockquote>
+<p>为什么同义词的向量也相近</p>
+<blockquote>
+<p>我理解是上下文接近，对于CBOW，训练每个词后更新的是上下文，对于近义词往往有类似的上下文</p>
+</blockquote>
+<p>如何计算距一个词最近的向量？</p>
+<blockquote>
+<p>KD树搜索。（<a href="https://www.cnblogs.com/21207-iHome/p/6084670.html）" target="_blank" rel="noopener">https://www.cnblogs.com/21207-iHome/p/6084670.html）</a></p>
+<p>构建方法：任选一个特征（或者数据方差最大的特征，说明分散，越可能不属于同一个区间），以此为坐标轴划分，将最近的点落在坐标轴上。</p>
+<p><img src="https://images2015.cnblogs.com/blog/890966/201611/890966-20161123134503362-571302342.png" alt=""></p>
+<p>KD树搜索</p>
+<p>先从根节点往下找到叶子节点，再回溯，回溯到每层时要判断是否跟另一区间相交。</p>
+<p><img src="https://images2015.cnblogs.com/blog/890966/201611/890966-20161123150431143-1520224794.png" alt=""></p>
+<p>但是KD是递归查找，效率低。递归效率低是函数调用的开销导致的（函数调用需要准备资源），且有栈溢出的风险。</p>
+<p>idistance</p>
+<p><a href="https://en.m.wikipedia.org/wiki/IDistance" target="_blank" rel="noopener">https://en.m.wikipedia.org/wiki/IDistance</a></p>
+<p>目前线上怎么做的</p>
+</blockquote>
+<p>如何用word2vec计算句子相似度</p>
+<blockquote>
+<p>词向量按tfidf权重求mean</p>
+<p>也要分应用，需求是topic相关还是语义相关。比如我爱苹果，我不爱苹果，topic相似语义不相似。</p>
+<p>如果从词的粒度比较，还要结合上下文，避免一词多义。</p>
+</blockquote>
+<p>文本分类</p>
+<blockquote>
+<p>可以直接用fasttext，也可以tfidf+svm</p>
+</blockquote>
+<p>熵</p>
+<p>随机游走算法</p>
+<p>动态规划算法</p>
+<p>异常检测算法</p>
+<h1 id="CTR预测"><a href="#CTR预测" class="headerlink" title="CTR预测"></a>CTR预测</h1><h2 id="如何预测CTR线上的效果"><a href="#如何预测CTR线上的效果" class="headerlink" title="如何预测CTR线上的效果"></a>如何预测CTR线上的效果</h2><p>线下的可以用log loss和AUC</p>
+<p><strong>这里要特别强调一下用线上的其它业务指标如点击率、营收、利润、eCPC等等是不能给出CTR预估效果评价的</strong>。这些业务指标，受到整个广告系统其它模块如bid optimization,budget pacing等和外部竞价环境的综合影响，它的变化或者AB test中观察到的不同，不是简单地由于CTR预估变化带来的。换句话说，如果上了一个新的CTR预估模型的实验，发现业务指标变好了，这不等于说CTR预估更准了。一个简单的例子：如果一个CTR预估模型给出的预估总是比上帝视角的完美预估在低CTR区域低估，在高CTR区域高估，那么假设bid是base_bid*pCTR的话，相比完美预估，这个模型会赢得更多的高CTR区域的竞价，输掉更多在低CTR区域的竞价，最后会观察到实验组的CTR反而比完美预估的试验组更高。作者：Jian Xu链接：<a href="https://www.zhihu.com/question/54009615/answer/137820154来源：知乎著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。" target="_blank" rel="noopener">https://www.zhihu.com/question/54009615/answer/137820154来源：知乎著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</a></p>
+<h3 id="为什么AUC可以评价CTR"><a href="#为什么AUC可以评价CTR" class="headerlink" title="为什么AUC可以评价CTR"></a>为什么AUC可以评价CTR</h3><p>它和Wilcoxon-Mann-Witney Test是等价的[3]。而Wilcoxon-Mann-Witney Test就是测试任意给一个正类样本和一个负类样本，正类样本的score有多大的概率大于负类样本的score。</p>
+<p>如何平衡样本？平衡后的数据不是真实分布</p>
+<h6 id="CTR评价"><a href="#CTR评价" class="headerlink" title="CTR评价"></a>CTR评价</h6><p>CTR的评价用logloss和AUC。因为是概率输出，不方便用PR。</p>
+<h6 id="点击率各模型优缺点"><a href="#点击率各模型优缺点" class="headerlink" title="点击率各模型优缺点"></a>点击率各模型优缺点</h6><p><a href="https://www.zhihu.com/question/62109451?answer_deleted_redirect=true" target="_blank" rel="noopener">广告点击率模型中，LR, GBDT+LR, FM, DNN等模型的优点和缺点？实际效果如何?</a></p>
+<p><a href="http://blog.csdn.net/lilyth_lilyth/article/details/48032119" target="_blank" rel="noopener">CTR预估中GBDT与LR融合方案</a></p>
+<p><a href=""><a href="http://blog.csdn.net/bitcarmanlee/article/details/52138970" target="_blank" rel="noopener">CTR点击率预估干货分享</a></a></p>
+<p>Ad Click Prediction: a View from the Trenches</p>
+<p><img src="https://pic1.zhimg.com/80/v2-7a75ba913f11b4fb483228f70172003a_hd.jpg" alt=""></p>
+<p>LR</p>
+<p>优点：实现简单</p>
+<p>缺点：需要寻找特征。我们也使用了FTRL，但实践中它并不能非常有效的产生稀疏模型，如果模型非常大，会导致同步模型变慢，一样会严重影响效果。</p>
+<h6 id="点击率模型中特征如何选择"><a href="#点击率模型中特征如何选择" class="headerlink" title="点击率模型中特征如何选择"></a>点击率模型中特征如何选择</h6><p><a href="http://blog.csdn.net/ariessurfer/article/details/40380051" target="_blank" rel="noopener">广告点击率预估中的特征选择</a></p>
+<p>不是看它分布均不均衡，而是看它符不符合原来的分布。如果符合原来的分布，那么训练误差最小化也就意味着整体分布误差的最小化，也就没有必要进行均衡。</p>
+<p>如何降维，每个特征都对应的ctr，在构建模型时，根据ctr的区间将属于同一个区间的特征值作为一个特征；随着ctr区间越分越细来迭代。停止条件是不超过所有特征的一半或达到最小区间阈值。</p>
+<h6 id="投放中出现的问题"><a href="#投放中出现的问题" class="headerlink" title="投放中出现的问题"></a>投放中出现的问题</h6><h6 id="spark数据倾斜"><a href="#spark数据倾斜" class="headerlink" title="spark数据倾斜"></a>spark数据倾斜</h6><p><a href="https://www.cnblogs.com/hd-zg/p/6089220.html" target="_blank" rel="noopener">https://www.cnblogs.com/hd-zg/p/6089220.html</a></p>
+<h6 id="spark资源调优"><a href="#spark资源调优" class="headerlink" title="spark资源调优"></a>spark资源调优</h6><p><a href="http://blog.csdn.net/u012102306/article/details/51637366" target="_blank" rel="noopener">http://blog.csdn.net/u012102306/article/details/51637366</a></p>
+<p>我们使用yarn作为资源管理集群。yarn集群管理器根据spark参数，在各个工作节点上，启动一定数量的Executor进程，每个进程有一定的内存和CPU  Core。</p>
+<p>在申请到了作业执行所需的资源之后，Driver进程就会开始调度和执行我们编写的作业代码了。Driver将代码拆分为多个stage，为每个stage创建一批task。将这些task分配到各个Executor执行。</p>
+<p>SparkConf的一些参数：</p>
+<p>spark.sql.shuffle.partitions指partition的数量。SparkSQL在运行时，将一个查询任务分解成多个task，一个task就是一个partition。默认是200个partition，而如果实际集群只能并行3个task，则跑完200个partition要200/3=67次。</p>
+<p>spark.network.timeout所有网络通信的超时时间，默认是120s</p>
+<h6 id="mapreduce-shuffle过程"><a href="#mapreduce-shuffle过程" class="headerlink" title="mapreduce shuffle过程"></a>mapreduce shuffle过程</h6><p><a href="http://langyu.iteye.com/blog/992916" target="_blank" rel="noopener">http://langyu.iteye.com/blog/992916</a></p>
+<p>map过程，阶段，将输入文本做split，并转成<k,v>格式，V的初始值是1</k,v></p>
+<p>之后，partitioner可以根据key和value以及reduce的数量来决定map的输出放到那个reduce task。默认是key hash后对reduce取模。</p>
+<p>接下来将output写入缓冲区，减少磁盘IO的影响。key，value，partitioner的结果都写入缓冲区。</p>
+<p>当缓冲区内容达到一定比例，就调用单独线程溢写到磁盘。溢写前，如果设置了combiner，在这里就要做合并。当溢写启动后，需要对溢写内容的key做sort。</p>
+<p>Merge。每次溢写生成一个文件，map task完成后内存缓冲区所有的数据也全部溢写生成一个文件。用Merge合并溢写文件。</p>
+<p>reduce</p>
+<p>执行之前，拉取每个job中每个map task的最终结果。从不同地方拉过来的做merge。作为reducer的输入，然后执行reducer，结果写入hdfs。</p>
+<p>文本分类怎么优化特征</p>
+<h6 id="CTR预测怎么优化特征"><a href="#CTR预测怎么优化特征" class="headerlink" title="CTR预测怎么优化特征"></a>CTR预测怎么优化特征</h6><p>选特征，版位id，版位类型，地理位置，曝光时间，ua信息（操作系统，浏览器等），人群特征因为样本稀疏所有没有选</p>
+<p>根据直接观察CTR，卡方检验，单特征AUC。</p>
+<p>用互信息、卡方检验有没有用</p>
+<p>没有CTR的新版位</p>
+<p>word2vec新词</p>
+<p>es</p>
+<p>java api常见操作，从hive导入，从文件导入，中文分词</p>
+<p>user-gene，投放，tracking处理的流程图</p>
+<p>domain黑名单</p>
+<p>DFA算法过滤敏感词</p>
+<p>二分查找</p>
+<h6 id="特征稀疏怎么做"><a href="#特征稀疏怎么做" class="headerlink" title="特征稀疏怎么做"></a>特征稀疏怎么做</h6><p><a href="https://www.zhihu.com/question/48673581#answer-49246569" target="_blank" rel="noopener">传统的CTR或推荐系统拥有高维特征和稀疏数据，转向深度学习如何</a></p>
+<p>如果可用特征值太少，就丢弃；要么就设值为unknown；xgboost有稀疏感知算法</p>
+<p>怎么想到age预测算法的</p>
+<p>哪些媒体获取？电商，微信</p>
+<p>audience的重合度，距离代表相关度</p>
+<p>hive的存储，ORC格式，以前用SequenceFile</p>
+<p>pig，数据倾斜时的join用replicated，大表放左，其他放右。</p>
+<p>动态规划</p>
+<p>L1和L2有什么区别</p>
+<h2 id="乱序数组找中位数"><a href="#乱序数组找中位数" class="headerlink" title="乱序数组找中位数"></a>乱序数组找中位数</h2><p>快排+二分。取partition后，去掉一半的数字。</p>
+<p>直接拿一个素材的点击率当一个维度的特征？</p>
+<p>随机森林和GBDT的区别</p>
+<h6 id="如何提高召回率或精确率"><a href="#如何提高召回率或精确率" class="headerlink" title="如何提高召回率或精确率"></a>如何提高召回率或精确率</h6><p><a href="https://www.zhihu.com/question/39819838" target="_blank" rel="noopener">如何提高机器学习算法的召回率？（尤其在样本集不平衡时）</a></p>
+<h6 id="引擎流程"><a href="#引擎流程" class="headerlink" title="引擎流程"></a>引擎流程</h6><p>用timeslot监控campaign参数变化，预测下一个slot。第一个slot内不投放。</p>
+<p>1、计算的参数包括flowbiddingrate、利润区间。</p>
+<p>fbr衡量擦camp能投放的量占总量的百分比。比如根据预算，剩余每个slot的预算/每个slot的最大预算；曝光就是每个slot剩余曝光量/最大曝光量。</p>
+<p>2、然后预测ctr并计算松弛系数（实际-期望），判断是否可以投放。</p>
+<p>3、计算竞价，计算初始值，对于CPM，根据投放和曝光速度进行调整。对于CPC，如果实际CTR较高，通过提高一些小CTR的出价来平滑。</p>
+<p>4、通过版位历史价格计算预期利润，统计利润区间分布。根据fbr确定可投放的利润区间。</p>
+<p>5、通过投放平衡率计算camp打分。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/17/机器学习/知识图谱入门/" rel="next" title="知识图谱入门">
+                <i class="fa fa-chevron-left"></i> 知识图谱入门
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/17/机器学习/评价指标/" rel="prev" title="评价指标">
+                评价指标 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="hypercomments_widget"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Schwimmer" />
+          <p class="site-author-name" itemprop="name">Schwimmer</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">114</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#特征选择"><span class="nav-number">1.</span> <span class="nav-text">特征选择</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#经典算法"><span class="nav-number"></span> <span class="nav-text">经典算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#LR"><span class="nav-number"></span> <span class="nav-text">LR</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#贝叶斯"><span class="nav-number"></span> <span class="nav-text">贝叶斯</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SVM"><span class="nav-number"></span> <span class="nav-text">SVM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BP的推导"><span class="nav-number"></span> <span class="nav-text">BP的推导</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#随机森林"><span class="nav-number"></span> <span class="nav-text">随机森林</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#决策树"><span class="nav-number"></span> <span class="nav-text">决策树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GBDT"><span class="nav-number"></span> <span class="nav-text">GBDT</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#样本倾斜的处理"><span class="nav-number">1.</span> <span class="nav-text">样本倾斜的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#分类算法的比较"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">分类算法的比较</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#预测的评价指标"><span class="nav-number">2.</span> <span class="nav-text">预测的评价指标</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ROC和AUC"><span class="nav-number">2.1.</span> <span class="nav-text">ROC和AUC</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CTR预测"><span class="nav-number"></span> <span class="nav-text">CTR预测</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#如何预测CTR线上的效果"><span class="nav-number"></span> <span class="nav-text">如何预测CTR线上的效果</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么AUC可以评价CTR"><span class="nav-number">1.</span> <span class="nav-text">为什么AUC可以评价CTR</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#CTR评价"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">CTR评价</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#点击率各模型优缺点"><span class="nav-number">1.0.0.2.</span> <span class="nav-text">点击率各模型优缺点</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#点击率模型中特征如何选择"><span class="nav-number">1.0.0.3.</span> <span class="nav-text">点击率模型中特征如何选择</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#投放中出现的问题"><span class="nav-number">1.0.0.4.</span> <span class="nav-text">投放中出现的问题</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#spark数据倾斜"><span class="nav-number">1.0.0.5.</span> <span class="nav-text">spark数据倾斜</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#spark资源调优"><span class="nav-number">1.0.0.6.</span> <span class="nav-text">spark资源调优</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#mapreduce-shuffle过程"><span class="nav-number">1.0.0.7.</span> <span class="nav-text">mapreduce shuffle过程</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#CTR预测怎么优化特征"><span class="nav-number">1.0.0.8.</span> <span class="nav-text">CTR预测怎么优化特征</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#特征稀疏怎么做"><span class="nav-number">1.0.0.9.</span> <span class="nav-text">特征稀疏怎么做</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#乱序数组找中位数"><span class="nav-number"></span> <span class="nav-text">乱序数组找中位数</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#如何提高召回率或精确率"><span class="nav-number">0.0.0.1.</span> <span class="nav-text">如何提高召回率或精确率</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#引擎流程"><span class="nav-number">0.0.0.2.</span> <span class="nav-text">引擎流程</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+<div>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+本站总访问量 <span id="busuanzi_value_site_pv"></span> 次&nbsp&nbsp&nbsp
+本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</div>
+
+
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+		<script type="text/javascript">
+		_hcwp = window._hcwp || [];
+
+		_hcwp.push({widget:"Bloggerstream", widget_id: 100710, selector:".hc-comment-count", label: "{\%COUNT%\}" });
+
+		
+		_hcwp.push({widget:"Stream", widget_id: 100710, xid: "2018/03/17/机器学习/知识点/"});
+		
+
+		(function() {
+		if("HC_LOAD_INIT" in window)return;
+		HC_LOAD_INIT = true;
+		var lang = (navigator.language || navigator.systemLanguage || navigator.userLanguage || "en").substr(0, 2).toLowerCase();
+		var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
+		hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://w.hypercomments.com/widget/hc/100710/"+lang+"/widget.js";
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(hcc, s.nextSibling);
+		})();
+		</script>
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+</body>
+</html>

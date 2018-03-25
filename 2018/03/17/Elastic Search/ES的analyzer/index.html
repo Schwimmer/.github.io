@@ -1,0 +1,1067 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="Mx7Ikp0IpBtTbSpHDTBV0_CMJA-E8CLn8NRIrwyq5m4" />
+
+
+
+
+
+
+<meta name="baidu-site-verification" content="ZBTsWx4NdC" />
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="记录笔记的地方" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="转自ElasticSearch 解析机制常见用法库 之 analyzer常用用法   单词或文档先经过Character Filters；Character Filters的作用就是对文本进行一个预处理，例如把文本中所有“&amp;amp;”换成“and”，把“?”去掉等等操作。 ​          之后就进入了十分重要的tokenizers模块了，Tokenizers的作用是进行分词，例如，“tom">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ES的analyzer">
+<meta property="og:url" content="https://schwimmer.github.io/2018/03/17/Elastic Search/ES的analyzer/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="转自ElasticSearch 解析机制常见用法库 之 analyzer常用用法   单词或文档先经过Character Filters；Character Filters的作用就是对文本进行一个预处理，例如把文本中所有“&amp;amp;”换成“and”，把“?”去掉等等操作。 ​          之后就进入了十分重要的tokenizers模块了，Tokenizers的作用是进行分词，例如，“tom">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://img.blog.csdn.net/20160526182911460?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:updated_time" content="2018-03-17T12:50:31.523Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ES的analyzer">
+<meta name="twitter:description" content="转自ElasticSearch 解析机制常见用法库 之 analyzer常用用法   单词或文档先经过Character Filters；Character Filters的作用就是对文本进行一个预处理，例如把文本中所有“&amp;amp;”换成“and”，把“?”去掉等等操作。 ​          之后就进入了十分重要的tokenizers模块了，Tokenizers的作用是进行分词，例如，“tom">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20160526182911460?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"always","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://schwimmer.github.io/2018/03/17/Elastic Search/ES的analyzer/"/>
+
+
+
+
+
+  <title> ES的analyzer | Schwimmer's Blog </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocapitalize="off" autocomplete="off" autocorrect="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/Elastic Search/ES的analyzer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                ES的analyzer
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-17T20:50:31+08:00">
+                2018-03-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Elastic-Search/" itemprop="url" rel="index">
+                    <span itemprop="name">Elastic Search</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            <!--noindex-->
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/03/17/Elastic Search/ES的analyzer/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count hc-comment-count" data-xid="2018/03/17/Elastic Search/ES的analyzer/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+              <!--/noindex-->
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>转自<a href="http://blog.csdn.net/i6448038/article/details/51509439" target="_blank" rel="noopener">ElasticSearch 解析机制常见用法库 之 analyzer常用用法</a></p>
+<p><img src="http://img.blog.csdn.net/20160526182911460?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></p>
+<p> 单词或文档先经过Character Filters；Character Filters的作用就是对文本进行一个预处理，例如把文本中所有“&amp;”换成“and”，把“?”去掉等等操作。</p>
+<p>​          之后就进入了十分重要的tokenizers模块了，Tokenizers的作用是进行分词，例如，“tom is a good doctor .”。经过Character Filters去掉句号“.”（假设）后，分词器Tokenizers会将这个文本分出很多词来：“tom”、“is”、“a”、“good”、“doctor”。</p>
+<p>​          经过分词之后的集合，最后会进入Token Filter词单元模块进行处理，此模块的作用是对已经分词后的集合(tokens)单元再进行操作，例如把“tom”再次拆分成“t”、“o”、“m”等操作。最后得出来的结果集合，就是最终的集合。</p>
+<p>​          所以整个流程是：单词 ====》Character Filter 预处理 =====》tokenizer分词 ====》 token filter对分词进行再处理。</p>
+<p>​          到此为止，Analyzer是什么鬼？它干什么呢？</p>
+<p>​          Analyzer是由一个tokenizer、零到多个Token Filter、还有零到多个CharFilters构成的，也就是说一个Analyzer就是一个完整的解析模块。</p>
+<p>​          下面，着重介绍一下常用的Analyzer、Tokenizer、Token filter、Character Filter：</p>
+<p><strong>Standard Analyzer</strong></p>
+<p>一个“standard”标准类型的 analyzer 就是由 标准分词 “Standard Tokenizer”和标准分词过滤器“Standard Token Filter”、小写字母转换分词过滤“Lower case Token Filter”、还有“Stop Token Filter”过滤构成的</p>
+<p>以下是一个standard类型</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>设置说明stopwords                 一个用于初始化stop filter的需要stop 单词的列表.默认为空 。</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>max_token_length             最大的token集合,即经过tokenizer过后得到的结果集的最大值。如果token的长度超过了设置的长度，将会继续分，默认255</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Stop Analyzer</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>一个stop类型的analyzer是由 Lower case Tokenizer 和 Stop Token Filter构成的。</p>
+<p>以下是一个stop analyzer可以设置的属性:</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>设置</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>stopwords</code></td>
+<td>一个用于初始化stop filter的需要stop 单词的列表.默认单词是英语</td>
+</tr>
+<tr>
+<td><code>stopwords_path</code></td>
+<td>一个有stopwords 配置文件的路径(一个和config文件相关的路径或者URL)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code>用“stopwords: _none_</code> ”来定义一个空的stopword列表</p>
+<p><strong>Simple Analyzer</strong></p>
+<p>一个simple类型的analyzer是由lower case Tokenizer构成的，具体信息可以查看此Tokenzier</p>
+<p><strong>Whitespace Analyzer</strong></p>
+<p>一个whitespace类型的analyzer是由Whitespace Tokenizer构成，请具体查看Whitespace Tokenizer</p>
+<p>Keyword Analyzer</p>
+<p>一个keyword类型的analyzer，它的Tokenizer将整块的数据作为一个小Token（即经过Tokenizer过滤后的数据），这对于像“邮政编码”、“id”等数据非常有用。注意：当使用并定义这种analyzer的时候，单纯的将fieled 设置为“not_analyzed”可能会更有意义。</p>
+<p><strong>Pattern Analyzer</strong></p>
+<p>一个pattern类型的analyzer可以通过正则表达式将文本分成”terms”(经过token Filter 后得到的东西 )。接受如下设置:</p>
+<p>一个 <code>pattern</code> analyzer 可以做如下的属性设置:</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th><code>lowercase</code></th>
+<th>terms是否是小写. 默认为 <code>true 小写</code>.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pattern</code></td>
+<td>正则表达式的pattern, 默认是 <code>\W+</code>.</td>
+</tr>
+<tr>
+<td><code>flags</code></td>
+<td>正则表达式的flags.</td>
+</tr>
+<tr>
+<td><code>stopwords</code></td>
+<td>一个用于初始化stop filter的需要stop 单词的列表.默认单词是空的列表</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Snowball Analyzer</strong></p>
+<p>一个snowball类型的analyzer是由standard tokenizer和standard filter、lowercase filter、stop filter、snowball filter这四个filter构成的。</p>
+<p>snowball analyzer 在Lucene中通常是不推荐使用的。</p>
+<p><strong>Language Analyzers</strong></p>
+<p>一个用于解析特殊语言文本的analyzer集合。（ <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#arabic-analyzer" target="_blank" rel="noopener"><code>arabic</code></a>,<a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#armenian-analyzer" target="_blank" rel="noopener"><code>armenian</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#basque-analyzer" target="_blank" rel="noopener"><code>basque</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#brazilian-analyzer" target="_blank" rel="noopener"><code>brazilian</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#bulgarian-analyzer" target="_blank" rel="noopener"><code>bulgarian</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#catalan-analyzer" target="_blank" rel="noopener"><code>catalan</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#cjk-analyzer" target="_blank" rel="noopener"><code>cjk</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#czech-analyzer" target="_blank" rel="noopener"><code>czech</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#danish-analyzer" target="_blank" rel="noopener"><code>danish</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#dutch-analyzer" target="_blank" rel="noopener"><code>dutch</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#english-analyzer" target="_blank" rel="noopener"><code>english</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#finnish-analyzer" target="_blank" rel="noopener"><code>finnish</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#french-analyzer" target="_blank" rel="noopener"><code>french</code></a>,<a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#galician-analyzer" target="_blank" rel="noopener"><code>galician</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#german-analyzer" target="_blank" rel="noopener"><code>german</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#greek-analyzer" target="_blank" rel="noopener"><code>greek</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#hindi-analyzer" target="_blank" rel="noopener"><code>hindi</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#hungarian-analyzer" target="_blank" rel="noopener"><code>hungarian</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#indonesian-analyzer" target="_blank" rel="noopener"><code>indonesian</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#irish-analyzer" target="_blank" rel="noopener"><code>irish</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#italian-analyzer" target="_blank" rel="noopener"><code>italian</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#latvian-analyzer" target="_blank" rel="noopener"><code>latvian</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#lithuanian-analyzer" target="_blank" rel="noopener"><code>lithuanian</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#norwegian-analyzer" target="_blank" rel="noopener"><code>norwegian</code></a>,<a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#persian-analyzer" target="_blank" rel="noopener"><code>persian</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#portuguese-analyzer" target="_blank" rel="noopener"><code>portuguese</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#romanian-analyzer" target="_blank" rel="noopener"><code>romanian</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#russian-analyzer" target="_blank" rel="noopener"><code>russian</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#sorani-analyzer" target="_blank" rel="noopener"><code>sorani</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#spanish-analyzer" target="_blank" rel="noopener"><code>spanish</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#swedish-analyzer" target="_blank" rel="noopener"><code>swedish</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#turkish-analyzer" target="_blank" rel="noopener"><code>turkish</code></a>, <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html#thai-analyzer" target="_blank" rel="noopener"><code>thai</code></a>.）可惜没有中文。不予考虑</p>
+<p><strong>Custom Analyzer</strong></p>
+<p>简而言之，是自定义的analyzer。允许多个零到多个tokenizer，零到多个 <code>Char Filters</code>. custom analyzer 的名字不能以 “_”开头.</p>
+<p>The following are settings that can be set for a <code>custom</code> analyzer type:</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tokenizer</code></td>
+<td>通用的或者注册的tokenizer.</td>
+</tr>
+<tr>
+<td><code>filter</code></td>
+<td>通用的或者注册的 token filters.</td>
+</tr>
+<tr>
+<td><code>char_filter</code></td>
+<td>通用的或者注册的 character filters.</td>
+</tr>
+<tr>
+<td><code>position_increment_gap</code></td>
+<td>距离查询时，最大允许查询的距离，默认是100</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>自定义的模板：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line">index :</div><div class="line"></div><div class="line">    analysis :</div><div class="line"></div><div class="line">        analyzer :</div><div class="line"></div><div class="line">            myAnalyzer2 :</div><div class="line"></div><div class="line">                type : custom</div><div class="line"></div><div class="line">                tokenizer : myTokenizer1</div><div class="line"></div><div class="line">                filter : [myTokenFilter1, myTokenFilter2]</div><div class="line"></div><div class="line">                char_filter : [my_html]</div><div class="line"></div><div class="line">                position_increment_gap: 256</div><div class="line"></div><div class="line">        tokenizer :</div><div class="line"></div><div class="line">            myTokenizer1 :</div><div class="line"></div><div class="line">                type : standard</div><div class="line"></div><div class="line">                max_token_length : 900</div><div class="line"></div><div class="line">        filter :</div><div class="line"></div><div class="line">            myTokenFilter1 :</div><div class="line"></div><div class="line">                type : stop</div><div class="line"></div><div class="line">                stopwords : [stop1, stop2, stop3, stop4]</div><div class="line"></div><div class="line">            myTokenFilter2 :</div><div class="line"></div><div class="line">                type : length</div><div class="line"></div><div class="line">                min : 0</div><div class="line"></div><div class="line">                max : 2000</div><div class="line"></div><div class="line">        char_filter :</div><div class="line"></div><div class="line">              my_html :</div><div class="line"></div><div class="line">                type : html_strip</div><div class="line"></div><div class="line">                escaped_tags : [xxx, yyy]</div><div class="line"></div><div class="line">                read_ahead : 1024</div></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/18/机器学习/fasttext/" rel="next" title="fastText">
+                <i class="fa fa-chevron-left"></i> fastText
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/17/NLP/NLP工具/" rel="prev" title="NL工具">
+                NL工具 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="hypercomments_widget"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Schwimmer" />
+          <p class="site-author-name" itemprop="name">Schwimmer</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">114</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+<div>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+本站总访问量 <span id="busuanzi_value_site_pv"></span> 次&nbsp&nbsp&nbsp
+本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</div>
+
+
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+		<script type="text/javascript">
+		_hcwp = window._hcwp || [];
+
+		_hcwp.push({widget:"Bloggerstream", widget_id: 100710, selector:".hc-comment-count", label: "{\%COUNT%\}" });
+
+		
+		_hcwp.push({widget:"Stream", widget_id: 100710, xid: "2018/03/17/Elastic Search/ES的analyzer/"});
+		
+
+		(function() {
+		if("HC_LOAD_INIT" in window)return;
+		HC_LOAD_INIT = true;
+		var lang = (navigator.language || navigator.systemLanguage || navigator.userLanguage || "en").substr(0, 2).toLowerCase();
+		var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
+		hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://w.hypercomments.com/widget/hc/100710/"+lang+"/widget.js";
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(hcc, s.nextSibling);
+		})();
+		</script>
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+</body>
+</html>

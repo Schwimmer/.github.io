@@ -115,7 +115,7 @@
 <meta property="og:site_name" content="Schwimmer&#39;s Blog">
 <meta property="og:description" content="过滤字段中为空的通过filter中的exists，如 12345678910111213141516171819GET iclick_persona/iclick/_search&amp;#123;  &amp;quot;query&amp;quot;: &amp;#123;    &amp;quot;bool&amp;quot;: &amp;#123;      &amp;quot;must&amp;quot;: [        &amp;#123;&amp;quot;term&amp;">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-01-30T06:15:18.000Z">
+<meta property="og:updated_time" content="2018-03-17T12:50:31.524Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="elastic search笔记">
 <meta name="twitter:description" content="过滤字段中为空的通过filter中的exists，如 12345678910111213141516171819GET iclick_persona/iclick/_search&amp;#123;  &amp;quot;query&amp;quot;: &amp;#123;    &amp;quot;bool&amp;quot;: &amp;#123;      &amp;quot;must&amp;quot;: [        &amp;#123;&amp;quot;term&amp;">
@@ -423,6 +423,10 @@
       
         <h1 id="过滤字段中为空的"><a href="#过滤字段中为空的" class="headerlink" title="过滤字段中为空的"></a>过滤字段中为空的</h1><p>通过filter中的exists，如</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">GET iclick_persona/iclick/_search</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;bool&quot;: &#123;</div><div class="line">      &quot;must&quot;: [</div><div class="line">        &#123;&quot;term&quot;: &#123;</div><div class="line">          &quot;province&quot;: &#123;</div><div class="line">            &quot;value&quot;: &quot;CN_IN_SG&quot;</div><div class="line">          &#125;</div><div class="line">        &#125;&#125;</div><div class="line">      ],</div><div class="line">      &quot;filter&quot;: &#123;</div><div class="line">        &quot;exists&quot;: &#123;</div><div class="line">          &quot;field&quot;: &quot;articles.titles&quot;</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="大索引按天拆开"><a href="#大索引按天拆开" class="headerlink" title="大索引按天拆开"></a>大索引按天拆开</h1><p>好像不能直接从A索引中抽取一部分到B索引</p>
+<h1 id="python从文件插入到ES"><a href="#python从文件插入到ES" class="headerlink" title="python从文件插入到ES"></a>python从文件插入到ES</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">def set_pois_data(es, input_file, index_name=&quot;pois&quot;, doc_type_name=&quot;iclick&quot;):</div><div class="line">    #读入数据</div><div class="line">    fp = open(input_file)</div><div class="line"></div><div class="line">    #创建ACTIONS</div><div class="line">    ACTIONS = []</div><div class="line">    for line in fp:</div><div class="line">        fields = line.strip(&apos;\n&apos;).split(&quot;\t&quot;)</div><div class="line">        name = fields[0]</div><div class="line">        location = fields[2] + &quot;,&quot; + fields[3]</div><div class="line"></div><div class="line">        action = &#123;</div><div class="line">            &quot;_index&quot;: index_name,</div><div class="line">            &quot;_type&quot;: doc_type_name,</div><div class="line">            &quot;_source&quot;: &#123;</div><div class="line">                  &quot;name&quot; : name,</div><div class="line">                  &quot;pois&quot; : location,</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        #print action</div><div class="line">        ACTIONS.append(action)</div><div class="line"></div><div class="line">    # 批量处理</div><div class="line">    success, _ = bulk(es, ACTIONS, index=index_name, raise_on_error=True)</div><div class="line">    print(&apos;Performed %d actions&apos; % success)</div></pre></td></tr></table></figure>
+<h1 id="复制index的数据到另一个"><a href="#复制index的数据到另一个" class="headerlink" title="复制index的数据到另一个"></a>复制index的数据到另一个</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">import pyes</div><div class="line">conn = pyes.es.ES(&quot;http://10.xx.xx.xx:8305/&quot;)</div><div class="line">search = pyes.query.MatchAllQuery().search(bulk_read=1000)</div><div class="line">hits = conn.search(search, &apos;store_v1&apos;, &apos;client&apos;, scan=True, scroll=&quot;30m&quot;, model=lambda _,hit: hit)</div><div class="line">for hit in hits:</div><div class="line">     #print hit</div><div class="line">     conn.index(hit[&apos;_source&apos;], &apos;store_v2&apos;, &apos;client&apos;, hit[&apos;_id&apos;], bulk=True)</div><div class="line">conn.flush()</div></pre></td></tr></table></figure>
+<h1 id="统计数组的元素个数的sum、avg"><a href="#统计数组的元素个数的sum、avg" class="headerlink" title="统计数组的元素个数的sum、avg"></a>统计数组的元素个数的sum、avg</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">GET iclick_persona/iclick/_search?size=0</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;bool&quot;: &#123;</div><div class="line">      &quot;must&quot;: [</div><div class="line">        &#123;&quot;term&quot;: &#123;</div><div class="line">          &quot;device&quot;: &#123;</div><div class="line">            &quot;value&quot;: &quot;PC&quot;</div><div class="line">          &#125;</div><div class="line">        &#125;&#125;</div><div class="line">      ],</div><div class="line">      &quot;filter&quot;: [</div><div class="line">        &#123;&quot;script&quot;:&#123;&quot;script&quot;:&quot;doc[&apos;articles.domains&apos;].values.length&gt;1&quot;&#125;&#125;</div><div class="line">      ]</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;NAME&quot;: &#123;</div><div class="line">      &quot;avg&quot;: &#123;</div><div class="line">        &quot;script&quot;: &#123;</div><div class="line">          &quot;inline&quot;: &quot;doc[&apos;articles.domains&apos;].values.length&quot;</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 
       
     </div>
@@ -465,8 +469,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/07/12/数学/利率计算/" rel="next" title="利率计算">
-                <i class="fa fa-chevron-left"></i> 利率计算
+              <a href="/2017/07/12/深度学习/Tensor Flow/" rel="next" title="Tensorflow环境搭建">
+                <i class="fa fa-chevron-left"></i> Tensorflow环境搭建
               </a>
             
           </div>
@@ -475,8 +479,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/12/工具和环境/scp免密码登录/" rel="prev" title="scp免密码登录">
-                scp免密码登录 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/07/12/深度学习/CNN/" rel="prev" title="CNN">
+                CNN <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -551,7 +555,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-count">114</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -562,7 +566,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-count">14</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -573,7 +577,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-count">55</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -608,7 +612,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#过滤字段中为空的"><span class="nav-number">1.</span> <span class="nav-text">过滤字段中为空的</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#过滤字段中为空的"><span class="nav-number">1.</span> <span class="nav-text">过滤字段中为空的</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#大索引按天拆开"><span class="nav-number">2.</span> <span class="nav-text">大索引按天拆开</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#python从文件插入到ES"><span class="nav-number">3.</span> <span class="nav-text">python从文件插入到ES</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#复制index的数据到另一个"><span class="nav-number">4.</span> <span class="nav-text">复制index的数据到另一个</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#统计数组的元素个数的sum、avg"><span class="nav-number">5.</span> <span class="nav-text">统计数组的元素个数的sum、avg</span></a></li></ol></div>
             
 
           </div>
