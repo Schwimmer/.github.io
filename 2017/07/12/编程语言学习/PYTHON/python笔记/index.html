@@ -115,7 +115,7 @@
 <meta property="og:site_name" content="Schwimmer&#39;s Blog">
 <meta property="og:description" content="json操作1.1  json转字符串1result = json.loads(s) 1.2 遍历json的key将json当做dict，用dict的方法遍历 12for k,v in result.items():    print result[k] 1.3 读json文件1234567import jsonf = open(&amp;quot;/home/david/keywordjson&amp;quot">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-03-23T13:02:13.821Z">
+<meta property="og:updated_time" content="2018-03-31T02:28:31.013Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="python笔记">
 <meta name="twitter:description" content="json操作1.1  json转字符串1result = json.loads(s) 1.2 遍历json的key将json当做dict，用dict的方法遍历 12for k,v in result.items():    print result[k] 1.3 读json文件1234567import jsonf = open(&amp;quot;/home/david/keywordjson&amp;quot">
@@ -467,6 +467,8 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">child.poll() # 检查子进程状态</div><div class="line">child.kill() # 终止子进程</div><div class="line">child.send_signal() # 向子进程发送信号</div><div class="line">child.terminate() # 终止子进程</div></pre></td></tr></table></figure>
 <p>子进程的PID存储在child.pid，子进程的标准输入、标准输出和标准错误如下属性分别表示:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">child.stdin</div><div class="line">child.stdout</div><div class="line">child.stderr</div></pre></td></tr></table></figure>
+<p>例如<code>lbspoi.py</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generate_poi_content</span><span class="params">(self)</span>:</span></div><div class="line">        city_list = []</div><div class="line">        cmd_out = subprocess.Popen(</div><div class="line">            <span class="string">" hadoop fs -ls /shortdata/mobile_poi_raw/day_id=%s|awk -F'city=' 'NF==2&#123;print $2&#125;'"</span> % (self.today),</div><div class="line">            stdout=subprocess.PIPE, shell=<span class="keyword">True</span>)</div><div class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> cmd_out.stdout:</div><div class="line">            line = line.strip()</div><div class="line">            <span class="keyword">if</span> len(line) &gt; <span class="number">0</span>:</div><div class="line">                city_list.append(line)</div><div class="line"></div><div class="line">        <span class="keyword">for</span> city_code <span class="keyword">in</span> city_list:</div><div class="line">            sql = <span class="string">"pig -p MOBILE_POI_RAW=/shortdata/mobile_poi_raw/day_id=%s/city=%s "</span> \</div><div class="line">                  <span class="string">"-p CITY_CODE=%s -p MOBILE_POI_INFO=/shortdata/persona/mobile_poi/%s/%s "</span> \</div><div class="line">                  <span class="string">"/opt/pig_home/mobile_poi/GeneratePoiContent.pig"</span> % (</div><div class="line">                      self.today, city_code, city_code, self.today, city_code)</div><div class="line">            taskCmd(sql)</div><div class="line">            sql = <span class="string">"alter table mobile_poi "</span> \</div><div class="line">                  <span class="string">"add partition (day_id='%s',city_code='%s') "</span> \</div><div class="line">                  <span class="string">"location '/shortdata/persona/mobile_poi/%s/%s';"</span> % (self.today, city_code, self.today, city_code)</div><div class="line">            cmd = <span class="string">'hive -e "use persona; %s"'</span> % (sql)</div><div class="line">            taskCmd(cmd)</div></pre></td></tr></table></figure>
 <h1 id="Python模块安装方法"><a href="#Python模块安装方法" class="headerlink" title="Python模块安装方法"></a>Python模块安装方法</h1><p>一、方法1： 单文件模块<br>直接把文件拷贝到 $python_dir/Lib</p>
 <p>二、方法2： 多文件模块，带setup.py</p>
 <p>下载模块包，进行解压，进入模块文件夹，执行：<br>python setup.py install</p>
@@ -591,8 +593,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/07/12/hadoop-spark/hive笔记/" rel="next" title="hive笔记">
-                <i class="fa fa-chevron-left"></i> hive笔记
+              <a href="/2017/07/12/工具和环境/scp免密码登录/" rel="next" title="scp免密码登录">
+                <i class="fa fa-chevron-left"></i> scp免密码登录
               </a>
             
           </div>
@@ -601,8 +603,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/12/机器学习/机器学习笔记-最大熵/" rel="prev" title="机器学习笔记-最大熵">
-                机器学习笔记-最大熵 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/07/12/hadoop-spark/spark笔记-local开发/" rel="prev" title="spark笔记-local开发">
+                spark笔记-local开发 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -677,7 +679,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">114</span>
+                <span class="site-state-item-count">120</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -688,7 +690,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-count">15</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
