@@ -91,7 +91,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="elastic search,spark," />
+  <meta name="keywords" content="spark-sql," />
 
 
 
@@ -107,18 +107,18 @@
 
 
 
-<meta name="description" content="最简单的例子1、在pom.xml中增加12345&amp;lt;dependency&amp;gt;    &amp;lt;groupId&amp;gt;org.elasticsearch&amp;lt;/groupId&amp;gt;    &amp;lt;artifactId&amp;gt;elasticsearch-spark_2.10&amp;lt;/artifactId&amp;gt;    &amp;lt;version&amp;gt;2.2.1&amp;lt;/version&amp;gt;&amp;">
-<meta name="keywords" content="elastic search,spark">
+<meta name="description" content="spark sql可以用基本的SQL语法，或者hiveQL。Spark SQL也能从hive中读数据。 Data Frame的来源可以是：结构化数据、hive表、外部数据库或者RDD Starting Point: SQLContextThe entry point into all functionality in Spark SQL is the SQLContext class, or on">
+<meta name="keywords" content="spark-sql">
 <meta property="og:type" content="article">
-<meta property="og:title" content="spark笔记-操作elastic search">
-<meta property="og:url" content="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark笔记-操作elastic-search/index.html">
+<meta property="og:title" content="spark-sql笔记">
+<meta property="og:url" content="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark-sql笔记/index.html">
 <meta property="og:site_name" content="Schwimmer&#39;s Blog">
-<meta property="og:description" content="最简单的例子1、在pom.xml中增加12345&amp;lt;dependency&amp;gt;    &amp;lt;groupId&amp;gt;org.elasticsearch&amp;lt;/groupId&amp;gt;    &amp;lt;artifactId&amp;gt;elasticsearch-spark_2.10&amp;lt;/artifactId&amp;gt;    &amp;lt;version&amp;gt;2.2.1&amp;lt;/version&amp;gt;&amp;">
+<meta property="og:description" content="spark sql可以用基本的SQL语法，或者hiveQL。Spark SQL也能从hive中读数据。 Data Frame的来源可以是：结构化数据、hive表、外部数据库或者RDD Starting Point: SQLContextThe entry point into all functionality in Spark SQL is the SQLContext class, or on">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-01-30T07:50:16.000Z">
+<meta property="og:updated_time" content="2018-01-30T07:49:02.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="spark笔记-操作elastic search">
-<meta name="twitter:description" content="最简单的例子1、在pom.xml中增加12345&amp;lt;dependency&amp;gt;    &amp;lt;groupId&amp;gt;org.elasticsearch&amp;lt;/groupId&amp;gt;    &amp;lt;artifactId&amp;gt;elasticsearch-spark_2.10&amp;lt;/artifactId&amp;gt;    &amp;lt;version&amp;gt;2.2.1&amp;lt;/version&amp;gt;&amp;">
+<meta name="twitter:title" content="spark-sql笔记">
+<meta name="twitter:description" content="spark sql可以用基本的SQL语法，或者hiveQL。Spark SQL也能从hive中读数据。 Data Frame的来源可以是：结构化数据、hive表、外部数据库或者RDD Starting Point: SQLContextThe entry point into all functionality in Spark SQL is the SQLContext class, or on">
 
 
 
@@ -146,13 +146,13 @@
 
 
 
-  <link rel="canonical" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark笔记-操作elastic-search/"/>
+  <link rel="canonical" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark-sql笔记/"/>
 
 
 
 
 
-  <title> spark笔记-操作elastic search | Schwimmer's Blog </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title> spark-sql笔记 | Schwimmer's Blog </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -315,7 +315,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark笔记-操作elastic-search/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark-sql笔记/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -336,7 +336,7 @@
             
             
               
-                spark笔记-操作elastic search
+                spark-sql笔记
               
             
           </h2>
@@ -393,8 +393,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/07/12/hadoop-spark/spark笔记-操作elastic-search/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count hc-comment-count" data-xid="2017/07/12/hadoop-spark/spark笔记-操作elastic-search/" itemprop="commentsCount"></span>
+                <a href="/2017/07/12/hadoop-spark/spark/spark-sql笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count hc-comment-count" data-xid="2017/07/12/hadoop-spark/spark/spark-sql笔记/" itemprop="commentsCount"></span>
                 </a>
               </span>
               <!--/noindex-->
@@ -421,17 +421,22 @@
       
 
       
-        <h1 id="最简单的例子"><a href="#最简单的例子" class="headerlink" title="最简单的例子"></a>最简单的例子</h1><p>1、在pom.xml中增加<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;org.elasticsearch&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;elasticsearch-spark_2.10&lt;/artifactId&gt;</div><div class="line">    &lt;version&gt;2.2.1&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure></p>
-<p>2、在spark的main中导入<code>org.elasticsearch.spark</code>包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">...</div><div class="line">import org.elasticsearch.spark._</div></pre></td></tr></table></figure></p>
-<p>3、在spark的conf中增加如下配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">set(&quot;es.index.auto.create&quot;, &quot;true&quot;).set(&quot;es.nodes&quot;, &quot;192.168.37.129&quot;).set(&quot;es.port&quot;,&quot;9200&quot;)</div></pre></td></tr></table></figure></p>
-<p>其中，<code>es.nodes</code>是ElasticSearch的host</p>
-<p>4、简单的写法如下<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> conf = ...</div><div class="line"><span class="keyword">val</span> sc = <span class="keyword">new</span> <span class="type">SparkContext</span>(conf)         </div><div class="line"></div><div class="line"><span class="keyword">val</span> numbers = <span class="type">Map</span>(<span class="string">"one"</span> -&gt; <span class="number">1</span>, <span class="string">"two"</span> -&gt; <span class="number">2</span>, <span class="string">"three"</span> -&gt; <span class="number">3</span>)</div><div class="line"><span class="keyword">val</span> airports = <span class="type">Map</span>(<span class="string">"arrival"</span> -&gt; <span class="string">"Otopeni"</span>, <span class="string">"SFO"</span> -&gt; <span class="string">"San Fran"</span>)</div><div class="line"></div><div class="line">sc.makeRDD(<span class="type">Seq</span>(numbers, airports)).saveToEs(<span class="string">"spark/docs"</span>)</div></pre></td></tr></table></figure></p>
-<p>也可以用case class来写<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Trip</span>(<span class="params">departrue: <span class="type">String</span>, arrival: <span class="type">String</span></span>)</span></div><div class="line">    </div><div class="line"><span class="keyword">val</span> upTrip = <span class="type">Trip</span>(<span class="string">"OTF"</span>, <span class="string">"SFO"</span>)</div><div class="line"><span class="keyword">val</span> downTrip = <span class="type">Trip</span>(<span class="string">"MUC"</span>, <span class="string">"OTP"</span>)</div><div class="line"></div><div class="line"><span class="keyword">val</span> rdd = sc.makeRDD(<span class="type">Seq</span>(upTrip, downTrip))</div><div class="line"><span class="type">EsSpark</span>.saveToEs(rdd, <span class="string">"spark/docs"</span>)</div></pre></td></tr></table></figure></p>
-<p>5、在Elastic Search的Sense中查询<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">GET /spark/docs/_search</div></pre></td></tr></table></figure></p>
-<p>返回<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  &quot;took&quot;: 4,</div><div class="line">  &quot;timed_out&quot;: false,</div><div class="line">  &quot;_shards&quot;: &#123;</div><div class="line">    &quot;total&quot;: 5,</div><div class="line">    &quot;successful&quot;: 5,</div><div class="line">    &quot;failed&quot;: 0</div><div class="line">  &#125;,</div><div class="line">  &quot;hits&quot;: &#123;</div><div class="line">    &quot;total&quot;: 2,</div><div class="line">    &quot;max_score&quot;: 1,</div><div class="line">    &quot;hits&quot;: [</div><div class="line">      &#123;</div><div class="line">        &quot;_index&quot;: &quot;spark&quot;,</div><div class="line">        &quot;_type&quot;: &quot;docs&quot;,</div><div class="line">        &quot;_id&quot;: &quot;AVSkEdTv9l_YEZuMmxgt&quot;,</div><div class="line">        &quot;_score&quot;: 1,</div><div class="line">        &quot;_source&quot;: &#123;</div><div class="line">          &quot;arrival&quot;: &quot;Otopeni&quot;,</div><div class="line">          &quot;SFO&quot;: &quot;San Fran&quot;</div><div class="line">        &#125;</div><div class="line">      &#125;,</div><div class="line">      &#123;</div><div class="line">        &quot;_index&quot;: &quot;spark&quot;,</div><div class="line">        &quot;_type&quot;: &quot;docs&quot;,</div><div class="line">        &quot;_id&quot;: &quot;AVSkEdZp9l_YEZuMmxgu&quot;,</div><div class="line">        &quot;_score&quot;: 1,</div><div class="line">        &quot;_source&quot;: &#123;</div><div class="line">          &quot;one&quot;: 1,</div><div class="line">          &quot;three&quot;: 3,</div><div class="line">          &quot;two&quot;: 2</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    ]</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>测试通过</p>
-<h1 id="与spark-streaming结合"><a href="#与spark-streaming结合" class="headerlink" title="与spark streaming结合"></a>与spark streaming结合</h1><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 创建 StreamingContext，5秒一个批次</span></div><div class="line"><span class="keyword">val</span> ssc = <span class="keyword">new</span> <span class="type">StreamingContext</span>(sc, <span class="type">Seconds</span>(<span class="number">3</span>))</div><div class="line"><span class="keyword">val</span> lines = ssc.socketTextStream(<span class="string">"192.168.37.129"</span>, <span class="number">9999</span>)</div><div class="line"><span class="comment">// 对每一行数据执行 Split 操作</span></div><div class="line"><span class="keyword">val</span> words = lines.flatMap(_.split(<span class="string">" "</span>))</div><div class="line"><span class="comment">// 统计 word 的数量</span></div><div class="line"><span class="keyword">val</span> pairs = words.map(word =&gt; (word, <span class="number">1</span>))</div><div class="line"></div><div class="line">pairs.foreachRDD&#123;</div><div class="line">x =&gt;</div><div class="line">x.saveToEs(<span class="string">"spark/words"</span>)</div><div class="line">&#125;</div><div class="line"></div><div class="line">ssc.start()</div><div class="line">ssc.awaitTermination()</div></pre></td></tr></table></figure>
-<p>pairs是一个DSteamRDD，通过foreachRDD来遍历其中的每个RDD，对于每个RDD，可以saveToEs</p>
+        <p>spark sql可以用基本的SQL语法，或者hiveQL。Spark SQL也能从hive中读数据。</p>
+<p>Data Frame的来源可以是：结构化数据、hive表、外部数据库或者RDD</p>
+<h2 id="Starting-Point-SQLContext"><a href="#Starting-Point-SQLContext" class="headerlink" title="Starting Point: SQLContext"></a>Starting Point: SQLContext</h2><p>The entry point into all functionality in Spark SQL is the <a href="http://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.sql.SQLContext" target="_blank" rel="noopener"><code>SQLContext</code></a> class, or one of its descendants. To create a basic <code>SQLContext</code>, all you need is a SparkContext.</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> sc: <span class="type">SparkContext</span> <span class="comment">// An existing SparkContext.</span></div><div class="line"><span class="keyword">val</span> sqlContext = <span class="keyword">new</span> org.apache.spark.sql.<span class="type">SQLContext</span>(sc)</div><div class="line"></div><div class="line"><span class="comment">// this is used to implicitly convert an RDD to a DataFrame.</span></div><div class="line"><span class="keyword">import</span> sqlContext.implicits._</div></pre></td></tr></table></figure>
+<p>在SQLContext的基础上，也要创建一个HiveContext，可以用Hive的udf，也能读hive表。<br>HiveContext是一个独立的包，不需要安装hive</p>
+<h2 id="Creating-DataFrames"><a href="#Creating-DataFrames" class="headerlink" title="Creating DataFrames"></a>Creating DataFrames</h2><p>With a <code>SQLContext</code>, applications can create <code>DataFrame</code>s from an <a href="http://spark.apache.org/docs/latest/sql-programming-guide.html#interoperating-with-rdds" target="_blank" rel="noopener">existing <code>RDD</code></a>, from a Hive table, or from <a href="http://spark.apache.org/docs/latest/sql-programming-guide.html#data-sources" target="_blank" rel="noopener">data sources</a>.</p>
+<p>As an example, the following creates a <code>DataFrame</code> based on the content of a JSON file:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> sc: <span class="type">SparkContext</span> <span class="comment">// An existing SparkContext.</span></div><div class="line"><span class="keyword">val</span> sqlContext = <span class="keyword">new</span> org.apache.spark.sql.<span class="type">SQLContext</span>(sc)</div><div class="line"></div><div class="line"><span class="keyword">val</span> df = sqlContext.read.json(<span class="string">"examples/src/main/resources/people.json"</span>)</div><div class="line"></div><div class="line"><span class="comment">// Displays the content of the DataFrame to stdout</span></div><div class="line">df.show()</div></pre></td></tr></table></figure>
+<h2 id="Creating-Datasets"><a href="#Creating-Datasets" class="headerlink" title="Creating Datasets"></a>Creating Datasets</h2><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> org.apache.spark.sql.<span class="type">SQLContext</span></div><div class="line">...</div><div class="line">...</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">// Encoders for most common types are automatically provided by importing sqlContext.implicits._</span></div><div class="line"><span class="keyword">val</span> sqlContext = <span class="type">SQLContext</span>.getOrCreate(sc)</div><div class="line"><span class="keyword">import</span> sqlContext.implicits._</div><div class="line"><span class="keyword">val</span> ds = <span class="type">Seq</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>).toDS()</div><div class="line">ds.map(_ + <span class="number">1</span>).collect() <span class="comment">// Returns: Array(2, 3, 4)</span></div><div class="line"></div><div class="line"><span class="comment">// Encoders are also created for case classes.</span></div><div class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span>(<span class="params">name: <span class="type">String</span>, age: <span class="type">Long</span></span>)</span></div><div class="line"><span class="keyword">val</span> ds = <span class="type">Seq</span>(<span class="type">Person</span>(<span class="string">"Andy"</span>, <span class="number">32</span>)).toDS()</div><div class="line"></div><div class="line"><span class="comment">// DataFrames can be converted to a Dataset by providing a class. Mapping will be done by name.</span></div><div class="line"><span class="keyword">val</span> path = <span class="string">"examples/src/main/resources/people.json"</span></div><div class="line"><span class="keyword">val</span> people = sqlContext.read.json(path).as[<span class="type">Person</span>]</div></pre></td></tr></table></figure>
+<h2 id="在DataFrame中创建表并查询"><a href="#在DataFrame中创建表并查询" class="headerlink" title="在DataFrame中创建表并查询"></a>在DataFrame中创建表并查询</h2><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> sqlContext = <span class="type">SQLContext</span>.getOrCreate(sc)</div><div class="line"><span class="keyword">import</span> sqlContext.implicits._</div><div class="line"></div><div class="line"><span class="comment">//把andy和32匹配到name和age列。</span></div><div class="line"><span class="comment">//先创建一个DataFrame，再注册为table</span></div><div class="line"><span class="keyword">val</span> ds = sc.parallelize(<span class="type">Seq</span>((<span class="string">"Andy"</span>, <span class="number">32</span>))).toDF(<span class="string">"name"</span>,<span class="string">"age"</span>)    </div><div class="line">ds.registerTempTable(<span class="string">"ds1"</span>)</div><div class="line">sqlContext.sql(<span class="string">"select * from ds1"</span>)</div></pre></td></tr></table></figure>
+<h2 id="sparkSQL链接GP"><a href="#sparkSQL链接GP" class="headerlink" title="sparkSQL链接GP"></a>sparkSQL链接GP</h2><p>1、maven中增加包<br>一开始试过8.2的包就不行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;postgresql&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;postgresql&lt;/artifactId&gt;</div><div class="line">    &lt;version&gt;8.3-606.jdbc3&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure></p>
+<p>2、连接jdbc<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> jdbcDF = sqlContext.read.format(<span class="string">"jdbc"</span>).options(</div><div class="line">      <span class="type">Map</span>(<span class="string">"url"</span> -&gt; <span class="string">"jdbc:postgresql://10.1.1.230:5432/xmo_dw"</span>,</div><div class="line">          <span class="string">"user"</span>-&gt;<span class="string">"david_xu"</span>,  </div><div class="line">          <span class="string">"password"</span>-&gt;<span class="string">"w7dtfxHD"</span>,</div><div class="line">        <span class="string">"dbtable"</span> -&gt; <span class="string">"(select * from xmo_dw.bshare_blacklist_tagid) as aa"</span>)).load().show()</div></pre></td></tr></table></figure></p>
+<h2 id="在spark-sql命令行中测试连接"><a href="#在spark-sql命令行中测试连接" class="headerlink" title="在spark sql命令行中测试连接"></a>在spark sql命令行中测试连接</h2><p>/usr/lib/spark/bin/spark-sql —jars /home/david/jars/postgresql-8.3-606.jdbc4.jar</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="type">CREATE</span> <span class="type">TEMPORARY</span> <span class="type">TABLE</span> temp_imageviews</div><div class="line"><span class="type">USING</span> org.apache.spark.sql.jdbc</div><div class="line"><span class="type">OPTIONS</span> (</div><div class="line">  driver <span class="string">"org.postgresql.Driver"</span>,</div><div class="line">  url <span class="string">"jdbc:postgresql://10.1.1.230:5432/xmo_dw"</span>,</div><div class="line">  user <span class="string">"david_xu"</span>,</div><div class="line">  password <span class="string">"w7dtfxHD"</span>,</div><div class="line">  dbtable <span class="string">"(select date_i,opxpid::text from xmo_dw.imageviews where date_i=20160512 limit 20000000) as aa"</span>,</div><div class="line">  numPartitions <span class="string">"6"</span></div><div class="line">);</div></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">cd /usr/lib/spark/bin/</div><div class="line">/usr/lib/spark/bin/spark-sql <span class="comment">--executor-memory 100g</span></div><div class="line"></div><div class="line">add jar /home/wilson/sparksql/postgresql-8.3-606.jdbc3.jar;</div><div class="line"><span class="keyword">set</span>  spark.sql.shuffle.partitions=<span class="number">20</span>;</div><div class="line"> <span class="keyword">CREATE</span> <span class="keyword">TEMPORARY</span> <span class="keyword">TABLE</span> temp_imageviews</div><div class="line"><span class="keyword">USING</span> org.apache.spark.sql.jdbc</div><div class="line">OPTIONS (</div><div class="line">  driver <span class="string">"org.postgresql.Driver"</span>,</div><div class="line">  <span class="keyword">url</span> <span class="string">"jdbc:postgresql://10.1.1.230:5432/xmo_dw"</span>,</div><div class="line">  <span class="keyword">user</span> <span class="string">"david_xu"</span>,</div><div class="line">  <span class="keyword">password</span> <span class="string">"w7dtfxHD"</span>,</div><div class="line">  dbtable <span class="string">"(select  timeslot,record_server,referring_site ,opxsid  from  xmo_dw.imageviews   where  date_i=20160515 limit  5000000) as aa"</span>,</div><div class="line">  numPartitions <span class="string">"6"</span>);</div></pre></td></tr></table></figure>
+<h3 id="spark-sql读取HDFS建表"><a href="#spark-sql读取HDFS建表" class="headerlink" title="spark sql读取HDFS建表"></a>spark sql读取HDFS建表</h3><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">/usr/lib/spark/bin/spark-sql -e "CREATE TEMPORARY TABLE rtbreq_hour</div><div class="line">USING org.apache.spark.sql.bytes</div><div class="line">OPTIONS (</div><div class="line">  paths '$&#123;rtbreq_path&#125;'</div><div class="line">);</div><div class="line">create TEMPORARY TABLE rtbreq_tanx_hour</div><div class="line">USING org.apache.spark.sql.bytes</div><div class="line">OPTIONS(</div><div class="line"> paths '$&#123;rtbreq_tanx_path&#125;'</div><div class="line">);</div><div class="line">select ip,count(1) cnt from (select ip from rtbreq_hour union all select ip from rtbreq_tanx_hour) a group by ip having cnt &gt; 30 order by cnt desc;</div><div class="line">select bxid,count(1) cnt from (select bxid from rtbreq_hour union all select bxid from rtbreq_tanx_hour) a group by bxid having cnt &gt; 1000 order by cnt desc;</div><div class="line">" &gt; rtbreq/$day/$hour.txt</div></pre></td></tr></table></figure>
 
       
     </div>
@@ -461,9 +466,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/elastic-search/" rel="tag"># elastic search</a>
-          
-            <a href="/tags/spark/" rel="tag"># spark</a>
+            <a href="/tags/spark-sql/" rel="tag"># spark-sql</a>
           
         </div>
       
@@ -476,8 +479,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/07/12/深度学习/CNN/" rel="next" title="CNN">
-                <i class="fa fa-chevron-left"></i> CNN
+              <a href="/2017/07/12/hadoop-spark/spark/spark-streaming笔记/" rel="next" title="spark-streaming笔记">
+                <i class="fa fa-chevron-left"></i> spark-streaming笔记
               </a>
             
           </div>
@@ -486,8 +489,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/12/机器学习/集成学习/" rel="prev" title="集成学习">
-                集成学习 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/07/12/机器学习/面试刷题/" rel="prev" title="面试刷题">
+                面试刷题 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -562,7 +565,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">120</span>
+                <span class="site-state-item-count">127</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -573,7 +576,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -619,7 +622,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#最简单的例子"><span class="nav-number">1.</span> <span class="nav-text">最简单的例子</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#与spark-streaming结合"><span class="nav-number">2.</span> <span class="nav-text">与spark streaming结合</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Starting-Point-SQLContext"><span class="nav-number">1.</span> <span class="nav-text">Starting Point: SQLContext</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Creating-DataFrames"><span class="nav-number">2.</span> <span class="nav-text">Creating DataFrames</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Creating-Datasets"><span class="nav-number">3.</span> <span class="nav-text">Creating Datasets</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在DataFrame中创建表并查询"><span class="nav-number">4.</span> <span class="nav-text">在DataFrame中创建表并查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sparkSQL链接GP"><span class="nav-number">5.</span> <span class="nav-text">sparkSQL链接GP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在spark-sql命令行中测试连接"><span class="nav-number">6.</span> <span class="nav-text">在spark sql命令行中测试连接</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#spark-sql读取HDFS建表"><span class="nav-number">6.1.</span> <span class="nav-text">spark sql读取HDFS建表</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -776,7 +779,7 @@
 		_hcwp.push({widget:"Bloggerstream", widget_id: 100710, selector:".hc-comment-count", label: "{\%COUNT%\}" });
 
 		
-		_hcwp.push({widget:"Stream", widget_id: 100710, xid: "2017/07/12/hadoop-spark/spark笔记-操作elastic-search/"});
+		_hcwp.push({widget:"Stream", widget_id: 100710, xid: "2017/07/12/hadoop-spark/spark/spark-sql笔记/"});
 		
 
 		(function() {
