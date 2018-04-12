@@ -114,7 +114,7 @@
 <meta property="og:site_name" content="Schwimmer&#39;s Blog">
 <meta property="og:description" content="用map实现 123456789101112131415161718192021import org.apache.spark.&amp;#123; SparkConf, SparkContext &amp;#125;object DoubleNum &amp;#123;  def mapDoubleFunc(a: Int): (Int, Int) = &amp;#123;    (a, a * 2)  &amp;#125;  def">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-04-07T14:38:45.475Z">
+<meta property="og:updated_time" content="2018-04-08T03:40:46.482Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="map-flatMap-mapPartitions">
 <meta name="twitter:description" content="用map实现 123456789101112131415161718192021import org.apache.spark.&amp;#123; SparkConf, SparkContext &amp;#125;object DoubleNum &amp;#123;  def mapDoubleFunc(a: Int): (Int, Int) = &amp;#123;    (a, a * 2)  &amp;#125;  def">
@@ -425,7 +425,12 @@
 <p>如果这里改成flatMap？</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
 <p>用mapPartitions实现</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">val a = sc.parallelize(1 to 9, 3)</div><div class="line">def doubleFunc(iter: Iterator[Int]) : Iterator[(Int,Int)] = &#123;</div><div class="line">    var res = List[(Int,Int)]()</div><div class="line">    while (iter.hasNext)</div><div class="line">    &#123;</div><div class="line">      val cur = iter.next;</div><div class="line">      res .::= (cur,cur*2)</div><div class="line">    &#125;</div><div class="line">    res.iterator</div><div class="line">  &#125;</div><div class="line">val result = a.mapPartitions(doubleFunc)</div><div class="line">println(result.collect().mkString)</div></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> a = sc.parallelize(<span class="number">1</span> to <span class="number">9</span>, <span class="number">3</span>)</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">doubleFunc</span></span>(iter: <span class="type">Iterator</span>[<span class="type">Int</span>]) : <span class="type">Iterator</span>[(<span class="type">Int</span>,<span class="type">Int</span>)] = &#123;</div><div class="line">    <span class="keyword">var</span> res = <span class="type">List</span>[(<span class="type">Int</span>,<span class="type">Int</span>)]()</div><div class="line">    <span class="keyword">while</span> (iter.hasNext)</div><div class="line">    &#123;</div><div class="line">      <span class="keyword">val</span> cur = iter.next;</div><div class="line">      res .::= (cur,cur*<span class="number">2</span>)</div><div class="line">    &#125;</div><div class="line">    res.iterator</div><div class="line">  &#125;</div><div class="line"><span class="keyword">val</span> result = a.mapPartitions(doubleFunc)</div><div class="line">println(result.collect().mkString)</div></pre></td></tr></table></figure>
+<p>写成匿名函数</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> result = a.mapPartitions(iter =&gt; &#123;</div><div class="line">      <span class="keyword">var</span> res = <span class="type">List</span>[(<span class="type">Int</span>, <span class="type">Int</span>)]()</div><div class="line">      <span class="keyword">while</span> (iter.hasNext) &#123;</div><div class="line">        <span class="keyword">val</span> cur = iter.next</div><div class="line">        res.::=(cur, cur * <span class="number">2</span>)</div><div class="line">      &#125;</div><div class="line">      res.iterator</div><div class="line">    &#125;)</div></pre></td></tr></table></figure>
+<p>也可以声明iter的数据类型<code>(iter: Iterator[Int])</code></p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> result = a.mapPartitions( (iter: <span class="type">Iterator</span>[<span class="type">Int</span>]) =&gt; &#123;</div><div class="line">      <span class="keyword">var</span> res = <span class="type">List</span>[(<span class="type">Int</span>, <span class="type">Int</span>)]()</div><div class="line">      <span class="keyword">while</span> (iter.hasNext) &#123;</div><div class="line">        <span class="keyword">val</span> cur = iter.next</div><div class="line">        res.::=(cur, cur * <span class="number">2</span>)</div><div class="line">      &#125;</div><div class="line">      res.iterator</div><div class="line">    &#125;)</div></pre></td></tr></table></figure>
+<p>foreachPartitions</p>
 
       
     </div>
@@ -539,7 +544,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">127</span>
+                <span class="site-state-item-count">131</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
