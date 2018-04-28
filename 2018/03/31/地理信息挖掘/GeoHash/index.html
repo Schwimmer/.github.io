@@ -114,7 +114,7 @@
 <meta property="og:site_name" content="Schwimmer&#39;s Blog">
 <meta property="og:description" content="geohash学习及优化 GeoHash 经纬度坐标编码与解码算法 geohash在实际使用时，需要注意： 1、一个geohash编码对应一个区域 2、geohash编码越长，精度越高 3、同一个区域内的点的距离不一定就比不同区域的距离短。这个很容易理解，这就像你有两个朋友A和B，A和你都在中国，B在俄罗斯，你和A的编码是一样的，但是不一定A离你近，还是B离你近。 4、由于存在#3的问题，搜索范围">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-03-31T02:28:31.011Z">
+<meta property="og:updated_time" content="2018-04-12T04:14:20.999Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GeoHash">
 <meta name="twitter:description" content="geohash学习及优化 GeoHash 经纬度坐标编码与解码算法 geohash在实际使用时，需要注意： 1、一个geohash编码对应一个区域 2、geohash编码越长，精度越高 3、同一个区域内的点的距离不一定就比不同区域的距离短。这个很容易理解，这就像你有两个朋友A和B，A和你都在中国，B在俄罗斯，你和A的编码是一样的，但是不一定A离你近，还是B离你近。 4、由于存在#3的问题，搜索范围">
@@ -428,6 +428,16 @@
 <p>3、同一个区域内的点的距离不一定就比不同区域的距离短。这个很容易理解，这就像你有两个朋友A和B，A和你都在中国，B在俄罗斯，你和A的编码是一样的，但是不一定A离你近，还是B离你近。</p>
 <p>4、由于存在#3的问题，搜索范围poi时，必须至少扩展一圈。</p>
 <p>5、#4带来一个扩展策略的问题，就是精度选择的问题。精度太低，划分的区域很大，会选择出很多多余的点，降低性能。精度太高，有可能需要进行多次扩展，扩展得到的区域数将会快速的增长(2*n+1)^2，性能也会降低。</p>
+<h1 id="GeoHash的优化"><a href="#GeoHash的优化" class="headerlink" title="GeoHash的优化"></a>GeoHash的优化</h1><h2 id="用打表的方式解决求Geohash当前区域周围8个区域编码"><a href="#用打表的方式解决求Geohash当前区域周围8个区域编码" class="headerlink" title="用打表的方式解决求Geohash当前区域周围8个区域编码"></a>用打表的方式解决求Geohash当前区域周围8个区域编码</h2><p><a href="https://blog.csdn.net/u014520745/article/details/52619796" target="_blank" rel="noopener">https://blog.csdn.net/u014520745/article/details/52619796</a></p>
+<h2 id="订制经纬度范围"><a href="#订制经纬度范围" class="headerlink" title="订制经纬度范围"></a>订制经纬度范围</h2><p>标准的geohash算法的经度范围是(-180,180)，纬度范围为(-90,90)，这个范围是适用于全球的地理位置的。但是我们目前的应用数据点仅局限于国内，所以可以将范围缩小。</p>
+<ul>
+<li>减少计算的次数提高性能</li>
+<li>降低geohash有效值的位数</li>
+<li>自定义经纬度范围可选定一个趋于正方形的范围，当计算结果为一个圆形区域，这样能更好的和圆契合。</li>
+</ul>
+<p>​    可选定经纬度范围， 经度(75, 135)，纬度(18, 53)。</p>
+<p>参考</p>
+<p><a href="https://my.oschina.net/shipley/blog/704964" target="_blank" rel="noopener">Geohash介绍及针对具体需求的改良</a></p>
 
       
     </div>
@@ -464,8 +474,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/03/31/NLP/fasttext/" rel="next" title="fastText">
-                <i class="fa fa-chevron-left"></i> fastText
+              <a href="/2018/03/31/地理信息挖掘/经纬度找POI/" rel="next" title="经纬度找POI">
+                <i class="fa fa-chevron-left"></i> 经纬度找POI
               </a>
             
           </div>
@@ -474,8 +484,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/03/31/地理信息挖掘/经纬度找POI/" rel="prev" title="经纬度找POI">
-                经纬度找POI <i class="fa fa-chevron-right"></i>
+              <a href="/2018/03/31/算法与数据结构/前缀树/" rel="prev" title="前缀树">
+                前缀树 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -525,8 +535,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.gif"
@@ -541,7 +560,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">137</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -552,7 +571,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-count">17</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -588,6 +607,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#GeoHash的优化"><span class="nav-number">1.</span> <span class="nav-text">GeoHash的优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#用打表的方式解决求Geohash当前区域周围8个区域编码"><span class="nav-number">1.1.</span> <span class="nav-text">用打表的方式解决求Geohash当前区域周围8个区域编码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#订制经纬度范围"><span class="nav-number">1.2.</span> <span class="nav-text">订制经纬度范围</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
