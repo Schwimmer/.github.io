@@ -1,0 +1,997 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="Mx7Ikp0IpBtTbSpHDTBV0_CMJA-E8CLn8NRIrwyq5m4" />
+
+
+
+
+
+
+<meta name="baidu-site-verification" content="ZBTsWx4NdC" />
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="记录笔记的地方" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="LightGBM 中文文档: http://lightgbm.apachecn.org/cn/latest/  LightGBM 英文文档: http://lightgbm.apachecn.org/en/latest/ LightGBM 官方文档: https://lightgbm.readthedocs.io/en/latest/ 安装LightGBM 依赖于 OpenMP 进行编译, 然而">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Schwimmer&#39;s Blog">
+<meta property="og:url" content="https://schwimmer.github.io/2018/07/10/机器学习/lightGBM/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="LightGBM 中文文档: http://lightgbm.apachecn.org/cn/latest/  LightGBM 英文文档: http://lightgbm.apachecn.org/en/latest/ LightGBM 官方文档: https://lightgbm.readthedocs.io/en/latest/ 安装LightGBM 依赖于 OpenMP 进行编译, 然而">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-09-14T04:59:15.437Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Schwimmer&#39;s Blog">
+<meta name="twitter:description" content="LightGBM 中文文档: http://lightgbm.apachecn.org/cn/latest/  LightGBM 英文文档: http://lightgbm.apachecn.org/en/latest/ LightGBM 官方文档: https://lightgbm.readthedocs.io/en/latest/ 安装LightGBM 依赖于 OpenMP 进行编译, 然而">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"always","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://schwimmer.github.io/2018/07/10/机器学习/lightGBM/"/>
+
+
+
+
+
+  <title>  | Schwimmer's Blog </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocapitalize="off" autocomplete="off" autocorrect="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/07/10/机器学习/lightGBM/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-10T11:51:05+08:00">
+                2018-07-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+            <!--noindex-->
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/10/机器学习/lightGBM/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count hc-comment-count" data-xid="2018/07/10/机器学习/lightGBM/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+              <!--/noindex-->
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>LightGBM 中文文档: <a href="http://lightgbm.apachecn.org/cn/latest/" target="_blank" rel="noopener">http://lightgbm.apachecn.org/cn/latest/</a></p>
+<p> LightGBM 英文文档: <a href="http://lightgbm.apachecn.org/en/latest/" target="_blank" rel="noopener">http://lightgbm.apachecn.org/en/latest/</a></p>
+<p>LightGBM 官方文档: <a href="https://lightgbm.readthedocs.io/en/latest/" target="_blank" rel="noopener">https://lightgbm.readthedocs.io/en/latest/</a></p>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>LightGBM 依赖于 <strong>OpenMP</strong> 进行编译, 然而 Apple Clang 不支持它.</p>
+<p>请使用以下命令来安装 <strong>gcc/g++</strong> :</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">brew install cmake</div><div class="line">brew install gcc --without-multilib</div></pre></td></tr></table></figure>
+<p>然后安装 LightGBM:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">git clone --recursive https://github.com/Microsoft/LightGBM ; cd LightGBM</div><div class="line">export CXX=g++-8 CC=gcc-8</div><div class="line">mkdir build ; cd build</div><div class="line">cmake ..</div><div class="line">make -j4</div></pre></td></tr></table></figure>
+<blockquote>
+<p><code>cmake ..</code> 这一步之后报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&gt; CMake Error at /usr/local/Cellar/cmake/3.11.4/share/cmake/Modules/CMakeDetermineCCompiler.cmake:48 (message):</div><div class="line">&gt;   Could not find compiler set in environment variable CC:</div><div class="line">&gt; </div><div class="line">&gt;   gcc-7.</div><div class="line">&gt; Call Stack (most recent call first):</div><div class="line">&gt;   CMakeLists.txt:9 (PROJECT)</div><div class="line">&gt; </div><div class="line">&gt; </div><div class="line">&gt; CMake Error: CMAKE_C_COMPILER not set, after EnableLanguage</div><div class="line">&gt; CMake Error: CMAKE_CXX_COMPILER not set, after EnableLanguage</div><div class="line">&gt; -- Configuring incomplete, errors occurred!</div><div class="line">&gt; See also &quot;/Users/david/david/git/LightGBM/build/CMakeFiles/CMakeOutput.log&quot;.</div><div class="line">&gt;</div></pre></td></tr></table></figure>
+</blockquote>
+<p>&gt;</p>
+<blockquote>
+<p><a href="https://github.com/Microsoft/LightGBM/issues/118官方的解答并不适用，看了下发现gcc的版本已经自动装到8了，所以将export这里改成了" target="_blank" rel="noopener">https://github.com/Microsoft/LightGBM/issues/118官方的解答并不适用，看了下发现gcc的版本已经自动装到8了，所以将export这里改成了</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; export CXX=g++-8 CC=gcc-8</div><div class="line">&gt;</div></pre></td></tr></table></figure>
+</blockquote>
+<p>&gt;</p>
+<blockquote>
+<p>然后通过</p>
+</blockquote>
+<p>或者直接用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip install lightgbm</div></pre></td></tr></table></figure>
+<p>安装</p>
+<h2 id="训练数据格式"><a href="#训练数据格式" class="headerlink" title="训练数据格式"></a>训练数据格式</h2><p>LightGBM 支持 <a href="https://en.wikipedia.org/wiki/Comma-separated_values" target="_blank" rel="noopener">CSV</a>, <a href="https://en.wikipedia.org/wiki/Tab-separated_values" target="_blank" rel="noopener">TSV</a> 和 <a href="https://www.csie.ntu.edu.tw/~cjlin/libsvm/" target="_blank" rel="noopener">LibSVM</a> 格式的输入数据文件。</p>
+<p>Label 是第一列的数据，文件中是不包含 header（标题） 的。</p>
+<p>LightGBM 可以直接使用 categorical feature（类别特征）（不需要单独编码）。 <a href="http://stat-computing.org/dataexpo/2009/" target="_blank" rel="noopener">Expo data</a> 实验显示，与 one-hot 编码相比，其速度提高了 8 倍。</p>
+<h3 id="权重和-Query-Group-数据"><a href="#权重和-Query-Group-数据" class="headerlink" title="权重和 Query/Group 数据"></a>权重和 Query/Group 数据</h3><p>LightGBM 也支持加权训练，它需要一个额外的 <a href="http://lightgbm.apachecn.org/cn/latest/Parameters.html#io-parameters" target="_blank" rel="noopener">加权数据</a> 。 它需要额外的 <a href="http://lightgbm.apachecn.org/cn/latest/Parameters.html#io-parameters" target="_blank" rel="noopener">query 数据</a> 用于排名任务。</p>
+<p>11/3/2016 更新:</p>
+<ol>
+<li>现在支持 header（标题）输入</li>
+<li>可以指定 label 列，权重列和 query/group id 列。 索引和列都支持</li>
+<li>可以指定一个被忽略的列的列表</li>
+</ol>
+<h2 id="参数快速查看"><a href="#参数快速查看" class="headerlink" title="参数快速查看"></a>参数快速查看</h2><p>参数格式是 <code>key1=value1 key2=value2 ...</code> 。 参数可以在配置文件和命令行中。</p>
+<p>想要了解全部的参数， 请参阅 <a href="http://lightgbm.apachecn.org/cn/latest/Parameters.html" target="_blank" rel="noopener">Parameters（参数）</a>.</p>
+<h2 id="运行-LightGBM"><a href="#运行-LightGBM" class="headerlink" title="运行 LightGBM"></a>运行 LightGBM</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./lightgbm config=your_config_file other_args ...</div></pre></td></tr></table></figure>
+<p><a href="https://blog.csdn.net/m0_37477175/article/details/80567010" target="_blank" rel="noopener">使用lightgbm画并保存Feature Importance</a></p>
+<p><a href="https://blog.csdn.net/m0_37922734/article/details/80677736" target="_blank" rel="noopener">【lightgbm 使用经验总结教训】</a></p>
+<h1 id=""><a href="#" class="headerlink" title=" "></a> </h1><p><a href="https://cloud.tencent.com/info/user/necther" target="_blank" rel="noopener">对xgboost和lightgbm的理解及其调参应该关注的点</a></p>
+<h1 id="调参"><a href="#调参" class="headerlink" title="调参"></a>调参</h1><h2 id="官方文档的调参"><a href="#官方文档的调参" class="headerlink" title="官方文档的调参"></a>官方文档的调参</h2><p><a href="http://lightgbm.apachecn.org/cn/latest/Parameters-Tuning.html" target="_blank" rel="noopener">http://lightgbm.apachecn.org/cn/latest/Parameters-Tuning.html</a></p>
+<h3 id="针对-Leaf-wise-最佳优先-树的参数优化"><a href="#针对-Leaf-wise-最佳优先-树的参数优化" class="headerlink" title="针对 Leaf-wise (最佳优先) 树的参数优化"></a>针对 Leaf-wise (最佳优先) 树的参数优化</h3><p><code>num_leaves</code>. 这是控制树模型复杂度的主要参数</p>
+<h2 id="CV调参"><a href="#CV调参" class="headerlink" title="CV调参"></a>CV调参</h2><p><a href="https://github.com/wanglei5205/Machine_learning/blob/master/Boosting--LightGBM/lgb-python/2.lightgbm%E8%B0%83%E5%8F%82%E6%A1%88%E4%BE%8B.py" target="_blank" rel="noopener">https://github.com/wanglei5205/Machine_learning/blob/master/Boosting--LightGBM/lgb-python/2.lightgbm%E8%B0%83%E5%8F%82%E6%A1%88%E4%BE%8B.py</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># -*- coding: utf-8 -*-</span></div><div class="line"><span class="string">"""</span></div><div class="line"># 作者：wanglei5205</div><div class="line"># 邮箱：wanglei5205@126.com</div><div class="line"># 博客：http://cnblogs.com/wanglei5205</div><div class="line"># github：http://github.com/wanglei5205</div><div class="line">"""</div><div class="line"><span class="comment">### 导入模块</span></div><div class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"><span class="keyword">import</span> lightgbm <span class="keyword">as</span> lgb</div><div class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> metrics</div><div class="line"></div><div class="line"><span class="comment">### 载入数据</span></div><div class="line">print(<span class="string">'载入数据'</span>)</div><div class="line">dataset1 = pd.read_csv(<span class="string">'G:/ML/ML_match/IJCAI/data3.22/3.22ICJAI/data/7_train_data1.csv'</span>)</div><div class="line">dataset2 = pd.read_csv(<span class="string">'G:/ML/ML_match/IJCAI/data3.22/3.22ICJAI/data/7_train_data2.csv'</span>)</div><div class="line">dataset3 = pd.read_csv(<span class="string">'G:/ML/ML_match/IJCAI/data3.22/3.22ICJAI/data/7_train_data3.csv'</span>)</div><div class="line">dataset4 = pd.read_csv(<span class="string">'G:/ML/ML_match/IJCAI/data3.22/3.22ICJAI/data/7_train_data4.csv'</span>)</div><div class="line">dataset5 = pd.read_csv(<span class="string">'G:/ML/ML_match/IJCAI/data3.22/3.22ICJAI/data/7_train_data5.csv'</span>)</div><div class="line"></div><div class="line">print(<span class="string">'数据去重'</span>)</div><div class="line">dataset1.drop_duplicates(inplace=<span class="keyword">True</span>)</div><div class="line">dataset2.drop_duplicates(inplace=<span class="keyword">True</span>)</div><div class="line">dataset3.drop_duplicates(inplace=<span class="keyword">True</span>)</div><div class="line">dataset4.drop_duplicates(inplace=<span class="keyword">True</span>)</div><div class="line">dataset5.drop_duplicates(inplace=<span class="keyword">True</span>)</div><div class="line"></div><div class="line">print(<span class="string">'数据合并'</span>)</div><div class="line">trains = pd.concat([dataset1,dataset2],axis=<span class="number">0</span>)</div><div class="line">trains = pd.concat([trains,dataset3],axis=<span class="number">0</span>)</div><div class="line">trains = pd.concat([trains,dataset4],axis=<span class="number">0</span>)</div><div class="line"></div><div class="line">online_test = dataset5</div><div class="line"></div><div class="line"><span class="comment">### 数据拆分(训练集+验证集+测试集)</span></div><div class="line">print(<span class="string">'数据拆分'</span>)</div><div class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</div><div class="line">train_xy,offline_test = train_test_split(trains,test_size = <span class="number">0.2</span>,random_state=<span class="number">21</span>)</div><div class="line">train,val = train_test_split(train_xy,test_size = <span class="number">0.2</span>,random_state=<span class="number">21</span>)</div><div class="line"></div><div class="line"><span class="comment"># 训练集</span></div><div class="line">y_train = train.is_trade                                               <span class="comment"># 训练集标签</span></div><div class="line">X_train = train.drop([<span class="string">'instance_id'</span>,<span class="string">'is_trade'</span>],axis=<span class="number">1</span>)                <span class="comment"># 训练集特征矩阵</span></div><div class="line"></div><div class="line"><span class="comment"># 验证集</span></div><div class="line">y_val = val.is_trade                                                   <span class="comment"># 验证集标签</span></div><div class="line">X_val = val.drop([<span class="string">'instance_id'</span>,<span class="string">'is_trade'</span>],axis=<span class="number">1</span>)                    <span class="comment"># 验证集特征矩阵</span></div><div class="line"></div><div class="line"><span class="comment"># 测试集</span></div><div class="line">offline_test_X = offline_test.drop([<span class="string">'instance_id'</span>,<span class="string">'is_trade'</span>],axis=<span class="number">1</span>)  <span class="comment"># 线下测试特征矩阵</span></div><div class="line">online_test_X  = online_test.drop([<span class="string">'instance_id'</span>],axis=<span class="number">1</span>)              <span class="comment"># 线上测试特征矩阵</span></div><div class="line"></div><div class="line"><span class="comment">### 数据转换</span></div><div class="line">print(<span class="string">'数据转换'</span>)</div><div class="line">lgb_train = lgb.Dataset(X_train, y_train, free_raw_data=<span class="keyword">False</span>)</div><div class="line">lgb_eval = lgb.Dataset(X_val, y_val, reference=lgb_train,free_raw_data=<span class="keyword">False</span>)</div><div class="line"></div><div class="line"><span class="comment">### 设置初始参数--不含交叉验证参数</span></div><div class="line">print(<span class="string">'设置参数'</span>)</div><div class="line">params = &#123;</div><div class="line">          <span class="string">'boosting_type'</span>: <span class="string">'gbdt'</span>,</div><div class="line">          <span class="string">'objective'</span>: <span class="string">'binary'</span>,</div><div class="line">          <span class="string">'metric'</span>: <span class="string">'binary_logloss'</span>,</div><div class="line">          &#125;</div><div class="line"></div><div class="line"><span class="comment">### 交叉验证(调参)</span></div><div class="line">print(<span class="string">'交叉验证'</span>)</div><div class="line">min_merror = float(<span class="string">'Inf'</span>)</div><div class="line">best_params = &#123;&#125;</div><div class="line"></div><div class="line"><span class="comment"># 准确率</span></div><div class="line">print(<span class="string">"调参1：提高准确率"</span>)</div><div class="line"><span class="keyword">for</span> num_leaves <span class="keyword">in</span> range(<span class="number">20</span>,<span class="number">200</span>,<span class="number">5</span>):</div><div class="line">    <span class="keyword">for</span> max_depth <span class="keyword">in</span> range(<span class="number">3</span>,<span class="number">8</span>,<span class="number">1</span>):</div><div class="line">        params[<span class="string">'num_leaves'</span>] = num_leaves</div><div class="line">        params[<span class="string">'max_depth'</span>] = max_depth</div><div class="line"></div><div class="line">        cv_results = lgb.cv(</div><div class="line">                            params,</div><div class="line">                            lgb_train,</div><div class="line">                            seed=<span class="number">2018</span>,</div><div class="line">                            nfold=<span class="number">3</span>,</div><div class="line">                            metrics=[<span class="string">'binary_error'</span>],</div><div class="line">                            early_stopping_rounds=<span class="number">10</span>,</div><div class="line">                            verbose_eval=<span class="keyword">True</span></div><div class="line">                            )</div><div class="line"></div><div class="line">        mean_merror = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).min()</div><div class="line">        boost_rounds = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).argmin()</div><div class="line"></div><div class="line">        <span class="keyword">if</span> mean_merror &lt; min_merror:</div><div class="line">            min_merror = mean_merror</div><div class="line">            best_params[<span class="string">'num_leaves'</span>] = num_leaves</div><div class="line">            best_params[<span class="string">'max_depth'</span>] = max_depth</div><div class="line"></div><div class="line">params[<span class="string">'num_leaves'</span>] = best_params[<span class="string">'num_leaves'</span>]</div><div class="line">params[<span class="string">'max_depth'</span>] = best_params[<span class="string">'max_depth'</span>]</div><div class="line"></div><div class="line"><span class="comment"># 过拟合</span></div><div class="line">print(<span class="string">"调参2：降低过拟合"</span>)</div><div class="line"><span class="keyword">for</span> max_bin <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">255</span>,<span class="number">5</span>):</div><div class="line">    <span class="keyword">for</span> min_data_in_leaf <span class="keyword">in</span> range(<span class="number">10</span>,<span class="number">200</span>,<span class="number">5</span>):</div><div class="line">            params[<span class="string">'max_bin'</span>] = max_bin</div><div class="line">            params[<span class="string">'min_data_in_leaf'</span>] = min_data_in_leaf</div><div class="line"></div><div class="line">            cv_results = lgb.cv(</div><div class="line">                                params,</div><div class="line">                                lgb_train,</div><div class="line">                                seed=<span class="number">42</span>,</div><div class="line">                                nfold=<span class="number">3</span>,</div><div class="line">                                metrics=[<span class="string">'binary_error'</span>],</div><div class="line">                                early_stopping_rounds=<span class="number">3</span>,</div><div class="line">                                verbose_eval=<span class="keyword">True</span></div><div class="line">                                )</div><div class="line"></div><div class="line">            mean_merror = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).min()</div><div class="line">            boost_rounds = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).argmin()</div><div class="line"></div><div class="line">            <span class="keyword">if</span> mean_merror &lt; min_merror:</div><div class="line">                min_merror = mean_merror</div><div class="line">                best_params[<span class="string">'max_bin'</span>]= max_bin</div><div class="line">                best_params[<span class="string">'min_data_in_leaf'</span>] = min_data_in_leaf</div><div class="line"></div><div class="line">params[<span class="string">'min_data_in_leaf'</span>] = best_params[<span class="string">'min_data_in_leaf'</span>]</div><div class="line">params[<span class="string">'max_bin'</span>] = best_params[<span class="string">'max_bin'</span>]</div><div class="line"></div><div class="line">print(<span class="string">"调参3：降低过拟合"</span>)</div><div class="line"><span class="keyword">for</span> feature_fraction <span class="keyword">in</span> [<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">0.6</span>,<span class="number">0.7</span>,<span class="number">0.8</span>,<span class="number">0.9</span>,<span class="number">1.0</span>]:</div><div class="line">    <span class="keyword">for</span> bagging_fraction <span class="keyword">in</span> [<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">0.6</span>,<span class="number">0.7</span>,<span class="number">0.8</span>,<span class="number">0.9</span>,<span class="number">1.0</span>]:</div><div class="line">        <span class="keyword">for</span> bagging_freq <span class="keyword">in</span> range(<span class="number">0</span>,<span class="number">50</span>,<span class="number">5</span>):</div><div class="line">            params[<span class="string">'feature_fraction'</span>] = feature_fraction</div><div class="line">            params[<span class="string">'bagging_fraction'</span>] = bagging_fraction</div><div class="line">            params[<span class="string">'bagging_freq'</span>] = bagging_freq</div><div class="line"></div><div class="line">            cv_results = lgb.cv(</div><div class="line">                                params,</div><div class="line">                                lgb_train,</div><div class="line">                                seed=<span class="number">42</span>,</div><div class="line">                                nfold=<span class="number">3</span>,</div><div class="line">                                metrics=[<span class="string">'binary_error'</span>],</div><div class="line">                                early_stopping_rounds=<span class="number">3</span>,</div><div class="line">                                verbose_eval=<span class="keyword">True</span></div><div class="line">                                )</div><div class="line"></div><div class="line">            mean_merror = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).min()</div><div class="line">            boost_rounds = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).argmin()</div><div class="line"></div><div class="line">            <span class="keyword">if</span> mean_merror &lt; min_merror:</div><div class="line">                min_merror = mean_merror</div><div class="line">                best_params[<span class="string">'feature_fraction'</span>] = feature_fraction</div><div class="line">                best_params[<span class="string">'bagging_fraction'</span>] = bagging_fraction</div><div class="line">                best_params[<span class="string">'bagging_freq'</span>] = bagging_freq</div><div class="line"></div><div class="line">params[<span class="string">'feature_fraction'</span>] = best_params[<span class="string">'feature_fraction'</span>]</div><div class="line">params[<span class="string">'bagging_fraction'</span>] = best_params[<span class="string">'bagging_fraction'</span>]</div><div class="line">params[<span class="string">'bagging_freq'</span>] = best_params[<span class="string">'bagging_freq'</span>]</div><div class="line"></div><div class="line">print(<span class="string">"调参4：降低过拟合"</span>)</div><div class="line"><span class="keyword">for</span> lambda_l1 <span class="keyword">in</span> [<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">0.6</span>,<span class="number">0.7</span>,<span class="number">0.8</span>,<span class="number">0.9</span>,<span class="number">1.0</span>]:</div><div class="line">    <span class="keyword">for</span> lambda_l2 <span class="keyword">in</span> [<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">0.6</span>,<span class="number">0.7</span>,<span class="number">0.8</span>,<span class="number">0.9</span>,<span class="number">1.0</span>]:</div><div class="line">        <span class="keyword">for</span> min_split_gain <span class="keyword">in</span> [<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">0.6</span>,<span class="number">0.7</span>,<span class="number">0.8</span>,<span class="number">0.9</span>,<span class="number">1.0</span>]:</div><div class="line">            params[<span class="string">'lambda_l1'</span>] = lambda_l1</div><div class="line">            params[<span class="string">'lambda_l2'</span>] = lambda_l2</div><div class="line">            params[<span class="string">'min_split_gain'</span>] = min_split_gain</div><div class="line"></div><div class="line">            cv_results = lgb.cv(</div><div class="line">                                params,</div><div class="line">                                lgb_train,</div><div class="line">                                seed=<span class="number">42</span>,</div><div class="line">                                nfold=<span class="number">3</span>,</div><div class="line">                                metrics=[<span class="string">'binary_error'</span>],</div><div class="line">                                early_stopping_rounds=<span class="number">3</span>,</div><div class="line">                                verbose_eval=<span class="keyword">True</span></div><div class="line">                                )</div><div class="line"></div><div class="line">            mean_merror = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).min()</div><div class="line">            boost_rounds = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).argmin()</div><div class="line"></div><div class="line">            <span class="keyword">if</span> mean_merror &lt; min_merror:</div><div class="line">                min_merror = mean_merror</div><div class="line">                best_params[<span class="string">'lambda_l1'</span>] = lambda_l1</div><div class="line">                best_params[<span class="string">'lambda_l2'</span>] = lambda_l2</div><div class="line">                best_params[<span class="string">'min_split_gain'</span>] = min_split_gain</div><div class="line"></div><div class="line">params[<span class="string">'lambda_l1'</span>] = best_params[<span class="string">'lambda_l1'</span>]</div><div class="line">params[<span class="string">'lambda_l2'</span>] = best_params[<span class="string">'lambda_l2'</span>]</div><div class="line">params[<span class="string">'min_split_gain'</span>] = best_params[<span class="string">'min_split_gain'</span>]</div><div class="line"></div><div class="line"></div><div class="line">print(best_params)</div><div class="line"></div><div class="line"><span class="comment">### 训练</span></div><div class="line">params[<span class="string">'learning_rate'</span>]=<span class="number">0.01</span></div><div class="line">lgb.train(</div><div class="line">          params,                     <span class="comment"># 参数字典</span></div><div class="line">          lgb_train,                  <span class="comment"># 训练集</span></div><div class="line">          valid_sets=lgb_eval,        <span class="comment"># 验证集</span></div><div class="line">          num_boost_round=<span class="number">2000</span>,       <span class="comment"># 迭代次数</span></div><div class="line">          early_stopping_rounds=<span class="number">50</span>    <span class="comment"># 早停次数</span></div><div class="line">          )</div><div class="line"></div><div class="line"><span class="comment">### 线下预测</span></div><div class="line"><span class="keyword">print</span> (<span class="string">"线下预测"</span>)</div><div class="line">preds_offline = lgb.predict(offline_test_X, num_iteration=lgb.best_iteration) <span class="comment"># 输出概率</span></div><div class="line">offline=offline_test[[<span class="string">'instance_id'</span>,<span class="string">'is_trade'</span>]]</div><div class="line">offline[<span class="string">'preds'</span>]=preds_offline</div><div class="line">offline.is_trade = offline[<span class="string">'is_trade'</span>].astype(np.float64)</div><div class="line">print(<span class="string">'log_loss'</span>, metrics.log_loss(offline.is_trade, offline.preds))</div><div class="line"></div><div class="line"><span class="comment">### 线上预测</span></div><div class="line">print(<span class="string">"线上预测"</span>)</div><div class="line">preds_online =  lgb.predict(online_test_X, num_iteration=lgb.best_iteration)  <span class="comment"># 输出概率</span></div><div class="line">online=online_test[[<span class="string">'instance_id'</span>]]</div><div class="line">online[<span class="string">'preds'</span>]=preds_online</div><div class="line">online.rename(columns=&#123;<span class="string">'preds'</span>:<span class="string">'predicted_score'</span>&#125;,inplace=<span class="keyword">True</span>)           <span class="comment"># 更改列名</span></div><div class="line">online.to_csv(<span class="string">"./data/20180405.txt"</span>,index=<span class="keyword">None</span>,sep=<span class="string">' '</span>)                   <span class="comment"># 保存结果</span></div><div class="line"></div><div class="line"><span class="comment">### 保存模型</span></div><div class="line"><span class="keyword">from</span> sklearn.externals <span class="keyword">import</span> joblib</div><div class="line">joblib.dump(lgb,<span class="string">'lgb.pkl'</span>)</div><div class="line"></div><div class="line"><span class="comment">### 特征选择</span></div><div class="line">df = pd.DataFrame(X_train.columns.tolist(), columns=[<span class="string">'feature'</span>])</div><div class="line">df[<span class="string">'importance'</span>]=list(lgb.feature_importance())                           <span class="comment"># 特征分数</span></div><div class="line">df = df.sort_values(by=<span class="string">'importance'</span>,ascending=<span class="keyword">False</span>)                      <span class="comment"># 特征排序</span></div><div class="line">df.to_csv(<span class="string">"./data/feature_score_20180331.csv"</span>,index=<span class="keyword">None</span>,encoding=<span class="string">'gbk'</span>)  <span class="comment"># 保存分数</span></div></pre></td></tr></table></figure>
+<h1 id="样本集处理"><a href="#样本集处理" class="headerlink" title="样本集处理"></a>样本集处理</h1><p>加载样本集，去掉app_code和日期列，保存为新样本集</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">df04 = pd.read_csv(<span class="string">'3dtrain_aprilnew.csv'</span>, header=<span class="number">0</span>)</div><div class="line">df04 = df04.drop(df04.columns[[<span class="number">0</span>,<span class="number">-2</span>]], axis=<span class="number">1</span>)</div><div class="line">print(df04.shape)</div><div class="line"><span class="comment"># print(df04['main_unittype_3days'] &gt; 0)</span></div><div class="line">df04 = df04[df04[<span class="string">'main_unittype_3days'</span>] &gt; <span class="number">0</span>]</div><div class="line">df04 = df04.drop(df04.columns[[<span class="string">'all_district_entropy_avg_3days'</span>, <span class="string">'all_max_distance_with_guarantee_now_unit_address_max_3days'</span>, <span class="string">'all_max_distance_with_guarantee_now_unit_address_min_3days'</span>, <span class="string">'all_max_distance_with_guarantee_now_unit_address_avg_3days'</span>, <span class="string">'all_max_distance_with_guarantee_now_unit_address_sd_3days'</span>, <span class="string">'all_max_distance_with_now_address_max_3days'</span>, <span class="string">'all_max_distance_with_now_address_min_3days'</span>, <span class="string">'all_max_distance_with_now_address_avg_3days'</span>, <span class="string">'all_max_distance_with_now_address_sd_3days'</span>, <span class="string">'all_min_time_between_accon_accoff_avg_3days'</span>, <span class="string">'all_min_time_between_accon_accoff_sd_3days'</span>, <span class="string">'all_overspeed120_time_before_dawn_sd_3days'</span>, <span class="string">'all_overspeed120_time_daytime_sd_3days'</span>, <span class="string">'all_total_time_near_now_unit_address_max_3days'</span>, <span class="string">'all_total_time_near_now_unit_address_min_3days'</span>, <span class="string">'all_total_time_near_now_unit_address_avg_3days'</span>, <span class="string">'all_total_time_near_now_unit_address_sd_3days'</span>, <span class="string">'topone_district_most_per_3days'</span>, <span class="string">'main_unittype_3days'</span>, <span class="string">'is_unittype_changed_3days'</span>]], axis=<span class="number">1</span>)</div><div class="line"><span class="comment"># df04 = df04[(True - (df04['days_samewith_now_address_3days'] == "-0.0507071"))]</span></div><div class="line"><span class="comment"># df04 = df04[df04["is_gps_yx_lost_nighttime_district_3days"] != "-0.0507071"]</span></div><div class="line"><span class="comment"># df04.loc[df04['days_samewith_now_address_3days'] != "-0.0507071"]</span></div><div class="line">print(df04.head)</div><div class="line"><span class="comment"># df04.to_csv('3dtrain_april_yx.csv', index=False)</span></div><div class="line"></div><div class="line"></div><div class="line">df05 = pd.read_csv(<span class="string">'3dpredict_maynew.csv'</span>, header=<span class="number">0</span>)</div><div class="line">print(df05.shape)</div><div class="line">df05 = df05.drop(df05.columns[[<span class="number">0</span>,<span class="number">-2</span>]], axis=<span class="number">1</span>)</div><div class="line">df05 = df05[df05[<span class="string">'main_unittype_3days'</span>] &gt; <span class="number">0</span>]</div><div class="line">print(df05.shape)</div><div class="line">df05.to_csv(<span class="string">'3dpredict_may_yx.csv'</span>, index=<span class="keyword">False</span>)</div></pre></td></tr></table></figure>
+<h1 id="从最佳迭代开始预测"><a href="#从最佳迭代开始预测" class="headerlink" title="从最佳迭代开始预测"></a>从最佳迭代开始预测</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">y_pred = gbm.predict(X_test, num_iteration=gbm.best_iteration)</div></pre></td></tr></table></figure>
+<h1 id="lightgbm算法优化-不平衡二分类问题（附代码）"><a href="#lightgbm算法优化-不平衡二分类问题（附代码）" class="headerlink" title="lightgbm算法优化-不平衡二分类问题（附代码）"></a>lightgbm算法优化-不平衡二分类问题（附代码）</h1><p><a href="https://yq.aliyun.com/articles/529970" target="_blank" rel="noopener">https://yq.aliyun.com/articles/529970</a></p>
+<h1 id="减少打印日志"><a href="#减少打印日志" class="headerlink" title="减少打印日志"></a>减少打印日志</h1><p>设置verbosity</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">params = &#123;</div><div class="line">            &apos;boosting_type&apos;: &apos;gbdt&apos;,</div><div class="line">            &apos;objective&apos;: &apos;binary&apos;,</div><div class="line">            &apos;metric&apos;: &apos;binary_logloss&apos;,</div><div class="line">            &apos;verbosity&apos;: -1,</div><div class="line">        &#125;</div></pre></td></tr></table></figure>
+<h1 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h1><h3 id="进程被killed"><a href="#进程被killed" class="headerlink" title="进程被killed"></a>进程被killed</h3><p>执行到cv时就显示Killed，被python杀死，可能是内存不够了</p>
+<p><a href="https://stackoverflow.com/questions/726690/what-killed-my-process-and-why" target="_blank" rel="noopener">https://stackoverflow.com/questions/726690/what-killed-my-process-and-why</a></p>
+<h1 id="Java调用"><a href="#Java调用" class="headerlink" title="Java调用"></a>Java调用</h1><p><a href="https://blog.csdn.net/luoyexuge/article/details/80087952" target="_blank" rel="noopener">https://blog.csdn.net/luoyexuge/article/details/80087952</a></p>
+<h1 id="处理离散特征"><a href="#处理离散特征" class="headerlink" title="处理离散特征"></a>处理离散特征</h1><p>而Lightgbm可以直接支持category特征的处理，在用pandas结构使用LGB时可以指定哪一列是类别型数据，省去one-hot的步骤。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">data[item] = data[item].astype(&quot;category&quot;).cat.codes +1</div><div class="line"></div><div class="line">train, test, y_train, y_test = train_test_split(data.drop([&quot;ARRIVAL_DELAY&quot;], axis=1), data[&quot;ARRIVAL_DELAY&quot;],</div><div class="line"></div><div class="line">random_state=10, test_size=0.25)</div></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/10/hadoop-spark/spark/pyspark笔记/" rel="next" title="">
+                <i class="fa fa-chevron-left"></i> 
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/11/机器学习/基于ChiMerge的数据分箱/" rel="prev" title="">
+                 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="hypercomments_widget"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Schwimmer" />
+          <p class="site-author-name" itemprop="name">Schwimmer</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">282</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#安装"><span class="nav-number">1.</span> <span class="nav-text">安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#训练数据格式"><span class="nav-number">1.1.</span> <span class="nav-text">训练数据格式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#权重和-Query-Group-数据"><span class="nav-number">1.1.1.</span> <span class="nav-text">权重和 Query/Group 数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参数快速查看"><span class="nav-number">1.2.</span> <span class="nav-text">参数快速查看</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行-LightGBM"><span class="nav-number">1.3.</span> <span class="nav-text">运行 LightGBM</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text"> </span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调参"><span class="nav-number">3.</span> <span class="nav-text">调参</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#官方文档的调参"><span class="nav-number">3.1.</span> <span class="nav-text">官方文档的调参</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#针对-Leaf-wise-最佳优先-树的参数优化"><span class="nav-number">3.1.1.</span> <span class="nav-text">针对 Leaf-wise (最佳优先) 树的参数优化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CV调参"><span class="nav-number">3.2.</span> <span class="nav-text">CV调参</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#样本集处理"><span class="nav-number">4.</span> <span class="nav-text">样本集处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#从最佳迭代开始预测"><span class="nav-number">5.</span> <span class="nav-text">从最佳迭代开始预测</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#lightgbm算法优化-不平衡二分类问题（附代码）"><span class="nav-number">6.</span> <span class="nav-text">lightgbm算法优化-不平衡二分类问题（附代码）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#减少打印日志"><span class="nav-number">7.</span> <span class="nav-text">减少打印日志</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题记录"><span class="nav-number">8.</span> <span class="nav-text">问题记录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#进程被killed"><span class="nav-number">8.0.1.</span> <span class="nav-text">进程被killed</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java调用"><span class="nav-number">9.</span> <span class="nav-text">Java调用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#处理离散特征"><span class="nav-number">10.</span> <span class="nav-text">处理离散特征</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+<div>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+本站总访问量 <span id="busuanzi_value_site_pv"></span> 次&nbsp&nbsp&nbsp
+本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</div>
+
+
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+		<script type="text/javascript">
+		_hcwp = window._hcwp || [];
+
+		_hcwp.push({widget:"Bloggerstream", widget_id: 100710, selector:".hc-comment-count", label: "{\%COUNT%\}" });
+
+		
+		_hcwp.push({widget:"Stream", widget_id: 100710, xid: "2018/07/10/机器学习/lightGBM/"});
+		
+
+		(function() {
+		if("HC_LOAD_INIT" in window)return;
+		HC_LOAD_INIT = true;
+		var lang = (navigator.language || navigator.systemLanguage || navigator.userLanguage || "en").substr(0, 2).toLowerCase();
+		var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
+		hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://w.hypercomments.com/widget/hc/100710/"+lang+"/widget.js";
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(hcc, s.nextSibling);
+		})();
+		</script>
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+</body>
+</html>

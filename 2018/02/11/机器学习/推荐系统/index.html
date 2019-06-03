@@ -1,0 +1,1148 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="Mx7Ikp0IpBtTbSpHDTBV0_CMJA-E8CLn8NRIrwyq5m4" />
+
+
+
+
+
+
+<meta name="baidu-site-verification" content="ZBTsWx4NdC" />
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="推荐系统," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="推荐算法概述根据数据源的不同分为 1）基于人口的统计学推荐 2）基于内容的推荐Content-based 比如说电影推荐中，基于电影的内容，推荐相似的 3）基于协同过滤的推荐Collaborative Filtering-based 然后CF再分User-Based、Item-Based、Model-Based User-Based、Item-Based都是将用户所有输入载入内存进行运算，又合称为">
+<meta name="keywords" content="推荐系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="推荐系统">
+<meta property="og:url" content="https://schwimmer.github.io/2018/02/11/机器学习/推荐系统/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="推荐算法概述根据数据源的不同分为 1）基于人口的统计学推荐 2）基于内容的推荐Content-based 比如说电影推荐中，基于电影的内容，推荐相似的 3）基于协同过滤的推荐Collaborative Filtering-based 然后CF再分User-Based、Item-Based、Model-Based User-Based、Item-Based都是将用户所有输入载入内存进行运算，又合称为">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://yanyiwu.com/img/svd-recsys-p4.png">
+<meta property="og:image" content="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdtSWibmAR6neaUZ4M5qWJGHChZNLa1mTDw47jcGICuUJV1G0jceYKt1A/0?wx_fmt=jpeg">
+<meta property="og:image" content="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdxyvlXlbCmxCXH188VCKcf4LSkXStuns7pGXyFTEB24FnMcy30cqpSA/0?wx_fmt=jpeg">
+<meta property="og:image" content="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdG05EQl0mwZxsSvO9LWLv4wRSpjZuia8V3QeNNib68Vn1p3KKFUVB1ddQ/0?wx_fmt=jpeg">
+<meta property="og:image" content="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasd0Bcf9wn6dNsB1GvvadgaEDZqLu4L524RdicF7GBNEtFdrjnpg4aMhYA/0?wx_fmt=jpeg">
+<meta property="og:image" content="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdZwA6QNMTAJicDKib9LOFp8acFV2fTEknWVtId5uqdRsshzicd68dUbib5Q/0?wx_fmt=jpeg">
+<meta property="og:image" content="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdwib2nrpADovTp7nhgib9BWoK9ks0oxwn3ry0tvOpiaNHEWQGDVOwgzLNA/0?wx_fmt=jpeg">
+<meta property="og:image" content="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasd5kWZiaia9wmkE9vhDCYpS3tY6ChT7WShiciaGxYAztaTWtGK9fefg54Z3Q/0?wx_fmt=jpeg">
+<meta property="og:image" content="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdVqpHCZCibfYIjb9e3icqiaKCEhNFOLhGcvglb3bJn2WhxRAgfWDiaRwcQg/0?wx_fmt=jpeg">
+<meta property="og:image" content="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdElhBVwEdYY9uaZ8OQwlOqqSwOx6D7zHrDLZGsCkFLmJCBApKKQz48g/0?wx_fmt=jpeg">
+<meta property="og:image" content="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasd3ha2ia9opVTkYJJApg4zfNX5MiafHp1rWzYEyFxspzdVpibuuyxgk9DHQ/0?wx_fmt=jpeg">
+<meta property="og:image" content="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasd8QU2w6zpznjclZVh5pn46vEsibtUcX7srPQ8XF3n5lJsA7G5vuaOdcw/0?wx_fmt=jpeg">
+<meta property="og:image" content="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdSHII6DSUH6mKL05ngpzhapbd64zbLxYq2YEAIajqPAUmssUG69eY0g/0?wx_fmt=jpeg">
+<meta property="og:image" content="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdtIXmKo2Cs0icjx0pgG3L0gXSh0evQEicH8QCdzhynoztackmh5f4lGhw/0?wx_fmt=jpeg">
+<meta property="og:image" content="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdSG2LoG2OQaLfDmlcrPNv1vJeQVStIctECXeQE1NIE2ErjV9amYibLIA/0?wx_fmt=jpeg">
+<meta property="og:image" content="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdBY4fNAxunpYzP6LEtRUsiaTibUGciafxfSab5Ab4Q7jscYzJ7nNIiaLPUw/0?wx_fmt=jpeg">
+<meta property="og:updated_time" content="2018-02-11T01:26:22.572Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="推荐系统">
+<meta name="twitter:description" content="推荐算法概述根据数据源的不同分为 1）基于人口的统计学推荐 2）基于内容的推荐Content-based 比如说电影推荐中，基于电影的内容，推荐相似的 3）基于协同过滤的推荐Collaborative Filtering-based 然后CF再分User-Based、Item-Based、Model-Based User-Based、Item-Based都是将用户所有输入载入内存进行运算，又合称为">
+<meta name="twitter:image" content="https://yanyiwu.com/img/svd-recsys-p4.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"always","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://schwimmer.github.io/2018/02/11/机器学习/推荐系统/"/>
+
+
+
+
+
+  <title> 推荐系统 | Schwimmer's Blog </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocapitalize="off" autocomplete="off" autocorrect="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/02/11/机器学习/推荐系统/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                推荐系统
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-11T09:26:22+08:00">
+                2018-02-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            <!--noindex-->
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/02/11/机器学习/推荐系统/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count hc-comment-count" data-xid="2018/02/11/机器学习/推荐系统/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+              <!--/noindex-->
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="推荐算法概述"><a href="#推荐算法概述" class="headerlink" title="推荐算法概述"></a>推荐算法概述</h1><p>根据数据源的不同分为</p>
+<p>1）基于人口的统计学推荐</p>
+<p>2）基于内容的推荐Content-based</p>
+<p>比如说电影推荐中，基于电影的内容，推荐相似的</p>
+<p>3）基于协同过滤的推荐Collaborative Filtering-based</p>
+<p>然后CF再分User-Based、Item-Based、Model-Based</p>
+<p>User-Based、Item-Based都是将用户所有输入载入内存进行运算，又合称为Memory-Based</p>
+<p>Model-Based包括Aspect Model，pLSA，LDA，聚类，SVD，Matrix Factorization等。</p>
+<h2 id="SVD和矩阵分解算法"><a href="#SVD和矩阵分解算法" class="headerlink" title="SVD和矩阵分解算法"></a>SVD和矩阵分解算法</h2><p>SVD是矩阵分解的一种，不过两种方法在推荐系统中的用法不一样。</p>
+<h3 id="基于SVD的推荐系统"><a href="#基于SVD的推荐系统" class="headerlink" title="基于SVD的推荐系统"></a>基于SVD的推荐系统</h3><p>对A做奇异值分解后，取奇异值矩阵的前N个对角值，相应的取U和V的行和列，再重新拼成A2。</p>
+<p>此时的A2相当于A的有损压缩。</p>
+<p>分析得知，U矩阵和V矩阵可以近似来代表A矩阵，换据话说就是<strong>将A矩阵压缩成U矩阵和V矩阵</strong>，至于压缩比例得看当时对S矩阵取前k个数的k值是多少。</p>
+<p><a href="https://yanyiwu.com/work/2012/09/10/SVD-application-in-recsys.html" target="_blank" rel="noopener">SVD在推荐系统中的应用</a></p>
+<p>代码见<code>svd_recommendation.py</code></p>
+<p>假设行是user，列是item，SVD分解后，</p>
+<ul>
+<li>U的行和user的行数一致，代表user的主题分布</li>
+<li>V的列和item的列数一致，代表item的主题分布</li>
+<li>S是奇异值，从中选择k</li>
+</ul>
+<p><img src="https://yanyiwu.com/img/svd-recsys-p4.png" alt=""></p>
+<p>该计算的含义不明白</p>
+<h3 id="基于矩阵分解的推荐系统"><a href="#基于矩阵分解的推荐系统" class="headerlink" title="基于矩阵分解的推荐系统"></a>基于矩阵分解的推荐系统</h3><p>koren获得netflix grand prize时关于矩阵分解的的论文</p>
+<p>Matrix Factorization Techniques For Recommender Systems   <a href="https://datajobs.com/data-science-repo/Recommender-Systems-%5BNetflix%5D.pdf" target="_blank" rel="noopener">https://datajobs.com/data-science-repo/Recommender-Systems-%5BNetflix%5D.pdf</a></p>
+<p><a href="http://blog.csdn.net/winone361/article/details/50705739" target="_blank" rel="noopener">矩阵分解在推荐系统中的应用：NMF和经典SVD实战</a></p>
+<h1 id="论文"><a href="#论文" class="headerlink" title="论文"></a>论文</h1><p>Factorization meets the neighborhood a multifaceted collaborative filtering model   <a href="http://vdisk.weibo.com/s/khQ1v" target="_blank" rel="noopener">http://vdisk.weibo.com/s/khQ1v</a></p>
+<p>Collaborative Filtering with Temporal Dynamics     <a href="http://vdisk.weibo.com/s/khQ9o" target="_blank" rel="noopener">http://vdisk.weibo.com/s/khQ9o</a></p>
+<p>其他推荐系统的论文</p>
+<p>作者：严林链接：<a href="https://www.zhihu.com/question/25566638/answer/37455091来源：知乎著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。" target="_blank" rel="noopener">https://www.zhihu.com/question/25566638/answer/37455091来源：知乎著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</a></p>
+<ol>
+<li>The Wisdom of The Few 豆瓣阿稳在介绍豆瓣猜的时候极力推荐过这篇论文，豆瓣猜也充分应用了这篇论文中提出的算法；</li>
+</ol>
+<ol>
+<li>Restricted Boltzmann Machines for Collaborative Filtering 目前Netflix使用的主要推荐算法之一；</li>
+<li>Factorization Meets the Neighborhood: a Multifaceted Collaborative Filtering Model 这个无需强调重要性，LFM几乎应用到了每一个商业推荐系统中；</li>
+<li>Collaborative Filtering with Temporal Dynamics 加入时间因素的SVD++模型，曾在Netflix Prize中大放溢彩的算法模型；</li>
+<li>Context-Aware Recommender Systems 基于上下文的推荐模型，现在不论是工业界还是学术界都非常火的一个topic；</li>
+<li>Toward the next generation of recommender systems 对下一代推荐系统的一个综述；</li>
+<li>Item-Based Collaborative Filtering Recommendation Algorithms 基于物品的协同过滤，Amazon等电商网站的主力模型算法之一；</li>
+<li>Information Seeking-Convergence of Search, Recommendations and Advertising 搜索、推荐和广告的大融合也是未来推荐系统的发展趋势之一；</li>
+<li>Ad Click Prediction: a View from the Trenches 可以对推荐结果做CTR预测排序；</li>
+<li>Performance of Recommender Algorithm on top-n Recommendation Task TopN预测的一个综合评测，TopN现在是推荐系统的主流话题，可以全部实现这篇文章中提到的算法大概对TopN有个体会；</li>
+<li><a href="https://link.zhihu.com/?target=http%3A//dsec.pku.edu.cn/%7Ejinlong/publication/wjlthesis.pdf" target="_blank" rel="noopener">http://dsec.pku.edu.cn/~jinlong/publication/wjlthesis.pdf</a> 北大一博士对Netflix Prize算法的研究做的毕业论文，这篇论文本身对业界影响不大，但是Netflix Prize中运用到的算法极大地推动了推荐系统的发展</li>
+</ol>
+<h1 id="Hulu视频推荐算法"><a href="#Hulu视频推荐算法" class="headerlink" title="Hulu视频推荐算法"></a>Hulu视频推荐算法</h1><p>干货：从相关性到 RNN，一家线上“租碟店”的视频推荐算法演进</p>
+<p><a href="http://blog.csdn.net/dzjx2eotaa24adr/article/details/79060659" target="_blank" rel="noopener">http://blog.csdn.net/dzjx2eotaa24adr/article/details/79060659</a></p>
+<p>推荐系统的模型：</p>
+<p>利用（Exploitation）：</p>
+<blockquote>
+<p>计算要给用户推荐什么，比较确定的兴趣。</p>
+</blockquote>
+<ul>
+<li>货架：从协同滤波到深度神经网络</li>
+<li>自动播放：RNN</li>
+</ul>
+<p>探索（Exploration）：</p>
+<blockquote>
+<p>探索用户的新兴趣，防止出现一样的推荐。</p>
+</blockquote>
+<ul>
+<li>Adaptive：在线学习</li>
+<li>Diversity：行列式点过程</li>
+</ul>
+<p>推荐系统的优化目标，如果从用户的偏好来讲，我们是希望提供给用户一个非常健康的组合，<strong>既符合他们的口味，又有足够的多样性</strong> 。</p>
+<p>最后从算法或者数学抽象来讲，我们就把这个问题抽象成为<strong>“怎样最大化用户的观看时长”</strong>。包括</p>
+<ul>
+<li>点击进去看一个视频之后，你看了多长时间？这个跟视频本身的长度有关，跟你的完成度有关，我们叫playback_duration。</li>
+<li>有效点击eCTR。（<strong>推荐系统优劣的评价</strong>）</li>
+<li>整个内容的曝光量。（<strong>推荐系统的作用！</strong>）</li>
+</ul>
+<p><strong>把这三项乘在一起的话，就变成了每个用户的观看时长。</strong></p>
+<p>我们最终想要最大化的是<strong>eCTR和曝光量的乘积</strong>。</p>
+<p><img src="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdtSWibmAR6neaUZ4M5qWJGHChZNLa1mTDw47jcGICuUJV1G0jceYKt1A/0?wx_fmt=jpeg" alt=""></p>
+<h2 id="视频推荐系统的框架"><a href="#视频推荐系统的框架" class="headerlink" title="视频推荐系统的框架"></a>视频推荐系统的框架</h2><p><img src="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdxyvlXlbCmxCXH188VCKcf4LSkXStuns7pGXyFTEB24FnMcy30cqpSA/0?wx_fmt=jpeg" alt=""></p>
+<p>1）<strong>Data</strong>。最底下一层是基础数据。</p>
+<p>2）<strong>Feature</strong>。第二层是特征，特征可以分为用户的特征和内容的特征。</p>
+<p>3）<strong>Model</strong>，分为Exploitation、Exploration。</p>
+<p><strong>Exploitation</strong>包括：</p>
+<p>a、Relevant相关度，</p>
+<p>b、Transparent透明度（对产品经理还是对最终用户是不是可解释）</p>
+<p>c、Contextual上下文（时间、设备、地点这些上下文信息）</p>
+<p><strong>Exploration</strong>包括</p>
+<p>a、<strong>Coverage</strong>范围，对新内容我们有没有给足够的展现</p>
+<p>b、<strong>Serendipity</strong>惊喜，有没有给用户惊喜、发现用户隐藏的一些兴趣。</p>
+<p>c、<strong>Adapive</strong>适应性，当用户兴趣发生改变的时候，我们是不是非常快地适应了用户这种兴趣改变。</p>
+<p>d、<strong>Diverse</strong>多样性，我们给出的这个套餐是不是组合了很多不同的类别，而不是非常单调、单一的。</p>
+<p>4）<strong>Application</strong>。这些应用主要是服务用户在四个阶段的行为。</p>
+<p>a、<strong>Onboarding</strong>：新用户，刚刚订阅我们的服务的时候，还在一个初始的、给我们一些信号的阶段。我们让用户选择他最喜欢的内容频道，然后用户会告诉我们他喜欢体育、喜剧或者动作片。基于这些大类，我们可以给他做一个冷启动，给他第一屏的推荐结果。</p>
+<p>b、<strong>Convert-to-Pay</strong>：在一个新用户进来之后，我们大概有七天的时间把他转化为一个付费用户。在这个阶段，我们需要快速地探索用户的各种需求，让他体会到我们的服务非常有价值，那么他才愿意买单。</p>
+<p>c、<strong>Retention</strong>留存：到了第三个阶段，就是用户已经是一个付费用户，那我们就需要留住他，所以就是不断的去给他更多的、他之前可能没有看过，但是和之前看过的很相关的内容。</p>
+<p>d、<strong>Monetization</strong>变现：广告变现。一个已经付费的用户，已经留下来的用户，我们怎么样用广告把他的流量变现。</p>
+<h2 id="视频推荐算法"><a href="#视频推荐算法" class="headerlink" title="视频推荐算法"></a>视频推荐算法</h2><h3 id="Exploitation"><a href="#Exploitation" class="headerlink" title="Exploitation"></a>Exploitation</h3><p><strong>基于用户行为和side information做货架场景的排序和自动播放的这种持续预测。</strong></p>
+<h4 id="相似性算法"><a href="#相似性算法" class="headerlink" title="相似性算法"></a>相似性算法</h4><p>1）Relevant的角度，还是user-based+item-based</p>
+<ul>
+<li>基于存储的Memory-based：item-based CF</li>
+<li>基于模型的Model-based：矩阵分解和神经网络。神经网络现在也有基于RBM的，还有Embedding-based Neural Network。</li>
+</ul>
+<p>Hulu经历了三代相关性算法的演进，第一代是item-based CF，第二代是基于矩阵分解，现在我们正在开发的第三代是基于Embedding-based Neural Network。从Netflix公开的文件来看，它主要使用的是SVD和RBM的方法。</p>
+<p>a、第一代，协同滤波</p>
+<p><img src="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdG05EQl0mwZxsSvO9LWLv4wRSpjZuia8V3QeNNib68Vn1p3KKFUVB1ddQ/0?wx_fmt=jpeg" alt=""></p>
+<p>创建一个<strong>相关度矩阵</strong>。这个矩阵是很稀疏的，<strong>大约有百分之七八十的数据是实际上是零</strong>。</p>
+<p>b、第二代，矩阵分解</p>
+<p><img src="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasd0Bcf9wn6dNsB1GvvadgaEDZqLu4L524RdicF7GBNEtFdrjnpg4aMhYA/0?wx_fmt=jpeg" alt=""></p>
+<p>矩阵分解为了解决这个稀疏性的问题，使用了线性代数里面的一个特性，就是<strong>一个低秩矩阵，可以用两个相对低维度矩阵的乘积来表示</strong>。</p>
+<p>相关度矩阵（评分矩阵）是低秩的，可以用一个P和Q的乘积来表示，P就是所有用户的特征。</p>
+<blockquote>
+<p>SVD待看</p>
+</blockquote>
+<p>c、第三代，深度学习</p>
+<p><img src="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdZwA6QNMTAJicDKib9LOFp8acFV2fTEknWVtId5uqdRsshzicd68dUbib5Q/0?wx_fmt=jpeg" alt=""></p>
+<p>把原来矩阵分解里面代数运算的步骤，用一个前向神经网络来替换。好处是，</p>
+<ul>
+<li>一方面非线性前向网络允许一些非线性映射，可以有更好的表达能力去model一个更复杂的分布。</li>
+<li>另外可以直接把关于用户的处行为外的所有信息，用一个矢量feed到神经网络中去。</li>
+</ul>
+<p>对内容我们也可以做相应的处理，就是把元数据，比如说导演、演员信息用一个向量来表示，然后把它feed到神经网络里面去。</p>
+<h4 id="相似性算法应用场景"><a href="#相似性算法应用场景" class="headerlink" title="相似性算法应用场景"></a>相似性算法应用场景</h4><p><img src="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdwib2nrpADovTp7nhgib9BWoK9ks0oxwn3ry0tvOpiaNHEWQGDVOwgzLNA/0?wx_fmt=jpeg" alt=""></p>
+<p>对应这两种不同的场景，其实需要不同的相关运算。</p>
+<ul>
+<li>一个是所谓的货架场景，就是给一个网格里面按照相关性做了排序，然后<strong>希望用户点越靠上越靠左的这些内容</strong>。CF比较适合货架场景的召回和排序。</li>
+<li>一个是自动播放的场景，就是播完一个内容之后，我们会<strong>自动地开始下一个我们觉得用户最可能看的内容</strong>。用RNN。</li>
+</ul>
+<p><img src="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasd5kWZiaia9wmkE9vhDCYpS3tY6ChT7WShiciaGxYAztaTWtGK9fefg54Z3Q/0?wx_fmt=jpeg" alt=""></p>
+<p><strong>用反向传播的方法去训练一个RNN模型</strong>，来预测用户在网络上的下一个行为。</p>
+<blockquote>
+<p><strong>如何评估</strong>：</p>
+<p>仿真测试的方法就是当用户看完剧A/B/C之后，我们假装不知道这个用户接下来看了哪一个，<strong>然后基于时间序列的建模，来算出一个最可能看的剧，它可能是当前这一剧的下一集，或者是跳到另外一个剧D或者是另外一个剧E</strong>。根据RNN模型，我们找到最有可能的下一个剧，然后和用户实际看的下一个剧之间做比对，这是离线的一种评估方案。</p>
+</blockquote>
+<h3 id="Exploration"><a href="#Exploration" class="headerlink" title="Exploration"></a>Exploration</h3><h4 id="自适应"><a href="#自适应" class="headerlink" title="自适应"></a>自适应</h4><p>为了解决用户兴趣的时变以及新内容的冷启动，我们采用一种叫做<strong>多臂老虎机（MAB）</strong>的模型。</p>
+<p><img src="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdVqpHCZCibfYIjb9e3icqiaKCEhNFOLhGcvglb3bJn2WhxRAgfWDiaRwcQg/0?wx_fmt=jpeg" alt=""></p>
+<blockquote>
+<p>原理</p>
+<p><strong>一个赌徒可以在不同的时间选择不同的摇臂，每个摇臂会给这个赌徒不同的赢率。</strong>如果赌徒每次都选择摇臂1的话，有可能不是最优的，因为可能另外一个摇臂的反馈更好。</p>
+</blockquote>
+<p>在推荐系统中，每个摇臂就是推荐用户的一个剧，算法就是赌徒，根据一些策略选择推荐哪个剧。每个摇臂的奖励就是这个用户是否点击和观看了。</p>
+<p><img src="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdElhBVwEdYY9uaZ8OQwlOqqSwOx6D7zHrDLZGsCkFLmJCBApKKQz48g/0?wx_fmt=jpeg" alt=""></p>
+<p><strong>LinUCB算法</strong>。会根据当前推的结果，来实时更新对每个摇臂的点击率的预测。</p>
+<p><img src="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasd3ha2ia9opVTkYJJApg4zfNX5MiafHp1rWzYEyFxspzdVpibuuyxgk9DHQ/0?wx_fmt=jpeg" alt=""></p>
+<p>在线上部署LinUCB的算法，有一个线上更新提取特征以及模型运算的过程，以及一个线下根据之前模型采集到的信号去更新模型参数的过程。</p>
+<p>在我们这个实验里面，可能对大家比较有参考意义的就是我们发现的LinUCB的一些特征，其中包括用户当前看剧的完成度，就是他看到了第几集、是不是看到了高潮部分还是快要结束的部分。<strong>完成度是一个很重要的特征维度</strong>。然后就是上次给用户曝光这个剧的时间和现在之间的<strong>时间间隔</strong>，以及它历史上的<strong>点击率</strong>，还有这个剧的一些元数据信息，它在外面的流行程度，以及根据刚才讲的协同滤波的方法，得到的用户和这个剧之间的相关性。</p>
+<p><img src="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasd8QU2w6zpznjclZVh5pn46vEsibtUcX7srPQ8XF3n5lJsA7G5vuaOdcw/0?wx_fmt=jpeg" alt=""></p>
+<h4 id="多样性"><a href="#多样性" class="headerlink" title="多样性"></a>多样性</h4><p><img src="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdSHII6DSUH6mKL05ngpzhapbd64zbLxYq2YEAIajqPAUmssUG69eY0g/0?wx_fmt=jpeg" alt=""></p>
+<p><strong>为什么要关注多样性？</strong></p>
+<p>因为用户的兴趣爱好可能<strong>不是单峰分布的</strong>。有可能用户有多个兴趣爱好，其中有非常突出的一个，就是这个比较高的右边的峰。但是还有一个比较低的，就是右边这张图里面的靠左的这个峰值。用多样性来考虑用户的多个爱好。不是只推荐他最喜欢的。</p>
+<p>传统上使用<strong>启发式</strong>的方法，它会在多样性和相关性之间用一个加权平均的方法来获得一个总体的优化目标，然后两两之间比较当前推荐的差异性，然后试图最大化这个总的平衡了之后的优化目标，用穷举的方法。</p>
+<p>我们在现有的启发式的搜索基础上，采用了一些不同的代数模型，就是把两两之间比较不相似性改变成为用一个多边形的体积来量化我们给出的不同物品之间的差异性。<strong>把每个物品看作一个多维空间里的向量，然后用这些向量总体张成的一个多边形的体积来度量这个集合的差异性。</strong></p>
+<h2 id="推荐的应用场景"><a href="#推荐的应用场景" class="headerlink" title="推荐的应用场景"></a>推荐的应用场景</h2><h3 id="生成推荐的理由"><a href="#生成推荐的理由" class="headerlink" title="生成推荐的理由"></a>生成推荐的理由</h3><p>比如说，当我们推荐《终结者2》，我们说是由于你历史上看过《终结者1》，这时候就比完全没有任何原因的推荐显得更加顺理成章。如何构建一个推荐的理由？我们可以用刚才很简单的模板，就是因为你历史上看过和它相关的一个剧。</p>
+<p><img src="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdtIXmKo2Cs0icjx0pgG3L0gXSh0evQEicH8QCdzhynoztackmh5f4lGhw/0?wx_fmt=jpeg" alt=""></p>
+<p>但是如果我们想做得更加人性化、更加自然，我们要用一种<strong>知识图谱</strong>的方法。在知识图谱里面构建内容，用户的群组，相关性的信息，以及一些统计信息，包括这个剧的流行程度，它在外面的排名。我们用一种N元组的方法来记录这个知识图谱。</p>
+<p><img src="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdSG2LoG2OQaLfDmlcrPNv1vJeQVStIctECXeQE1NIE2ErjV9amYibLIA/0?wx_fmt=jpeg" alt=""></p>
+<h4 id="推理规则"><a href="#推理规则" class="headerlink" title="推理规则"></a>推理规则</h4><p>基于这个知识图谱，我们可以设定一些<strong>推理规则</strong>，手工建立规则。    每一条规则其实对应某一种经典算法，比如第一条规则，就是如果用户喜欢电视剧，一是由于他曾经看过电视剧，二是电视剧2和1非常相近，这就是item-based CF逻辑的一种表达方式。类似的话，我们还可以把user-based CF也用一条规则来表达。比如说这个地方列出的第二条规则，就是<strong>如果用户属于某一个群组，而这个群组里面60%的人都看过剧1，那就说明当前这个用户也可能会喜欢看剧1</strong>。</p>
+<p><img src="http://ss.csdn.net/p?https://mmbiz.qpic.cn/mmbiz_jpg/wc7YNPm3YxWCL7kfAbDibBgOrqyRRibiasdBY4fNAxunpYzP6LEtRUsiaTibUGciafxfSab5Ab4Q7jscYzJ7nNIiaLPUw/0?wx_fmt=jpeg" alt=""></p>
+<h3 id="语音对话推荐"><a href="#语音对话推荐" class="headerlink" title="语音对话推荐"></a>语音对话推荐</h3><p>然后当用户对当前的推荐不满的时候，他也可以用自然语言来告诉我们，为什么他不喜欢这个剧，以及他想要换另外一个什么样的剧。<strong>大家知道PC时代，鼠标和键盘是最流行的交互方式，到了移动时代，触屏变成了手机上的最流行的交互方式。随着物联网的发展，我们认为语音会成为下一代的交互方式。</strong></p>
+<blockquote>
+<p><strong>怎么识别用户的兴趣是否改变呢？</strong></p>
+<p>其实对于多臂老虎机的问题模型来讲，认为用户的兴趣是一个可以实时更新的参数。</p>
+<p><strong>知识图谱是怎么建立和生成的？</strong></p>
+<p>一方面是从第三方采买的，有专门的构建知识图谱的厂商，他们会做数据清洗爬取。另外一部分是我们从内容提供商那里获得的一些元数据信息。</p>
+</blockquote>
+<p><strong>延伸</strong>：<a href="https://zhuanlan.zhihu.com/p/21388070?refer=resyschina" target="_blank" rel="noopener">bandit问题</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/推荐系统/" rel="tag"># 推荐系统</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/11/机器学习/MCMC/" rel="next" title="MCMC">
+                <i class="fa fa-chevron-left"></i> MCMC
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/17/Elastic Search/ES的analyzer/" rel="prev" title="ES的analyzer">
+                ES的analyzer <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="hypercomments_widget"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Schwimmer" />
+          <p class="site-author-name" itemprop="name">Schwimmer</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">282</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#推荐算法概述"><span class="nav-number">1.</span> <span class="nav-text">推荐算法概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#SVD和矩阵分解算法"><span class="nav-number">1.1.</span> <span class="nav-text">SVD和矩阵分解算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基于SVD的推荐系统"><span class="nav-number">1.1.1.</span> <span class="nav-text">基于SVD的推荐系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于矩阵分解的推荐系统"><span class="nav-number">1.1.2.</span> <span class="nav-text">基于矩阵分解的推荐系统</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#论文"><span class="nav-number">2.</span> <span class="nav-text">论文</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hulu视频推荐算法"><span class="nav-number">3.</span> <span class="nav-text">Hulu视频推荐算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#视频推荐系统的框架"><span class="nav-number">3.1.</span> <span class="nav-text">视频推荐系统的框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#视频推荐算法"><span class="nav-number">3.2.</span> <span class="nav-text">视频推荐算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Exploitation"><span class="nav-number">3.2.1.</span> <span class="nav-text">Exploitation</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#相似性算法"><span class="nav-number">3.2.1.1.</span> <span class="nav-text">相似性算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#相似性算法应用场景"><span class="nav-number">3.2.1.2.</span> <span class="nav-text">相似性算法应用场景</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Exploration"><span class="nav-number">3.2.2.</span> <span class="nav-text">Exploration</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#自适应"><span class="nav-number">3.2.2.1.</span> <span class="nav-text">自适应</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#多样性"><span class="nav-number">3.2.2.2.</span> <span class="nav-text">多样性</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#推荐的应用场景"><span class="nav-number">3.3.</span> <span class="nav-text">推荐的应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#生成推荐的理由"><span class="nav-number">3.3.1.</span> <span class="nav-text">生成推荐的理由</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#推理规则"><span class="nav-number">3.3.1.1.</span> <span class="nav-text">推理规则</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#语音对话推荐"><span class="nav-number">3.3.2.</span> <span class="nav-text">语音对话推荐</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+<div>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+本站总访问量 <span id="busuanzi_value_site_pv"></span> 次&nbsp&nbsp&nbsp
+本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</div>
+
+
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+		<script type="text/javascript">
+		_hcwp = window._hcwp || [];
+
+		_hcwp.push({widget:"Bloggerstream", widget_id: 100710, selector:".hc-comment-count", label: "{\%COUNT%\}" });
+
+		
+		_hcwp.push({widget:"Stream", widget_id: 100710, xid: "2018/02/11/机器学习/推荐系统/"});
+		
+
+		(function() {
+		if("HC_LOAD_INIT" in window)return;
+		HC_LOAD_INIT = true;
+		var lang = (navigator.language || navigator.systemLanguage || navigator.userLanguage || "en").substr(0, 2).toLowerCase();
+		var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
+		hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://w.hypercomments.com/widget/hc/100710/"+lang+"/widget.js";
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(hcc, s.nextSibling);
+		})();
+		</script>
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+</body>
+</html>

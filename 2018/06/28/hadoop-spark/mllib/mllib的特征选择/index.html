@@ -1,0 +1,1023 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="Mx7Ikp0IpBtTbSpHDTBV0_CMJA-E8CLn8NRIrwyq5m4" />
+
+
+
+
+
+
+<meta name="baidu-site-verification" content="ZBTsWx4NdC" />
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="记录笔记的地方" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="http://www.cnblogs.com/xing901022/p/7152922.html  在机器学习中，一般都会按照下面几个步骤：特征提取、数据预处理、特征选择、模型训练、检验优化。那么特征的选择就很关键了，一般模型最后效果的好坏往往都是跟特征的选择有关系的，因为模型本身的参数并没有太多优化的点，反而特征这边有时候多加一个或者少加一个，最终的结果都会差别很大。  在SparkMLlib中">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Schwimmer&#39;s Blog">
+<meta property="og:url" content="https://schwimmer.github.io/2018/06/28/hadoop-spark/mllib/mllib的特征选择/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="http://www.cnblogs.com/xing901022/p/7152922.html  在机器学习中，一般都会按照下面几个步骤：特征提取、数据预处理、特征选择、模型训练、检验优化。那么特征的选择就很关键了，一般模型最后效果的好坏往往都是跟特征的选择有关系的，因为模型本身的参数并没有太多优化的点，反而特征这边有时候多加一个或者少加一个，最终的结果都会差别很大。  在SparkMLlib中">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-06-28T08:32:03.180Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Schwimmer&#39;s Blog">
+<meta name="twitter:description" content="http://www.cnblogs.com/xing901022/p/7152922.html  在机器学习中，一般都会按照下面几个步骤：特征提取、数据预处理、特征选择、模型训练、检验优化。那么特征的选择就很关键了，一般模型最后效果的好坏往往都是跟特征的选择有关系的，因为模型本身的参数并没有太多优化的点，反而特征这边有时候多加一个或者少加一个，最终的结果都会差别很大。  在SparkMLlib中">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"always","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://schwimmer.github.io/2018/06/28/hadoop-spark/mllib/mllib的特征选择/"/>
+
+
+
+
+
+  <title>  | Schwimmer's Blog </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocapitalize="off" autocomplete="off" autocorrect="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/06/28/hadoop-spark/mllib/mllib的特征选择/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-28T16:31:45+08:00">
+                2018-06-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+            <!--noindex-->
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/06/28/hadoop-spark/mllib/mllib的特征选择/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count hc-comment-count" data-xid="2018/06/28/hadoop-spark/mllib/mllib的特征选择/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+              <!--/noindex-->
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="http://www.cnblogs.com/xing901022/p/7152922.html" target="_blank" rel="noopener">http://www.cnblogs.com/xing901022/p/7152922.html</a></p>
+<blockquote>
+<p>在机器学习中，一般都会按照下面几个步骤：特征提取、数据预处理、特征选择、模型训练、检验优化。那么特征的选择就很关键了，一般模型最后效果的好坏往往都是跟特征的选择有关系的，因为模型本身的参数并没有太多优化的点，反而特征这边有时候多加一个或者少加一个，最终的结果都会差别很大。</p>
+</blockquote>
+<p>在SparkMLlib中为我们提供了几种特征选择的方法，分别是<code>VectorSlicer</code>、<code>RFormula</code>和<code>ChiSqSelector</code>。</p>
+<p>下面就介绍下这三个方法的使用,强烈推荐有时间的把参考的文献都阅读下，会有所收获！</p>
+<h2 id="VectorSlicer"><a href="#VectorSlicer" class="headerlink" title="VectorSlicer"></a>VectorSlicer</h2><p>这个转换器可以支持用户自定义选择列，可以基于下标索引，也可以基于列名。</p>
+<ul>
+<li>如果是下标都可以使用setIndices方法</li>
+<li>如果是列名可以使用setNames方法。使用这个方法的时候，vector字段需要通过AttributeGroup设置每个向量元素的列名。</li>
+</ul>
+<h4 id="注意1：可以同时使用setInices和setName"><a href="#注意1：可以同时使用setInices和setName" class="headerlink" title="注意1：可以同时使用setInices和setName"></a>注意1：可以同时使用setInices和setName</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">object VectorSlicer &#123;</div><div class="line">  def main(args: Array[String]) &#123;</div><div class="line">    val conf = new SparkConf().setAppName(&quot;VectorSlicer-Test&quot;).setMaster(&quot;local[2]&quot;)</div><div class="line">    val sc = new SparkContext(conf)</div><div class="line">    sc.setLogLevel(&quot;WARN&quot;)</div><div class="line">    var sqlContext = new SQLContext(sc)</div><div class="line"></div><div class="line">    val data = Array(Row(Vectors.dense(-2.0, 2.3, 0.0,1.0,2.0)))</div><div class="line"></div><div class="line">    val defaultAttr = NumericAttribute.defaultAttr</div><div class="line">    val attrs = Array(&quot;f1&quot;, &quot;f2&quot;, &quot;f3&quot;,&quot;f4&quot;,&quot;f5&quot;).map(defaultAttr.withName)</div><div class="line">    val attrGroup = new AttributeGroup(&quot;userFeatures&quot;, attrs.asInstanceOf[Array[Attribute]])</div><div class="line"></div><div class="line">    val dataRDD = sc.parallelize(data)</div><div class="line">    val dataset = sqlContext.createDataFrame(dataRDD, StructType(Array(attrGroup.toStructField())))</div><div class="line"></div><div class="line">    val slicer = new VectorSlicer().setInputCol(&quot;userFeatures&quot;).setOutputCol(&quot;features&quot;)</div><div class="line"></div><div class="line">    slicer.setIndices(Array(0)).setNames(Array(&quot;f2&quot;))</div><div class="line">    val output = slicer.transform(dataset)</div><div class="line">    println(output.select(&quot;userFeatures&quot;, &quot;features&quot;).first())</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="注意2：如果下标和索引重复，会报重复的错："><a href="#注意2：如果下标和索引重复，会报重复的错：" class="headerlink" title="注意2：如果下标和索引重复，会报重复的错："></a>注意2：如果下标和索引重复，会报重复的错：</h4><p>比如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">slicer.setIndices(Array(1)).setNames(Array(&quot;f2&quot;))</div></pre></td></tr></table></figure>
+<p>那么会遇到报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">Exception in thread &quot;main&quot; java.lang.IllegalArgumentException: requirement failed: VectorSlicer requires indices and names to be disjoint sets of features, but they overlap. indices: [1]. names: [1:f2]</div><div class="line">    at scala.Predef$.require(Predef.scala:233)</div><div class="line">    at org.apache.spark.ml.feature.VectorSlicer.getSelectedFeatureIndices(VectorSlicer.scala:137)</div><div class="line">    at org.apache.spark.ml.feature.VectorSlicer.transform(VectorSlicer.scala:108)</div><div class="line">    at xingoo.mllib.VectorSlicer$.main(VectorSlicer.scala:35)</div><div class="line">    at xingoo.mllib.VectorSlicer.main(VectorSlicer.scala)</div><div class="line">    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</div><div class="line">    at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)</div><div class="line">    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)</div><div class="line">    at java.lang.reflect.Method.invoke(Method.java:497)</div><div class="line">    at com.intellij.rt.execution.application.AppMain.main(AppMain.java:144)</div></pre></td></tr></table></figure>
+<h4 id="注意3：如果下标不存在"><a href="#注意3：如果下标不存在" class="headerlink" title="注意3：如果下标不存在"></a>注意3：如果下标不存在</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">slicer.setIndices(Array(6))</div></pre></td></tr></table></figure>
+<p>如果数组越界也会报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">Exception in thread &quot;main&quot; java.lang.ArrayIndexOutOfBoundsException: 6</div><div class="line">    at org.apache.spark.ml.feature.VectorSlicer$$anonfun$3$$anonfun$apply$2.apply(VectorSlicer.scala:110)</div><div class="line">    at org.apache.spark.ml.feature.VectorSlicer$$anonfun$3$$anonfun$apply$2.apply(VectorSlicer.scala:110)</div><div class="line">    at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:244)</div><div class="line">    at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:244)</div><div class="line">    at scala.collection.IndexedSeqOptimized$class.foreach(IndexedSeqOptimized.scala:33)</div><div class="line">    at scala.collection.mutable.ArrayOps$ofInt.foreach(ArrayOps.scala:156)</div><div class="line">    at scala.collection.TraversableLike$class.map(TraversableLike.scala:244)</div><div class="line">    at scala.collection.mutable.ArrayOps$ofInt.map(ArrayOps.scala:156)</div><div class="line">    at org.apache.spark.ml.feature.VectorSlicer$$anonfun$3.apply(VectorSlicer.scala:110)</div><div class="line">    at org.apache.spark.ml.feature.VectorSlicer$$anonfun$3.apply(VectorSlicer.scala:109)</div><div class="line">    at scala.Option.map(Option.scala:145)</div><div class="line">    at org.apache.spark.ml.feature.VectorSlicer.transform(VectorSlicer.scala:109)</div><div class="line">    at xingoo.mllib.VectorSlicer$.main(VectorSlicer.scala:35)</div><div class="line">    at xingoo.mllib.VectorSlicer.main(VectorSlicer.scala)</div><div class="line">    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</div><div class="line">    at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)</div><div class="line">    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)</div><div class="line">    at java.lang.reflect.Method.invoke(Method.java:497)</div><div class="line">    at com.intellij.rt.execution.application.AppMain.main(AppMain.java:144)</div></pre></td></tr></table></figure>
+<h4 id="注意4：如果名称不存在也会报错"><a href="#注意4：如果名称不存在也会报错" class="headerlink" title="注意4：如果名称不存在也会报错"></a>注意4：如果名称不存在也会报错</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">Exception in thread &quot;main&quot; java.lang.IllegalArgumentException: requirement failed: getFeatureIndicesFromNames found no feature with name f8 in column StructField(userFeatures,org.apache.spark.mllib.linalg.VectorUDT@f71b0bce,false).</div><div class="line">    at scala.Predef$.require(Predef.scala:233)</div><div class="line">    at org.apache.spark.ml.util.MetadataUtils$$anonfun$getFeatureIndicesFromNames$2.apply(MetadataUtils.scala:89)</div><div class="line">    at org.apache.spark.ml.util.MetadataUtils$$anonfun$getFeatureIndicesFromNames$2.apply(MetadataUtils.scala:88)</div><div class="line">    at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:244)</div><div class="line">    at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:244)</div><div class="line">    at scala.collection.IndexedSeqOptimized$class.foreach(IndexedSeqOptimized.scala:33)</div><div class="line">    at scala.collection.mutable.ArrayOps$ofRef.foreach(ArrayOps.scala:108)</div><div class="line">    at scala.collection.TraversableLike$class.map(TraversableLike.scala:244)</div><div class="line">    at scala.collection.mutable.ArrayOps$ofRef.map(ArrayOps.scala:108)</div><div class="line">    at org.apache.spark.ml.util.MetadataUtils$.getFeatureIndicesFromNames(MetadataUtils.scala:88)</div><div class="line">    at org.apache.spark.ml.feature.VectorSlicer.getSelectedFeatureIndices(VectorSlicer.scala:129)</div><div class="line">    at org.apache.spark.ml.feature.VectorSlicer.transform(VectorSlicer.scala:108)</div><div class="line">    at xingoo.mllib.VectorSlicer$.main(VectorSlicer.scala:35)</div><div class="line">    at xingoo.mllib.VectorSlicer.main(VectorSlicer.scala)</div><div class="line">    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</div><div class="line">    at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)</div><div class="line">    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)</div><div class="line">    at java.lang.reflect.Method.invoke(Method.java:497)</div><div class="line">    at com.intellij.rt.execution.application.AppMain.main(AppMain.java:144)</div></pre></td></tr></table></figure>
+<h4 id="注意5：经过特征选择后，特征的顺序与索引和名称的顺序相同"><a href="#注意5：经过特征选择后，特征的顺序与索引和名称的顺序相同" class="headerlink" title="注意5：经过特征选择后，特征的顺序与索引和名称的顺序相同"></a>注意5：经过特征选择后，特征的顺序与索引和名称的顺序相同</h4><h2 id="RFormula"><a href="#RFormula" class="headerlink" title="RFormula"></a>RFormula</h2><p>这个转换器可以帮助基于R模型，自动生成feature和label。比如说最常用的线性回归，在先用回归中，我们需要把一些离散化的变量变成哑变量，即转变成onehot编码，使之数值化，这个我之前的文章也介绍过，这里就不多说了。</p>
+<p>如果不是用这个RFormula，我们可能需要经过几个步骤：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">StringIndex...OneHotEncoder...</div></pre></td></tr></table></figure>
+<p>而且每个特征都要经过这样的变换，非常繁琐。有了RFormula，几乎可以一键把所有的特征问题解决。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>coutry</th>
+<th>hour</th>
+<th>clicked</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>7</td>
+<td>US</td>
+<td>18</td>
+<td>1.0</td>
+</tr>
+<tr>
+<td>8</td>
+<td>CA</td>
+<td>12</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td>9</td>
+<td>NZ</td>
+<td>15</td>
+<td>0.0</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>然后我们只要写一个类似这样的公式<code>clicked ~ country + hour + my_test</code>，就代表<code>clicked</code>为<code>label</code>，<code>coutry、hour、my_test</code>是三个特征</p>
+<p>比如下面的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">object RFormulaTest &#123;</div><div class="line">  def main(args: Array[String]) &#123;</div><div class="line">    val conf = new SparkConf().setAppName(&quot;RFormula-Test&quot;).setMaster(&quot;local[2]&quot;)</div><div class="line">    val sc = new SparkContext(conf)</div><div class="line">    sc.setLogLevel(&quot;WARN&quot;)</div><div class="line">    var sqlContext = new SQLContext(sc)</div><div class="line"></div><div class="line">    val dataset = sqlContext.createDataFrame(Seq(</div><div class="line">      (7, &quot;US&quot;, 18, 1.0,&quot;a&quot;),</div><div class="line">      (8, &quot;CA&quot;, 12, 0.0,&quot;b&quot;),</div><div class="line">      (9, &quot;NZ&quot;, 15, 0.0,&quot;a&quot;)</div><div class="line">    )).toDF(&quot;id&quot;, &quot;country&quot;, &quot;hour&quot;, &quot;clicked&quot;,&quot;my_test&quot;)</div><div class="line">    val formula = new RFormula()</div><div class="line">      .setFormula(&quot;clicked ~ country + hour + my_test&quot;)</div><div class="line">      .setFeaturesCol(&quot;features&quot;)</div><div class="line">      .setLabelCol(&quot;label&quot;)</div><div class="line">    val output = formula.fit(dataset).transform(dataset)</div><div class="line">    output.show()</div><div class="line">    output.select(&quot;features&quot;, &quot;label&quot;).show()</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>得到的结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">+---+-------+----+-------+-------+------------------+-----+</div><div class="line">| id|country|hour|clicked|my_test|          features|label|</div><div class="line">+---+-------+----+-------+-------+------------------+-----+</div><div class="line">|  7|     US|  18|    1.0|      a|[0.0,0.0,18.0,1.0]|  1.0|</div><div class="line">|  8|     CA|  12|    0.0|      b|[1.0,0.0,12.0,0.0]|  0.0|</div><div class="line">|  9|     NZ|  15|    0.0|      a|[0.0,1.0,15.0,1.0]|  0.0|</div><div class="line">+---+-------+----+-------+-------+------------------+-----+</div><div class="line"></div><div class="line">+------------------+-----+</div><div class="line">|          features|label|</div><div class="line">+------------------+-----+</div><div class="line">|[0.0,0.0,18.0,1.0]|  1.0|</div><div class="line">|[1.0,0.0,12.0,0.0]|  0.0|</div><div class="line">|[0.0,1.0,15.0,1.0]|  0.0|</div><div class="line">+------------------+-----+</div></pre></td></tr></table></figure>
+<h2 id="ChiSqSelector"><a href="#ChiSqSelector" class="headerlink" title="ChiSqSelector"></a>ChiSqSelector</h2><p>这个选择器支持基于卡方检验的特征选择，卡方检验是一种计算变量独立性的检验手段。具体的可以参考维基百科，最终的结论就是卡方的值越大，就是我们越想要的特征。因此这个选择器就可以理解为，再计算卡方的值，最后按照这个值排序，选择我们想要的个数的特征。</p>
+<p>代码也很简单</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">object ChiSqSelectorTest &#123;</div><div class="line">  def main(args: Array[String]) &#123;</div><div class="line">    val conf = new SparkConf().setAppName(&quot;ChiSqSelector-Test&quot;).setMaster(&quot;local[2]&quot;)</div><div class="line">    val sc = new SparkContext(conf)</div><div class="line">    sc.setLogLevel(&quot;WARN&quot;)</div><div class="line">    var sqlContext = new SQLContext(sc)</div><div class="line"></div><div class="line">    val data = Seq(</div><div class="line">      (7, Vectors.dense(0.0, 0.0, 18.0, 1.0), 1.0),</div><div class="line">      (8, Vectors.dense(0.0, 1.0, 12.0, 0.0), 0.0),</div><div class="line">      (9, Vectors.dense(1.0, 0.0, 15.0, 0.1), 0.0)</div><div class="line">    )</div><div class="line"></div><div class="line">    val beanRDD = sc.parallelize(data).map(t3 =&gt; Bean(t3._1,t3._2,t3._3))</div><div class="line">    val df = sqlContext.createDataFrame(beanRDD)</div><div class="line"></div><div class="line">    val selector = new ChiSqSelector()</div><div class="line">      .setNumTopFeatures(2)</div><div class="line">      .setFeaturesCol(&quot;features&quot;)</div><div class="line">      .setLabelCol(&quot;clicked&quot;)</div><div class="line">      .setOutputCol(&quot;selectedFeatures&quot;)</div><div class="line"></div><div class="line">    val result = selector.fit(df).transform(df)</div><div class="line">    result.show()</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  case class Bean(id:Double,features:org.apache.spark.mllib.linalg.Vector,clicked:Double)&#123;&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这样得到的结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">+---+------------------+-------+----------------+</div><div class="line">| id|          features|clicked|selectedFeatures|</div><div class="line">+---+------------------+-------+----------------+</div><div class="line">|7.0|[0.0,0.0,18.0,1.0]|    1.0|      [18.0,1.0]|</div><div class="line">|8.0|[0.0,1.0,12.0,0.0]|    0.0|      [12.0,0.0]|</div><div class="line">|9.0|[1.0,0.0,15.0,0.1]|    0.0|      [15.0,0.1]|</div><div class="line">+---+------------------+-------+----------------+</div></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>下面总结一下三种特征选择的使用场景：</p>
+<ul>
+<li><code>VectorSilcer</code>，这个选择器适合那种有很多特征，并且明确知道自己想要哪个特征的情况。比如你有一个很全的用户画像系统，每个人有成百上千个特征，但是你指向抽取用户对电影感兴趣相关的特征，因此只要手动选择一下就可以了。</li>
+<li><code>RFormula</code>，这个选择器适合在需要做OneHotEncoder的时候，可以一个简单的代码把所有的离散特征转化成数值化表示。</li>
+<li><code>ChiSqSelector</code>，卡方检验选择器适合在你有比较多的特征，但是不知道这些特征哪个有用，哪个没用，想要通过某种方式帮助你快速筛选特征，那么这个方法很适合。</li>
+</ul>
+<p>以上的总结纯属个人看法，不代表官方做法，如果有其他的见解可以留言~ 多交流！</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>1 <a href="http://lxw1234.com/archives/2016/03/619.htm" target="_blank" rel="noopener">Spark特征处理</a></p>
+<p>2 <a href="http://spark.apache.org/docs/1.6.0/ml-features.html#rformula" target="_blank" rel="noopener">Spark官方文档</a></p>
+<p>3 <a href="https://www.zhihu.com/question/23654047" target="_blank" rel="noopener">如何优化逻辑回归</a></p>
+<p>4 <a href="http://blog.csdn.net/kevin7658/article/details/50780391" target="_blank" rel="noopener">数据挖掘中的VI和WOE</a></p>
+<p>5 <a href="https://endymecy.gitbooks.io/spark-ml-source-analysis/content/%E7%89%B9%E5%BE%81%E6%8A%BD%E5%8F%96%E5%92%8C%E8%BD%AC%E6%8D%A2/chi-square-selector.html" target="_blank" rel="noopener">Spark卡方选择器</a></p>
+<p>6 <a href="https://zh.wikipedia.org/wiki/%E5%8D%A1%E6%96%B9%E5%88%86%E4%BD%88" target="_blank" rel="noopener">卡方分布</a></p>
+<p>7 <a href="https://zh.wikipedia.org/wiki/%E7%9A%AE%E7%88%BE%E6%A3%AE%E5%8D%A1%E6%96%B9%E6%AA%A2%E5%AE%9A" target="_blank" rel="noopener">皮尔逊卡方检验</a></p>
+<p>8 <a href="http://guoze.me/2015/09/07/chi-square/" target="_blank" rel="noopener">卡方检验原理</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/27/hadoop-spark/mllib/mllib源码修改/" rel="next" title="">
+                <i class="fa fa-chevron-left"></i> 
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/02/风控/风控模型/" rel="prev" title="">
+                 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="hypercomments_widget"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Schwimmer" />
+          <p class="site-author-name" itemprop="name">Schwimmer</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">282</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#VectorSlicer"><span class="nav-number">1.</span> <span class="nav-text">VectorSlicer</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#注意1：可以同时使用setInices和setName"><span class="nav-number">1.0.1.</span> <span class="nav-text">注意1：可以同时使用setInices和setName</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#注意2：如果下标和索引重复，会报重复的错："><span class="nav-number">1.0.2.</span> <span class="nav-text">注意2：如果下标和索引重复，会报重复的错：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#注意3：如果下标不存在"><span class="nav-number">1.0.3.</span> <span class="nav-text">注意3：如果下标不存在</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#注意4：如果名称不存在也会报错"><span class="nav-number">1.0.4.</span> <span class="nav-text">注意4：如果名称不存在也会报错</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#注意5：经过特征选择后，特征的顺序与索引和名称的顺序相同"><span class="nav-number">1.0.5.</span> <span class="nav-text">注意5：经过特征选择后，特征的顺序与索引和名称的顺序相同</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RFormula"><span class="nav-number">2.</span> <span class="nav-text">RFormula</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ChiSqSelector"><span class="nav-number">3.</span> <span class="nav-text">ChiSqSelector</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+<div>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+本站总访问量 <span id="busuanzi_value_site_pv"></span> 次&nbsp&nbsp&nbsp
+本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</div>
+
+
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+		<script type="text/javascript">
+		_hcwp = window._hcwp || [];
+
+		_hcwp.push({widget:"Bloggerstream", widget_id: 100710, selector:".hc-comment-count", label: "{\%COUNT%\}" });
+
+		
+		_hcwp.push({widget:"Stream", widget_id: 100710, xid: "2018/06/28/hadoop-spark/mllib/mllib的特征选择/"});
+		
+
+		(function() {
+		if("HC_LOAD_INIT" in window)return;
+		HC_LOAD_INIT = true;
+		var lang = (navigator.language || navigator.systemLanguage || navigator.userLanguage || "en").substr(0, 2).toLowerCase();
+		var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
+		hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://w.hypercomments.com/widget/hc/100710/"+lang+"/widget.js";
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(hcc, s.nextSibling);
+		})();
+		</script>
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+</body>
+</html>
