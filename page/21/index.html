@@ -317,186 +317,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/31/地理信息挖掘/经纬度判断城市/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/03/31/地理信息挖掘/经纬度判断城市/" class="post-title-link" itemprop="url">经纬度判断城市</a>
-              
-            
-          </h2>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-
-              
-                
-              
-
-              <time title="Erstellt: 2018-03-31 10:30:28" itemprop="dateCreated datePublished" datetime="2018-03-31T10:30:28+08:00">2018-03-31</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Bearbeitet am</span>
-                
-                <time title="Geändert am: 2018-04-10 18:32:46" itemprop="dateModified" datetime="2018-04-10T18:32:46+08:00">2018-04-10</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">in</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/地理信息挖掘/" itemprop="url" rel="index"><span itemprop="name">地理信息挖掘</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/geo-poi/src/main/java/com/iclick/geo/search/Geolocation.java</div></pre></td></tr></table></figure>
-<p>有数据<code>district_v2.tar.gz</code> 包括每个行政区划的边界经纬度和中心经纬度</p>
-<h2 id="district-v2的结构"><a href="#district-v2的结构" class="headerlink" title="district_v2的结构"></a>district_v2的结构</h2><p>爬去的高德的数据</p>
-<p>每行对应一个城市的区县</p>
-<p>citycode 城市代码</p>
-<p>adcode是全国行政区划代码</p>
-<p>code编码数据来源于国家标准行政区划代码（adcode）映射表《》</p>
-<p>解析数据，将每个district的边界坐标保存到<code>districts</code> 。对于一个经纬度，遍历每个district，判断点是否在多边形内，找到所属行政区划。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**  </span></div><div class="line"> * 判断目标点是否在多边形内(由多个点组成)&lt;br/&gt;  </div><div class="line"> *   </div><div class="line"> * <span class="doctag">@param</span> px 目标点的经度坐标  </div><div class="line"> * <span class="doctag">@param</span> py 目标点的纬度坐标  </div><div class="line"> * <span class="doctag">@param</span> polygonXA 多边形的经度坐标集合  </div><div class="line"> * <span class="doctag">@param</span> polygonYA 多边形的纬度坐标集合  </div><div class="line"> * <span class="doctag">@return</span>  </div><div class="line"> */  </div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isPointInPolygon</span> <span class="params">( <span class="keyword">double</span> px , <span class="keyword">double</span> py , ArrayList&lt;Double&gt; polygonXA , ArrayList&lt;Double&gt; polygonYA )</span>    </span></div><div class="line">&#123;    </div><div class="line">    <span class="keyword">boolean</span> isInside = <span class="keyword">false</span>;    </div><div class="line">    <span class="keyword">double</span> ESP = <span class="number">1e-9</span>;    </div><div class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;    </div><div class="line">    <span class="keyword">double</span> linePoint1x;    </div><div class="line">    <span class="keyword">double</span> linePoint1y;    </div><div class="line">    <span class="keyword">double</span> linePoint2x = <span class="number">180</span>;    </div><div class="line">    <span class="keyword">double</span> linePoint2y;    </div><div class="line">  </div><div class="line">    linePoint1x = px;    </div><div class="line">    linePoint1y = py;    </div><div class="line">    linePoint2y = py;    </div><div class="line">  </div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; polygonXA.size() - <span class="number">1</span>; i++)    </div><div class="line">    &#123;    </div><div class="line">        <span class="keyword">double</span> cx1 = polygonXA.get(i);    </div><div class="line">        <span class="keyword">double</span> cy1 = polygonYA.get(i);    </div><div class="line">        <span class="keyword">double</span> cx2 = polygonXA.get(i + <span class="number">1</span>);    </div><div class="line">        <span class="keyword">double</span> cy2 = polygonYA.get(i + <span class="number">1</span>);   </div><div class="line">        <span class="comment">//如果目标点在任何一条线上  </span></div><div class="line">        <span class="keyword">if</span> ( isPointOnLine(px, py, cx1, cy1, cx2, cy2) )    </div><div class="line">        &#123;    </div><div class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;    </div><div class="line">        &#125;  </div><div class="line">        <span class="comment">//如果线段的长度无限小(趋于零)那么这两点实际是重合的，不足以构成一条线段  </span></div><div class="line">        <span class="keyword">if</span> ( Math.abs(cy2 - cy1) &lt; ESP )    </div><div class="line">        &#123;    </div><div class="line">            <span class="keyword">continue</span>;    </div><div class="line">        &#125;    </div><div class="line">        <span class="comment">//第一个点是否在以目标点为基础衍生的平行纬度线  </span></div><div class="line">        <span class="keyword">if</span> ( isPointOnLine(cx1, cy1, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </div><div class="line">        &#123;    </div><div class="line">            <span class="comment">//第二个点在第一个的下方,靠近赤道纬度为零(最小纬度)  </span></div><div class="line">            <span class="keyword">if</span> ( cy1 &gt; cy2 )    </div><div class="line">                count++;    </div><div class="line">        &#125;  </div><div class="line">        <span class="comment">//第二个点是否在以目标点为基础衍生的平行纬度线  </span></div><div class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ( isPointOnLine(cx2, cy2, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </div><div class="line">        &#123;    </div><div class="line">            <span class="comment">//第二个点在第一个的上方,靠近极点(南极或北极)纬度为90(最大纬度)  </span></div><div class="line">            <span class="keyword">if</span> ( cy2 &gt; cy1 )    </div><div class="line">                count++;    </div><div class="line">        &#125;  </div><div class="line">        <span class="comment">//由两点组成的线段是否和以目标点为基础衍生的平行纬度线相交  </span></div><div class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ( isIntersect(cx1, cy1, cx2, cy2, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </div><div class="line">        &#123;    </div><div class="line">            count++;    </div><div class="line">        &#125;    </div><div class="line">    &#125;    </div><div class="line">    <span class="keyword">if</span> ( count % <span class="number">2</span> == <span class="number">1</span> )    </div><div class="line">    &#123;    </div><div class="line">        isInside = <span class="keyword">true</span>;    </div><div class="line">    &#125;    </div><div class="line">  </div><div class="line">    <span class="keyword">return</span> isInside;    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>也可以用geojson配合qgis的api，geojson文件为<code>BOUNT_poly.geojson</code></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/31/hadoop-spark/数据仓库框架对比/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -625,6 +445,186 @@
 <p>1、基于hbase预聚合的。适合<strong>相对固定的业务报表类需求</strong>。需要指定预聚合的指标，在数据接入的时候根据指定的指标进行聚合运算，只需要统计少量维度即可满足业务报表需求。比如Opentsdb,Kylin,Druid等</p>
 <p>2、基于Parquet列式存储的，基本是完全基于内存的并行计算，Parquet系能降低存储空间，提高IO效率，以离线处理为主，<strong>很难提高数据写的实时性，超大表的join支持可能不够好</strong>。spark sql也算类似，但它在内存不足时可以spill disk来支持超大数据查询和join。比如Presto, Drill，Impala等</p>
 <p>3、基于lucene外部索引的，比如ElasticSearch和Solr,能够满足的的查询场景远多于传统的数据库存储，但对于日志、行为类时序数据，所有的搜索请求都也必须搜索所有的分片，另外，对于聚合分析场景的支持也是软肋    </p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/31/地理信息挖掘/经纬度判断城市/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/03/31/地理信息挖掘/经纬度判断城市/" class="post-title-link" itemprop="url">经纬度判断城市</a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+
+              
+                
+              
+
+              <time title="Erstellt: 2018-03-31 10:30:28" itemprop="dateCreated datePublished" datetime="2018-03-31T10:30:28+08:00">2018-03-31</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Bearbeitet am</span>
+                
+                <time title="Geändert am: 2018-04-10 18:32:46" itemprop="dateModified" datetime="2018-04-10T18:32:46+08:00">2018-04-10</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">in</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/地理信息挖掘/" itemprop="url" rel="index"><span itemprop="name">地理信息挖掘</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/geo-poi/src/main/java/com/iclick/geo/search/Geolocation.java</div></pre></td></tr></table></figure>
+<p>有数据<code>district_v2.tar.gz</code> 包括每个行政区划的边界经纬度和中心经纬度</p>
+<h2 id="district-v2的结构"><a href="#district-v2的结构" class="headerlink" title="district_v2的结构"></a>district_v2的结构</h2><p>爬去的高德的数据</p>
+<p>每行对应一个城市的区县</p>
+<p>citycode 城市代码</p>
+<p>adcode是全国行政区划代码</p>
+<p>code编码数据来源于国家标准行政区划代码（adcode）映射表《》</p>
+<p>解析数据，将每个district的边界坐标保存到<code>districts</code> 。对于一个经纬度，遍历每个district，判断点是否在多边形内，找到所属行政区划。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**  </span></div><div class="line"> * 判断目标点是否在多边形内(由多个点组成)&lt;br/&gt;  </div><div class="line"> *   </div><div class="line"> * <span class="doctag">@param</span> px 目标点的经度坐标  </div><div class="line"> * <span class="doctag">@param</span> py 目标点的纬度坐标  </div><div class="line"> * <span class="doctag">@param</span> polygonXA 多边形的经度坐标集合  </div><div class="line"> * <span class="doctag">@param</span> polygonYA 多边形的纬度坐标集合  </div><div class="line"> * <span class="doctag">@return</span>  </div><div class="line"> */  </div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isPointInPolygon</span> <span class="params">( <span class="keyword">double</span> px , <span class="keyword">double</span> py , ArrayList&lt;Double&gt; polygonXA , ArrayList&lt;Double&gt; polygonYA )</span>    </span></div><div class="line">&#123;    </div><div class="line">    <span class="keyword">boolean</span> isInside = <span class="keyword">false</span>;    </div><div class="line">    <span class="keyword">double</span> ESP = <span class="number">1e-9</span>;    </div><div class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;    </div><div class="line">    <span class="keyword">double</span> linePoint1x;    </div><div class="line">    <span class="keyword">double</span> linePoint1y;    </div><div class="line">    <span class="keyword">double</span> linePoint2x = <span class="number">180</span>;    </div><div class="line">    <span class="keyword">double</span> linePoint2y;    </div><div class="line">  </div><div class="line">    linePoint1x = px;    </div><div class="line">    linePoint1y = py;    </div><div class="line">    linePoint2y = py;    </div><div class="line">  </div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; polygonXA.size() - <span class="number">1</span>; i++)    </div><div class="line">    &#123;    </div><div class="line">        <span class="keyword">double</span> cx1 = polygonXA.get(i);    </div><div class="line">        <span class="keyword">double</span> cy1 = polygonYA.get(i);    </div><div class="line">        <span class="keyword">double</span> cx2 = polygonXA.get(i + <span class="number">1</span>);    </div><div class="line">        <span class="keyword">double</span> cy2 = polygonYA.get(i + <span class="number">1</span>);   </div><div class="line">        <span class="comment">//如果目标点在任何一条线上  </span></div><div class="line">        <span class="keyword">if</span> ( isPointOnLine(px, py, cx1, cy1, cx2, cy2) )    </div><div class="line">        &#123;    </div><div class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;    </div><div class="line">        &#125;  </div><div class="line">        <span class="comment">//如果线段的长度无限小(趋于零)那么这两点实际是重合的，不足以构成一条线段  </span></div><div class="line">        <span class="keyword">if</span> ( Math.abs(cy2 - cy1) &lt; ESP )    </div><div class="line">        &#123;    </div><div class="line">            <span class="keyword">continue</span>;    </div><div class="line">        &#125;    </div><div class="line">        <span class="comment">//第一个点是否在以目标点为基础衍生的平行纬度线  </span></div><div class="line">        <span class="keyword">if</span> ( isPointOnLine(cx1, cy1, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </div><div class="line">        &#123;    </div><div class="line">            <span class="comment">//第二个点在第一个的下方,靠近赤道纬度为零(最小纬度)  </span></div><div class="line">            <span class="keyword">if</span> ( cy1 &gt; cy2 )    </div><div class="line">                count++;    </div><div class="line">        &#125;  </div><div class="line">        <span class="comment">//第二个点是否在以目标点为基础衍生的平行纬度线  </span></div><div class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ( isPointOnLine(cx2, cy2, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </div><div class="line">        &#123;    </div><div class="line">            <span class="comment">//第二个点在第一个的上方,靠近极点(南极或北极)纬度为90(最大纬度)  </span></div><div class="line">            <span class="keyword">if</span> ( cy2 &gt; cy1 )    </div><div class="line">                count++;    </div><div class="line">        &#125;  </div><div class="line">        <span class="comment">//由两点组成的线段是否和以目标点为基础衍生的平行纬度线相交  </span></div><div class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ( isIntersect(cx1, cy1, cx2, cy2, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </div><div class="line">        &#123;    </div><div class="line">            count++;    </div><div class="line">        &#125;    </div><div class="line">    &#125;    </div><div class="line">    <span class="keyword">if</span> ( count % <span class="number">2</span> == <span class="number">1</span> )    </div><div class="line">    &#123;    </div><div class="line">        isInside = <span class="keyword">true</span>;    </div><div class="line">    &#125;    </div><div class="line">  </div><div class="line">    <span class="keyword">return</span> isInside;    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>也可以用geojson配合qgis的api，geojson文件为<code>BOUNT_poly.geojson</code></p>
 
           
         
@@ -1869,162 +1869,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/23/编程语言学习/PYTHON/读取文件内容并写到kafka/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/03/23/编程语言学习/PYTHON/读取文件内容并写到kafka/" class="post-title-link" itemprop="url">Unbenannt</a>
-              
-            
-          </h2>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-
-              
-                
-              
-
-              <time title="Erstellt: 2018-03-23 21:02:13" itemprop="dateCreated datePublished" datetime="2018-03-23T21:02:13+08:00">2018-03-23</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Bearbeitet am</span>
-                
-                <time title="Geändert am: 2019-02-13 17:01:01" itemprop="dateModified" datetime="2019-02-13T17:01:01+08:00">2019-02-13</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python2</span></div><div class="line"><span class="comment"># -*- coding: utf-8 -*-</span></div><div class="line"><span class="keyword">from</span> kafka.producer <span class="keyword">import</span> KafkaProducer  </div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">import</span> logging</div><div class="line"><span class="keyword">import</span> os</div><div class="line"><span class="keyword">import</span> datetime</div><div class="line"><span class="keyword">import</span> random</div><div class="line"><span class="keyword">import</span> threading  </div><div class="line"><span class="keyword">import</span> time</div><div class="line"></div><div class="line"></div><div class="line">parentPath = <span class="string">"/opt/git/tracking_ingest_HK/app/event"</span></div><div class="line">finishedLogPath = parentPath+<span class="string">"/finished_log.dat"</span></div><div class="line"></div><div class="line">logger = logging.getLogger(<span class="string">"eventToKafka"</span>)</div><div class="line">logger.setLevel(logging.DEBUG)</div><div class="line"><span class="comment"># 建立一个filehandler来把日志记录在文件里，级别为debug以上</span></div><div class="line">fh = logging.FileHandler(parentPath+<span class="string">"/event_to_kafka.log"</span>)</div><div class="line">fh.setLevel(logging.DEBUG)</div><div class="line"><span class="comment"># 建立一个streamhandler来把日志打在CMD窗口上，级别为error以上</span></div><div class="line">ch = logging.StreamHandler()</div><div class="line">ch.setLevel(logging.ERROR)</div><div class="line"><span class="comment"># 设置日志格式</span></div><div class="line">formatter = logging.Formatter(<span class="string">"%(asctime)s - %(name)s - %(levelname)s - %(message)s"</span>)</div><div class="line">ch.setFormatter(formatter)</div><div class="line">fh.setFormatter(formatter)</div><div class="line"><span class="comment">#将相应的handler添加在logger对象中</span></div><div class="line">logger.addHandler(ch)</div><div class="line">logger.addHandler(fh)</div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Kafka_producer</span><span class="params">()</span>:</span></div><div class="line">    <span class="string">"""</span></div><div class="line">    使用kafka的生产模块</div><div class="line">    """</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, kafkatopic, kafkapartition)</span>:</span></div><div class="line">        self.kafkaTopic = kafkatopic</div><div class="line">        self.kafkaPartition=kafkapartition</div><div class="line">        self.producer = KafkaProducer(bootstrap_servers = [<span class="string">'10.11.70.141:9092'</span>,<span class="string">'10.11.70.142:9092'</span>,<span class="string">'10.11.70.143:9092'</span>])</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">sendjsondata</span><span class="params">(self, jsonData)</span>:</span></div><div class="line">        <span class="keyword">try</span>:</div><div class="line">            producer = self.producer</div><div class="line">            producer.send(self.kafkaTopic, jsonData)</div><div class="line">            <span class="comment">#producer.flush()</span></div><div class="line">        <span class="keyword">except</span> Exception, e:</div><div class="line">            logger.error(e)</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">flush</span><span class="params">(self)</span>:</span></div><div class="line">        producer = self.producer</div><div class="line">        producer.flush()</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">sendBatchJsonData</span><span class="params">(self, jsonData)</span>:</span></div><div class="line">        <span class="keyword">try</span>:</div><div class="line">            curcount = len(jsonData)/self.kafkaPartition</div><div class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, self.kafkaPartition):</div><div class="line">                start = i * curcount</div><div class="line">                <span class="keyword">if</span> i != (self.kafkaPartition - <span class="number">1</span>):</div><div class="line">                    end = (i+<span class="number">1</span>) * curcount</div><div class="line">                    curdata = jsonData[start:end]</div><div class="line">                    self.producer.send(self.kafkaTopic, curdata)</div><div class="line">                    self.producer.flush()</div><div class="line">                <span class="keyword">else</span>:</div><div class="line">                    curdata = jsonData[start:]</div><div class="line">                    self.producer.send(self.kafkaTopic, curdata)</div><div class="line">                    self.producer.flush()</div><div class="line">        <span class="keyword">except</span> Exception, e:</div><div class="line">            logger.error(e)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">searchFile</span><span class="params">(path, keyword)</span>:</span></div><div class="line">    fpList = []</div><div class="line">    <span class="keyword">for</span> filename <span class="keyword">in</span> os.listdir(path):</div><div class="line">        fp = os.path.join(path, filename)</div><div class="line">        <span class="keyword">if</span> os.path.isfile(fp) <span class="keyword">and</span> keyword <span class="keyword">in</span> filename:</div><div class="line">            fpList.append(fp)</div><div class="line">    <span class="keyword">return</span> fpList</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">insertIntoSet</span><span class="params">(filePath)</span>:</span></div><div class="line">    file = open(filePath)</div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        tempSet = set()</div><div class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> file:</div><div class="line">            tempSet.add(line.replace(<span class="string">'\n'</span>,<span class="string">''</span>))</div><div class="line">    <span class="keyword">except</span> Exception, e:</div><div class="line">        logger.error(e)</div><div class="line">    <span class="keyword">finally</span>:</div><div class="line">        file.close()</div><div class="line">    <span class="keyword">return</span> tempSet</div><div class="line">    </div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">calthread</span><span class="params">(threading.Thread)</span>:</span>  </div><div class="line">    <span class="comment">#初始化函数  </span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self,threadname,cond,startN,endN,files)</span>:</span>  </div><div class="line">        threading.Thread.__init__(self,name = threadname)  </div><div class="line">        self.cond = cond  </div><div class="line">        self.startN = startN  </div><div class="line">        self.endN = endN  </div><div class="line">        self.files = files</div><div class="line">    <span class="comment">#业务函数  </span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self)</span>:</span>  </div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(self.startN,self.endN + <span class="number">1</span>):  </div><div class="line">            filePath = self.files[i]  </div><div class="line">            logger.info(<span class="string">"current file is "</span> + filePath)</div><div class="line">            producer = Kafka_producer(<span class="string">"event"</span>, <span class="number">1</span>)</div><div class="line">            file = open(filePath)</div><div class="line">            <span class="keyword">try</span>:</div><div class="line">                fileLines = <span class="number">0</span></div><div class="line">                <span class="keyword">for</span> line <span class="keyword">in</span> file:</div><div class="line">                    arr = line.strip().split(<span class="string">'\t'</span>)</div><div class="line">                    <span class="keyword">if</span> len(arr) &gt; <span class="number">0</span>:</div><div class="line">                        <span class="keyword">try</span>:</div><div class="line">                            producer.sendjsondata(arr[<span class="number">2</span>])</div><div class="line">                            producer.flush()</div><div class="line">                            <span class="comment">#随机打印日志</span></div><div class="line">                            <span class="keyword">if</span> random.random() &lt; <span class="number">0.00001</span>:</div><div class="line">                                logger.info(arr[<span class="number">2</span>])</div><div class="line">                            fileLines += <span class="number">1</span></div><div class="line">                        <span class="keyword">except</span> Exception, e:</div><div class="line">                            logger.error(<span class="string">"current wrong file is %s"</span> % (filePath))</div><div class="line">                            logger.error(<span class="string">"The wrong event log is %s"</span> % (arr[<span class="number">2</span>]))</div><div class="line">                            logger.error(e)</div><div class="line">                            <span class="keyword">continue</span></div><div class="line">                logger.info(<span class="string">"insert into kafka %s lines"</span> % (str(fileLines)))</div><div class="line">            <span class="keyword">except</span> Exception, e:</div><div class="line">                logger.error(e)</div><div class="line">            <span class="keyword">finally</span>:</div><div class="line">                file.close()</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">(argv=None)</span>:</span></div><div class="line">    <span class="keyword">if</span> argv == <span class="keyword">None</span>:</div><div class="line">        argv = sys.argv</div><div class="line">        </div><div class="line">        </div><div class="line">    <span class="comment">#获取线程锁  </span></div><div class="line">    cond = threading.Condition()  </div><div class="line">    </div><div class="line">    <span class="comment">#已处理日志</span></div><div class="line">    finishedLog = set()</div><div class="line">    finishedFile = open(finishedLogPath)</div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> finishedFile:</div><div class="line">            finishedLog.add(line.strip(<span class="string">'\n'</span>))</div><div class="line">    <span class="keyword">finally</span>:</div><div class="line">        finishedFile.close()            </div><div class="line">    </div><div class="line">    <span class="comment">#incoming日志</span></div><div class="line">    incomingLog = set(searchFile(<span class="string">"/mapr/hkidc.hadoop.iclick/staging/tracking/incoming/"</span>, <span class="string">"event.HK"</span>))</div><div class="line">    </div><div class="line">    <span class="comment">#待处理日志写入finished_log.dat</span></div><div class="line">    todoLog = incomingLog - finishedLog</div><div class="line">    <span class="keyword">if</span> len(todoLog) == <span class="number">0</span>:</div><div class="line">	<span class="keyword">return</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> todoLog:</div><div class="line">	print(i)</div><div class="line">    outfile = open(finishedLogPath, <span class="string">'a'</span>)</div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> todoLog:</div><div class="line">            outfile.write(i + <span class="string">"\n"</span>)</div><div class="line">    <span class="keyword">finally</span>:</div><div class="line">        outfile.close()</div><div class="line">    </div><div class="line">    todoList = list(todoLog)</div><div class="line">      </div><div class="line"></div><div class="line"> </div><div class="line">    alen = len(todoList)</div><div class="line">    threadN = alen</div><div class="line"></div><div class="line">    <span class="comment">#执行线程对象列表  </span></div><div class="line">    threadL  = []   </div><div class="line">    t = alen / threadN </div><div class="line">       </div><div class="line">    logger.info( <span class="string">"初始化线程"</span>  )</div><div class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">0</span>,threadN):  </div><div class="line">        startN = x*t  </div><div class="line">        endN = <span class="number">0</span>  </div><div class="line">        <span class="keyword">if</span>((x+<span class="number">1</span>)*t &gt;= alen):  </div><div class="line">            endN = alen - <span class="number">1</span>  </div><div class="line">        <span class="keyword">else</span>:  </div><div class="line">            <span class="keyword">if</span>(x == threadN - <span class="number">1</span>):  </div><div class="line">                endN = alen - <span class="number">1</span>  </div><div class="line">            <span class="keyword">else</span>:  </div><div class="line">                endN = (x+<span class="number">1</span>)*t - <span class="number">1</span>  </div><div class="line">        <span class="comment">#向列表中存入新线程对象  </span></div><div class="line">        threadTT = calthread(<span class="string">"Thread--"</span>+str(x),cond,startN,endN,todoList)  </div><div class="line">        threadL.append(threadTT)  </div><div class="line">      </div><div class="line">    <span class="comment">#总计完成线程计数器  </span></div><div class="line">    logger.info(<span class="string">"Start time of threadCal--"</span>+ str(time.time()))</div><div class="line">    <span class="keyword">for</span> a <span class="keyword">in</span> threadL:  </div><div class="line">        a.start() </div><div class="line">    </div><div class="line">    logger.info(<span class="string">"done"</span>)</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</div><div class="line">	main()</div></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/23/机器学习/计算广告/相关文章/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2127,6 +1971,162 @@
           
             <p>腾讯2017广告大赛的代码<a href="https://github.com/BladeCoda/Tencent2017_Final_Coda_Allegro" target="_blank" rel="noopener">https://github.com/BladeCoda/Tencent2017_Final_Coda_Allegro</a></p>
 <p>在线广告中基于转化率提升的竞价策略<a href="https://zhuanlan.zhihu.com/p/24801130" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/24801130</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/23/编程语言学习/PYTHON/读取文件内容并写到kafka/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/03/23/编程语言学习/PYTHON/读取文件内容并写到kafka/" class="post-title-link" itemprop="url">Unbenannt</a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+
+              
+                
+              
+
+              <time title="Erstellt: 2018-03-23 21:02:13" itemprop="dateCreated datePublished" datetime="2018-03-23T21:02:13+08:00">2018-03-23</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Bearbeitet am</span>
+                
+                <time title="Geändert am: 2019-02-13 17:01:01" itemprop="dateModified" datetime="2019-02-13T17:01:01+08:00">2019-02-13</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python2</span></div><div class="line"><span class="comment"># -*- coding: utf-8 -*-</span></div><div class="line"><span class="keyword">from</span> kafka.producer <span class="keyword">import</span> KafkaProducer  </div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">import</span> logging</div><div class="line"><span class="keyword">import</span> os</div><div class="line"><span class="keyword">import</span> datetime</div><div class="line"><span class="keyword">import</span> random</div><div class="line"><span class="keyword">import</span> threading  </div><div class="line"><span class="keyword">import</span> time</div><div class="line"></div><div class="line"></div><div class="line">parentPath = <span class="string">"/opt/git/tracking_ingest_HK/app/event"</span></div><div class="line">finishedLogPath = parentPath+<span class="string">"/finished_log.dat"</span></div><div class="line"></div><div class="line">logger = logging.getLogger(<span class="string">"eventToKafka"</span>)</div><div class="line">logger.setLevel(logging.DEBUG)</div><div class="line"><span class="comment"># 建立一个filehandler来把日志记录在文件里，级别为debug以上</span></div><div class="line">fh = logging.FileHandler(parentPath+<span class="string">"/event_to_kafka.log"</span>)</div><div class="line">fh.setLevel(logging.DEBUG)</div><div class="line"><span class="comment"># 建立一个streamhandler来把日志打在CMD窗口上，级别为error以上</span></div><div class="line">ch = logging.StreamHandler()</div><div class="line">ch.setLevel(logging.ERROR)</div><div class="line"><span class="comment"># 设置日志格式</span></div><div class="line">formatter = logging.Formatter(<span class="string">"%(asctime)s - %(name)s - %(levelname)s - %(message)s"</span>)</div><div class="line">ch.setFormatter(formatter)</div><div class="line">fh.setFormatter(formatter)</div><div class="line"><span class="comment">#将相应的handler添加在logger对象中</span></div><div class="line">logger.addHandler(ch)</div><div class="line">logger.addHandler(fh)</div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Kafka_producer</span><span class="params">()</span>:</span></div><div class="line">    <span class="string">"""</span></div><div class="line">    使用kafka的生产模块</div><div class="line">    """</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, kafkatopic, kafkapartition)</span>:</span></div><div class="line">        self.kafkaTopic = kafkatopic</div><div class="line">        self.kafkaPartition=kafkapartition</div><div class="line">        self.producer = KafkaProducer(bootstrap_servers = [<span class="string">'10.11.70.141:9092'</span>,<span class="string">'10.11.70.142:9092'</span>,<span class="string">'10.11.70.143:9092'</span>])</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">sendjsondata</span><span class="params">(self, jsonData)</span>:</span></div><div class="line">        <span class="keyword">try</span>:</div><div class="line">            producer = self.producer</div><div class="line">            producer.send(self.kafkaTopic, jsonData)</div><div class="line">            <span class="comment">#producer.flush()</span></div><div class="line">        <span class="keyword">except</span> Exception, e:</div><div class="line">            logger.error(e)</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">flush</span><span class="params">(self)</span>:</span></div><div class="line">        producer = self.producer</div><div class="line">        producer.flush()</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">sendBatchJsonData</span><span class="params">(self, jsonData)</span>:</span></div><div class="line">        <span class="keyword">try</span>:</div><div class="line">            curcount = len(jsonData)/self.kafkaPartition</div><div class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, self.kafkaPartition):</div><div class="line">                start = i * curcount</div><div class="line">                <span class="keyword">if</span> i != (self.kafkaPartition - <span class="number">1</span>):</div><div class="line">                    end = (i+<span class="number">1</span>) * curcount</div><div class="line">                    curdata = jsonData[start:end]</div><div class="line">                    self.producer.send(self.kafkaTopic, curdata)</div><div class="line">                    self.producer.flush()</div><div class="line">                <span class="keyword">else</span>:</div><div class="line">                    curdata = jsonData[start:]</div><div class="line">                    self.producer.send(self.kafkaTopic, curdata)</div><div class="line">                    self.producer.flush()</div><div class="line">        <span class="keyword">except</span> Exception, e:</div><div class="line">            logger.error(e)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">searchFile</span><span class="params">(path, keyword)</span>:</span></div><div class="line">    fpList = []</div><div class="line">    <span class="keyword">for</span> filename <span class="keyword">in</span> os.listdir(path):</div><div class="line">        fp = os.path.join(path, filename)</div><div class="line">        <span class="keyword">if</span> os.path.isfile(fp) <span class="keyword">and</span> keyword <span class="keyword">in</span> filename:</div><div class="line">            fpList.append(fp)</div><div class="line">    <span class="keyword">return</span> fpList</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">insertIntoSet</span><span class="params">(filePath)</span>:</span></div><div class="line">    file = open(filePath)</div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        tempSet = set()</div><div class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> file:</div><div class="line">            tempSet.add(line.replace(<span class="string">'\n'</span>,<span class="string">''</span>))</div><div class="line">    <span class="keyword">except</span> Exception, e:</div><div class="line">        logger.error(e)</div><div class="line">    <span class="keyword">finally</span>:</div><div class="line">        file.close()</div><div class="line">    <span class="keyword">return</span> tempSet</div><div class="line">    </div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">calthread</span><span class="params">(threading.Thread)</span>:</span>  </div><div class="line">    <span class="comment">#初始化函数  </span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self,threadname,cond,startN,endN,files)</span>:</span>  </div><div class="line">        threading.Thread.__init__(self,name = threadname)  </div><div class="line">        self.cond = cond  </div><div class="line">        self.startN = startN  </div><div class="line">        self.endN = endN  </div><div class="line">        self.files = files</div><div class="line">    <span class="comment">#业务函数  </span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self)</span>:</span>  </div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(self.startN,self.endN + <span class="number">1</span>):  </div><div class="line">            filePath = self.files[i]  </div><div class="line">            logger.info(<span class="string">"current file is "</span> + filePath)</div><div class="line">            producer = Kafka_producer(<span class="string">"event"</span>, <span class="number">1</span>)</div><div class="line">            file = open(filePath)</div><div class="line">            <span class="keyword">try</span>:</div><div class="line">                fileLines = <span class="number">0</span></div><div class="line">                <span class="keyword">for</span> line <span class="keyword">in</span> file:</div><div class="line">                    arr = line.strip().split(<span class="string">'\t'</span>)</div><div class="line">                    <span class="keyword">if</span> len(arr) &gt; <span class="number">0</span>:</div><div class="line">                        <span class="keyword">try</span>:</div><div class="line">                            producer.sendjsondata(arr[<span class="number">2</span>])</div><div class="line">                            producer.flush()</div><div class="line">                            <span class="comment">#随机打印日志</span></div><div class="line">                            <span class="keyword">if</span> random.random() &lt; <span class="number">0.00001</span>:</div><div class="line">                                logger.info(arr[<span class="number">2</span>])</div><div class="line">                            fileLines += <span class="number">1</span></div><div class="line">                        <span class="keyword">except</span> Exception, e:</div><div class="line">                            logger.error(<span class="string">"current wrong file is %s"</span> % (filePath))</div><div class="line">                            logger.error(<span class="string">"The wrong event log is %s"</span> % (arr[<span class="number">2</span>]))</div><div class="line">                            logger.error(e)</div><div class="line">                            <span class="keyword">continue</span></div><div class="line">                logger.info(<span class="string">"insert into kafka %s lines"</span> % (str(fileLines)))</div><div class="line">            <span class="keyword">except</span> Exception, e:</div><div class="line">                logger.error(e)</div><div class="line">            <span class="keyword">finally</span>:</div><div class="line">                file.close()</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">(argv=None)</span>:</span></div><div class="line">    <span class="keyword">if</span> argv == <span class="keyword">None</span>:</div><div class="line">        argv = sys.argv</div><div class="line">        </div><div class="line">        </div><div class="line">    <span class="comment">#获取线程锁  </span></div><div class="line">    cond = threading.Condition()  </div><div class="line">    </div><div class="line">    <span class="comment">#已处理日志</span></div><div class="line">    finishedLog = set()</div><div class="line">    finishedFile = open(finishedLogPath)</div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> finishedFile:</div><div class="line">            finishedLog.add(line.strip(<span class="string">'\n'</span>))</div><div class="line">    <span class="keyword">finally</span>:</div><div class="line">        finishedFile.close()            </div><div class="line">    </div><div class="line">    <span class="comment">#incoming日志</span></div><div class="line">    incomingLog = set(searchFile(<span class="string">"/mapr/hkidc.hadoop.iclick/staging/tracking/incoming/"</span>, <span class="string">"event.HK"</span>))</div><div class="line">    </div><div class="line">    <span class="comment">#待处理日志写入finished_log.dat</span></div><div class="line">    todoLog = incomingLog - finishedLog</div><div class="line">    <span class="keyword">if</span> len(todoLog) == <span class="number">0</span>:</div><div class="line">	<span class="keyword">return</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> todoLog:</div><div class="line">	print(i)</div><div class="line">    outfile = open(finishedLogPath, <span class="string">'a'</span>)</div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> todoLog:</div><div class="line">            outfile.write(i + <span class="string">"\n"</span>)</div><div class="line">    <span class="keyword">finally</span>:</div><div class="line">        outfile.close()</div><div class="line">    </div><div class="line">    todoList = list(todoLog)</div><div class="line">      </div><div class="line"></div><div class="line"> </div><div class="line">    alen = len(todoList)</div><div class="line">    threadN = alen</div><div class="line"></div><div class="line">    <span class="comment">#执行线程对象列表  </span></div><div class="line">    threadL  = []   </div><div class="line">    t = alen / threadN </div><div class="line">       </div><div class="line">    logger.info( <span class="string">"初始化线程"</span>  )</div><div class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">0</span>,threadN):  </div><div class="line">        startN = x*t  </div><div class="line">        endN = <span class="number">0</span>  </div><div class="line">        <span class="keyword">if</span>((x+<span class="number">1</span>)*t &gt;= alen):  </div><div class="line">            endN = alen - <span class="number">1</span>  </div><div class="line">        <span class="keyword">else</span>:  </div><div class="line">            <span class="keyword">if</span>(x == threadN - <span class="number">1</span>):  </div><div class="line">                endN = alen - <span class="number">1</span>  </div><div class="line">            <span class="keyword">else</span>:  </div><div class="line">                endN = (x+<span class="number">1</span>)*t - <span class="number">1</span>  </div><div class="line">        <span class="comment">#向列表中存入新线程对象  </span></div><div class="line">        threadTT = calthread(<span class="string">"Thread--"</span>+str(x),cond,startN,endN,todoList)  </div><div class="line">        threadL.append(threadTT)  </div><div class="line">      </div><div class="line">    <span class="comment">#总计完成线程计数器  </span></div><div class="line">    logger.info(<span class="string">"Start time of threadCal--"</span>+ str(time.time()))</div><div class="line">    <span class="keyword">for</span> a <span class="keyword">in</span> threadL:  </div><div class="line">        a.start() </div><div class="line">    </div><div class="line">    logger.info(<span class="string">"done"</span>)</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</div><div class="line">	main()</div></pre></td></tr></table></figure>
 
           
         

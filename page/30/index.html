@@ -317,7 +317,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/数学/利率计算/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark笔记-操作elastic-search/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -337,7 +337,7 @@
           <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/数学/利率计算/" class="post-title-link" itemprop="url">利率计算</a>
+                <a href="/2017/07/12/hadoop-spark/spark/spark笔记-操作elastic-search/" class="post-title-link" itemprop="url">spark笔记-操作elastic search</a>
               
             
           </h2>
@@ -377,7 +377,7 @@
                 
                   <span class="post-meta-item-text">Bearbeitet am</span>
                 
-                <time title="Geändert am: 2018-01-29 21:42:24" itemprop="dateModified" datetime="2018-01-29T21:42:24+08:00">2018-01-29</time>
+                <time title="Geändert am: 2018-01-30 15:50:16" itemprop="dateModified" datetime="2018-01-30T15:50:16+08:00">2018-01-30</time>
               </span>
             
           
@@ -391,7 +391,7 @@
                 <span class="post-meta-item-text">in</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数学/" itemprop="url" rel="index"><span itemprop="name">数学</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
 
                 
                 
@@ -431,15 +431,17 @@
       
         
           
-            <p>等额本息</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">每月月供额=〔贷款本金×月利率×(1＋月利率)＾还款月数〕÷〔(1＋月利率)＾还款月数-1〕</div><div class="line">每月应还利息=贷款本金×月利率×〔(1+月利率)^还款月数-(1+月利率)^(还款月序号-1)〕÷〔(1+月利率)^还款月数-1〕</div><div class="line">每月应还本金=贷款本金×月利率×(1+月利率)^(还款月序号-1)÷〔(1+月利率)^还款月数-1〕</div><div class="line">总利息=还款月数×每月月供额-贷款本金</div></pre></td></tr></table></figure>
-<p>等额本金</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">每月月供额=(贷款本金÷还款月数)+(贷款本金-已归还本金累计额)×月利率</div><div class="line">每月应还本金=贷款本金÷还款月数</div><div class="line">每月应还利息=剩余本金×月利率=(贷款本金-已归还本金累计额)×月利率</div><div class="line">每月月供递减额=每月应还本金×月利率=贷款本金÷还款月数×月利率</div><div class="line">总利息=还款月数×(总贷款额×月利率-月利率×(总贷款额÷还款月数)*(还款月数-1)÷2+总贷款额÷还款月数)</div></pre></td></tr></table></figure>
-<p><a href="https://zhuanlan.zhihu.com/p/22920169" target="_blank" rel="noopener">信用卡账单分期真实年化利率</a></p>
-<p><img src="https://pic4.zhimg.com/v2-177bf28088e8ef5462e3b5cc3d1ab2eb_b.png" alt=""></p>
-<h1 id="年利率"><a href="#年利率" class="headerlink" title="年利率"></a>年利率</h1><p>利息率=利息量÷本金÷时间×100%</p>
-<h1 id="IRR"><a href="#IRR" class="headerlink" title="IRR"></a>IRR</h1><p><strong>内部收益率 (IRR) 的定义是：净现值 (NPV) 为零时的折现率。</strong></p>
-<p>综合考虑了每期的流入流出现金的量和时间，加权出来的结果。<br>IRR实质上是一个折现率，用IRR折现时会达到该项目的净现值NPV为0的状态。也可以理解为一个项目的预期收益率。<br>举例来说，如IRR为8%，可以简单解释为以8%的利率借钱投资于此项目，刚好可以不赚不赔。</p>
+            <h1 id="最简单的例子"><a href="#最简单的例子" class="headerlink" title="最简单的例子"></a>最简单的例子</h1><p>1、在pom.xml中增加<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;org.elasticsearch&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;elasticsearch-spark_2.10&lt;/artifactId&gt;</div><div class="line">    &lt;version&gt;2.2.1&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure></p>
+<p>2、在spark的main中导入<code>org.elasticsearch.spark</code>包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">...</div><div class="line">import org.elasticsearch.spark._</div></pre></td></tr></table></figure></p>
+<p>3、在spark的conf中增加如下配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">set(&quot;es.index.auto.create&quot;, &quot;true&quot;).set(&quot;es.nodes&quot;, &quot;192.168.37.129&quot;).set(&quot;es.port&quot;,&quot;9200&quot;)</div></pre></td></tr></table></figure></p>
+<p>其中，<code>es.nodes</code>是ElasticSearch的host</p>
+<p>4、简单的写法如下<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> conf = ...</div><div class="line"><span class="keyword">val</span> sc = <span class="keyword">new</span> <span class="type">SparkContext</span>(conf)         </div><div class="line"></div><div class="line"><span class="keyword">val</span> numbers = <span class="type">Map</span>(<span class="string">"one"</span> -&gt; <span class="number">1</span>, <span class="string">"two"</span> -&gt; <span class="number">2</span>, <span class="string">"three"</span> -&gt; <span class="number">3</span>)</div><div class="line"><span class="keyword">val</span> airports = <span class="type">Map</span>(<span class="string">"arrival"</span> -&gt; <span class="string">"Otopeni"</span>, <span class="string">"SFO"</span> -&gt; <span class="string">"San Fran"</span>)</div><div class="line"></div><div class="line">sc.makeRDD(<span class="type">Seq</span>(numbers, airports)).saveToEs(<span class="string">"spark/docs"</span>)</div></pre></td></tr></table></figure></p>
+<p>也可以用case class来写<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Trip</span>(<span class="params">departrue: <span class="type">String</span>, arrival: <span class="type">String</span></span>)</span></div><div class="line">    </div><div class="line"><span class="keyword">val</span> upTrip = <span class="type">Trip</span>(<span class="string">"OTF"</span>, <span class="string">"SFO"</span>)</div><div class="line"><span class="keyword">val</span> downTrip = <span class="type">Trip</span>(<span class="string">"MUC"</span>, <span class="string">"OTP"</span>)</div><div class="line"></div><div class="line"><span class="keyword">val</span> rdd = sc.makeRDD(<span class="type">Seq</span>(upTrip, downTrip))</div><div class="line"><span class="type">EsSpark</span>.saveToEs(rdd, <span class="string">"spark/docs"</span>)</div></pre></td></tr></table></figure></p>
+<p>5、在Elastic Search的Sense中查询<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">GET /spark/docs/_search</div></pre></td></tr></table></figure></p>
+<p>返回<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  &quot;took&quot;: 4,</div><div class="line">  &quot;timed_out&quot;: false,</div><div class="line">  &quot;_shards&quot;: &#123;</div><div class="line">    &quot;total&quot;: 5,</div><div class="line">    &quot;successful&quot;: 5,</div><div class="line">    &quot;failed&quot;: 0</div><div class="line">  &#125;,</div><div class="line">  &quot;hits&quot;: &#123;</div><div class="line">    &quot;total&quot;: 2,</div><div class="line">    &quot;max_score&quot;: 1,</div><div class="line">    &quot;hits&quot;: [</div><div class="line">      &#123;</div><div class="line">        &quot;_index&quot;: &quot;spark&quot;,</div><div class="line">        &quot;_type&quot;: &quot;docs&quot;,</div><div class="line">        &quot;_id&quot;: &quot;AVSkEdTv9l_YEZuMmxgt&quot;,</div><div class="line">        &quot;_score&quot;: 1,</div><div class="line">        &quot;_source&quot;: &#123;</div><div class="line">          &quot;arrival&quot;: &quot;Otopeni&quot;,</div><div class="line">          &quot;SFO&quot;: &quot;San Fran&quot;</div><div class="line">        &#125;</div><div class="line">      &#125;,</div><div class="line">      &#123;</div><div class="line">        &quot;_index&quot;: &quot;spark&quot;,</div><div class="line">        &quot;_type&quot;: &quot;docs&quot;,</div><div class="line">        &quot;_id&quot;: &quot;AVSkEdZp9l_YEZuMmxgu&quot;,</div><div class="line">        &quot;_score&quot;: 1,</div><div class="line">        &quot;_source&quot;: &#123;</div><div class="line">          &quot;one&quot;: 1,</div><div class="line">          &quot;three&quot;: 3,</div><div class="line">          &quot;two&quot;: 2</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    ]</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>测试通过</p>
+<h1 id="与spark-streaming结合"><a href="#与spark-streaming结合" class="headerlink" title="与spark streaming结合"></a>与spark streaming结合</h1><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 创建 StreamingContext，5秒一个批次</span></div><div class="line"><span class="keyword">val</span> ssc = <span class="keyword">new</span> <span class="type">StreamingContext</span>(sc, <span class="type">Seconds</span>(<span class="number">3</span>))</div><div class="line"><span class="keyword">val</span> lines = ssc.socketTextStream(<span class="string">"192.168.37.129"</span>, <span class="number">9999</span>)</div><div class="line"><span class="comment">// 对每一行数据执行 Split 操作</span></div><div class="line"><span class="keyword">val</span> words = lines.flatMap(_.split(<span class="string">" "</span>))</div><div class="line"><span class="comment">// 统计 word 的数量</span></div><div class="line"><span class="keyword">val</span> pairs = words.map(word =&gt; (word, <span class="number">1</span>))</div><div class="line"></div><div class="line">pairs.foreachRDD&#123;</div><div class="line">x =&gt;</div><div class="line">x.saveToEs(<span class="string">"spark/words"</span>)</div><div class="line">&#125;</div><div class="line"></div><div class="line">ssc.start()</div><div class="line">ssc.awaitTermination()</div></pre></td></tr></table></figure>
+<p>pairs是一个DSteamRDD，通过foreachRDD来遍历其中的每个RDD，对于每个RDD，可以saveToEs</p>
 
           
         
@@ -496,7 +498,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/工具和环境/Hexo + Github 搭建博客入门/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/算法与数据结构/最长公共子串/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -516,7 +518,7 @@
           <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/工具和环境/Hexo + Github 搭建博客入门/" class="post-title-link" itemprop="url">Hexo + Github 搭建博客入门</a>
+                <a href="/2017/07/12/算法与数据结构/最长公共子串/" class="post-title-link" itemprop="url">最长公共子串</a>
               
             
           </h2>
@@ -556,7 +558,7 @@
                 
                   <span class="post-meta-item-text">Bearbeitet am</span>
                 
-                <time title="Geändert am: 2019-06-03 09:49:30" itemprop="dateModified" datetime="2019-06-03T09:49:30+08:00">2019-06-03</time>
+                <time title="Geändert am: 2018-03-17 20:50:31" itemprop="dateModified" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
               </span>
             
           
@@ -570,7 +572,7 @@
                 <span class="post-meta-item-text">in</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/工具和环境/" itemprop="url" rel="index"><span itemprop="name">工具和环境</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法与数据结构/" itemprop="url" rel="index"><span itemprop="name">算法与数据结构</span></a></span>
 
                 
                 
@@ -610,108 +612,12 @@
       
         
           
-            <h1 id="1、安装node-js"><a href="#1、安装node-js" class="headerlink" title="1、安装node.js"></a>1、安装node.js</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo add-apt-repository ppa:chris-lea/node.js</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></div><div class="line"><span class="meta">#</span><span class="bash">原方法没有这一步，但是后面的操作会提示npm <span class="built_in">command</span> not found</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install npm</span></div></pre></td></tr></table></figure>
-<h1 id="2、安装hexo"><a href="#2、安装hexo" class="headerlink" title="2、安装hexo"></a>2、安装hexo</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo npm install hexo -g</span></div></pre></td></tr></table></figure>
-<p>如果是mac，要用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo npm install hexo --no-optional</div></pre></td></tr></table></figure>
-<p>不然会报错<strong>Error: Cannot find module ‘./build/Release/DTraceProviderBindings’] code: ‘MODULE_NOT_FOUND’</strong>这个错误。</p>
-<p>如果报权限错误，需要用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo npm install --unsafe-perm --verbose -g hexo</div></pre></td></tr></table></figure>
-<h1 id="3、初始博客的根目录"><a href="#3、初始博客的根目录" class="headerlink" title="3、初始博客的根目录"></a>3、初始博客的根目录</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> ~/myblog</span></div><div class="line"><span class="meta">$</span><span class="bash"> hexo init</span></div></pre></td></tr></table></figure>
-<p>mac的根目录在</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/Users/david/david/myblog</div></pre></td></tr></table></figure>
-<h1 id="4、在github上新建仓库"><a href="#4、在github上新建仓库" class="headerlink" title="4、在github上新建仓库"></a>4、在github上新建仓库</h1><p>名称必须是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gitusername.github.io</div></pre></td></tr></table></figure>
-<p>我的就是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Schwimmer.github.io</div></pre></td></tr></table></figure>
-<p>并将本地的SSH KEY添加到git上（略）</p>
-<h1 id="5、让博客可以发布到git"><a href="#5、让博客可以发布到git" class="headerlink" title="5、让博客可以发布到git"></a>5、让博客可以发布到git</h1><p>1）安装hexo-deployer-Git（不然会出现ERROR Deployer not found: git）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-deployer-git --save</div></pre></td></tr></table></figure>
-<p>2） 配置你hexo博客根目录下的_config.yml文件(应该是最下面一行，修改成你的github)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: git@github.com:Schwimmer/Schwimmer.github.io.git</div><div class="line">  branch: master</div></pre></td></tr></table></figure>
-<blockquote>
-<p> tips</p>
-<p> 冒号后面一定要跟空格</p>
-</blockquote>
-<h1 id="6、hexo常用命令"><a href="#6、hexo常用命令" class="headerlink" title="6、hexo常用命令"></a>6、hexo常用命令</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">hexo clean #清除缓存</div><div class="line">hexo new &quot;title&quot; #新建文章</div><div class="line">hexo g #生成html，或hexo generate</div><div class="line">hexo s #在本地启动服务，启动后访问localhost:4000就可以打开，或hexo server</div><div class="line">hexo d #发布到git，发布后访问https://schwimmer.github.io/就可以打开，或hexo deploy</div></pre></td></tr></table></figure>
-<blockquote>
-<p> tips</p>
-<p> 我目前用的新建文章的方法，就是直接在source/_posts/下面新建md文件</p>
-<p> 可以偷懒写成</p>
-<p> cd ~/myblog</p>
-<p> hexo clean;hexo g;hexo s</p>
-<p> 或</p>
-<p> hexo clean;hexo g;hexo d</p>
-</blockquote>
-<h1 id="7、支持数学公式"><a href="#7、支持数学公式" class="headerlink" title="7、支持数学公式"></a>7、支持数学公式</h1><p>更新：</p>
-<p>现在用</p>
-<p><a href="http://blog.csdn.net/u014630987/article/details/78670258" target="_blank" rel="noopener">如何在 hexo 中支持 Mathjax？</a></p>
-<p><a href="http://blog.csdn.net/emptyset110/article/details/50123231" target="_blank" rel="noopener">搭建一个支持LaTEX的hexo博客</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-math --save</div></pre></td></tr></table></figure>
-<p>这时如果你会发现出了一些问题，原因是hexo先用marked.<a href="http://lib.csdn.net/base/javascript" target="_blank" rel="noopener">js</a>渲染，然后再交给MathJax渲染。在marked.js渲染的时候下划线<code>_</code>是被escape掉并且换成了<code>&lt;em&gt;</code>标签，即斜体字，另外LaTeX中的<code>\\</code>也会被转义成一个<code>\</code>，这样会导致MathJax渲染时不认为它是一个换行符了。</p>
-<p>为了使Marked.js与MathJax共存，打开node_modules/marked/lib/marked.js并做如下改动</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Step 1:</div><div class="line">  escape: /^\\([\\`*&#123;&#125;\[\]()# +\-.!_&gt;])/,11替换成</div><div class="line">  escape: /^\\([`*\[\]()# +\-.!_&gt;])/,11这一步是在原基础上取消了对\\,\&#123;,\&#125;的转义(escape)</div><div class="line">Step 2:</div><div class="line">  em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,11替换成</div><div class="line">  em:/^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML&quot;&gt;&lt;/script&gt;</div></pre></td></tr></table></figure>
-<h1 id="8、安装主题"><a href="#8、安装主题" class="headerlink" title="8、安装主题"></a>8、安装主题</h1><p>转自：<a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="noopener">NexT主题安装教程</a></p>
-<h1 id="9、文章阅读计数"><a href="#9、文章阅读计数" class="headerlink" title="9、文章阅读计数"></a>9、文章阅读计数</h1><p>转自：<a href="http://www.jianshu.com/p/702a7aec4d00" target="_blank" rel="noopener">Hexo添加不蒜子和LeanCloud统计无标题文章</a></p>
-<p>找到站点的<code>themes/next/layout/_partials</code>目录下的<code>footer.swig</code>文件。插入代码如下。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&#123;% if theme.copyright %&#125;</div><div class="line">&lt;div class=&quot;powered-by&quot;&gt;</div><div class="line">  &#123;&#123; __(&apos;footer.powered&apos;, &apos;&lt;a class=&quot;theme-link&quot; href=&quot;https://hexo.io&quot;&gt;Hexo&lt;/a&gt;&apos;) &#125;&#125;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">&lt;div class=&quot;theme-info&quot;&gt;</div><div class="line">  &#123;&#123; __(&apos;footer.theme&apos;) &#125;&#125; -</div><div class="line">  &lt;a class=&quot;theme-link&quot; href=&quot;https://github.com/iissnan/hexo-theme-next&quot;&gt;</div><div class="line">    NexT.&#123;&#123; theme.scheme &#125;&#125;</div><div class="line">  &lt;/a&gt;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line"># 此位置插入以下代码</div><div class="line">&lt;div&gt;</div><div class="line">&lt;script async src=&quot;https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js&quot;&gt;&lt;/script&gt;</div><div class="line"></div><div class="line">本站总访问量 &lt;span id=&quot;busuanzi_value_site_pv&quot;&gt;&lt;/span&gt; 次&amp;nbsp&amp;nbsp&amp;nbsp</div><div class="line">本站访客数&lt;span id=&quot;busuanzi_value_site_uv&quot;&gt;&lt;/span&gt;人次</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">&#123;% endif %&#125;</div></pre></td></tr></table></figure>
-<h1 id="10、增加图片"><a href="#10、增加图片" class="headerlink" title="10、增加图片"></a>10、增加图片</h1><p>1 把主页配置文件<code>_config.yml</code> 里的<code>post_asset_folder:</code>这个选项设置为<code>true</code></p>
-<p>2 在你的hexo目录下执行这样一句话<code>npm install hexo-asset-image --save</code>，这是下载安装一个可以上传本地图片的插件，来自dalao：<a href="https://github.com/CodeFalling/hexo-asset-image" target="_blank" rel="noopener">dalao的git</a></p>
-<p>3 等待一小段时间后，再运行<code>hexo n &quot;xxxx&quot;</code>来生成md博文时，<code>/source/_posts</code>文件夹内除了<code>xxxx.md</code>文件还有一个<strong>同名的文件夹</strong></p>
-<p>4 最后在<code>xxxx.md</code>中想引入图片时，先把图片复制到xxxx这个文件夹中，然后只需要在xxxx.md中按照markdown的格式引入图片：</p>
-<p><code>![你想输入的替代文字](xxxx/图片名.jpg)</code></p>
-<p><strong>注意：</strong>xxxx是这个md文件的名字，也是同名文件夹的名字，你想引入的图片就只需要放入xxxx这个文件夹内就好了，很像引用相对路径。</p>
-<p>5 最后检查一下，<code>hexo g</code>生成页面后，进入<code>public\2017\02\26\index.html</code>文件中查看相关字段，可以发现，html标签内的语句是<code>&lt;img src=&quot;2017/02/26/xxxx/图片名.jpg&quot;&gt;</code>，而不是<code>&lt;img src=&quot;xxxx/图片名.jpg&gt;</code>。这很重要，关乎你的网页是否可以真正加载你想插入的图片。</p>
-<h1 id="11、sitemap-插件"><a href="#11、sitemap-插件" class="headerlink" title="11、sitemap 插件"></a>11、sitemap 插件</h1><p><a href="https://www.jianshu.com/p/86557c34b671" target="_blank" rel="noopener">Hexo Seo优化让你的博客在google搜索排名第一</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;meta name=&quot;google-site-verification&quot; content=&quot;Mx7Ikp0IpBtTbSpHDTBV0_CMJA-E8CLn8NRIrwyq5m4&quot; /&gt;</div><div class="line">&lt;meta name=&quot;baidu-site-verification&quot; content=&quot;ZBTsWx4NdC&quot; /&gt;</div></pre></td></tr></table></figure>
-<h1 id="12、首页显示文章摘要"><a href="#12、首页显示文章摘要" class="headerlink" title="12、首页显示文章摘要"></a>12、首页显示文章摘要</h1><ul>
-<li>进入hexo博客项目的themes/next目录</li>
-<li>用文本编辑器打开_config.yml文件</li>
-<li>搜索”auto_excerpt”,找到如下部分：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># Automatically Excerpt. Not recommand.</div><div class="line"># Please use &lt;!-- more --&gt; in the post to control excerpt accurately.</div><div class="line">auto_excerpt:</div><div class="line">  enable: false</div><div class="line">  length: 150</div></pre></td></tr></table></figure>
-<ul>
-<li>把enable改为对应的false改为true，然后<code>hexo d -g</code>，再进主页，问题就解决了！</li>
-</ul>
-<h1 id="13、启用分类和标签"><a href="#13、启用分类和标签" class="headerlink" title="13、启用分类和标签"></a>13、启用分类和标签</h1><p>1、在博客的开头要加上</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">title: Hexo + Github 搭建博客入门</div><div class="line">date: 2017-07-12 11:49:53</div><div class="line">categories: &quot;工具和环境&quot;</div><div class="line">tags: </div><div class="line"> - hexo</div><div class="line">description:</div></pre></td></tr></table></figure>
-<p>2、修改主题配置文档</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">menu:</div><div class="line">  home: /</div><div class="line">  categories: /categories</div><div class="line">  #about: /about</div><div class="line">  archives: /archives</div><div class="line">  tags: /tags</div></pre></td></tr></table></figure>
-<p>3、hexo加上page</p>
-<p>如分类</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo new page categories</div></pre></td></tr></table></figure>
-<p>然后打开<code>source/categories/index.md</code>，增加一行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">type: &quot;categories&quot;</div></pre></td></tr></table></figure>
-<p>增加标签也是一样</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo new page tags</div></pre></td></tr></table></figure>
-<p>然后打开<code>source/tags/index.md</code>，增加一行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">type: &quot;tags&quot;</div></pre></td></tr></table></figure>
-<p>谷歌与百度的站点地图，前者适用于其他搜索引擎，用来手动提交以增加收录</p>
-<p>安装：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">npm install hexo-generator-sitemap@1 --save</div><div class="line">npm install hexo-generator-baidu-sitemap@0.1.1 --save</div></pre></td></tr></table></figure>
-<p><code>_config.yml</code>添加代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">baidusitemap:</div><div class="line">  path: baidusitemap.xml</div></pre></td></tr></table></figure>
-<p>谷歌的<code>sitemap.xml</code>不需要写到配置文件中，自动生效。</p>
-<p>在主页后面加<code>/baidusitemap.xml</code>可以看到baidusitemap（谷歌同理），将该网址它提交给百度搜索：<a href="http://zhanzhang.baidu.com/?castk=LTE%3D" target="_blank" rel="noopener">百度站长平台</a>，贴吧账号无法在这里使用。</p>
-<p>不过由于Github禁止了百度爬虫，百度无法抓取其中的URL：</p>
-<h1 id="绑定代码到Coding"><a href="#绑定代码到Coding" class="headerlink" title="绑定代码到Coding"></a>绑定代码到Coding</h1><p>创建coding仓库</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/4093388-383ab28e2c2b2e84.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt=""></p>
-<p>上传公钥</p>
-<p><a href="https://coding.net/user/account/setting/keys" target="_blank" rel="noopener">https://coding.net/user/account/setting/keys</a></p>
-<p>测试SSH Key 是否配置成功</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ssh -T git@git.coding.net</div></pre></td></tr></table></figure>
-<p>用来部署Hexo博客的Coding项目地址为：<code>git@git.coding.net:ddxy1986/DavidXu-Blog</code></p>
-<p>deploy的配置改为</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: </div><div class="line">    github: git@github.com:Schwimmer/Schwimmer.github.io.git</div><div class="line">    coding: git@git.coding.net:ddxy1986/DavidXu-Blog</div><div class="line">  branch: master</div></pre></td></tr></table></figure>
-<h2 id="配置Coding项目的Pages服务"><a href="#配置Coding项目的Pages服务" class="headerlink" title="配置Coding项目的Pages服务"></a>配置Coding项目的Pages服务</h2><h3 id="开启Coding项目的Pages服务"><a href="#开启Coding项目的Pages服务" class="headerlink" title="开启Coding项目的Pages服务"></a>开启Coding项目的Pages服务</h3><p><img src="https://upload-images.jianshu.io/upload_images/4093388-1ab23c0ef7e753ea.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt=""></p>
-<h1 id="踩过的坑"><a href="#踩过的坑" class="headerlink" title="踩过的坑"></a>踩过的坑</h1><p>1）若启动时报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> Error: Warning: Permanently added &apos;github.com,192.30.253.112&apos; (RSA) to the list of known hosts.</div><div class="line">sign_and_send_pubkey: signing failed: agent refused operation</div><div class="line">Permission denied (publickey).</div><div class="line">fatal: Could not read from remote repository.</div></pre></td></tr></table></figure>
-<p>处理是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ eval &quot;$(ssh-agent -s)&quot;</div><div class="line">$ ssh-add</div></pre></td></tr></table></figure>
-<p>2）生成html时报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">end of the stream or a document separator is expected</div></pre></td></tr></table></figure>
-<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><p><a href="http://blog.csdn.net/kesarchen/article/details/50579550" target="_blank" rel="noopener">ubuntu下使用hexo搭建博客</a> </p>
+            <p>找出最长子串，需要知道子串的<strong>起始位置</strong>和子串的<strong>长度</strong>。</p>
+<p>因此，维护一个二维数组，存放两个字符串的字符关系，再创建两个变量存放index和maxLen。</p>
+<p><img src="https://segmentfault.com/img/remote/1460000007963599?w=684&amp;h=644" alt=""></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">findLcsNew</span><span class="params">(String str1, String str2)</span> </span>&#123;</div><div class="line">		<span class="keyword">int</span> len1, len2;</div><div class="line">		len1 = str1.length();</div><div class="line">		len2 = str2.length();</div><div class="line">		</div><div class="line">		<span class="keyword">int</span> maxLen = <span class="number">0</span>, index = <span class="number">0</span>;</div><div class="line">		<span class="keyword">int</span>[][] arr = <span class="keyword">new</span> <span class="keyword">int</span>[len1 + <span class="number">1</span>][len2 + <span class="number">1</span>];</div><div class="line">		</div><div class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len1; i++) &#123;</div><div class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; len2; j++) &#123;</div><div class="line">				<span class="keyword">if</span> ( i == <span class="number">0</span> || j == <span class="number">0</span> ) &#123;</div><div class="line">                  <span class="comment">// 第一行和第一列都是0</span></div><div class="line">					arr[i][j] = <span class="number">0</span>;</div><div class="line">				&#125; <span class="keyword">else</span> &#123;</div><div class="line">                  <span class="comment">// 该字符和上一个字符均相等时</span></div><div class="line">					<span class="keyword">if</span> (str1.charAt(i) == str2.charAt(j) &amp;&amp; str1.charAt(i-<span class="number">1</span>) == str2.charAt(j-<span class="number">1</span>)) &#123;</div><div class="line">						arr[i][j] = arr[i-<span class="number">1</span>][j-<span class="number">1</span>] + <span class="number">1</span>;</div><div class="line">					&#125; <span class="keyword">else</span> &#123;</div><div class="line">						arr[i][j] = <span class="number">0</span>;</div><div class="line">					&#125;</div><div class="line">				&#125;</div><div class="line">				</div><div class="line">				<span class="keyword">if</span> (arr[i][j] &gt; maxLen) &#123;</div><div class="line">					maxLen = arr[i][j];</div><div class="line">					index = i;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		String newStr = str1.substring(index - maxLen, index + <span class="number">1</span>);</div><div class="line">		</div><div class="line">		<span class="keyword">return</span> newStr;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>也可以用一维数组实现，同时可以记录多个相同长度的最长子串</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">findLcs</span><span class="params">(String str1, String str2)</span> </span>&#123;</div><div class="line">	StringBuffer buff = <span class="keyword">new</span> StringBuffer();</div><div class="line">	<span class="keyword">int</span> i, j;</div><div class="line">	<span class="keyword">int</span> len1, len2;</div><div class="line">	len1 = str1.length();</div><div class="line">	len2 = str2.length();</div><div class="line">	<span class="keyword">int</span> maxLen = len1 &gt; len2 ? len1 : len2;</div><div class="line">	<span class="keyword">int</span>[] max = <span class="keyword">new</span> <span class="keyword">int</span>[maxLen];</div><div class="line">	<span class="keyword">int</span>[] maxIndex = <span class="keyword">new</span> <span class="keyword">int</span>[maxLen];</div><div class="line">	<span class="keyword">int</span>[] c = <span class="keyword">new</span> <span class="keyword">int</span>[maxLen];</div><div class="line"></div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; len2; i++) &#123;</div><div class="line">		<span class="keyword">for</span> (j = len1 - <span class="number">1</span>; j &gt;= <span class="number">0</span>; j--) &#123;</div><div class="line">			<span class="keyword">if</span> (str2.charAt(i) == str1.charAt(j)) &#123;</div><div class="line">				<span class="keyword">if</span> ((i == <span class="number">0</span>) || (j == <span class="number">0</span>))</div><div class="line">					c[j] = <span class="number">1</span>;</div><div class="line">				<span class="keyword">else</span></div><div class="line">					c[j] = c[j - <span class="number">1</span>] + <span class="number">1</span>;</div><div class="line">			&#125; <span class="keyword">else</span> &#123;</div><div class="line">				c[j] = <span class="number">0</span>;</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			<span class="keyword">if</span> (c[j] &gt; max[<span class="number">0</span>]) &#123; <span class="comment">// 如果是大于那暂时只有一个是最长的,而且要把后面的清0;</span></div><div class="line">				max[<span class="number">0</span>] = c[j];</div><div class="line">				maxIndex[<span class="number">0</span>] = j;</div><div class="line"></div><div class="line">				<span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">1</span>; k &lt; maxLen; k++) &#123;</div><div class="line">					max[k] = <span class="number">0</span>;</div><div class="line">					maxIndex[k] = <span class="number">0</span>;</div><div class="line">				&#125;</div><div class="line">			&#125; <span class="keyword">else</span> <span class="keyword">if</span> (c[j] == max[<span class="number">0</span>]) &#123; <span class="comment">// 有多个是相同长度的子串</span></div><div class="line">				<span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">1</span>; k &lt; maxLen; k++) &#123;</div><div class="line">					<span class="keyword">if</span> (max[k] == <span class="number">0</span>) &#123;</div><div class="line">						max[k] = c[j];</div><div class="line">						maxIndex[k] = j;</div><div class="line">						<span class="keyword">break</span>; <span class="comment">// 在后面加一个就要退出循环了</span></div><div class="line">					&#125;</div><div class="line"></div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; maxLen; j++) &#123;</div><div class="line">		<span class="keyword">if</span> (max[j] &gt; <span class="number">0</span>) &#123;</div><div class="line">			<span class="keyword">for</span> (i = maxIndex[j] - max[j] + <span class="number">1</span>; i &lt;= maxIndex[j]; i++)</div><div class="line">				buff.append(str1.charAt(i));			</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> buff.toString();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 
           
         
@@ -768,7 +674,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/编程语言学习/JAVA/ubuntu-java反编译/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/简单聚类算法/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -788,7 +694,7 @@
           <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/编程语言学习/JAVA/ubuntu-java反编译/" class="post-title-link" itemprop="url">ubuntu java反编译</a>
+                <a href="/2017/07/12/机器学习/简单聚类算法/" class="post-title-link" itemprop="url">简单聚类算法</a>
               
             
           </h2>
@@ -828,7 +734,7 @@
                 
                   <span class="post-meta-item-text">Bearbeitet am</span>
                 
-                <time title="Geändert am: 2018-01-30 16:08:16" itemprop="dateModified" datetime="2018-01-30T16:08:16+08:00">2018-01-30</time>
+                <time title="Geändert am: 2018-02-01 21:40:11" itemprop="dateModified" datetime="2018-02-01T21:40:11+08:00">2018-02-01</time>
               </span>
             
           
@@ -842,7 +748,7 @@
                 <span class="post-meta-item-text">in</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JAVA/" itemprop="url" rel="index"><span itemprop="name">JAVA</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
 
                 
                 
@@ -882,10 +788,8 @@
       
         
           
-            <p>从<a href="https://sourceforge.net/projects/jadx/下载" target="_blank" rel="noopener">https://sourceforge.net/projects/jadx/下载</a></p>
-<p>假设安装路径为<code>~/opt/jadx</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd ~/opt/jadx/jadx/build/jadx/bin</div><div class="line">./jadx-gui</div></pre></td></tr></table></figure>
-<p>打开gui，拖入jar包或者class文件</p>
+            <h1 id="canopy"><a href="#canopy" class="headerlink" title="canopy"></a>canopy</h1><p><img src="http://img.blog.csdn.net/20140528112050187?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvamFtZXNoYWRvb3A=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">while D is not empty</div><div class="line">      select element d from D to initialize canopy c</div><div class="line">      remove d from D</div><div class="line">      Loop through remaining elements in D</div><div class="line">           if distance between d_i and c &lt; T1 : add element to the canopy c</div><div class="line">           if distance between d_i and c &lt; T2 : remove element from D</div><div class="line">      end</div><div class="line">      add canopy c to the list of canopies C</div></pre></td></tr></table></figure>
 
           
         
@@ -1205,7 +1109,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark-sql笔记/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/算法与数据结构/查找树/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -1225,7 +1129,7 @@
           <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/hadoop-spark/spark/spark-sql笔记/" class="post-title-link" itemprop="url">spark-sql笔记</a>
+                <a href="/2017/07/12/算法与数据结构/查找树/" class="post-title-link" itemprop="url">查找树</a>
               
             
           </h2>
@@ -1265,7 +1169,7 @@
                 
                   <span class="post-meta-item-text">Bearbeitet am</span>
                 
-                <time title="Geändert am: 2018-01-30 15:49:02" itemprop="dateModified" datetime="2018-01-30T15:49:02+08:00">2018-01-30</time>
+                <time title="Geändert am: 2017-07-16 12:44:24" itemprop="dateModified" datetime="2017-07-16T12:44:24+08:00">2017-07-16</time>
               </span>
             
           
@@ -1279,7 +1183,7 @@
                 <span class="post-meta-item-text">in</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法与数据结构/" itemprop="url" rel="index"><span itemprop="name">算法与数据结构</span></a></span>
 
                 
                 
@@ -1319,22 +1223,47 @@
       
         
           
-            <p>spark sql可以用基本的SQL语法，或者hiveQL。Spark SQL也能从hive中读数据。</p>
-<p>Data Frame的来源可以是：结构化数据、hive表、外部数据库或者RDD</p>
-<h2 id="Starting-Point-SQLContext"><a href="#Starting-Point-SQLContext" class="headerlink" title="Starting Point: SQLContext"></a>Starting Point: SQLContext</h2><p>The entry point into all functionality in Spark SQL is the <a href="http://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.sql.SQLContext" target="_blank" rel="noopener"><code>SQLContext</code></a> class, or one of its descendants. To create a basic <code>SQLContext</code>, all you need is a SparkContext.</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> sc: <span class="type">SparkContext</span> <span class="comment">// An existing SparkContext.</span></div><div class="line"><span class="keyword">val</span> sqlContext = <span class="keyword">new</span> org.apache.spark.sql.<span class="type">SQLContext</span>(sc)</div><div class="line"></div><div class="line"><span class="comment">// this is used to implicitly convert an RDD to a DataFrame.</span></div><div class="line"><span class="keyword">import</span> sqlContext.implicits._</div></pre></td></tr></table></figure>
-<p>在SQLContext的基础上，也要创建一个HiveContext，可以用Hive的udf，也能读hive表。<br>HiveContext是一个独立的包，不需要安装hive</p>
-<h2 id="Creating-DataFrames"><a href="#Creating-DataFrames" class="headerlink" title="Creating DataFrames"></a>Creating DataFrames</h2><p>With a <code>SQLContext</code>, applications can create <code>DataFrame</code>s from an <a href="http://spark.apache.org/docs/latest/sql-programming-guide.html#interoperating-with-rdds" target="_blank" rel="noopener">existing <code>RDD</code></a>, from a Hive table, or from <a href="http://spark.apache.org/docs/latest/sql-programming-guide.html#data-sources" target="_blank" rel="noopener">data sources</a>.</p>
-<p>As an example, the following creates a <code>DataFrame</code> based on the content of a JSON file:</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> sc: <span class="type">SparkContext</span> <span class="comment">// An existing SparkContext.</span></div><div class="line"><span class="keyword">val</span> sqlContext = <span class="keyword">new</span> org.apache.spark.sql.<span class="type">SQLContext</span>(sc)</div><div class="line"></div><div class="line"><span class="keyword">val</span> df = sqlContext.read.json(<span class="string">"examples/src/main/resources/people.json"</span>)</div><div class="line"></div><div class="line"><span class="comment">// Displays the content of the DataFrame to stdout</span></div><div class="line">df.show()</div></pre></td></tr></table></figure>
-<h2 id="Creating-Datasets"><a href="#Creating-Datasets" class="headerlink" title="Creating Datasets"></a>Creating Datasets</h2><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> org.apache.spark.sql.<span class="type">SQLContext</span></div><div class="line">...</div><div class="line">...</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">// Encoders for most common types are automatically provided by importing sqlContext.implicits._</span></div><div class="line"><span class="keyword">val</span> sqlContext = <span class="type">SQLContext</span>.getOrCreate(sc)</div><div class="line"><span class="keyword">import</span> sqlContext.implicits._</div><div class="line"><span class="keyword">val</span> ds = <span class="type">Seq</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>).toDS()</div><div class="line">ds.map(_ + <span class="number">1</span>).collect() <span class="comment">// Returns: Array(2, 3, 4)</span></div><div class="line"></div><div class="line"><span class="comment">// Encoders are also created for case classes.</span></div><div class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span>(<span class="params">name: <span class="type">String</span>, age: <span class="type">Long</span></span>)</span></div><div class="line"><span class="keyword">val</span> ds = <span class="type">Seq</span>(<span class="type">Person</span>(<span class="string">"Andy"</span>, <span class="number">32</span>)).toDS()</div><div class="line"></div><div class="line"><span class="comment">// DataFrames can be converted to a Dataset by providing a class. Mapping will be done by name.</span></div><div class="line"><span class="keyword">val</span> path = <span class="string">"examples/src/main/resources/people.json"</span></div><div class="line"><span class="keyword">val</span> people = sqlContext.read.json(path).as[<span class="type">Person</span>]</div></pre></td></tr></table></figure>
-<h2 id="在DataFrame中创建表并查询"><a href="#在DataFrame中创建表并查询" class="headerlink" title="在DataFrame中创建表并查询"></a>在DataFrame中创建表并查询</h2><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> sqlContext = <span class="type">SQLContext</span>.getOrCreate(sc)</div><div class="line"><span class="keyword">import</span> sqlContext.implicits._</div><div class="line"></div><div class="line"><span class="comment">//把andy和32匹配到name和age列。</span></div><div class="line"><span class="comment">//先创建一个DataFrame，再注册为table</span></div><div class="line"><span class="keyword">val</span> ds = sc.parallelize(<span class="type">Seq</span>((<span class="string">"Andy"</span>, <span class="number">32</span>))).toDF(<span class="string">"name"</span>,<span class="string">"age"</span>)    </div><div class="line">ds.registerTempTable(<span class="string">"ds1"</span>)</div><div class="line">sqlContext.sql(<span class="string">"select * from ds1"</span>)</div></pre></td></tr></table></figure>
-<h2 id="sparkSQL链接GP"><a href="#sparkSQL链接GP" class="headerlink" title="sparkSQL链接GP"></a>sparkSQL链接GP</h2><p>1、maven中增加包<br>一开始试过8.2的包就不行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;postgresql&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;postgresql&lt;/artifactId&gt;</div><div class="line">    &lt;version&gt;8.3-606.jdbc3&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure></p>
-<p>2、连接jdbc<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> jdbcDF = sqlContext.read.format(<span class="string">"jdbc"</span>).options(</div><div class="line">      <span class="type">Map</span>(<span class="string">"url"</span> -&gt; <span class="string">"jdbc:postgresql://10.1.1.230:5432/xmo_dw"</span>,</div><div class="line">          <span class="string">"user"</span>-&gt;<span class="string">"david_xu"</span>,  </div><div class="line">          <span class="string">"password"</span>-&gt;<span class="string">"w7dtfxHD"</span>,</div><div class="line">        <span class="string">"dbtable"</span> -&gt; <span class="string">"(select * from xmo_dw.bshare_blacklist_tagid) as aa"</span>)).load().show()</div></pre></td></tr></table></figure></p>
-<h2 id="在spark-sql命令行中测试连接"><a href="#在spark-sql命令行中测试连接" class="headerlink" title="在spark sql命令行中测试连接"></a>在spark sql命令行中测试连接</h2><p>/usr/lib/spark/bin/spark-sql —jars /home/david/jars/postgresql-8.3-606.jdbc4.jar</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="type">CREATE</span> <span class="type">TEMPORARY</span> <span class="type">TABLE</span> temp_imageviews</div><div class="line"><span class="type">USING</span> org.apache.spark.sql.jdbc</div><div class="line"><span class="type">OPTIONS</span> (</div><div class="line">  driver <span class="string">"org.postgresql.Driver"</span>,</div><div class="line">  url <span class="string">"jdbc:postgresql://10.1.1.230:5432/xmo_dw"</span>,</div><div class="line">  user <span class="string">"david_xu"</span>,</div><div class="line">  password <span class="string">"w7dtfxHD"</span>,</div><div class="line">  dbtable <span class="string">"(select date_i,opxpid::text from xmo_dw.imageviews where date_i=20160512 limit 20000000) as aa"</span>,</div><div class="line">  numPartitions <span class="string">"6"</span></div><div class="line">);</div></pre></td></tr></table></figure>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">cd /usr/lib/spark/bin/</div><div class="line">/usr/lib/spark/bin/spark-sql <span class="comment">--executor-memory 100g</span></div><div class="line"></div><div class="line">add jar /home/wilson/sparksql/postgresql-8.3-606.jdbc3.jar;</div><div class="line"><span class="keyword">set</span>  spark.sql.shuffle.partitions=<span class="number">20</span>;</div><div class="line"> <span class="keyword">CREATE</span> <span class="keyword">TEMPORARY</span> <span class="keyword">TABLE</span> temp_imageviews</div><div class="line"><span class="keyword">USING</span> org.apache.spark.sql.jdbc</div><div class="line">OPTIONS (</div><div class="line">  driver <span class="string">"org.postgresql.Driver"</span>,</div><div class="line">  <span class="keyword">url</span> <span class="string">"jdbc:postgresql://10.1.1.230:5432/xmo_dw"</span>,</div><div class="line">  <span class="keyword">user</span> <span class="string">"david_xu"</span>,</div><div class="line">  <span class="keyword">password</span> <span class="string">"w7dtfxHD"</span>,</div><div class="line">  dbtable <span class="string">"(select  timeslot,record_server,referring_site ,opxsid  from  xmo_dw.imageviews   where  date_i=20160515 limit  5000000) as aa"</span>,</div><div class="line">  numPartitions <span class="string">"6"</span>);</div></pre></td></tr></table></figure>
-<h3 id="spark-sql读取HDFS建表"><a href="#spark-sql读取HDFS建表" class="headerlink" title="spark sql读取HDFS建表"></a>spark sql读取HDFS建表</h3><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">/usr/lib/spark/bin/spark-sql -e "CREATE TEMPORARY TABLE rtbreq_hour</div><div class="line">USING org.apache.spark.sql.bytes</div><div class="line">OPTIONS (</div><div class="line">  paths '$&#123;rtbreq_path&#125;'</div><div class="line">);</div><div class="line">create TEMPORARY TABLE rtbreq_tanx_hour</div><div class="line">USING org.apache.spark.sql.bytes</div><div class="line">OPTIONS(</div><div class="line"> paths '$&#123;rtbreq_tanx_path&#125;'</div><div class="line">);</div><div class="line">select ip,count(1) cnt from (select ip from rtbreq_hour union all select ip from rtbreq_tanx_hour) a group by ip having cnt &gt; 30 order by cnt desc;</div><div class="line">select bxid,count(1) cnt from (select bxid from rtbreq_hour union all select bxid from rtbreq_tanx_hour) a group by bxid having cnt &gt; 1000 order by cnt desc;</div><div class="line">" &gt; rtbreq/$day/$hour.txt</div></pre></td></tr></table></figure>
+            <p><strong>动态查找树主要有：二叉查找树（Binary Search Tree），平衡二叉查找树（Balanced Binary Search Tree），红黑树 (Red-Black Tree )，B-tree/B+-tree/ B*-tree (B~Tree)。前三者是典型的二叉查找树结构，其查找的时间复杂度*</strong>O<em>(log2</em>N<em>)<em>*与树的深度相关，那么降低树的深度自然对查找效率是有所提高的；还有一个实际问题：就是大规模数据存储中，实现索引查询这样一个实际背景下，树节点存储的元素数量是有限的（如果元素数量非常多的话，查找就退化成节点内部的线性查找了），这样导致二叉查找树结构由于树的深度过大而造成磁盘I/O读写过于频繁，进而导致查询效率低下（为什么会出现这种情况，待会在外部存储器-磁盘中有所解释），那么如何减少树的深度（当然是不能减少查询的数据量），一个基本的想法就是：采用多叉树结构（由于树节点元素数量是有限的，自然该节点的子树数量也就是有限的）。</em></em></p>
+<p><strong>这样我们就提出了一个新的查找树结构——多路查找树。根据平衡二叉树的启发，自然就想到平衡多路查找树结构，也就是B树</strong></p>
+<h1 id="1、B树"><a href="#1、B树" class="headerlink" title="1、B树"></a>1、B树</h1><h2 id="1-1-原理"><a href="#1-1-原理" class="headerlink" title="1.1 原理"></a>1.1 原理</h2><p>二叉搜索树：</p>
+<ol>
+<li>所有非叶子结点至多拥有两个儿子（ Left 和 Right ）；</li>
+<li>所有结点存储一个关键字；</li>
+<li>非叶子结点的左指针指向小于其关键字的子树，右指针指向大于其关键字的子树；</li>
+</ol>
+<p><img src="http://static.oschina.net/uploads/img/201301/06112317_yHxY.jpg" alt=""></p>
+<h2 id="1-2-搜索方法"><a href="#1-2-搜索方法" class="headerlink" title="1.2 搜索方法"></a>1.2 搜索方法</h2><p> B 树的搜索，从根结点开始，如果查询的关键字与结点的关键字相等，那么就命中；否则，如果查询关键字比 结点关键字小，就进入左儿子；如果比结点关键字大，就进入右儿子；如果左儿子或右儿子的指针为空，则报告找不到相应的关键字；</p>
+<p> 如果 B 树的所有非叶子结点的左右子树的 结点数目均保持差不多（平衡），那么 B 树的搜索性能逼近二分查找；但它比连续内存空间的二分查找的优点是，改变 B 树结构（插入与删除结点）不需要移动大段的内存数据，甚至通常是常数开销；如</p>
+<p><img src="http://static.oschina.net/uploads/img/201301/06112317_ssDu.jpg" alt=""></p>
+<p>但 B 树在经过多次插入与删除后，有可能导致不同的结构：</p>
+<p><img src="http://static.oschina.net/uploads/img/201301/06112317_NTuh.jpg" alt=""></p>
+<p>右边也是一个 B 树，但 它的搜索性能已经是线性的了；同样的关键字集合有可能导致不同的树结构索引；所以，使用 B 树还 要考虑尽可能让 B 树保持左图的结构，和避免右图的结构，也就是所谓的“平衡”问题；       </p>
+<p>实际使用的 B 树都是在原 B 树的基 础上加上平衡算法，即“平衡二叉树”；如何保持 B 树结点分布均匀的平衡算法是平衡二叉树的 关键；<strong>平衡算法</strong>是一种在 B 树中插入和删除结点的策略；</p>
+<h1 id="2、B-树"><a href="#2、B-树" class="headerlink" title="2、B-树"></a>2、B-树</h1><h2 id="1-1-原理-1"><a href="#1-1-原理-1" class="headerlink" title="1.1 原理"></a>1.1 原理</h2><p>是一种多路搜索树（并不是二叉的）：</p>
+<p>​       1. 定义任意非叶子结点最多只有 M 个儿 子；且 M&gt;2 ；</p>
+<p>​       2. 根结点的儿子数为 [2, M] ；</p>
+<p>​       3. 除根结点以外的非叶子结点的儿子数为 [M/2, M] ；</p>
+<p>​       4. 每个结点存放至少 M/2-1 （取 上整）和至多 M-1 个关键字；（至少 2 个关键 字）</p>
+<p>​       5. 非叶子结点的关键字个数 = 指向儿 子的指针个数 -1 ；</p>
+<p>​       6. 非叶子结点的关键字： K[1], K[2], …, K[M-1] ；且 K[i] &lt; K[i+1] ；</p>
+<p>​       7. 非叶子结点的指针： P[1], P[2], …, P[M] ；其中 P[1] 指向关键字小于 K[1] 的子树， P[M] 指向关键字大于K[M-1] 的子树，其它 P[i] 指 向关键字属于 (K[i-1], K[i]) 的子树；</p>
+<p>​       8. 所有叶子结点位于同一层；</p>
+<p>如：（ M=3 ）</p>
+<p><img src="http://static.oschina.net/uploads/img/201301/06112317_djvw.jpg" alt=""></p>
+<p>B- 树的特性：</p>
+<p>​       1. 关键字集合分布在整颗树中；</p>
+<p>​       2. 任何一个关键字出现且只出现在一个结点中；</p>
+<p>​       3. 搜索有可能在非叶子结点结束；</p>
+<p>​       4. 其搜索性能等价于在关键字全集内做一次二分查找；</p>
+<p>​       5. 自动层次控制；</p>
+<p>​       由于限制了除根结点以外的非叶子结点，至少含有 M/2 个儿子，确保了结点的至少利用率，其最底搜索性能为：</p>
+<p><img src="http://static.oschina.net/uploads/img/201301/06112318_AOeO.jpg" alt=""></p>
+<p> 其中， M 为设定的非叶子结点最多子树个 数， N 为关键字总数；</p>
+<p>​       所以 B- 树的性能<strong>总是等价于二分查找 （与 M 值无关）</strong>，也就没有 B 树平衡 的问题；</p>
+<p>​       由于 M/2 的限制，在插入结点时，如果 结点已满，需要将结点分裂为两个各占 M/2 的结点；删除结点时，需将两个不足 M/2 的 兄弟结点合并；</p>
+<h2 id="1-2-方法"><a href="#1-2-方法" class="headerlink" title="1.2 方法"></a>1.2 方法</h2><p>参考</p>
+<p><a href="http://www.oschina.net/question/565065_86338" target="_blank" rel="noopener">BTree,B-Tree,B+Tree,B*Tree都是什么</a></p>
+<p><a href="http://blog.csdn.net/hbhhww/article/details/8206846" target="_blank" rel="noopener">B-tree/B+tree/B*tree</a></p>
 
           
         
@@ -1391,7 +1320,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/机器学习笔记-最大熵/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/工具和环境/Mac技巧/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -1411,7 +1340,7 @@
           <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/机器学习/机器学习笔记-最大熵/" class="post-title-link" itemprop="url">机器学习笔记-最大熵</a>
+                <a href="/2017/07/12/工具和环境/Mac技巧/" class="post-title-link" itemprop="url">Mac技巧</a>
               
             
           </h2>
@@ -1451,7 +1380,261 @@
                 
                   <span class="post-meta-item-text">Bearbeitet am</span>
                 
-                <time title="Geändert am: 2018-03-17 20:50:31" itemprop="dateModified" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
+                <time title="Geändert am: 2019-07-01 12:02:30" itemprop="dateModified" datetime="2019-07-01T12:02:30+08:00">2019-07-01</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">in</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/工具和环境/" itemprop="url" rel="index"><span itemprop="name">工具和环境</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="卸载jdk9安装jdk8"><a href="#卸载jdk9安装jdk8" class="headerlink" title="卸载jdk9安装jdk8"></a>卸载jdk9安装jdk8</h1><p>brew默认安装的jdk9带来了一些麻烦，</p>
+<p>比如mvn java和scala混编项目会报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">error: error while loading package, Missing dependency &apos;object java.lang.Object in compiler mirror&apos;, required by /Users/david/david/.m2/repository/org/scala-lang/scala-library/2.10.5/scala-library-2.10.5.jar(scala/package.class)</div></pre></td></tr></table></figure>
+<p>于是打算卸载并换回jdk8</p>
+<p>安装Java：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew cask install java  //命令安装的是最新的Java9，我需要的是Java8……</div></pre></td></tr></table></figure>
+<p>卸载Java9:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">ls  /Library/Java/JavaVirtualMachines/ //查看jdk版本</div><div class="line"></div><div class="line">//卸载</div><div class="line"></div><div class="line">sudo rm -rf /Library/Java/JavaVirtualMachines/jdk-9.0.4.jdk //此处9.0.1即是上一步查看到的版本号</div><div class="line">sudo rm -fr /Library/Internet\ Plug-Ins/JavaAppletPlugin.plugin </div><div class="line">sudo rm -fr /Library/PreferencePanes/JavaControlPanel.prefPane </div><div class="line">sudo rm -fr ~/Library/Application\ Support/Java</div></pre></td></tr></table></figure>
+<p>安装Java8:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">brew tap caskroom/versions</div><div class="line">brew cask install java8</div></pre></td></tr></table></figure>
+<p>安装eclipse：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew cask install eclipse-ide</div></pre></td></tr></table></figure>
+<p>配置Java环境变量：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">/usr/libexec/java_home  //定位JAVA_HOME位置</div><div class="line"></div><div class="line">  Matching Java Virtual Machines (1):</div><div class="line">    1.8.0_121, x86_64:  &quot;Java SE 8&quot; </div><div class="line">  /Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Home</div><div class="line"></div><div class="line"></div><div class="line">vi ~/.bash_profile  //编辑profile文件</div><div class="line"></div><div class="line">//按i键，输入以下代码</div><div class="line"></div><div class="line">JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Home</div><div class="line">PATH=$JAVA_HOME/bin:$PATH</div><div class="line">CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar</div><div class="line"></div><div class="line">//然后按esc键，输入 :wq  保存并退出profile文件。</div></pre></td></tr></table></figure>
+<p>之后执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">source ~/.base_profile  </div><div class="line"></div><div class="line">echo ~/.base_profile</div></pre></td></tr></table></figure>
+<p>查看环境变量是否配置成功：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$  echo $JAVA_HOME</div><div class="line"></div><div class="line">/Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Home</div></pre></td></tr></table></figure>
+<h1 id="Finder复制路径"><a href="#Finder复制路径" class="headerlink" title="Finder复制路径"></a>Finder复制路径</h1><p><a href="https://www.jianshu.com/p/757f9ffc5acf" target="_blank" rel="noopener">https://www.jianshu.com/p/757f9ffc5acf</a></p>
+<h1 id="拷贝文件内容到剪切板"><a href="#拷贝文件内容到剪切板" class="headerlink" title="拷贝文件内容到剪切板"></a>拷贝文件内容到剪切板</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pbcopy &lt; id_rsa.pub</div></pre></td></tr></table></figure>
+<h1 id="支持LUIT"><a href="#支持LUIT" class="headerlink" title="支持LUIT"></a>支持LUIT</h1><ul>
+<li>下载地址<br><a href="https://link.jianshu.com?t=http://invisible-island.net/luit/luit.html#download" target="_blank" rel="noopener">http://invisible-island.net/luit/luit.html#download</a></li>
+<li>解压<br>tar zxvf luit.tar.gz<br>cd luit-20141204</li>
+</ul>
+<blockquote>
+<p>可能版本会不一样</p>
+</blockquote>
+<ul>
+<li>配置<br>./configure</li>
+<li>编译<br>make</li>
+<li>安装<br>make install</li>
+<li>卸载<br>make uninstall</li>
+<li>使用<br>luit -encoding gbk ssh user@host</li>
+</ul>
+<h1 id="刷新dns"><a href="#刷新dns" class="headerlink" title="刷新dns"></a>刷新dns</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo dscacheutil -flushcache</div></pre></td></tr></table></figure>
+<h1 id="windows的文本文件乱码"><a href="#windows的文本文件乱码" class="headerlink" title="windows的文本文件乱码"></a>windows的文本文件乱码</h1><p><a href="https://bbs.feng.com/read-htm-tid-11194986.html" target="_blank" rel="noopener">https://bbs.feng.com/read-htm-tid-11194986.html</a></p>
+<p>大家可能都碰到过从Windows复制了一些文本文件到mac上，打开以后发现乱码的问题。楼主经常mac和win两个系统之间互相传一些程序文件比如.cpp .h，由于编码不一样，用<br>win的人把他的程序传给我，我在mac里打开的中文注释总是乱码，令我大为恼火<br>原来win上很多文本编辑器用的是GB18030编码来保存汉字，mac上都是用的utf-8编码，导致了乱码</p>
+<p>下面附下这两个服务的下载 <a href="https://pan.baidu.com/s/1kU50qxh" target="_blank" rel="noopener">https://pan.baidu.com/s/1kU50qxh</a></p>
+<p>GB18030转换为utf-8.zip</p>
+<p>utf-8转为GB18030.zip</p>
+<p>下载解压后复制到~/资源库/Services 目录下即可使用</p>
+<p><img src="https://bbsimg.joyslink.com/2017/03/30/13410258_p2.png" alt="img"></p>
+<p>如果不想用了在系统偏好设置的如图位置可以取消</p>
+<p><img src="https://bbsimg.joyslink.com/2017/03/30/13410254_p1.png" alt="img"></p>
+<h1 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h1><p>查看nginx安装目录：　</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">open /usr/local/Cellar/nginx  //其实这个才是nginx被安装到的目录</div></pre></td></tr></table></figure>
+<p>nginx的配置文件（nginx.conf）:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vim  /usr/local/etc/nginx/nginx.conf</div></pre></td></tr></table></figure>
+<p>nginx重启</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nginx -s reload</div></pre></td></tr></table></figure>
+<h1 id="安装lisp"><a href="#安装lisp" class="headerlink" title="安装lisp"></a>安装lisp</h1><p>1、安装sbcl</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew install sbcl</div></pre></td></tr></table></figure>
+<p>2、安装emacs</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
+<h1 id="在Drscheme使用stream的问题"><a href="#在Drscheme使用stream的问题" class="headerlink" title="在Drscheme使用stream的问题"></a>在Drscheme使用stream的问题</h1><p><a href="https://blog.csdn.net/interhanchi/article/details/83190473" target="_blank" rel="noopener">https://blog.csdn.net/interhanchi/article/details/83190473</a></p>
+<h1 id="安装MySQL"><a href="#安装MySQL" class="headerlink" title="安装MySQL"></a>安装MySQL</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew install mysql</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">To connect run:</div><div class="line">    mysql -uroot</div><div class="line"></div><div class="line">To have launchd start mysql now and restart at login:</div><div class="line">  brew services start mysql</div><div class="line">Or, if you don&apos;t want/need a background service you can just run:</div><div class="line">  mysql.server start</div></pre></td></tr></table></figure>
+<h1 id="redis"><a href="#redis" class="headerlink" title="redis"></a>redis</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># 带密码启动</div><div class="line">src/redis-server redis.conf</div></pre></td></tr></table></figure>
+<h1 id="mac下载破解软件"><a href="#mac下载破解软件" class="headerlink" title="mac下载破解软件"></a>mac下载破解软件</h1><p><a href="https://www.waitsun.com/" target="_blank" rel="noopener">https://www.waitsun.com/</a></p>
+<blockquote>
+<h1 id="Mac安装软件时提示已损坏的解决方法"><a href="#Mac安装软件时提示已损坏的解决方法" class="headerlink" title="Mac安装软件时提示已损坏的解决方法"></a>Mac安装软件时提示已损坏的解决方法</h1><p>今天要说的内容是重中之重。一直有朋友同事反映，从网上下载的Sketch、Principle等设计软件，以及输入法等常用软件，安装时总是提示“已损坏，移至废纸篓”这类信息，根本无法打开。如下图：</p>
+<p><img src="/2017/07/12/工具和环境/Mac技巧/pic/432.png" alt="Mac安装软件时提示已损坏的解决方法-爱情守望者"></p>
+<p>其实，这是新系统（macOS Sierra 10.12.X）惹的祸。新系统加强了安全机制，默认不允许用户自行下载安装应用程序，只能从Mac App Store里安装应用。</p>
+<h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h4><p><strong>步骤一</strong>：打开终端（按F4启动Launchpad，终端默认在“其他”中）</p>
+<p><img src="/2017/07/12/工具和环境/Mac技巧/pic/683.jpeg" alt="Mac安装软件时提示已损坏的解决方法-爱情守望者"></p>
+<p><strong>步骤二</strong>：输入代码：sudo spctl <strong>—</strong>master-disable（<strong>master前面为两个短横线，看下面的截图</strong>）</p>
+<p><img src="/2017/07/12/工具和环境/Mac技巧/pic/566.png" alt="Mac安装软件时提示已损坏的解决方法-爱情守望者"></p>
+<p>注意红框处应有空格<br><strong>步骤三</strong>：按回车输入自己电脑密码，再次回车（密码不会显示出来，放心输就好）</p>
+<p><img src="/2017/07/12/工具和环境/Mac技巧/pic/564.png" alt="Mac安装软件时提示已损坏的解决方法-爱情守望者"></p>
+<p>不显示密码，输完按回车</p>
+<p><strong>步骤四</strong>：打开系统偏好设置 » 安全性与隐私，若显示<em>任何来源</em>，大功告成；若没有此选项，一定是你前面的步骤不对</p>
+<p><img src="/2017/07/12/工具和环境/Mac技巧/pic/665.png" alt="Mac安装软件时提示已损坏的解决方法-爱情守望者"><br>回到桌面双击安装文件，发现都可以打开啦，尽情享受Mac带给你的乐趣吧！</p>
+<p><img src="/2017/07/12/工具和环境/Mac技巧/pic/700.png" alt="Mac安装软件时提示已损坏的解决方法-爱情守望者"></p>
+</blockquote>
+<h1 id="MongoDB"><a href="#MongoDB" class="headerlink" title="MongoDB"></a>MongoDB</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew install mongodb</div></pre></td></tr></table></figure>
+<p>启动服务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew services start mongodb</div></pre></td></tr></table></figure>
+<p>可视化工具</p>
+<p><a href="https://robomongo.org/download" target="_blank" rel="noopener">Robomongo</a></p>
+<p>``</p>
+<h1 id="brew更换镜像"><a href="#brew更换镜像" class="headerlink" title="brew更换镜像"></a>brew更换镜像</h1><p><a href="https://mirror.tuna.tsinghua.edu.cn/help/homebrew/" target="_blank" rel="noopener">https://mirror.tuna.tsinghua.edu.cn/help/homebrew/</a></p>
+<h1 id="docker"><a href="#docker" class="headerlink" title="docker"></a>docker</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew cask install docker</div></pre></td></tr></table></figure>
+<h1 id="Pytorch安装"><a href="#Pytorch安装" class="headerlink" title="Pytorch安装"></a>Pytorch安装</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">conda create -n pytorch python=3.6</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip3 install torch torchvision</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/用scikit-learn生成测试数据集/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/07/12/机器学习/用scikit-learn生成测试数据集/" class="post-title-link" itemprop="url">用scikit-learn生成测试数据集</a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+
+              
+                
+              
+
+              <time title="Erstellt: 2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Bearbeitet am</span>
+                
+                <time title="Geändert am: 2018-07-04 23:22:59" itemprop="dateModified" datetime="2018-07-04T23:22:59+08:00">2018-07-04</time>
               </span>
             
           
@@ -1505,123 +1688,25 @@
       
         
           
-            <h1 id="1、最大熵原理"><a href="#1、最大熵原理" class="headerlink" title="1、最大熵原理"></a>1、最大熵原理</h1><p>日常生活中，很多事情的发生表现出一定的随机性，试验的结果往往是不确定的，也不知道这个随机现象所服从的概率分布。<strong>最大熵的实质</strong>就是，在已知部分知识的前提下，关于未知分布最合理的推断就是符合已知知识最不确定或者最随机的推断。任何其他的选择都意味着我们增加了其他的约束和假设。</p>
-<p>将最大熵应用到分类，就是最大熵模型。给定一个训练集：</p>
-<script type="math/tex; mode=display">
-T = \{  (x_1,y_1),  (x_2,y_2),..., (x_N,y_N)\}</script><p>其中$x_i \in X$是输入，$y_i \in Y$是输出，X和Y表示输入和输出空间。N为样本数。<strong>目标是</strong>，利用最大熵原理选出一个最好的分类模型，即对于任意给定的输入$x \in X$，可以以概率$p(y|x)$输出$y \in Y$ 。</p>
-<p>按照最大熵原理，应该<strong>优先保证模型满足已知的所有约束</strong>。思路是，从训练数据T中抽取若干有用的特征，要求这些特征在T上关于经验分布$\tilde{p}(x,y)$的数学期望与它们在模型中关于$p(x,y)$的数学期望相等。这样，一个特征就是一个约束了。</p>
-<p>这里就涉及到，<strong>特征如何刻画？经验分布如何表示？</strong></p>
-<h1 id="2、特征函数"><a href="#2、特征函数" class="headerlink" title="2、特征函数"></a>2、特征函数</h1><p>假设通过特征选择，抽取若干特征。特征通常由特征函数来表示。例如</p>
-<script type="math/tex; mode=display">
-f(x,y) =\left\{\begin{matrix}
-\begin{aligned}
-& 1，若x,y满足某个事实 \\ 
-& 0，否则
-\end{aligned}
-\end{matrix}\right.</script><p>这里的特征不是指输入的某个特征，而是指输入和输出共同的特征。</p>
-<blockquote>
-<p>例如，假设我们需要判断“打”是动词还是量词，已知的训练数据有</p>
-<p>(x1,y1)=(一打火柴，量词);</p>
-<p>(x2,y2)=(三打啤酒，量词);</p>
-<p>(x3,y3)=(打电话，动词);</p>
-<p>(x4,y4)=(打篮球，动词);</p>
-<p>通过观察，发现“打”前面是数字时，是量词，“打”后面是名词时，是动词。这就是从训练数据中提取的两个特征，可分别用特征函数表示为</p>
-</blockquote>
-<h1 id="3、经验分布"><a href="#3、经验分布" class="headerlink" title="3、经验分布"></a>3、经验分布</h1><p>经验（概率）分布就是通过对训练集T进行统计得到的分布，用$\tilde p$表示。这里列举两个经验分布</p>
-<script type="math/tex; mode=display">
-\tilde p(x,y) = \frac {count(x,y)} {N} , \tilde p(x)=\frac {count(x)} {N}</script><p>其中，count表示出现的次数。</p>
-<h1 id="4、约束条件"><a href="#4、约束条件" class="headerlink" title="4、约束条件"></a>4、约束条件</h1><p>对于任意一个特征函数f，$E<em>{\tilde p}f$ 表示f在训练数据T上关于$\tilde p(x,y)$的数学期望， $E</em>{p}f$ 表示f在训练数据T上关于$p(x,y)$的数学期望。按照期望的定义，我们有</p>
-<script type="math/tex; mode=display">
-E_{\tilde p}f=\sum_{x,y}\tilde p(x,y)f(x,y)</script><script type="math/tex; mode=display">
-E_{ p}f=\sum_{x,y} p(x,y)f(x,y)</script><p>其中，p(x,y)是未知的，而建模的目标是生成$p(y|x)$，因此，根据Bayes定理，$p(x,y)=p(x)p(y|x)$。在样本数量足够的条件下，$p(x)$可以用$\tilde p(x)$近似表示。这样</p>
-<script type="math/tex; mode=display">
-E_{ p}f=\sum_{x,y} \tilde p(x)p(y|x)f(x,y)</script><p>对于概率分布$p(y|x)$，我们希望特征f的期望值应该和从训练集中得到的特征期望值是一致的，因此，<strong>增加约束</strong></p>
-<script type="math/tex; mode=display">
-E_{ p}f=E_{\tilde p}f</script><p>假设我们从训练集中抽取了n个特征，相应的，便有n个特征函数$f_i(i=1,2,…,n)$以及n个约束条件</p>
-<script type="math/tex; mode=display">
-C_i:E_{ p}(f_i)=E_{\tilde p}(f_i) \tag {3-1}</script><blockquote>
-<p>关于约束条件的几何解释</p>
-<p><img src="/2017/07/12/机器学习/机器学习笔记-最大熵/最大熵1.png" alt="最大熵1"></p>
-<p>（a）：P是所有可能的概率空间，此时没有约束条件，所有的概率模型$p(y|x)$都是允许的；</p>
-<p>（b）：增加了一个线性约束条件$C_1$，此时，目标分布$p(y|x)$只能落在由$C_1$定义的线段上；</p>
-<p>（c）：在（b）的基础上增加了另一个约束条件$C_2$ ，且$C_1 \cap C_2  \neq \varnothing$。此时，目标分布只能落在交点上，即被唯一确定；</p>
-<p>（d）：在（b）基础上增加了另一个约束$C_3$，且$C_1 \cap C_2  = \varnothing$，此时不存在能够同时满足$C_1$和$C_3$的$p(y|x)$。</p>
-</blockquote>
-<p>利用（3-1）定义的约束条件，我们定义P的一个子空间</p>
-<script type="math/tex; mode=display">
-C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><h1 id="5、最大熵模型"><a href="#5、最大熵模型" class="headerlink" title="5、最大熵模型"></a>5、最大熵模型</h1><p>由于我们的目标是获得一个条件分布，因此这里也采用相应的条件熵</p>
-<script type="math/tex; mode=display">
-H(p(y|x))=-\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)</script><p>可以看出这里也是用$\tilde p(x)$来近似$p(x)$。以下将$H(p(y|x))$简记为$H(p)$。至此，可以给出最大熵模型的完整描述。</p>
-<p>对于给定的训练集T，特征函数$f_i(x,y), i=1,2,…n$，最大熵模型就是求解</p>
-<script type="math/tex; mode=display">
-\underset {p \in C} {max} \ \  H(p) = \begin{pmatrix}
--\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)
-\end{pmatrix}, \\
-s.t. \sum_y p(y|x)=1 \tag {5-1} \\
-s.t. \ C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><p>其中的s.t.是为了保证$p(y|x)$是一个（合法的）条件概率分布。</p>
-<p>等价于一个求极小值问题</p>
-<script type="math/tex; mode=display">
-\underset {p \in C} {min} \ \  -H(p) = \begin{pmatrix}
-\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)
-\end{pmatrix}, \\
-s.t. \sum_y p(y|x)=1 \tag {5-2} \\
-s.t. \ C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><h1 id="6、模型求解"><a href="#6、模型求解" class="headerlink" title="6、模型求解"></a>6、模型求解</h1><p>对于5-1的求解，主要思路和步骤如下：</p>
-<ol>
-<li>利用Lagrange乘子将最大熵模型由一个带约束的最优化问题转为无约束的最优化问题，这是一个<strong>极小极大问题（min max）</strong>。</li>
-<li>利用对偶问题等价性，转化为求解上一步得到的极大/极小问题的对偶问题，也是一个极大极小问题。</li>
-</ol>
-<h2 id="6-1-原始问题和对偶问题"><a href="#6-1-原始问题和对偶问题" class="headerlink" title="6.1 原始问题和对偶问题"></a>6.1 原始问题和对偶问题</h2><p>根据（5-2），引入拉格朗日乘子$\lambda=(\lambda_0,\lambda_1,…,\lambda_n)^T$，定义拉格朗日函数</p>
-<script type="math/tex; mode=display">
-L(p,\lambda) = -H(p) + \lambda_0(1-\sum_y p(y|x))+\sum_{i=1}^n\lambda_i(\tau_i-E_p(f_i))  \tag{6-1}</script><p>利用对偶性，求解（6-1）的<strong>原始问题</strong>表示为：</p>
-<script type="math/tex; mode=display">
-\underset {p \in C} {min}\  \underset {\lambda} {max}\ L(p,\lambda) \tag{6-2}</script><p><strong>对偶问题</strong>为：</p>
-<script type="math/tex; mode=display">
-\underset {\lambda} {max}\ \underset {p \in C} {min}\  L(p,\lambda) \tag{6-3}</script><p>由于$H(p)$是关于p的凸函数，因此要求解最大熵模型，只需求解对偶问题（6-3）即可。</p>
-<h3 id="6-1-1-指数形式的解"><a href="#6-1-1-指数形式的解" class="headerlink" title="6.1.1 指数形式的解"></a>6.1.1 指数形式的解</h3><p>首先求解内部的极小问题。由于$\underset {p \in C} {min}\  L(p,\lambda)$是关于$\lambda$的函数，将其记做：</p>
-<script type="math/tex; mode=display">
-\Psi (\lambda) =\underset {p \in C} {min}\  L(p,\lambda) = L(p_{\lambda}, \lambda) \tag {6-4}</script><p>其中</p>
-<script type="math/tex; mode=display">
-p_{\lambda}=\underset {p \in C} {argmin}\ L(p,\lambda)=p_{\lambda}(y|x) \tag {6-5}</script><p>根据拉格朗日乘子法，求$L(p,\lambda)$对$p(y|x)$的偏导，得（求解过程略）：</p>
-<script type="math/tex; mode=display">
-p_{\lambda}=\frac {1} {Z_{\lambda}(x)} \ \exp(\sum_{i=1}^n \lambda_i f_i(x,y)) \tag{6-6}</script><p>其中，</p>
-<script type="math/tex; mode=display">
-Z_{\lambda}(x)=\sum_y \exp(\sum_{i=1}^n \lambda_i f_i(x,y)) \tag{6-7}</script><p>称为<strong>规范化因子</strong>（normalizing factor）。注意，此时已经没有$\lambda_0$了。</p>
-<p>由（6-6）定义的$p_{\lambda}$就是最大熵模型的解，它具有<strong>指数形式</strong>。其中，$\lambda_i$就是特征$f_i$的权重，越大表示特征越重要。</p>
-<h3 id="6-1-2-最大似然估计"><a href="#6-1-2-最大似然估计" class="headerlink" title="6.1.2 最大似然估计"></a>6.1.2 最大似然估计</h3><p>得到对偶问题的内层极小值问题的解之后，接着求解外层的极大值问题$\underset {\lambda} {max} \ \Psi(\lambda)$。</p>
-<p>设其解为</p>
-<script type="math/tex; mode=display">
-\lambda^* = \underset {\lambda} {argmax} \ \Psi(\lambda) \tag{6-8}</script><p>则最大熵模型的解为</p>
-<script type="math/tex; mode=display">
-p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$与最大似然估计是等价的！</p>
-<h1 id="7、最优化方法"><a href="#7、最优化方法" class="headerlink" title="7、最优化方法"></a>7、最优化方法</h1><p>通用的方法有梯度下降，拟牛顿法等，最大熵模型有两个量身定做的方法：通用迭代尺度法（Generalized Iterative Scaling，GIS）和改进的迭代尺度法（Impoved Iterative Scaling，IIS）。</p>
-<h2 id="7-1-GIS算法"><a href="#7-1-GIS算法" class="headerlink" title="7.1 GIS算法"></a>7.1 GIS算法</h2><blockquote>
-<p>算法1：</p>
-<p>S1：初始化参数，令$\lambda=0$</p>
-<p>S2：计算$E_{\tilde p}(f_i),\ i=1,2,…,n$</p>
-<p>S3：执行一次迭代，对参数做一次刷新。</p>
-<p>​    计算$E<em>{p</em>{\lambda}}(f_i)$</p>
-<p>​    FOR i=1,2,…,n DO {</p>
-<p>​        $\lambda<em>i\  += \ \eta \log\frac {E</em>{\tilde p}(f<em>i)} {E</em>{p_{\lambda}}(f_i)}$</p>
-<p>​    }</p>
-<p>S4：检查是否收敛，若未收敛则继续S3</p>
-</blockquote>
-<p>其中，$\eta$是学习率，在实际中取$\frac {1} {C}$，$$，表示训练数据中包含特征最多的那个样本所包含的特征个数。</p>
-<script type="math/tex; mode=display">
-\Delta\lambda_i=\eta \log\frac {E_{\tilde p}(f_i)} {E_{p_{\lambda}}(f_i)}</script><p>是校正量。</p>
-<p>每次迭代，先用当前的权重估算每个特征$f<em>i$在训练数据中的概率分布的期望，然后逐个与相应的经验分布的期望比较，其偏差程度通过$\log\frac {E</em>{\tilde p}(f<em>i)} {E</em>{p_{\lambda}}(f_i)}$来进行刻画。</p>
-<p>收敛条件就是当两次迭代的$\lambda$在一个较小的范围。</p>
-<p>GIS每次迭代时间很长，不太稳定，容易溢出，一般不会使用。</p>
-<h2 id="7-2-IIS算法"><a href="#7-2-IIS算法" class="headerlink" title="7.2 IIS算法"></a>7.2 IIS算法</h2><p>与GIS的不同主要在$\Delta\lambda_i$的计算上。IIS通过求解方程</p>
-<script type="math/tex; mode=display">
-\sum_{x,y} \tilde p(x)p(y|x)f_i(x,y)\exp(\Delta\lambda_i\sum_{i=1}^nf_i(x,y))=\tilde p(f_i)</script><p>1）若$\sum<em>{i=1}^nf_i(x,y)$为常数，即对任意样本(x,y)，都有$\sum</em>{i=1}^nf_i(x,y)=C$，则</p>
-<script type="math/tex; mode=display">
-\Delta\lambda_i=\frac {1} {C} \log\frac {E_{\tilde p}(f_i)} {E_{p_{\lambda}}(f_i)}</script><p>此时，IIS可以看做是GIS的一种推广。</p>
-<p>2）若$\sum_{i=1}^nf_i(x,y)$不是常数，则需要通过数值方式来求解$\Delta\lambda_i$，如牛顿法。</p>
-<h1 id="8、优缺点"><a href="#8、优缺点" class="headerlink" title="8、优缺点"></a>8、优缺点</h1><p>优点是：在建模时，只需要集中精力选取特征，不需要花费精力考虑如何使用这些特征，可以灵活使用不同类型的特征。</p>
-<p>缺点是计算量大。</p>
-<p>参考</p>
-<p>【1】 <a href="http://blog.csdn.net/itplus/article/details/26550273" target="_blank" rel="noopener">最大熵学习笔记</a></p>
-<p>【2】统计学习方法</p>
+            <p>转自<a href="https://www.jiqizhixin.com/articles/2018-02-05-2" target="_blank" rel="noopener">https://www.jiqizhixin.com/articles/2018-02-05-2</a></p>
+<h1 id="分类测试问题"><a href="#分类测试问题" class="headerlink" title="分类测试问题"></a>分类测试问题</h1><p>将看三个分类问题：blobs、moons 和 circles。</p>
+<h2 id="线性分类"><a href="#线性分类" class="headerlink" title="线性分类"></a>线性分类</h2><p> make_blobs() 函数可被用于生成具有高斯分布的 blobs 点。你可以控制生成 blobs 的数量，生成样本的数量以及一系列其他属性。考虑到 blobs 的线性可分性质，该问题也适用于线性分类问题。</p>
+<p>下面的例子是一个多类分类预测问题，它生成了一个具有三个 blobs 的 2D 样本数据集。每个数据有两个输入和 0、1 或 2 个类的值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> sklearn.datasets.samples_generator <span class="keyword">import</span> make_blobs</div><div class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</div><div class="line"><span class="keyword">from</span> pandas <span class="keyword">import</span> DataFrame</div><div class="line"><span class="comment"># generate 2d classification dataset</span></div><div class="line">X, y = make_blobs(n_samples=<span class="number">100</span>, centers=<span class="number">3</span>, n_features=<span class="number">2</span>)</div><div class="line"><span class="comment"># dict中定义三个key，分别是坐标和label，再通过dict创建DataFrame</span></div><div class="line">df = DataFrame(dict(x=X[:,<span class="number">0</span>], y=X[:,<span class="number">1</span>], label=y))</div><div class="line">colors = &#123;<span class="number">0</span>:<span class="string">'red'</span>, <span class="number">1</span>:<span class="string">'blue'</span>, <span class="number">2</span>:<span class="string">'green'</span>&#125;</div><div class="line">fig, ax = pyplot.subplots()</div><div class="line"><span class="comment">#groupby可以通过传入需要分组的参数实现对数据的分组</span></div><div class="line">grouped = df.groupby(<span class="string">'label'</span>)</div><div class="line"><span class="keyword">for</span> key, group <span class="keyword">in</span> grouped:</div><div class="line">   group.plot(ax=ax, kind=<span class="string">'scatter'</span>, x=<span class="string">'x'</span>, y=<span class="string">'y'</span>, label=key, color=colors[key])</div><div class="line">pyplot.show()</div></pre></td></tr></table></figure>
+<h2 id="非线性分类"><a href="#非线性分类" class="headerlink" title="非线性分类"></a>非线性分类</h2><p>make_moons() 函数用于二进制分类并且将生成一个漩涡模式，或者两个 moons。你可以控制 moon 形状中的噪声量，以及要生产的样本数量。</p>
+<p>这个测试问题适用于能够学习非线性类边界的算法。下面的例子生成了一个中等噪音的 moon 数据集。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> make_moons</div><div class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</div><div class="line"><span class="keyword">from</span> pandas <span class="keyword">import</span> DataFrame</div><div class="line"><span class="comment"># generate 2d classification dataset</span></div><div class="line">X, y = make_moons(n_samples=<span class="number">100</span>, noise=<span class="number">0.1</span>)</div><div class="line"><span class="comment"># scatter plot, dots colored by class value</span></div><div class="line">df = DataFrame(dict(x=X[:,<span class="number">0</span>], y=X[:,<span class="number">1</span>], label=y))</div><div class="line">colors = &#123;<span class="number">0</span>:<span class="string">'red'</span>, <span class="number">1</span>:<span class="string">'blue'</span>&#125;</div><div class="line">fig, ax = pyplot.subplots()</div><div class="line">grouped = df.groupby(<span class="string">'label'</span>)</div><div class="line"><span class="keyword">for</span> key, group <span class="keyword">in</span> grouped:</div><div class="line">   group.plot(ax=ax, kind=<span class="string">'scatter'</span>, x=<span class="string">'x'</span>, y=<span class="string">'y'</span>, label=key, color=colors[key])</div><div class="line">pyplot.show()</div></pre></td></tr></table></figure>
+<p>make_circles() 函数生成一个数据集落入同心圆的二进制分类问题。再一次地，与 moons 测试问题一样，你可以控制形状中的噪声量。该测试问题适用于可以学习复杂的非线性流行的算法。下面的例子中生成了一个具有一定噪音的 circles 数据集。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> make_circles</div><div class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</div><div class="line"><span class="keyword">from</span> pandas <span class="keyword">import</span> DataFrame</div><div class="line"><span class="comment"># generate 2d classification dataset</span></div><div class="line">X, y = make_circles(n_samples=<span class="number">100</span>, noise=<span class="number">0.05</span>)</div><div class="line"><span class="comment"># scatter plot, dots colored by class value</span></div><div class="line">df = DataFrame(dict(x=X[:,<span class="number">0</span>], y=X[:,<span class="number">1</span>], label=y))</div><div class="line">colors = &#123;<span class="number">0</span>:<span class="string">'red'</span>, <span class="number">1</span>:<span class="string">'blue'</span>&#125;</div><div class="line">fig, ax = pyplot.subplots()</div><div class="line">grouped = df.groupby(<span class="string">'label'</span>)</div><div class="line"><span class="keyword">for</span> key, group <span class="keyword">in</span> grouped:</div><div class="line">   group.plot(ax=ax, kind=<span class="string">'scatter'</span>, x=<span class="string">'x'</span>, y=<span class="string">'y'</span>, label=key, color=colors[key])</div><div class="line">pyplot.show()</div></pre></td></tr></table></figure>
+<h1 id="回归测试问题"><a href="#回归测试问题" class="headerlink" title="回归测试问题"></a>回归测试问题</h1><h2 id="线性回归"><a href="#线性回归" class="headerlink" title="线性回归"></a>线性回归</h2><p>make_regression() 函数将创建一个输入和输出具有线性关系的数据集。你可以配置样本数量，输入特征数量，噪声级别等等。该数据集适用于可以学习线性回归函数的算法。</p>
+<p>下面的例子将生成 100 个示例，他们具有适度的噪声，都有一个输入特征和一个输出特征。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> make_regression</div><div class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</div><div class="line"><span class="comment"># generate regression dataset</span></div><div class="line">X, y = make_regression(n_samples=<span class="number">100</span>, n_features=<span class="number">1</span>, noise=<span class="number">0.1</span>)</div><div class="line"><span class="comment"># plot regression dataset</span></div><div class="line">pyplot.scatter(X,y)</div><div class="line">pyplot.show()</div></pre></td></tr></table></figure>
+<p>通过这些测试集可以：</p>
+<ul>
+<li><strong>比较算法</strong>。选择一个测试问题，并比较该问题的一系列算法并汇报性能。</li>
+<li><strong>放大问题</strong>。选择一个测试问题并探索将其放大，用级数法来可视化结果，也可以探索一个特定算法模型技能和问题规模。</li>
+</ul>
+<p>代码见<code>blogcodes\sclearn_testDataset.py</code></p>
 
           
         
@@ -1678,7 +1763,7 @@ p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$�
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习和深度学习算法理论/CNN/CNN/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/模型评估与选择/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -1698,7 +1783,7 @@ p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$�
           <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/机器学习和深度学习算法理论/CNN/CNN/" class="post-title-link" itemprop="url">CNN</a>
+                <a href="/2017/07/12/机器学习/模型评估与选择/" class="post-title-link" itemprop="url">模型评估与选择</a>
               
             
           </h2>
@@ -1738,7 +1823,7 @@ p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$�
                 
                   <span class="post-meta-item-text">Bearbeitet am</span>
                 
-                <time title="Geändert am: 2019-06-16 09:28:37" itemprop="dateModified" datetime="2019-06-16T09:28:37+08:00">2019-06-16</time>
+                <time title="Geändert am: 2018-01-29 21:43:42" itemprop="dateModified" datetime="2018-01-29T21:43:42+08:00">2018-01-29</time>
               </span>
             
           
@@ -1752,7 +1837,7 @@ p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$�
                 <span class="post-meta-item-text">in</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/深度学习/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
 
                 
                 
@@ -1792,488 +1877,30 @@ p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$�
       
         
           
-            <h1 id="卷积核"><a href="#卷积核" class="headerlink" title="卷积核"></a>卷积核</h1><p>也称为滤波器。</p>
-<p>权重共享：卷积核的权重（矩阵的值）对于不同位置的所有输入都是相同的。</p>
-<h2 id="卷积操作的意义"><a href="#卷积操作的意义" class="headerlink" title="卷积操作的意义"></a>卷积操作的意义</h2><p>例如，有整体边缘滤波器Ke，横向边缘滤波器Kh，纵向边缘滤波器Kv。</p>
+            <h1 id="1、模型评估方法"><a href="#1、模型评估方法" class="headerlink" title="1、模型评估方法"></a>1、模型评估方法</h1><blockquote>
+<p>可重复采样：<strong>在训练集小</strong>，难以划分训练/测试集是有用。此外，能产生多个不同训练集，对<strong>集成学习</strong>等方法有很大的好处。但是会改变初始数据集分布。</p>
+<p>在<strong>初始数据量足够</strong>时，用留出法或者交叉验证法。</p>
+</blockquote>
+<h2 id="1-1-留出法Hold-out"><a href="#1-1-留出法Hold-out" class="headerlink" title="1.1 留出法Hold-out"></a>1.1 留出法Hold-out</h2><p>将数据集D分成两个互斥的集合。</p>
+<p>训练/测试集尽量保证数据一致性，用分层采样，正负样本同比例。</p>
+<p>由于单次估计结果往往不可靠，使用留出法时，一般要采用若干次随机划分，重复进行实验后取平均值作为评估值。      ‘</p>
+<h2 id="1-2-交叉验证法"><a href="#1-2-交叉验证法" class="headerlink" title="1.2 交叉验证法"></a>1.2 交叉验证法</h2><p>将D分成k个大小相似的互斥子集，每个子集用分层采样得到。</p>
+<p>每次用k-1个子集的并集作为训练集，余下的子集作为测试集。这样获得k组训练/测试集。最终返回是k个测试结果的均值。</p>
+<p>常用10折交叉验证。</p>
+<h2 id="1-3-可重复采样"><a href="#1-3-可重复采样" class="headerlink" title="1.3 可重复采样"></a>1.3 可重复采样</h2><p>bootstrapping sampling：给定包含m个样本的数据集D，我们进行采样产生数据集$D’$，每次随机从D中挑选一个样本，将其拷贝放入$D’$，再将样本放回D。重复m次，得到包含m个样本的$D’$。</p>
+<p>样本在m次采样中始终不被采到的概率是$(1-\frac 1 m)^m$，取极限得到</p>
 <script type="math/tex; mode=display">
-K_e=\begin{bmatrix}
-0 & -4 & 0\\ 
--4 & 16 & -4\\ 
-0 & -4 & 0
-\end{bmatrix}\ \ K_h=\begin{bmatrix}
-1 & 2 & 1\\ 
-0 & 0 & 0\\ 
--1 & -2 & -1
-\end{bmatrix}\ \ K_v=\begin{bmatrix}
-1 & 0 & -1\\ 
-2 & 0 & -2\\ 
-1 & 0 & -1
-\end{bmatrix}</script><p>若某像素位于物体边缘，则周边像素与该像素会有明显差异，用Ke可以放大边缘和周边的差异，起到边缘检测的作用。同理，Kh、Kv可以保留横向、纵向的边缘信息。</p>
-<h1 id="池化层"><a href="#池化层" class="headerlink" title="池化层"></a>池化层</h1><p>也叫汇合层。通常操作有平均值池化（average-pooling）和最大值汇合（max-pooling）。与卷积核操作不同，池化层不包含需要学习的参数。仅指定汇合类型，核大小（kernel size）和步长（stride）。</p>
-<p>汇合的结果相对输入降小了，是一种降采样（down-sampling）操作。也可以看成是一个用p范数（p-norm）作为非线性映射的卷积操作。当p趋于正无穷时就是最大值汇合。</p>
-<p>汇合层的引入是仿照人的视觉系统对视觉输入对象进行降维和抽象。作用有：</p>
-<p>1）特征不变性（feature invariant）。使模型更关注是否存在某些特征而不是特征具体的位置。</p>
-<p>2）特征降维。</p>
-<p>3）一定程度上防止过拟合。</p>
-<h1 id="全连接层"><a href="#全连接层" class="headerlink" title="全连接层"></a>全连接层</h1><p>fully connected layers</p>
-<p>参考：</p>
-<p>【1】解析卷积神经网络.pdf</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/hive笔记/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/12/hadoop-spark/hive笔记/" class="post-title-link" itemprop="url">hive笔记</a>
-              
-            
-          </h2>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-
-              
-                
-              
-
-              <time title="Erstellt: 2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Bearbeitet am</span>
-                
-                <time title="Geändert am: 2019-06-19 13:06:22" itemprop="dateModified" datetime="2019-06-19T13:06:22+08:00">2019-06-19</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">in</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="插入hive表控制part文件数量"><a href="#插入hive表控制part文件数量" class="headerlink" title="插入hive表控制part文件数量"></a>插入hive表控制part文件数量</h1><p><a href="http://blog.sina.com.cn/s/blog_604c7cdd0102wbsw.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_604c7cdd0102wbsw.html</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">-- 每个文件上限500M</div><div class="line">set hive.exec.reducers.bytes.per.reducer=512000000;</div><div class="line">insert overwrite table carthage.gps_address_info_weekly_bak PARTITION(DATA_DATE=&apos;2019-01-15&apos;)</div><div class="line">select * from carthage.gps_address_info DISTRIBUTE by RAND();</div><div class="line">-- DISTRIBUTE by RAND()主要靠这个控制reduce的文件数</div></pre></td></tr></table></figure>
-<h1 id="strict模式"><a href="#strict模式" class="headerlink" title="strict模式"></a>strict模式</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">set hive.mapred.mode=strict</div></pre></td></tr></table></figure>
-<p>有助于前置解决一些语法和可能的逻辑错误。</p>
-<h1 id="限制小文件数量"><a href="#限制小文件数量" class="headerlink" title="限制小文件数量"></a>限制小文件数量</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">set mapred.max.split.size=256000000;        -- 决定每个map处理的最大的文件大小，单位为B</div><div class="line">set mapred.min.split.size.per.node=10000000;         -- 节点中可以处理的最小的文件大小</div><div class="line">set mapred.min.split.size.per.rack=10000000;          -- 机架中可以处理的最小的文件大小</div></pre></td></tr></table></figure>
-<h1 id="查询时如何去掉重复数据"><a href="#查询时如何去掉重复数据" class="headerlink" title="查询时如何去掉重复数据"></a>查询时如何去掉重复数据</h1><p>假设数据为</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">name  adx        tran_id                  cost        ts</div><div class="line">ck        5         125.168.10.0           33.00   1407234660</div><div class="line">ck        5         187.18.99.00           33.32   1407234661</div><div class="line">ck        5         125.168.10.0           33.24   1407234661</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">select * from (select *,row_number() over (partition by tran_id order by timestamp asc) num from table) t where t.num=1;</div></pre></td></tr></table></figure>
-<blockquote>
-<p>附上：<br><strong>ROW_NUMBER() OVER函数的基本用法 </strong></p>
-<p>语法：ROW_NUMBER() OVER(PARTITION BY COLUMN ORDER BY COLUMN) </p>
-<p>简单的说row_number()从1开始，为每一条分组记录返回一个数字，这里的ROW_NUMBER() OVER (ORDER BY xlh DESC) 是先把xlh列降序，再为降序以后的没条xlh记录返回一个序号。<br>示例： </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; xlh           row_num </div><div class="line">&gt; 1700              1 </div><div class="line">&gt; 1500              2 </div><div class="line">&gt; 1085              3 </div><div class="line">&gt; 710                4 </div><div class="line">&gt;</div></pre></td></tr></table></figure>
+{\lim_{m \mapsto \infty  }}(1-\frac 1 m)^m  \mapsto \frac 1 e\approx0.368</script><p>即通过bootstrapping，D中有36.8%的样本未出现在$D’$中，于是可以将$D’$作为训练集，$D-D’$作为测试集，这样可以有1/3个未出现在训练集的样本用于测试。测试结果称为“包外估计”（out-of-bag estimate）。</p>
+<h2 id="1-4-调参"><a href="#1-4-调参" class="headerlink" title="1.4 调参"></a>1.4 调参</h2><blockquote>
+<p>我们在模型评估时往往用来确定算法和参数。当这些确定后，要用所有的D再训练一次，才是最终的模型。</p>
 </blockquote>
-<p>&gt;</p>
-<blockquote>
-<p>row_number() OVER (PARTITION BY COL1 ORDER BY COL2) 表示根据COL1分组，在分组内部根据 COL2排序，而此函数计算的值就表示每组内部排序后的顺序编号（组内连续的唯一的) </p>
-</blockquote>
-<h1 id="split后的数组长度"><a href="#split后的数组长度" class="headerlink" title="split后的数组长度"></a>split后的数组长度</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">size(split(driving_districts,&apos;;&apos;))</div></pre></td></tr></table></figure>
-<h1 id="切换队列"><a href="#切换队列" class="headerlink" title="切换队列"></a>切换队列</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">set mapred.job.queue.name=data;</div></pre></td></tr></table></figure>
-<p>sqoop切换队列是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">-D mapred.job.queue.name=data</div></pre></td></tr></table></figure>
-<h1 id="加载hdfs的udf"><a href="#加载hdfs的udf" class="headerlink" title="加载hdfs的udf"></a>加载hdfs的udf</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ADD JAR hdfs://iclick/zyz/udf/zyz_udf2.jar;</div><div class="line">CREATE TEMPORARY FUNCTION get_region as &apos;org.apache.hadoop.hive.ql.udf.Ip2GeoCodeUDF&apos;;</div></pre></td></tr></table></figure>
-<h1 id="Hive-Trash"><a href="#Hive-Trash" class="headerlink" title="Hive Trash"></a>Hive Trash</h1><p>hive删除表时，会移除表的元数据和数据，而HDFS上的数据，如果配置了Trash，会移到.Trash/Current目录下。删除外部表时，表中的数据不会被删除。</p>
-<h1 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h1><p>用groupby代替distinct，少用orderby</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">同事写了个hive的sql语句，执行效率特别慢，跑了一个多小时程序只是map完了，reduce进行到20%。</div><div class="line">该Hive语句如下：</div><div class="line">select count(distinct ip) </div><div class="line">from (select ip as ip from comprehensive.f_client_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot;  </div><div class="line">union all </div><div class="line">select pub_ip as ip from f_app_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot; </div><div class="line">union all select ip as ip from format_log.format_pv1 where year=&quot;2013&quot; and month=&quot;10&quot; and url_first_id=1 </div><div class="line">) d </div><div class="line"></div><div class="line">       分析：select ip as ip from comprehensive.f_client_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot;这个语句筛选出来的数据约有10亿条，select pub_ip as ip from f_app_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot;约有10亿条条，select ip as ip from format_log.format_pv1 where year=&quot;2013&quot; and month=&quot;10&quot; and url_first_id=1 筛选出来的数据约有10亿条，总的数据量大约30亿条。这么大的数据量，使用disticnt函数，所有的数据只会shuffle到一个reducer上，导致reducer数据倾斜严重。</div><div class="line">       解决办法：</div><div class="line">       首先，通过使用groupby，按照ip进行分组。改写后的sql语句如下：</div><div class="line">select count(*) </div><div class="line">from </div><div class="line">(select ip </div><div class="line">from</div><div class="line">(select ip as ip from comprehensive.f_client_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot; </div><div class="line">union all </div><div class="line">select pub_ip as ip from f_app_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot; </div><div class="line">union all select ip as ip from format_log.format_pv1 where year=&quot;2013&quot; and month=&quot;10&quot; and url_first_id=1</div><div class="line">) d </div><div class="line">group by ip ) b </div><div class="line">       然后，合理的设置reducer数量，将数据分散到多台机器上。set mapred.reduce.tasks=50; </div><div class="line">       经过优化后，速度提高非常明显。整个作业跑完大约只需要20多分钟的时间。</div></pre></td></tr></table></figure>
-<p>提高order by的性能<a href="https://blog.csdn.net/djd1234567/article/details/51917603" target="_blank" rel="noopener">https://blog.csdn.net/djd1234567/article/details/51917603</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">Hive中的order by跟传统的sql语言中的order by作用是一样的，会对查询的结果做一次全局排序，所以说，只有hive的sql中制定了order by所有的数据都会到同一个reducer进行处理（不管有多少map，也不管文件有多少的block只会启动一个reducer）。但是对于大量数据这 将会消耗很长的时间去执行。</div><div class="line"></div><div class="line">    这里跟传统的sql还有一点区别：如果指定了hive.mapred.mode=strict（默认值是nonstrict）,这时就必须指定limit 来限制输出条数，原因是：所有的数据都会在同一个reducer端进行，数据量大的情况下可能不能出结果，那么在这样的严格模式下，必须指定输出的条数。</div><div class="line"></div><div class="line">    所以数据量大的时候能不用order by就不用，可以使用sort by结合distribute by来进行实现。sort by是局部排序，而distribute by是控制map怎么划分reducer。</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    Hive中指定了sort by，那么在每个reducer端都会做排序，也就是说保证了局部有序（每个reducer出来的数据是有序的，但是不能保证所有的数据是有序的，除非只有一个reducer），好处是：执行了局部排序之后可以为接下去的全局排序提高不少的效率（其实就是做一次归并排序就可以做到全局排序了）</div><div class="line"></div><div class="line"></div><div class="line">    ditribute by是控制map的输出在reducer是如何划分的，举个例子，我们有一张表，mid是指这个store所属的商户，money是这个商户的盈利，name是这个store的名字</div><div class="line"></div><div class="line">store:</div><div class="line"></div><div class="line"></div><div class="line">mid	money	name</div><div class="line">AA	15.0	商店1</div><div class="line">AA	20.0	商店2</div><div class="line">BB	22.0	商店3</div><div class="line">CC	44.0	商店4</div><div class="line">    执行hive语句：</div><div class="line"></div><div class="line">[sql] view plain copy</div><div class="line">select mid, money, name from store distribute by mid sort by mid asc, money asc  </div><div class="line">我 们所有的mid相同的数据会被送到同一个reducer去处理，这就是因为指定了distribute by mid，这样的话就可以统计出每个商户中各个商店盈利的排序了（这个肯定是全局有序的，因为相同的商户会放到同一个reducer去处理）。这里需要注意 的是distribute by必须要写在sort by之前。</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">cluster by</div><div class="line">    cluster by的功能就是distribute by和sort by相结合，如下2个语句是等价的：</div><div class="line"></div><div class="line">[sql] view plain copy</div><div class="line">select mid, money, name from store cluster by mid  </div><div class="line">select mid, money, name from store distribute by mid sort by mid  </div><div class="line">    如果需要获得与上面的中语句一样的效果：</div><div class="line"></div><div class="line">[sql] view plain copy</div><div class="line">select mid, money, name from store cluster by mid sort by money  </div><div class="line">    注意被cluster by指定的列只能是降序，不能指定asc和desc。</div></pre></td></tr></table></figure>
-<h1 id="问题集"><a href="#问题集" class="headerlink" title="问题集"></a>问题集</h1><h2 id="查询ES表报错"><a href="#查询ES表报错" class="headerlink" title="查询ES表报错"></a>查询ES表报错</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Failed with exception java.io.IOException:org.elasticsearch.hadoop.rest.EsHadoopInvalidRequest: The number of slices [1126] is too large. It must be less than [1024]. This limit can be set by changing the [index.max_slices_per_scroll] index level settin</div></pre></td></tr></table></figure>
-<p>修改es的设置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">PUT /megacorp/_settings</div><div class="line"></div><div class="line">&#123;</div><div class="line"></div><div class="line">  &quot;index&quot;: &#123;</div><div class="line"></div><div class="line">    &quot;max_slices_per_scroll&quot; : 1126</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="上传hive-UDF包后重启hive-server报错"><a href="#上传hive-UDF包后重启hive-server报错" class="headerlink" title="上传hive UDF包后重启hive server报错"></a>上传hive UDF包后重启hive server报错</h2><h2 id="hive-udf没有权限执行"><a href="#hive-udf没有权限执行" class="headerlink" title="hive udf没有权限执行"></a>hive udf没有权限执行</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Error while compiling statement: FAILED: SemanticException No valid privileges User dmp does not have privileges for CREATEFUNCTION The required privileges: Server=server1-&gt;URI=file:///home/hive/aux_libs/carthage-common-udf-hive-test.jar-&gt;action=*;</div></pre></td></tr></table></figure>
-<h2 id="没有找到jar包的报错"><a href="#没有找到jar包的报错" class="headerlink" title="没有找到jar包的报错"></a>没有找到jar包的报错</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Error while compiling statement: FAILED: SemanticException [Error 10014]: Line 1:7 Wrong arguments &apos;70.0&apos;: org.apache.hadoop.hive.ql.metadata.HiveException: Unable to execute method public java.lang.String com.mljr.carthage.common.geo.udf.hive.UDFGeoLocation.evaluate(java.lang.Double,java.lang.Double) on object com.mljr.carthage.common.geo.udf.hive.UDFGeoLocation@54ee9573 of class com.mljr.carthage.common.geo.udf.hive.UDFGeoLocation with arguments &#123;50.0:java.lang.Double, 70.0:java.lang.Double&#125; of size 2</div></pre></td></tr></table></figure>
-<p>其他都是可以的，就这个udf的第二个参数一直报错。经测试，还是UDF本身的问题，跟参数的设置没有关系。</p>
-<p>最后发现问题是udf的jar包上传后，关联的一些jar包没有打进去，手动加上</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&lt;plugin&gt;</div><div class="line">				&lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;</div><div class="line">				&lt;artifactId&gt;maven-shade-plugin&lt;/artifactId&gt;</div><div class="line">				&lt;version&gt;1.6&lt;/version&gt;</div><div class="line">				&lt;executions&gt;</div><div class="line">					&lt;execution&gt;</div><div class="line">						&lt;phase&gt;package&lt;/phase&gt;</div><div class="line">						&lt;goals&gt;</div><div class="line">							&lt;goal&gt;shade&lt;/goal&gt;</div><div class="line">						&lt;/goals&gt;</div><div class="line">						&lt;configuration&gt;</div><div class="line">							&lt;artifactSet&gt;</div><div class="line">								&lt;includes&gt;</div><div class="line">									&lt;include&gt;com.mljr.carthage:carthage-common-geo&lt;/include&gt;</div><div class="line">									&lt;include&gt;com.alibaba:fastjson&lt;/include&gt;</div><div class="line">									&lt;include&gt;com.github.davidmoten:geo&lt;/include&gt;</div><div class="line">									&lt;include&gt;com.github.davidmoten:grumpy-core&lt;/include&gt;</div><div class="line">								&lt;/includes&gt;</div><div class="line">							&lt;/artifactSet&gt;</div><div class="line">						&lt;/configuration&gt;</div><div class="line">					&lt;/execution&gt;</div><div class="line">				&lt;/executions&gt;</div><div class="line">			&lt;/plugin&gt;</div></pre></td></tr></table></figure>
-<h1 id="hive用高版本的UDF"><a href="#hive用高版本的UDF" class="headerlink" title="hive用高版本的UDF"></a>hive用高版本的UDF</h1><p>在hive2.0中有类似于months_between的函数，可以实现2个时间之间的月份差。但是低版本没有这个函数</p>
-<p>解决：</p>
-<p>下载hive-2.1源码包</p>
-<p><a href="http://mirrors.hust.edu.cn/apache/hive/hive-2.2.0/" target="_blank" rel="noopener">http://mirrors.hust.edu.cn/apache/hive/hive-2.2.0/</a></p>
-<p>导入eclipse，查找months_between</p>
-<p>在org.apache.hadoop.hive.ql.udf.generic包下找到GenericUDFMonthsBetween类，移植即可</p>
-<p>/ql/src/java/org/apache/hadoop/hive/ql/udf/generic/GenericUDFMonthsBetween.java</p>
-<h1 id="String转date"><a href="#String转date" class="headerlink" title="String转date"></a>String转date</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">select cast(to_date(from_unixtime(unix_timestamp(&apos;12-05-2010&apos;, &apos;dd-MM-yyyy&apos;))) as date)</div></pre></td></tr></table></figure>
-<h1 id="MapJoin异常问题处理总结"><a href="#MapJoin异常问题处理总结" class="headerlink" title="MapJoin异常问题处理总结"></a>MapJoin异常问题处理总结</h1><p><a href="https://yq.aliyun.com/articles/64306" target="_blank" rel="noopener">https://yq.aliyun.com/articles/64306</a></p>
-<h1 id="替换hive分隔符"><a href="#替换hive分隔符" class="headerlink" title="替换hive分隔符"></a>替换hive分隔符</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sed -i &apos;.bak&apos; &apos;s/^A/,/g&apos; baseinfo05.csv</div></pre></td></tr></table></figure>
-<p><code>^A</code>要用ctrl+V+A打出来</p>
-<h1 id="LOAD-DATA"><a href="#LOAD-DATA" class="headerlink" title="LOAD DATA"></a>LOAD DATA</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">LOAD DATA [LOCAL] INPATH &apos;filepath&apos; [OVERWRITE] INTO TABLE tablename[PARTITION (partcol1=val1,partcol2=val2,…)]</div></pre></td></tr></table></figure>
-<p>最好不要用LOCAL，要从hadoop加载数据。local读的是hive服务器的本地路径。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"># coding:utf-8</div><div class="line">from pyhive import hive</div><div class="line">from TCLIService.ttypes import TOperationState</div><div class="line"></div><div class="line"># 打开hive连接</div><div class="line">hiveConn = hive.connect(host=&apos;192.168.83.135&apos;,port=11111,username=&apos;hadoop&apos;)</div><div class="line">cursor = hiveConn.cursor()</div><div class="line"></div><div class="line"># 执行sql语句</div><div class="line">sql = &apos;&apos;&apos; LOAD DATA LOCAL INPATH &apos;/home/hadoop/HivePy/employee.txt&apos; OVERWRITE INTO TABLE userdbbypy.employee &apos;&apos;&apos;</div><div class="line">cursor.execute(sql, async=True)</div><div class="line"></div><div class="line"># 得到执行语句的状态</div><div class="line">status = cursor.poll().operationState</div><div class="line">print &quot;status:&quot;,status</div><div class="line"></div><div class="line"># 关闭hive连接</div><div class="line">cursor.close()</div><div class="line">hiveConn.close()</div></pre></td></tr></table></figure>
-<h1 id="return-code-3"><a href="#return-code-3" class="headerlink" title="return code 3"></a>return code 3</h1><p>试试</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">set hive.vectorized.execution.enabled=false;</div></pre></td></tr></table></figure>
-<h1 id="hive锁表"><a href="#hive锁表" class="headerlink" title="hive锁表"></a>hive锁表</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Completed compiling command</div></pre></td></tr></table></figure>
-<p>若卡在上面的语句，说明锁表</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">show locks carthage_dev.baseinfo_personal_info;</div><div class="line">-- 如果是</div><div class="line"></div><div class="line">unlock table dwh_dml_risk_dev.rec_car_operation;</div><div class="line">show locks carthage_dev.baseinfo_personal_info partition(data_date=&apos;20180517&apos;);</div><div class="line">unlock table dwh_dml_risk_dev.rec_car_operation partition(data_date=&apos;2018-09-30&apos;);</div></pre></td></tr></table></figure>
-<p>hive解锁的脚本是<code>all_hive_unlock.sh</code></p>
-<h1 id="hive新增列报错"><a href="#hive新增列报错" class="headerlink" title="hive新增列报错"></a>hive新增列报错</h1><p>在添加字段是可以通过CASCADE关键字来，避免出现这种问题。如alter table table_name add columns(age int) CASCADE</p>
-<p><a href="https://qubole.zendesk.com/hc/en-us/articles/115002396646-Hive-Null-Pointer-Exception-in-select-query-after-modifying-table-definition" target="_blank" rel="noopener">https://qubole.zendesk.com/hc/en-us/articles/115002396646-Hive-Null-Pointer-Exception-in-select-query-after-modifying-table-definition</a></p>
-<blockquote>
-<p>This can happen in the scenario where table definition and specific partition definition is different, and the underlying data matches table definition but not partition definition.</p>
-<p>When a table with partitions is altered to add a column using statement:</p>
-<p><em>ALTER TABLE <tablename> ADD COLUMNS (c1 int);</tablename></em></p>
-<p>The table definition for existing partitions don’t get modified as per the above statement. As a result of this there is a mismatch between partition and table definition. </p>
-<p>This is ok if the partition data matches the definition of partition, but if the data matches definition of table itself, NPE is thrown as there is a mismatch in data vs definition.</p>
-<p>To avoid this issue, this statement should be used in hadoop2</p>
-<p><em>ALTER TABLE <tablename> ADD COLUMNS (c1 int) CASCADE;</tablename></em> </p>
-<p>In case of hadoop1, CASCADE option is not available. Hence, as long as the table is external table, following can be done:</p>
-<ol>
-<li>Drop and recreate partitions for this table</li>
-<li>Alter partition definition for specific partition having issues</li>
-</ol>
-</blockquote>
-<p>用了cascade 无效。</p>
-<p>找到原因：</p>
-<p>hive表是ORC格式的，因此cascade无效，若改成text格式则成功。</p>
-<p>解决方案：</p>
-<p>若必须是ORC格式，建表是先预留若干字段，后期改名字</p>
-<h1 id="hive分区解锁"><a href="#hive分区解锁" class="headerlink" title="hive分区解锁"></a>hive分区解锁</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">show locks carthage_dev.baseinfo_personal_info;</div><div class="line">unlock table carthage_dev.baseinfo_personal_info;</div><div class="line">show locks carthage_dev.baseinfo_personal_info partition(data_date=&apos;20180517&apos;);</div><div class="line">unlock table carthage_dev.baseinfo_personal_info partition(data_date=&apos;20180517&apos;);</div></pre></td></tr></table></figure>
-<p>解锁的技巧：</p>
-<p>1、定位哪张表锁住，可以分批执行sql，定位关键表</p>
-<p>2、show locks并下载，观察锁表的状态，通过</p>
-<p><code>show locks table extends</code>可以看依赖的表</p>
-<p>3、用脚本all_hive_unlock.sh解锁</p>
-<h2 id="hive-column-rename"><a href="#hive-column-rename" class="headerlink" title="hive column rename"></a>hive column rename</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">alter table carthage_dev.gps_wx_stop_status CHANGE stop_region_center_lon stop_status_center_lon string</div></pre></td></tr></table></figure>
-<h1 id="hive配置"><a href="#hive配置" class="headerlink" title="hive配置"></a>hive配置</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">-- 输出为gzip</div><div class="line">set hive.exec.compress.output=true;    </div><div class="line">set mapred.output.compression.codec=org.apache.hadoop.io.compress.GzipCodec;</div><div class="line">-- 输出为一个文件</div><div class="line">set mapred.reduce.tasks=1;</div></pre></td></tr></table></figure>
-<h1 id="hive-timestamp转时间"><a href="#hive-timestamp转时间" class="headerlink" title="hive timestamp转时间"></a>hive timestamp转时间</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">from_unixtime(unix_timestamp(),‘yyyy/MM/dd HH:mm:ss’);</div><div class="line"></div><div class="line">from_unixtime(cast(cast(time as bigint)/1000 as bigint),&apos;yyyy/MM/dd HH:mm:ss&apos;)</div></pre></td></tr></table></figure>
-<h1 id="常用日期函数"><a href="#常用日期函数" class="headerlink" title="常用日期函数"></a>常用日期函数</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">to_date：日期时间转日期函数    </div><div class="line">	select to_date(&apos;2018-04-02 13:34:12&apos;);   输出：2018-04-02   </div><div class="line">from_unixtime：转化unix时间戳到当前时区的时间格式    </div><div class="line">	select from_unixtime(1524573762,&apos;yyyy-MM-dd HH:mm:ss&apos;);    输出：2018-04-24 20:42:42</div><div class="line">unix_timestamp：获取当前unix时间戳    </div><div class="line">	select unix_timestamp();    输出：1524573762  </div><div class="line">	select unix_timestamp(&apos;2018-04-01 13:01:20&apos;);  输出：1522558880</div><div class="line">datediff：返回开始日期减去结束日期的天数    </div><div class="line">	select datediff(&apos;2018-04-09&apos;,&apos;2018-04-01&apos;);    输出：8    </div><div class="line">date_sub：返回日期前n天的日期    </div><div class="line">	select date_sub(&apos;2018-04-09&apos;,4);    输出：2018-04-05    </div><div class="line">date_add：返回日期后n天的日期    </div><div class="line">	select date_add(&apos;2018-04-09&apos;,4);    输出：2018-04-13  </div><div class="line">add_months：月份增加函数</div><div class="line">	select add_months(&apos;2018-02-10&apos;, 2 );    输出：2018-04-10 </div><div class="line">last_day：返回当月底日期</div><div class="line">	select last_day(&apos;2018-02-21&apos;);    输出：2018-02-28</div></pre></td></tr></table></figure>
-<h1 id="hive-字符串函数"><a href="#hive-字符串函数" class="headerlink" title="hive 字符串函数"></a>hive 字符串函数</h1><p><strong>1. 字符串长度函数：length</strong></p>
-<p>语法: length(string A)</p>
-<p>返回值: int</p>
-<p>说明：返回字符串A的长度</p>
-<p>举例：</p>
-<p>hive&gt; select length(‘abcedfg’) from lxw_dual;</p>
-<p>7</p>
-<p><strong>2. 字符串反转函数：reverse</strong></p>
-<p>语法: reverse(string A)</p>
-<p>返回值: string</p>
-<p>说明：返回字符串A的反转结果</p>
-<p>举例：</p>
-<p>hive&gt; select reverse(abcedfg’) from lxw_dual;</p>
-<p>gfdecba</p>
-<p><strong>3. 字符串连接函数：concat</strong></p>
-<p>语法: concat(string A, string B…)</p>
-<p>返回值: string</p>
-<p>说明：返回输入字符串连接后的结果，支持任意个输入字符串</p>
-<p>举例：</p>
-<p>hive&gt; select concat(‘abc’,’def’,’gh’) from lxw_dual;</p>
-<p>abcdefgh</p>
-<p><strong>4. 带分隔符字符串连接函数：concat_ws</strong></p>
-<p>语法: concat_ws(string SEP, string A, string B…)</p>
-<p>返回值: string</p>
-<p>说明：返回输入字符串连接后的结果，SEP表示各个字符串间的分隔符</p>
-<p>举例：</p>
-<p>hive&gt; select concat_ws(‘,’,’abc’,’def’,’gh’) from lxw_dual;</p>
-<p>abc,def,gh</p>
-<p><strong>5. 字符串截取函数：substr,substring</strong></p>
-<p>语法: substr(string A, int start),substring(string A, int start)</p>
-<p>返回值: string</p>
-<p>说明：返回字符串A从start位置到结尾的字符串</p>
-<p>举例：</p>
-<p>hive&gt; select substr(‘abcde’,3) from lxw_dual;</p>
-<p>cde</p>
-<p>hive&gt; select substring(‘abcde’,3) from lxw_dual;</p>
-<p>cde</p>
-<p>hive&gt;  selectsubstr(‘abcde’,-1) from lxw_dual;  （和ORACLE相同）</p>
-<p>e</p>
-<p><strong>6. 字符串截取函数：substr,substring</strong></p>
-<p>语法: substr(string A, int start, int len),substring(string A, intstart, int len)</p>
-<p>返回值: string</p>
-<p>说明：返回字符串A从start位置开始，长度为len的字符串</p>
-<p>举例：</p>
-<p>hive&gt; select substr(‘abcde’,3,2) from lxw_dual;</p>
-<p>cd</p>
-<p>hive&gt; select substring(‘abcde’,3,2) from lxw_dual;</p>
-<p>cd</p>
-<p>hive&gt;select substring(‘abcde’,-2,2) from lxw_dual;</p>
-<p>de</p>
-<p><strong>7. 字符串转大写函数：upper,ucase</strong></p>
-<p>语法: upper(string A) ucase(string A)</p>
-<p>返回值: string</p>
-<p>说明：返回字符串A的大写格式</p>
-<p>举例：</p>
-<p>hive&gt; select upper(‘abSEd’) from lxw_dual;</p>
-<p>ABSED</p>
-<p>hive&gt; select ucase(‘abSEd’) from lxw_dual;</p>
-<p>ABSED</p>
-<p><strong>8. 字符串转小写函数：lower,lcase</strong></p>
-<p>语法: lower(string A) lcase(string A)</p>
-<p>返回值: string</p>
-<p>说明：返回字符串A的小写格式</p>
-<p>举例：</p>
-<p>hive&gt; select lower(‘abSEd’) from lxw_dual;</p>
-<p>absed</p>
-<p>hive&gt; select lcase(‘abSEd’) from lxw_dual;</p>
-<p>absed</p>
-<p><strong>9. 去空格函数：trim</strong></p>
-<p>语法: trim(string A)</p>
-<p>返回值: string</p>
-<p>说明：去除字符串两边的空格</p>
-<p>举例：</p>
-<p>hive&gt; select trim(‘ abc ‘) from lxw_dual;</p>
-<p>abc</p>
-<p><strong>10. 左边去空格函数：ltrim</strong></p>
-<p>语法: ltrim(string A)</p>
-<p>返回值: string</p>
-<p>说明：去除字符串左边的空格</p>
-<p>举例：</p>
-<p>hive&gt; select ltrim(‘ abc ‘) from lxw_dual;</p>
-<p>abc</p>
-<p><strong>11. 右边去空格函数：rtrim</strong></p>
-<p>语法: rtrim(string A)</p>
-<p>返回值: string</p>
-<p>说明：去除字符串右边的空格</p>
-<p>举例：</p>
-<p>hive&gt; select rtrim(‘ abc ‘) from lxw_dual;</p>
-<p>abc</p>
-<p><strong>12. 正则表达式替换函数：regexp_replace</strong></p>
-<p>语法: regexp_replace(string A, string B, string C)</p>
-<p>返回值: string</p>
-<p>说明：将字符串A中的符合java正则表达式B的部分替换为C。注意，在有些情况下要使用转义字符,类似oracle中的regexp_replace函数。</p>
-<p>举例：</p>
-<p>hive&gt; select regexp_replace(‘foobar’, ‘oo|ar’, ‘’) from lxw_dual;</p>
-<p>fb</p>
-<p><strong>13. 正则表达式解析函数：regexp_extract</strong></p>
-<p>语法: regexp_extract(string subject, string pattern, int index)</p>
-<p>返回值: string</p>
-<p>说明：将字符串subject按照pattern正则表达式的规则拆分，返回index指定的字符。</p>
-<p>举例：</p>
-<p>hive&gt; select regexp_extract(‘foothebar’, ‘foo(.*?)(bar)’, 1) fromlxw_dual;</p>
-<p>the</p>
-<p>hive&gt; select regexp_extract(‘foothebar’, ‘foo(.*?)(bar)’, 2) fromlxw_dual;</p>
-<p>bar</p>
-<p>hive&gt; select regexp_extract(‘foothebar’, ‘foo(.*?)(bar)’, 0) fromlxw_dual;</p>
-<p>foothebar</p>
-<p><strong>注意，在有些情况下要使用转义字符，下面的等号要用双竖线转义，这是java**</strong>正则表达式的规则。**</p>
-<p>select data_field,</p>
-<p>​     regexp_extract(data_field,’.*?bgStart\=(<sup><a href="#fn_&" id="reffn_&">&</a></sup>+)’,1) as aaa,</p>
-<p>​     regexp_extract(data_field,’.*?contentLoaded_headStart\=(<sup><a href="#fn_&" id="reffn_&">&</a></sup>+)’,1) as bbb,</p>
-<p>​     regexp_extract(data_field,’.*?AppLoad2Req\=(<sup><a href="#fn_&" id="reffn_&">&</a></sup>+)’,1) as ccc</p>
-<p>​     from pt_nginx_loginlog_st</p>
-<p>​     where pt = ‘2012-03-26’limit 2;</p>
-<p><strong>14. URL解析函数：parse_url</strong></p>
-<p>语法: parse_url(string urlString, string partToExtract [, stringkeyToExtract])</p>
-<p>返回值: string</p>
-<p>说明：返回URL中指定的部分。partToExtract的有效值为：HOST, PATH, QUERY, REF, PROTOCOL, AUTHORITY, FILE, and USERINFO.</p>
-<p>举例：</p>
-<p>hive&gt; selectparse_url(‘<a href="http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1" target="_blank" rel="noopener">http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1</a>‘, ‘HOST’) fromlxw_dual;</p>
-<p>facebook.com</p>
-<p>hive&gt; selectparse_url(‘<a href="http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1" target="_blank" rel="noopener">http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1</a>‘, ‘QUERY’,’k1’) from lxw_dual;</p>
-<p>v1</p>
-<p><strong>15. json解析函数：get_json_object</strong></p>
-<p>语法: get_json_object(string json_string, string path)</p>
-<p>返回值: string</p>
-<p>说明：解析json的字符串json_string,返回path指定的内容。如果输入的json字符串无效，那么返回NULL。</p>
-<p>举例：</p>
-<p>hive&gt; select get_json_object(‘{“store”:</p>
-<p>>  {“fruit”:[{“weight”:8,”type”:”apple”},{“weight”:9,”type”:”pear”}],</p>
-<p>>   “bicycle”:{“price”:19.95,”color”:”red”}</p>
-<p>>   },</p>
-<p>> “email”:”amy@only_for_json_udf_test.net”,</p>
-<p>>  “owner”:”amy”</p>
-<p>> }</p>
-<p>> ‘,’$.owner’) from lxw_dual;</p>
-<p>amy</p>
-<p><strong>16. 空格字符串函数：space</strong></p>
-<p>语法: space(int n)</p>
-<p>返回值: string</p>
-<p>说明：返回长度为n的字符串</p>
-<p>举例：</p>
-<p>hive&gt; select space(10) from lxw_dual;</p>
-<p>hive&gt; select length(space(10)) from lxw_dual;</p>
-<p>10</p>
-<p><strong>17. 重复字符串函数：repeat</strong></p>
-<p>语法: repeat(string str, int n)</p>
-<p>返回值: string</p>
-<p>说明：返回重复n次后的str字符串</p>
-<p>举例：</p>
-<p>hive&gt; select repeat(‘abc’,5) from lxw_dual;</p>
-<p>abcabcabcabcabc</p>
-<p><strong>18. 首字符ascii函数：ascii</strong></p>
-<p>语法: ascii(string str)</p>
-<p>返回值: int</p>
-<p>说明：返回字符串str第一个字符的ascii码</p>
-<p>举例：</p>
-<p>hive&gt; select ascii(‘abcde’) from lxw_dual;</p>
-<p>97</p>
-<p><strong>19. 左补足函数：lpad</strong></p>
-<p>语法: lpad(string str, int len, string pad)</p>
-<p>返回值: string</p>
-<p>说明：将str进行用pad进行左补足到len位</p>
-<p>举例：</p>
-<p>hive&gt; select lpad(‘abc’,10,’td’) from lxw_dual;</p>
-<p>tdtdtdtabc</p>
-<p><strong>注意：与GP**</strong>，ORACLE<strong>**不同，pad</strong> <strong>不能默认</strong></p>
-<p><strong>20. 右补足函数：rpad</strong></p>
-<p>语法: rpad(string str, int len, string pad)</p>
-<p>返回值: string</p>
-<p>说明：将str进行用pad进行右补足到len位</p>
-<p>举例：</p>
-<p>hive&gt; select rpad(‘abc’,10,’td’) from lxw_dual;</p>
-<p>abctdtdtdt</p>
-<p><strong>21. 分割字符串函数: split</strong></p>
-<p>语法:  split(string str, stringpat)</p>
-<p>返回值:  array</p>
-<p>说明: 按照pat字符串分割str，会返回分割后的字符串数组</p>
-<p>举例：</p>
-<p>hive&gt; select split(‘abtcdtef’,’t’) from lxw_dual;</p>
-<p>[“ab”,”cd”,”ef”]</p>
-<p><strong>22. 集合查找函数:find_in_set</strong></p>
-<p>语法: find_in_set(string str, string strList)</p>
-<p>返回值: int</p>
-<p>说明: 返回str在strlist第一次出现的位置，strlist是用逗号分割的字符串。如果没有找该str字符，则返回0</p>
-<p>举例：</p>
-<p>hive&gt; select find_in_set(‘ab’,’ef,ab,de’) from lxw_dual;</p>
-<p>2</p>
-<p>hive&gt; select find_in_set(‘at’,’ef,ab,de’) from lxw_dual;</p>
-<p>0</p>
-<p>instr</p>
-<h1 id="group后拼接"><a href="#group后拼接" class="headerlink" title="group后拼接"></a>group后拼接</h1><p>group_concat( [distinct] 要连接的字段 [order by 排序字段 asc/desc ] [separator ‘分隔符’] )</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">select userid,bankid,group_concat(cast(creditlimit as string))</div><div class="line">from vdm_fin.cc_user_bill_0724</div><div class="line">group by userid,bankid</div></pre></td></tr></table></figure>
-<p><img src="/2017/07/12/hadoop-spark/hive笔记/pic/70.png" alt="è¿éåå¾çæè¿°"></p>
-<p><strong>hive实现相同的功能：</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">SELECT id,</div><div class="line">concat_ws(&apos;|&apos;, collect_set(str)) </div><div class="line">FROM t  </div><div class="line">GROUP BY id;1234</div></pre></td></tr></table></figure>
-<p>主意:collect_set 只能返回不重复的集合<br>若要返回带重复的要用collect_list</p>
-<p>2、collect_list 展示子表排序后结果，collect_set 不受子表排序影响<br>select phone,collect_list(user_id) ,collect_set(user_id) from<br>(select * from a order by order_time asc)b<br>group by phone<br>结果：123456789    [1,1,3,2,2]    [1,3,2]</p>
-<p>a表数据如下<br>phone    user_id order_time<br>123456789    1    2018/8/23<br>123456789    3    2018/8/24<br>123456789    2    2018/8/25<br>123456789    1    2018/8/22<br>123456789    2    2018/8/26</p>
+<h1 id="2、性能度量"><a href="#2、性能度量" class="headerlink" title="2、性能度量"></a>2、性能度量</h1><p>回归最常用的是“均方误差”（mean squared error）</p>
+<script type="math/tex; mode=display">
+E(f;D) = \frac 1 m \sum_{i=1}^m(f(x_i)-y_i )^2</script><p>更一般的，对于数据分布D和概率密度函数$p(\cdot )$，均方误差可描述为</p>
+<script type="math/tex; mode=display">
+E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复杂</p>
+<h2 id="2-1-错误率和精度"><a href="#2-1-错误率和精度" class="headerlink" title="2.1 错误率和精度"></a>2.1 错误率和精度</h2><p>错误率：分类错误的样本占总样本的比例</p>
+<p>精度：分类正确的样本占总样本的比例</p>
 
           
         
