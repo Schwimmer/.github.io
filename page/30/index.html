@@ -328,7 +328,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/模型评估与选择/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习和深度学习算法理论/CNN/CNN/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -348,7 +348,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/机器学习/模型评估与选择/" class="post-title-link" itemprop="url">模型评估与选择</a>
+                <a href="/2017/07/12/机器学习和深度学习算法理论/CNN/CNN/" class="post-title-link" itemprop="url">CNN</a>
               
             
           </h1>
@@ -388,7 +388,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-01-29 21:43:42" itemprop="dateModified" datetime="2018-01-29T21:43:42+08:00">2018-01-29</time>
+                <time title="修改时间：2019-06-16 09:28:37" itemprop="dateModified" datetime="2019-06-16T09:28:37+08:00">2019-06-16</time>
               </span>
             
           
@@ -402,7 +402,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/深度学习/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a></span>
 
                 
                 
@@ -420,8 +420,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/机器学习/模型评估与选择/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/模型评估与选择/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/机器学习和深度学习算法理论/CNN/CNN/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习和深度学习算法理论/CNN/CNN/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -454,216 +454,32 @@
       
         
           
-            <h1 id="1、模型评估方法"><a href="#1、模型评估方法" class="headerlink" title="1、模型评估方法"></a>1、模型评估方法</h1><blockquote>
-<p>可重复采样：<strong>在训练集小</strong>，难以划分训练/测试集是有用。此外，能产生多个不同训练集，对<strong>集成学习</strong>等方法有很大的好处。但是会改变初始数据集分布。</p>
-<p>在<strong>初始数据量足够</strong>时，用留出法或者交叉验证法。</p>
-</blockquote>
-<h2 id="1-1-留出法Hold-out"><a href="#1-1-留出法Hold-out" class="headerlink" title="1.1 留出法Hold-out"></a>1.1 留出法Hold-out</h2><p>将数据集D分成两个互斥的集合。</p>
-<p>训练/测试集尽量保证数据一致性，用分层采样，正负样本同比例。</p>
-<p>由于单次估计结果往往不可靠，使用留出法时，一般要采用若干次随机划分，重复进行实验后取平均值作为评估值。      ‘</p>
-<h2 id="1-2-交叉验证法"><a href="#1-2-交叉验证法" class="headerlink" title="1.2 交叉验证法"></a>1.2 交叉验证法</h2><p>将D分成k个大小相似的互斥子集，每个子集用分层采样得到。</p>
-<p>每次用k-1个子集的并集作为训练集，余下的子集作为测试集。这样获得k组训练/测试集。最终返回是k个测试结果的均值。</p>
-<p>常用10折交叉验证。</p>
-<h2 id="1-3-可重复采样"><a href="#1-3-可重复采样" class="headerlink" title="1.3 可重复采样"></a>1.3 可重复采样</h2><p>bootstrapping sampling：给定包含m个样本的数据集D，我们进行采样产生数据集$D’$，每次随机从D中挑选一个样本，将其拷贝放入$D’$，再将样本放回D。重复m次，得到包含m个样本的$D’$。</p>
-<p>样本在m次采样中始终不被采到的概率是$(1-\frac 1 m)^m$，取极限得到</p>
+            <h1 id="卷积核"><a href="#卷积核" class="headerlink" title="卷积核"></a>卷积核</h1><p>也称为滤波器。</p>
+<p>权重共享：卷积核的权重（矩阵的值）对于不同位置的所有输入都是相同的。</p>
+<h2 id="卷积操作的意义"><a href="#卷积操作的意义" class="headerlink" title="卷积操作的意义"></a>卷积操作的意义</h2><p>例如，有整体边缘滤波器Ke，横向边缘滤波器Kh，纵向边缘滤波器Kv。</p>
 <script type="math/tex; mode=display">
-{\lim_{m \mapsto \infty  }}(1-\frac 1 m)^m  \mapsto \frac 1 e\approx0.368</script><p>即通过bootstrapping，D中有36.8%的样本未出现在$D’$中，于是可以将$D’$作为训练集，$D-D’$作为测试集，这样可以有1/3个未出现在训练集的样本用于测试。测试结果称为“包外估计”（out-of-bag estimate）。</p>
-<h2 id="1-4-调参"><a href="#1-4-调参" class="headerlink" title="1.4 调参"></a>1.4 调参</h2><blockquote>
-<p>我们在模型评估时往往用来确定算法和参数。当这些确定后，要用所有的D再训练一次，才是最终的模型。</p>
-</blockquote>
-<h1 id="2、性能度量"><a href="#2、性能度量" class="headerlink" title="2、性能度量"></a>2、性能度量</h1><p>回归最常用的是“均方误差”（mean squared error）</p>
-<script type="math/tex; mode=display">
-E(f;D) = \frac 1 m \sum_{i=1}^m(f(x_i)-y_i )^2</script><p>更一般的，对于数据分布D和概率密度函数$p(\cdot )$，均方误差可描述为</p>
-<script type="math/tex; mode=display">
-E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复杂</p>
-<h2 id="2-1-错误率和精度"><a href="#2-1-错误率和精度" class="headerlink" title="2.1 错误率和精度"></a>2.1 错误率和精度</h2><p>错误率：分类错误的样本占总样本的比例</p>
-<p>精度：分类正确的样本占总样本的比例</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/编程语言学习/JAVA/ubuntu-java反编译/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/12/编程语言学习/JAVA/ubuntu-java反编译/" class="post-title-link" itemprop="url">ubuntu java反编译</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-01-30 16:08:16" itemprop="dateModified" datetime="2018-01-30T16:08:16+08:00">2018-01-30</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JAVA/" itemprop="url" rel="index"><span itemprop="name">JAVA</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/编程语言学习/JAVA/ubuntu-java反编译/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/编程语言学习/JAVA/ubuntu-java反编译/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>从<a href="https://sourceforge.net/projects/jadx/下载" target="_blank" rel="noopener">https://sourceforge.net/projects/jadx/下载</a></p>
-<p>假设安装路径为<code>~/opt/jadx</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd ~/opt/jadx/jadx/build/jadx/bin</div><div class="line">./jadx-gui</div></pre></td></tr></table></figure>
-<p>打开gui，拖入jar包或者class文件</p>
+K_e=\begin{bmatrix}
+0 & -4 & 0\\ 
+-4 & 16 & -4\\ 
+0 & -4 & 0
+\end{bmatrix}\ \ K_h=\begin{bmatrix}
+1 & 2 & 1\\ 
+0 & 0 & 0\\ 
+-1 & -2 & -1
+\end{bmatrix}\ \ K_v=\begin{bmatrix}
+1 & 0 & -1\\ 
+2 & 0 & -2\\ 
+1 & 0 & -1
+\end{bmatrix}</script><p>若某像素位于物体边缘，则周边像素与该像素会有明显差异，用Ke可以放大边缘和周边的差异，起到边缘检测的作用。同理，Kh、Kv可以保留横向、纵向的边缘信息。</p>
+<h1 id="池化层"><a href="#池化层" class="headerlink" title="池化层"></a>池化层</h1><p>也叫汇合层。通常操作有平均值池化（average-pooling）和最大值汇合（max-pooling）。与卷积核操作不同，池化层不包含需要学习的参数。仅指定汇合类型，核大小（kernel size）和步长（stride）。</p>
+<p>汇合的结果相对输入降小了，是一种降采样（down-sampling）操作。也可以看成是一个用p范数（p-norm）作为非线性映射的卷积操作。当p趋于正无穷时就是最大值汇合。</p>
+<p>汇合层的引入是仿照人的视觉系统对视觉输入对象进行降维和抽象。作用有：</p>
+<p>1）特征不变性（feature invariant）。使模型更关注是否存在某些特征而不是特征具体的位置。</p>
+<p>2）特征降维。</p>
+<p>3）一定程度上防止过拟合。</p>
+<h1 id="全连接层"><a href="#全连接层" class="headerlink" title="全连接层"></a>全连接层</h1><p>fully connected layers</p>
+<p>参考：</p>
+<p>【1】解析卷积神经网络.pdf</p>
 
           
         
@@ -995,7 +811,7 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习和深度学习算法理论/CNN/CNN/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/Elastic Search/elastic-search笔记/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -1015,7 +831,7 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/机器学习和深度学习算法理论/CNN/CNN/" class="post-title-link" itemprop="url">CNN</a>
+                <a href="/2017/07/12/Elastic Search/elastic-search笔记/" class="post-title-link" itemprop="url">elastic search笔记</a>
               
             
           </h1>
@@ -1055,7 +871,7 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-06-16 09:28:37" itemprop="dateModified" datetime="2019-06-16T09:28:37+08:00">2019-06-16</time>
+                <time title="修改时间：2018-03-17 20:50:31" itemprop="dateModified" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
               </span>
             
           
@@ -1069,7 +885,7 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/深度学习/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Elastic-Search/" itemprop="url" rel="index"><span itemprop="name">Elastic Search</span></a></span>
 
                 
                 
@@ -1087,8 +903,8 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/机器学习和深度学习算法理论/CNN/CNN/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习和深度学习算法理论/CNN/CNN/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/Elastic Search/elastic-search笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/Elastic Search/elastic-search笔记/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1121,32 +937,12 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
       
         
           
-            <h1 id="卷积核"><a href="#卷积核" class="headerlink" title="卷积核"></a>卷积核</h1><p>也称为滤波器。</p>
-<p>权重共享：卷积核的权重（矩阵的值）对于不同位置的所有输入都是相同的。</p>
-<h2 id="卷积操作的意义"><a href="#卷积操作的意义" class="headerlink" title="卷积操作的意义"></a>卷积操作的意义</h2><p>例如，有整体边缘滤波器Ke，横向边缘滤波器Kh，纵向边缘滤波器Kv。</p>
-<script type="math/tex; mode=display">
-K_e=\begin{bmatrix}
-0 & -4 & 0\\ 
--4 & 16 & -4\\ 
-0 & -4 & 0
-\end{bmatrix}\ \ K_h=\begin{bmatrix}
-1 & 2 & 1\\ 
-0 & 0 & 0\\ 
--1 & -2 & -1
-\end{bmatrix}\ \ K_v=\begin{bmatrix}
-1 & 0 & -1\\ 
-2 & 0 & -2\\ 
-1 & 0 & -1
-\end{bmatrix}</script><p>若某像素位于物体边缘，则周边像素与该像素会有明显差异，用Ke可以放大边缘和周边的差异，起到边缘检测的作用。同理，Kh、Kv可以保留横向、纵向的边缘信息。</p>
-<h1 id="池化层"><a href="#池化层" class="headerlink" title="池化层"></a>池化层</h1><p>也叫汇合层。通常操作有平均值池化（average-pooling）和最大值汇合（max-pooling）。与卷积核操作不同，池化层不包含需要学习的参数。仅指定汇合类型，核大小（kernel size）和步长（stride）。</p>
-<p>汇合的结果相对输入降小了，是一种降采样（down-sampling）操作。也可以看成是一个用p范数（p-norm）作为非线性映射的卷积操作。当p趋于正无穷时就是最大值汇合。</p>
-<p>汇合层的引入是仿照人的视觉系统对视觉输入对象进行降维和抽象。作用有：</p>
-<p>1）特征不变性（feature invariant）。使模型更关注是否存在某些特征而不是特征具体的位置。</p>
-<p>2）特征降维。</p>
-<p>3）一定程度上防止过拟合。</p>
-<h1 id="全连接层"><a href="#全连接层" class="headerlink" title="全连接层"></a>全连接层</h1><p>fully connected layers</p>
-<p>参考：</p>
-<p>【1】解析卷积神经网络.pdf</p>
+            <h1 id="过滤字段中为空的"><a href="#过滤字段中为空的" class="headerlink" title="过滤字段中为空的"></a>过滤字段中为空的</h1><p>通过filter中的exists，如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">GET iclick_persona/iclick/_search</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;bool&quot;: &#123;</div><div class="line">      &quot;must&quot;: [</div><div class="line">        &#123;&quot;term&quot;: &#123;</div><div class="line">          &quot;province&quot;: &#123;</div><div class="line">            &quot;value&quot;: &quot;CN_IN_SG&quot;</div><div class="line">          &#125;</div><div class="line">        &#125;&#125;</div><div class="line">      ],</div><div class="line">      &quot;filter&quot;: &#123;</div><div class="line">        &quot;exists&quot;: &#123;</div><div class="line">          &quot;field&quot;: &quot;articles.titles&quot;</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="大索引按天拆开"><a href="#大索引按天拆开" class="headerlink" title="大索引按天拆开"></a>大索引按天拆开</h1><p>好像不能直接从A索引中抽取一部分到B索引</p>
+<h1 id="python从文件插入到ES"><a href="#python从文件插入到ES" class="headerlink" title="python从文件插入到ES"></a>python从文件插入到ES</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">def set_pois_data(es, input_file, index_name=&quot;pois&quot;, doc_type_name=&quot;iclick&quot;):</div><div class="line">    #读入数据</div><div class="line">    fp = open(input_file)</div><div class="line"></div><div class="line">    #创建ACTIONS</div><div class="line">    ACTIONS = []</div><div class="line">    for line in fp:</div><div class="line">        fields = line.strip(&apos;\n&apos;).split(&quot;\t&quot;)</div><div class="line">        name = fields[0]</div><div class="line">        location = fields[2] + &quot;,&quot; + fields[3]</div><div class="line"></div><div class="line">        action = &#123;</div><div class="line">            &quot;_index&quot;: index_name,</div><div class="line">            &quot;_type&quot;: doc_type_name,</div><div class="line">            &quot;_source&quot;: &#123;</div><div class="line">                  &quot;name&quot; : name,</div><div class="line">                  &quot;pois&quot; : location,</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        #print action</div><div class="line">        ACTIONS.append(action)</div><div class="line"></div><div class="line">    # 批量处理</div><div class="line">    success, _ = bulk(es, ACTIONS, index=index_name, raise_on_error=True)</div><div class="line">    print(&apos;Performed %d actions&apos; % success)</div></pre></td></tr></table></figure>
+<h1 id="复制index的数据到另一个"><a href="#复制index的数据到另一个" class="headerlink" title="复制index的数据到另一个"></a>复制index的数据到另一个</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">import pyes</div><div class="line">conn = pyes.es.ES(&quot;http://10.xx.xx.xx:8305/&quot;)</div><div class="line">search = pyes.query.MatchAllQuery().search(bulk_read=1000)</div><div class="line">hits = conn.search(search, &apos;store_v1&apos;, &apos;client&apos;, scan=True, scroll=&quot;30m&quot;, model=lambda _,hit: hit)</div><div class="line">for hit in hits:</div><div class="line">     #print hit</div><div class="line">     conn.index(hit[&apos;_source&apos;], &apos;store_v2&apos;, &apos;client&apos;, hit[&apos;_id&apos;], bulk=True)</div><div class="line">conn.flush()</div></pre></td></tr></table></figure>
+<h1 id="统计数组的元素个数的sum、avg"><a href="#统计数组的元素个数的sum、avg" class="headerlink" title="统计数组的元素个数的sum、avg"></a>统计数组的元素个数的sum、avg</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">GET iclick_persona/iclick/_search?size=0</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;bool&quot;: &#123;</div><div class="line">      &quot;must&quot;: [</div><div class="line">        &#123;&quot;term&quot;: &#123;</div><div class="line">          &quot;device&quot;: &#123;</div><div class="line">            &quot;value&quot;: &quot;PC&quot;</div><div class="line">          &#125;</div><div class="line">        &#125;&#125;</div><div class="line">      ],</div><div class="line">      &quot;filter&quot;: [</div><div class="line">        &#123;&quot;script&quot;:&#123;&quot;script&quot;:&quot;doc[&apos;articles.domains&apos;].values.length&gt;1&quot;&#125;&#125;</div><div class="line">      ]</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;NAME&quot;: &#123;</div><div class="line">      &quot;avg&quot;: &#123;</div><div class="line">        &quot;script&quot;: &#123;</div><div class="line">          &quot;inline&quot;: &quot;doc[&apos;articles.domains&apos;].values.length&quot;</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 
           
         
@@ -1203,7 +999,7 @@ K_e=\begin{bmatrix}
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/工具和环境/Mac技巧/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/算法与数据结构/路径规划算法/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -1223,7 +1019,7 @@ K_e=\begin{bmatrix}
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/工具和环境/Mac技巧/" class="post-title-link" itemprop="url">Mac技巧</a>
+                <a href="/2017/07/12/算法与数据结构/路径规划算法/" class="post-title-link" itemprop="url">路径规划算法</a>
               
             
           </h1>
@@ -1263,273 +1059,7 @@ K_e=\begin{bmatrix}
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-01 12:02:30" itemprop="dateModified" datetime="2019-07-01T12:02:30+08:00">2019-07-01</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/工具和环境/" itemprop="url" rel="index"><span itemprop="name">工具和环境</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/工具和环境/Mac技巧/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/工具和环境/Mac技巧/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="卸载jdk9安装jdk8"><a href="#卸载jdk9安装jdk8" class="headerlink" title="卸载jdk9安装jdk8"></a>卸载jdk9安装jdk8</h1><p>brew默认安装的jdk9带来了一些麻烦，</p>
-<p>比如mvn java和scala混编项目会报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">error: error while loading package, Missing dependency &apos;object java.lang.Object in compiler mirror&apos;, required by /Users/david/david/.m2/repository/org/scala-lang/scala-library/2.10.5/scala-library-2.10.5.jar(scala/package.class)</div></pre></td></tr></table></figure>
-<p>于是打算卸载并换回jdk8</p>
-<p>安装Java：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew cask install java  //命令安装的是最新的Java9，我需要的是Java8……</div></pre></td></tr></table></figure>
-<p>卸载Java9:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">ls  /Library/Java/JavaVirtualMachines/ //查看jdk版本</div><div class="line"></div><div class="line">//卸载</div><div class="line"></div><div class="line">sudo rm -rf /Library/Java/JavaVirtualMachines/jdk-9.0.4.jdk //此处9.0.1即是上一步查看到的版本号</div><div class="line">sudo rm -fr /Library/Internet\ Plug-Ins/JavaAppletPlugin.plugin </div><div class="line">sudo rm -fr /Library/PreferencePanes/JavaControlPanel.prefPane </div><div class="line">sudo rm -fr ~/Library/Application\ Support/Java</div></pre></td></tr></table></figure>
-<p>安装Java8:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">brew tap caskroom/versions</div><div class="line">brew cask install java8</div></pre></td></tr></table></figure>
-<p>安装eclipse：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew cask install eclipse-ide</div></pre></td></tr></table></figure>
-<p>配置Java环境变量：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">/usr/libexec/java_home  //定位JAVA_HOME位置</div><div class="line"></div><div class="line">  Matching Java Virtual Machines (1):</div><div class="line">    1.8.0_121, x86_64:  &quot;Java SE 8&quot; </div><div class="line">  /Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Home</div><div class="line"></div><div class="line"></div><div class="line">vi ~/.bash_profile  //编辑profile文件</div><div class="line"></div><div class="line">//按i键，输入以下代码</div><div class="line"></div><div class="line">JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Home</div><div class="line">PATH=$JAVA_HOME/bin:$PATH</div><div class="line">CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar</div><div class="line"></div><div class="line">//然后按esc键，输入 :wq  保存并退出profile文件。</div></pre></td></tr></table></figure>
-<p>之后执行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">source ~/.base_profile  </div><div class="line"></div><div class="line">echo ~/.base_profile</div></pre></td></tr></table></figure>
-<p>查看环境变量是否配置成功：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$  echo $JAVA_HOME</div><div class="line"></div><div class="line">/Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Home</div></pre></td></tr></table></figure>
-<h1 id="Finder复制路径"><a href="#Finder复制路径" class="headerlink" title="Finder复制路径"></a>Finder复制路径</h1><p><a href="https://www.jianshu.com/p/757f9ffc5acf" target="_blank" rel="noopener">https://www.jianshu.com/p/757f9ffc5acf</a></p>
-<h1 id="拷贝文件内容到剪切板"><a href="#拷贝文件内容到剪切板" class="headerlink" title="拷贝文件内容到剪切板"></a>拷贝文件内容到剪切板</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pbcopy &lt; id_rsa.pub</div></pre></td></tr></table></figure>
-<h1 id="支持LUIT"><a href="#支持LUIT" class="headerlink" title="支持LUIT"></a>支持LUIT</h1><ul>
-<li>下载地址<br><a href="https://link.jianshu.com?t=http://invisible-island.net/luit/luit.html#download" target="_blank" rel="noopener">http://invisible-island.net/luit/luit.html#download</a></li>
-<li>解压<br>tar zxvf luit.tar.gz<br>cd luit-20141204</li>
-</ul>
-<blockquote>
-<p>可能版本会不一样</p>
-</blockquote>
-<ul>
-<li>配置<br>./configure</li>
-<li>编译<br>make</li>
-<li>安装<br>make install</li>
-<li>卸载<br>make uninstall</li>
-<li>使用<br>luit -encoding gbk ssh user@host</li>
-</ul>
-<h1 id="刷新dns"><a href="#刷新dns" class="headerlink" title="刷新dns"></a>刷新dns</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo dscacheutil -flushcache</div></pre></td></tr></table></figure>
-<h1 id="windows的文本文件乱码"><a href="#windows的文本文件乱码" class="headerlink" title="windows的文本文件乱码"></a>windows的文本文件乱码</h1><p><a href="https://bbs.feng.com/read-htm-tid-11194986.html" target="_blank" rel="noopener">https://bbs.feng.com/read-htm-tid-11194986.html</a></p>
-<p>大家可能都碰到过从Windows复制了一些文本文件到mac上，打开以后发现乱码的问题。楼主经常mac和win两个系统之间互相传一些程序文件比如.cpp .h，由于编码不一样，用<br>win的人把他的程序传给我，我在mac里打开的中文注释总是乱码，令我大为恼火<br>原来win上很多文本编辑器用的是GB18030编码来保存汉字，mac上都是用的utf-8编码，导致了乱码</p>
-<p>下面附下这两个服务的下载 <a href="https://pan.baidu.com/s/1kU50qxh" target="_blank" rel="noopener">https://pan.baidu.com/s/1kU50qxh</a></p>
-<p>GB18030转换为utf-8.zip</p>
-<p>utf-8转为GB18030.zip</p>
-<p>下载解压后复制到~/资源库/Services 目录下即可使用</p>
-<p><img src="https://bbsimg.joyslink.com/2017/03/30/13410258_p2.png" alt="img"></p>
-<p>如果不想用了在系统偏好设置的如图位置可以取消</p>
-<p><img src="https://bbsimg.joyslink.com/2017/03/30/13410254_p1.png" alt="img"></p>
-<h1 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h1><p>查看nginx安装目录：　</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">open /usr/local/Cellar/nginx  //其实这个才是nginx被安装到的目录</div></pre></td></tr></table></figure>
-<p>nginx的配置文件（nginx.conf）:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vim  /usr/local/etc/nginx/nginx.conf</div></pre></td></tr></table></figure>
-<p>nginx重启</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nginx -s reload</div></pre></td></tr></table></figure>
-<h1 id="安装lisp"><a href="#安装lisp" class="headerlink" title="安装lisp"></a>安装lisp</h1><p>1、安装sbcl</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew install sbcl</div></pre></td></tr></table></figure>
-<p>2、安装emacs</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
-<h1 id="在Drscheme使用stream的问题"><a href="#在Drscheme使用stream的问题" class="headerlink" title="在Drscheme使用stream的问题"></a>在Drscheme使用stream的问题</h1><p><a href="https://blog.csdn.net/interhanchi/article/details/83190473" target="_blank" rel="noopener">https://blog.csdn.net/interhanchi/article/details/83190473</a></p>
-<h1 id="安装MySQL"><a href="#安装MySQL" class="headerlink" title="安装MySQL"></a>安装MySQL</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew install mysql</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">To connect run:</div><div class="line">    mysql -uroot</div><div class="line"></div><div class="line">To have launchd start mysql now and restart at login:</div><div class="line">  brew services start mysql</div><div class="line">Or, if you don&apos;t want/need a background service you can just run:</div><div class="line">  mysql.server start</div></pre></td></tr></table></figure>
-<h1 id="redis"><a href="#redis" class="headerlink" title="redis"></a>redis</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># 带密码启动</div><div class="line">src/redis-server redis.conf</div></pre></td></tr></table></figure>
-<h1 id="mac下载破解软件"><a href="#mac下载破解软件" class="headerlink" title="mac下载破解软件"></a>mac下载破解软件</h1><p><a href="https://www.waitsun.com/" target="_blank" rel="noopener">https://www.waitsun.com/</a></p>
-<blockquote>
-<h1 id="Mac安装软件时提示已损坏的解决方法"><a href="#Mac安装软件时提示已损坏的解决方法" class="headerlink" title="Mac安装软件时提示已损坏的解决方法"></a>Mac安装软件时提示已损坏的解决方法</h1><p>今天要说的内容是重中之重。一直有朋友同事反映，从网上下载的Sketch、Principle等设计软件，以及输入法等常用软件，安装时总是提示“已损坏，移至废纸篓”这类信息，根本无法打开。如下图：</p>
-<p><img src="/2017/07/12/工具和环境/Mac技巧/pic/432.png" alt="Mac安装软件时提示已损坏的解决方法-爱情守望者"></p>
-<p>其实，这是新系统（macOS Sierra 10.12.X）惹的祸。新系统加强了安全机制，默认不允许用户自行下载安装应用程序，只能从Mac App Store里安装应用。</p>
-<h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h4><p><strong>步骤一</strong>：打开终端（按F4启动Launchpad，终端默认在“其他”中）</p>
-<p><img src="/2017/07/12/工具和环境/Mac技巧/pic/683.jpeg" alt="Mac安装软件时提示已损坏的解决方法-爱情守望者"></p>
-<p><strong>步骤二</strong>：输入代码：sudo spctl <strong>—</strong>master-disable（<strong>master前面为两个短横线，看下面的截图</strong>）</p>
-<p><img src="/2017/07/12/工具和环境/Mac技巧/pic/566.png" alt="Mac安装软件时提示已损坏的解决方法-爱情守望者"></p>
-<p>注意红框处应有空格<br><strong>步骤三</strong>：按回车输入自己电脑密码，再次回车（密码不会显示出来，放心输就好）</p>
-<p><img src="/2017/07/12/工具和环境/Mac技巧/pic/564.png" alt="Mac安装软件时提示已损坏的解决方法-爱情守望者"></p>
-<p>不显示密码，输完按回车</p>
-<p><strong>步骤四</strong>：打开系统偏好设置 » 安全性与隐私，若显示<em>任何来源</em>，大功告成；若没有此选项，一定是你前面的步骤不对</p>
-<p><img src="/2017/07/12/工具和环境/Mac技巧/pic/665.png" alt="Mac安装软件时提示已损坏的解决方法-爱情守望者"><br>回到桌面双击安装文件，发现都可以打开啦，尽情享受Mac带给你的乐趣吧！</p>
-<p><img src="/2017/07/12/工具和环境/Mac技巧/pic/700.png" alt="Mac安装软件时提示已损坏的解决方法-爱情守望者"></p>
-</blockquote>
-<h1 id="MongoDB"><a href="#MongoDB" class="headerlink" title="MongoDB"></a>MongoDB</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew install mongodb</div></pre></td></tr></table></figure>
-<p>启动服务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew services start mongodb</div></pre></td></tr></table></figure>
-<p>可视化工具</p>
-<p><a href="https://robomongo.org/download" target="_blank" rel="noopener">Robomongo</a></p>
-<p>``</p>
-<h1 id="brew更换镜像"><a href="#brew更换镜像" class="headerlink" title="brew更换镜像"></a>brew更换镜像</h1><p><a href="https://mirror.tuna.tsinghua.edu.cn/help/homebrew/" target="_blank" rel="noopener">https://mirror.tuna.tsinghua.edu.cn/help/homebrew/</a></p>
-<h1 id="docker"><a href="#docker" class="headerlink" title="docker"></a>docker</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew cask install docker</div></pre></td></tr></table></figure>
-<h1 id="Pytorch安装"><a href="#Pytorch安装" class="headerlink" title="Pytorch安装"></a>Pytorch安装</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">conda create -n pytorch python=3.6</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip3 install torch torchvision</div></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/算法与数据结构/优先级队列/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/12/算法与数据结构/优先级队列/" class="post-title-link" itemprop="url">优先级队列</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-02-18 10:04:47" itemprop="dateModified" datetime="2018-02-18T10:04:47+08:00">2018-02-18</time>
+                <time title="修改时间：2019-06-03 09:22:59" itemprop="dateModified" datetime="2019-06-03T09:22:59+08:00">2019-06-03</time>
               </span>
             
           
@@ -1561,8 +1091,8 @@ K_e=\begin{bmatrix}
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/算法与数据结构/优先级队列/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/算法与数据结构/优先级队列/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/算法与数据结构/路径规划算法/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/算法与数据结构/路径规划算法/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1595,7 +1125,26 @@ K_e=\begin{bmatrix}
       
         
           
-            <figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">PriorityQueue</span>[<span class="type">E</span>](<span class="params">top: <span class="type">Int</span></span>) </span>&#123;</div><div class="line">  <span class="keyword">import</span> <span class="type">PriorityQueue</span>.<span class="type">Entry</span></div><div class="line"></div><div class="line">  <span class="keyword">private</span> <span class="keyword">var</span> nsize = <span class="number">0</span></div><div class="line">  <span class="keyword">private</span> <span class="keyword">val</span> heap = <span class="type">Array</span>.ofDim[<span class="type">Entry</span>[<span class="type">E</span>]](top+<span class="number">1</span>)</div><div class="line"></div><div class="line">  <span class="comment">/**</span></div><div class="line">   * Adds an Object to a PriorityQueue in log(size) time. It returns the</div><div class="line">   * object (if any) that was dropped off the heap because it was full. This</div><div class="line">   * can be the given parameter (in case it is smaller than the full heap's</div><div class="line">   * minimum, and couldn't be added), or another object that was previously</div><div class="line">   * the smallest value in the heap and now has been replaced by a larger one,</div><div class="line">   * or null if the queue wasn't yet full with maxSize elements.</div><div class="line">   */</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">add</span></span>(key: <span class="type">Double</span>, value: <span class="type">E</span>): <span class="type">Option</span>[<span class="type">Entry</span>[<span class="type">E</span>]] = &#123;</div><div class="line">    <span class="keyword">if</span> (nsize &lt; top) &#123;</div><div class="line">      nsize += <span class="number">1</span></div><div class="line">      heap(nsize) = <span class="type">Entry</span>(key, value)</div><div class="line">      upHeap</div><div class="line">      <span class="type">None</span></div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (nsize &gt; <span class="number">0</span> &amp;&amp; key &gt;= heap(<span class="number">1</span>).key) &#123;</div><div class="line">      <span class="keyword">val</span> old = heap(<span class="number">1</span>)</div><div class="line">      heap(<span class="number">1</span>) = <span class="type">Entry</span>(key, value)</div><div class="line">      updateTop</div><div class="line">      <span class="type">Some</span>(old)</div><div class="line">    &#125; <span class="keyword">else</span> <span class="type">Some</span>(<span class="type">Entry</span>(key, value))</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">values</span></span>(): <span class="type">List</span>[<span class="type">E</span>] = &#123;</div><div class="line">    <span class="keyword">val</span> entries = <span class="type">Array</span>.ofDim[<span class="type">Entry</span>[<span class="type">E</span>]](nsize)</div><div class="line">    <span class="type">System</span>.arraycopy(heap, <span class="number">1</span>, entries, <span class="number">0</span>, nsize)</div><div class="line">    entries sortBy(-_.key) map(_.value) toList</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">/**</span></div><div class="line">   * Removes and returns the least element of the PriorityQueue in log(size)</div><div class="line">   * time.</div><div class="line">   */</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">pop</span></span>(): <span class="type">Option</span>[<span class="type">Entry</span>[<span class="type">E</span>]] = &#123;</div><div class="line">    <span class="keyword">if</span> (nsize &gt; <span class="number">0</span>) &#123;</div><div class="line">      <span class="keyword">val</span> result = heap(<span class="number">1</span>)</div><div class="line">      heap(<span class="number">1</span>) = heap(nsize)</div><div class="line">      heap(nsize) = <span class="literal">null</span></div><div class="line">      nsize -= <span class="number">1</span></div><div class="line">      downHeap</div><div class="line">      <span class="type">Some</span>(result)</div><div class="line">    &#125; <span class="keyword">else</span> <span class="type">None</span></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">/** Returns the number of elements currently stored in the PriorityQueue. */</span></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">size</span></span>(): <span class="type">Int</span> = nsize</div><div class="line"></div><div class="line">  <span class="comment">/**</span></div><div class="line">   * Should be called when the Object at top changes values. Still log(n)</div><div class="line">   * worst case, but it's at least twice as fast to</div><div class="line">   *</div><div class="line">   * &lt;pre&gt;</div><div class="line">   * pq.top().change();</div><div class="line">   * pq.updateTop();</div><div class="line">   * &lt;/pre&gt;</div><div class="line">   *</div><div class="line">   * instead of</div><div class="line">   *</div><div class="line">   * &lt;pre&gt;</div><div class="line">   * o = pq.pop();</div><div class="line">   * o.change();</div><div class="line">   * pq.push(o);</div><div class="line">   * &lt;/pre&gt;</div><div class="line">   *</div><div class="line">   * @return the new 'top' element.</div><div class="line">   */</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">updateTop</span></span>(): <span class="type">Entry</span>[<span class="type">E</span>] = &#123;</div><div class="line">    downHeap</div><div class="line">    heap(<span class="number">1</span>)</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">private</span> <span class="function"><span class="keyword">def</span> <span class="title">upHeap</span></span>(): <span class="type">Unit</span> = &#123;</div><div class="line">    <span class="keyword">var</span> i = nsize</div><div class="line">    <span class="keyword">val</span> node = heap(i)</div><div class="line">    <span class="keyword">var</span> j = i &gt;&gt;&gt; <span class="number">1</span></div><div class="line">    <span class="keyword">while</span> (j &gt; <span class="number">0</span> &amp;&amp; node.key &lt; heap(j).key) &#123;</div><div class="line">      heap(i) = heap(j)</div><div class="line">      i = j</div><div class="line">      j = j &gt;&gt;&gt; <span class="number">1</span></div><div class="line">    &#125;</div><div class="line">    heap(i) = node</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">private</span> <span class="function"><span class="keyword">def</span> <span class="title">downHeap</span></span>(): <span class="type">Unit</span> = &#123;</div><div class="line">    <span class="keyword">var</span> i = <span class="number">1</span></div><div class="line">    <span class="keyword">val</span> node = heap(i)</div><div class="line">    <span class="keyword">var</span> j = i &lt;&lt; <span class="number">1</span></div><div class="line">    <span class="keyword">var</span> k = j + <span class="number">1</span></div><div class="line">    <span class="keyword">if</span> (k &lt;= nsize &amp;&amp; heap(k).key &lt; heap(j).key) &#123;</div><div class="line">      j = k</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">while</span> (j &lt;= nsize &amp;&amp; heap(j).key &lt; node.key) &#123;</div><div class="line">      heap(i) = heap(j)</div><div class="line">      i = j</div><div class="line">      j = i &lt;&lt; <span class="number">1</span></div><div class="line">      k = j + <span class="number">1</span></div><div class="line">      <span class="keyword">if</span> (k &lt;= nsize &amp;&amp; heap(k).key &lt; heap(j).key) &#123;</div><div class="line">        j = k</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">    heap(i) = node</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">PriorityQueue</span> </span>&#123;</div><div class="line">  <span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>[<span class="type">E</span>](<span class="params">key: <span class="type">Double</span>, value: <span class="type">E</span></span>)</span></div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]) &#123;</div><div class="line">    <span class="keyword">val</span> pq = <span class="keyword">new</span> <span class="type">PriorityQueue</span>[(<span class="type">Int</span>, <span class="type">Double</span>)](<span class="number">4</span>)</div><div class="line">    <span class="keyword">val</span> ds = <span class="type">Array</span>[<span class="type">Double</span>](<span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.7</span>, <span class="number">0.2</span>, <span class="number">0.2</span>, <span class="number">0.3</span>, <span class="number">0.3</span>, <span class="number">0.5</span>, <span class="number">0.5</span>, <span class="number">0.5</span>)</div><div class="line">    <span class="keyword">for</span> (i &lt;- <span class="number">0</span> until ds.length) &#123;</div><div class="line">      <span class="keyword">val</span> e = pq.add(ds(i), (i, ds(i)))</div><div class="line">      println((i, ds(i)) + <span class="string">" =&gt; "</span> + e)</div><div class="line">    &#125;</div><div class="line">    println(pq.values)</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+            <p>TSP、VRP</p>
+<h2 id="VRP"><a href="#VRP" class="headerlink" title="VRP"></a>VRP</h2><p>Vehicle Routing Problem</p>
+<p>假设在一个供求关系系统中，车辆从货源取货，配送到对应的若干配送点。车辆存在最大载货量，且配送可能有时间限制。需要合理安排取货时间，组织适当的行车路线，使用户需求得到满足，同时使某个代价函数最小，比如总工作时间最少、路径最短等。</p>
+<p>可以看出TSP问题是VRP问题的一种简单特殊形式。因此，VRP也是一种NP hard 问题。</p>
+<p>目前解决此种问题的办法有多种，主要以启发式算法为主。包括退火算法、遗传算法、蚁群算法、禁忌算法等。</p>
+<p><a href="https://blog.csdn.net/ldotn/article/details/53366882" target="_blank" rel="noopener">https://blog.csdn.net/ldotn/article/details/53366882</a></p>
+<p>C-W节约算法和遗传算法</p>
+<p>C-W节约算法：<br>基本思想是把各点单独与货源相连，构成若干条仅含一个配送点的线路，总费用为两倍从原点到各点的距离费用；然后计算将点 i 和点 j 连接在一条线路上费用节约值： </p>
+<script type="math/tex; mode=display">
+S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_{ij}</script><p>具体步骤：<br>（1）计算节约值S(i,j)，按从大到小排序<br>（2）考虑表格中最大元素Smax（i,j）Smax（i,j），对应点i和j，按条件进行操作： </p>
+<ol>
+<li>若i和j均不在构成线路上，则得到线路 o -&gt; i -&gt;j -&gt;o，转到（3） </li>
+<li>若i或j在已构成线路上，但不是内点 0 -&gt; i -&gt;o，则可连接，转到（3） </li>
+<li>若i和j位于已构成不同线路上，且均不是内点，则连接得到线路，转到（3） </li>
+<li>若i和j位于已构成的同一线路，则不连接，转到（3）<br>（3）划去第i行和第j列，即i点不能再到其他点，j点也不能由其他店到达<br>（4）若所有元素均被划去，则得到完整线路，算法终止；否则，在没有划去的元素中选最大元素，转至（2）。</li>
+</ol>
+<hr>
+<p>作者：LDOTN<br>来源：CSDN<br>原文：<a href="https://blog.csdn.net/ldotn/article/details/53366882?utm_source=copy" target="_blank" rel="noopener">https://blog.csdn.net/ldotn/article/details/53366882?utm_source=copy</a><br>版权声明：本文为博主原创文章，转载请附上博文链接！</p>
+<h2 id="专栏-从架构到算法，详解美团外卖订单分配内部机制"><a href="#专栏-从架构到算法，详解美团外卖订单分配内部机制" class="headerlink" title="专栏 | 从架构到算法，详解美团外卖订单分配内部机制"></a>专栏 | 从架构到算法，详解美团外卖订单分配内部机制</h2><p><a href="https://mp.weixin.qq.com/s?src=11&amp;timestamp=1539566532&amp;ver=1183&amp;signature=9jq4HLmibsnw8OrowBhYA9CXJN79KssHyV0G4Kra2LrXD95V-RHwziumoBV1pwJEsK-4kEiHILRjucx7fM4kyp*s61FEF3tEYd40N3CFBEvakfY1Kj0-pWEjqIYTm4G-&amp;new=1" target="_blank" rel="noopener">https://mp.weixin.qq.com/s?src=11&amp;timestamp=1539566532&amp;ver=1183&amp;signature=9jq4HLmibsnw8OrowBhYA9CXJN79KssHyV0G4Kra2LrXD95V-RHwziumoBV1pwJEsK-4kEiHILRjucx7fM4kyp*s61FEF3tEYd40N3CFBEvakfY1Kj0-pWEjqIYTm4G-&amp;new=1</a></p>
+<p>外卖订单的分配问题一般可建模为带有若干复杂约束的 DVRP（Dynamic Vehicle Routing Problem）问题。这类问题一般可表述为：有一定数量的骑手，每名骑手身上有若干订单正在配送过程中，在过去一段时间（如 1 分钟）内产生了一批新订单，已知骑手的行驶速度、任意两点间的行驶距离、每个订单的出餐时间和交付时间（骑手到达用户所在地之后将订单交付至用户所需的时间），那么如何将这批新订单在正确的时间分配至正确的骑手，使得用户体验得到保证的同时，骑手的配送效率最高。</p>
 
           
         
@@ -1875,7 +1424,7 @@ K_e=\begin{bmatrix}
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/算法与数据结构/最长公共子串/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark笔记-local开发/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -1895,7 +1444,7 @@ K_e=\begin{bmatrix}
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/算法与数据结构/最长公共子串/" class="post-title-link" itemprop="url">最长公共子串</a>
+                <a href="/2017/07/12/hadoop-spark/spark/spark笔记-local开发/" class="post-title-link" itemprop="url">spark笔记-local开发</a>
               
             
           </h1>
@@ -1935,7 +1484,7 @@ K_e=\begin{bmatrix}
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-03-17 20:50:31" itemprop="dateModified" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
+                <time title="修改时间：2018-11-13 10:00:42" itemprop="dateModified" datetime="2018-11-13T10:00:42+08:00">2018-11-13</time>
               </span>
             
           
@@ -1949,7 +1498,7 @@ K_e=\begin{bmatrix}
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法与数据结构/" itemprop="url" rel="index"><span itemprop="name">算法与数据结构</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
 
                 
                 
@@ -1967,8 +1516,8 @@ K_e=\begin{bmatrix}
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/算法与数据结构/最长公共子串/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/算法与数据结构/最长公共子串/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/hadoop-spark/spark/spark笔记-local开发/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/spark/spark笔记-local开发/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -2001,12 +1550,229 @@ K_e=\begin{bmatrix}
       
         
           
-            <p>找出最长子串，需要知道子串的<strong>起始位置</strong>和子串的<strong>长度</strong>。</p>
-<p>因此，维护一个二维数组，存放两个字符串的字符关系，再创建两个变量存放index和maxLen。</p>
-<p><img src="https://segmentfault.com/img/remote/1460000007963599?w=684&amp;h=644" alt=""></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">findLcsNew</span><span class="params">(String str1, String str2)</span> </span>&#123;</div><div class="line">		<span class="keyword">int</span> len1, len2;</div><div class="line">		len1 = str1.length();</div><div class="line">		len2 = str2.length();</div><div class="line">		</div><div class="line">		<span class="keyword">int</span> maxLen = <span class="number">0</span>, index = <span class="number">0</span>;</div><div class="line">		<span class="keyword">int</span>[][] arr = <span class="keyword">new</span> <span class="keyword">int</span>[len1 + <span class="number">1</span>][len2 + <span class="number">1</span>];</div><div class="line">		</div><div class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len1; i++) &#123;</div><div class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; len2; j++) &#123;</div><div class="line">				<span class="keyword">if</span> ( i == <span class="number">0</span> || j == <span class="number">0</span> ) &#123;</div><div class="line">                  <span class="comment">// 第一行和第一列都是0</span></div><div class="line">					arr[i][j] = <span class="number">0</span>;</div><div class="line">				&#125; <span class="keyword">else</span> &#123;</div><div class="line">                  <span class="comment">// 该字符和上一个字符均相等时</span></div><div class="line">					<span class="keyword">if</span> (str1.charAt(i) == str2.charAt(j) &amp;&amp; str1.charAt(i-<span class="number">1</span>) == str2.charAt(j-<span class="number">1</span>)) &#123;</div><div class="line">						arr[i][j] = arr[i-<span class="number">1</span>][j-<span class="number">1</span>] + <span class="number">1</span>;</div><div class="line">					&#125; <span class="keyword">else</span> &#123;</div><div class="line">						arr[i][j] = <span class="number">0</span>;</div><div class="line">					&#125;</div><div class="line">				&#125;</div><div class="line">				</div><div class="line">				<span class="keyword">if</span> (arr[i][j] &gt; maxLen) &#123;</div><div class="line">					maxLen = arr[i][j];</div><div class="line">					index = i;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		String newStr = str1.substring(index - maxLen, index + <span class="number">1</span>);</div><div class="line">		</div><div class="line">		<span class="keyword">return</span> newStr;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
-<p>也可以用一维数组实现，同时可以记录多个相同长度的最长子串</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">findLcs</span><span class="params">(String str1, String str2)</span> </span>&#123;</div><div class="line">	StringBuffer buff = <span class="keyword">new</span> StringBuffer();</div><div class="line">	<span class="keyword">int</span> i, j;</div><div class="line">	<span class="keyword">int</span> len1, len2;</div><div class="line">	len1 = str1.length();</div><div class="line">	len2 = str2.length();</div><div class="line">	<span class="keyword">int</span> maxLen = len1 &gt; len2 ? len1 : len2;</div><div class="line">	<span class="keyword">int</span>[] max = <span class="keyword">new</span> <span class="keyword">int</span>[maxLen];</div><div class="line">	<span class="keyword">int</span>[] maxIndex = <span class="keyword">new</span> <span class="keyword">int</span>[maxLen];</div><div class="line">	<span class="keyword">int</span>[] c = <span class="keyword">new</span> <span class="keyword">int</span>[maxLen];</div><div class="line"></div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; len2; i++) &#123;</div><div class="line">		<span class="keyword">for</span> (j = len1 - <span class="number">1</span>; j &gt;= <span class="number">0</span>; j--) &#123;</div><div class="line">			<span class="keyword">if</span> (str2.charAt(i) == str1.charAt(j)) &#123;</div><div class="line">				<span class="keyword">if</span> ((i == <span class="number">0</span>) || (j == <span class="number">0</span>))</div><div class="line">					c[j] = <span class="number">1</span>;</div><div class="line">				<span class="keyword">else</span></div><div class="line">					c[j] = c[j - <span class="number">1</span>] + <span class="number">1</span>;</div><div class="line">			&#125; <span class="keyword">else</span> &#123;</div><div class="line">				c[j] = <span class="number">0</span>;</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			<span class="keyword">if</span> (c[j] &gt; max[<span class="number">0</span>]) &#123; <span class="comment">// 如果是大于那暂时只有一个是最长的,而且要把后面的清0;</span></div><div class="line">				max[<span class="number">0</span>] = c[j];</div><div class="line">				maxIndex[<span class="number">0</span>] = j;</div><div class="line"></div><div class="line">				<span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">1</span>; k &lt; maxLen; k++) &#123;</div><div class="line">					max[k] = <span class="number">0</span>;</div><div class="line">					maxIndex[k] = <span class="number">0</span>;</div><div class="line">				&#125;</div><div class="line">			&#125; <span class="keyword">else</span> <span class="keyword">if</span> (c[j] == max[<span class="number">0</span>]) &#123; <span class="comment">// 有多个是相同长度的子串</span></div><div class="line">				<span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">1</span>; k &lt; maxLen; k++) &#123;</div><div class="line">					<span class="keyword">if</span> (max[k] == <span class="number">0</span>) &#123;</div><div class="line">						max[k] = c[j];</div><div class="line">						maxIndex[k] = j;</div><div class="line">						<span class="keyword">break</span>; <span class="comment">// 在后面加一个就要退出循环了</span></div><div class="line">					&#125;</div><div class="line"></div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; maxLen; j++) &#123;</div><div class="line">		<span class="keyword">if</span> (max[j] &gt; <span class="number">0</span>) &#123;</div><div class="line">			<span class="keyword">for</span> (i = maxIndex[j] - max[j] + <span class="number">1</span>; i &lt;= maxIndex[j]; i++)</div><div class="line">				buff.append(str1.charAt(i));			</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> buff.toString();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+            <h1 id="mac安装spark环境"><a href="#mac安装spark环境" class="headerlink" title="mac安装spark环境"></a>mac安装spark环境</h1><p><a href="https://blog.csdn.net/python_tty/article/details/72820469" target="_blank" rel="noopener">https://blog.csdn.net/python_tty/article/details/72820469</a></p>
+<h2 id="安装scala"><a href="#安装scala" class="headerlink" title="安装scala"></a>安装scala</h2><p><a href="https://downloads.lightbend.com/scala/2.10.7/scala-2.10.7.tgz" target="_blank" rel="noopener">2.10.7</a></p>
+<p>下载后放到<code>david/david/opt/scala</code></p>
+<p>修改<code>.bash_profile</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export SCALA_HOME=&quot;/Users/david/david/opt/scala-2.10.7&quot;</div><div class="line">export PATH=&quot;$SCALA_HOME/bin:$PATH&quot;</div></pre></td></tr></table></figure>
+<h2 id="下载spark"><a href="#下载spark" class="headerlink" title="下载spark"></a>下载spark</h2><p><a href="http://spark.apache.org/downloads.html" target="_blank" rel="noopener">http://spark.apache.org/downloads.html</a></p>
+<p>下载的是1.6.3的版本</p>
+<p>加到环境变量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export SPARK_HOME=&quot;/Users/david/david/opt/spark-1.6.3-bin-hadoop2.6&quot;</div><div class="line">export PATH=&quot;$SPARK_HOME/bin:$PATH&quot;</div></pre></td></tr></table></figure>
+<h2 id="允许ssh"><a href="#允许ssh" class="headerlink" title="允许ssh"></a>允许ssh</h2><h2 id="启动spark-shell"><a href="#启动spark-shell" class="headerlink" title="启动spark-shell"></a>启动spark-shell</h2><p>进入到spark安装目录的sbin/目录下，执行 ./start-all 启动spark </p>
+<p>进入到spark安装目录的bin/目录下，执行 ./spark-shell，看spark 是否安装成功</p>
+<h1 id="spark开发环境"><a href="#spark开发环境" class="headerlink" title="spark开发环境"></a>spark开发环境</h1><p>一、环境</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">			&lt;groupId&gt;org.apache.spark&lt;/groupId&gt;</div><div class="line">			&lt;artifactId&gt;spark-core_2.10&lt;/artifactId&gt;</div><div class="line">			&lt;version&gt;1.6.1&lt;/version&gt;</div><div class="line">		&lt;/dependency&gt;</div></pre></td></tr></table></figure>
+<p>二、编写local的spark程序<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">import org.apache.log4j.&#123; Level, Logger &#125;</div><div class="line">import org.apache.spark.&#123; SparkConf, SparkContext &#125;</div><div class="line"></div><div class="line">def main(args: Array[String]): Unit = &#123;</div><div class="line">    //关闭一些不必要的日志</div><div class="line">    Logger.getLogger(&quot;org.apache.spark&quot;).setLevel(Level.WARN)</div><div class="line">    Logger.getLogger(&quot;org.eclipse.jetty.server&quot;).setLevel(Level.OFF)</div><div class="line">    </div><div class="line">    val conf = new SparkConf().setAppName(&quot;wordSegname&quot;).setMaster(&quot;local[4]&quot;).</div><div class="line">    set(&quot;spark.sql.shuffle.partitions&quot;,&quot;10&quot;).set(&quot;spark.network.timeout&quot;,&quot;30s&quot;)</div><div class="line">    .set(&quot;spark.shuffle.compress&quot;,&quot;true&quot;).set(&quot;spark.shuffle.spill.compress&quot;,&quot;true&quot;)</div><div class="line">    .set(&quot;spark.shuffle.manager&quot;,&quot;sort&quot;)</div><div class="line">    val sc = new SparkContext(conf)</div><div class="line">  &#125;</div></pre></td></tr></table></figure></p>
+<p>程序示例<code>[WordTest.scala](../../../../code/spark/spark-buzzads/src/main/scala/com/iclick/word_segmentation/WordTest.scala)</code></p>
+<h1 id="spark数据操作"><a href="#spark数据操作" class="headerlink" title="spark数据操作"></a>spark数据操作</h1><h2 id="sparkRDD"><a href="#sparkRDD" class="headerlink" title="sparkRDD"></a>sparkRDD</h2><h3 id="创建RDD"><a href="#创建RDD" class="headerlink" title="创建RDD"></a>创建RDD</h3><p>1、数据集合</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">    var data = Array(1,2,3,4,5,6,7,8,9)</div><div class="line">    var disData = sc.parallelize(data,3)</div></pre></td></tr></table></figure>
+<p>创建一个RDD，包括1-9，分在3个分区</p>
+<p>2、外部数据源</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">textFile(path:String, minPartitions:Int) //第一个指定路径，第二个指定分区</div></pre></td></tr></table></figure>
+<h3 id="RDD转换"><a href="#RDD转换" class="headerlink" title="RDD转换"></a>RDD转换</h3><p>1、map，对每个元素执行一个指定函数产生新的RDD<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">val rdd1 = sc.parallelize(1 to 9, 3)</div><div class="line">val rdd2 = rdd1.map(x =&gt; x*2)</div></pre></td></tr></table></figure></p>
+<h1 id="spark-hive-local"><a href="#spark-hive-local" class="headerlink" title="spark hive local"></a>spark hive local</h1><p>local的spark连接测试服务器的hive</p>
+<p>1、复制hive环境上的<code>hdfs-site.xml</code>和<code>hive-site.xml</code>到项目的resource，如果有不识别的hostname则修改</p>
+<p>2、写法类似于</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.mljr.spark.gps.sample</div><div class="line"></div><div class="line"><span class="keyword">import</span> org.apache.spark.&#123;<span class="type">SparkConf</span>, <span class="type">SparkContext</span>&#125;</div><div class="line"><span class="keyword">import</span> org.apache.spark.sql.hive.<span class="type">HiveContext</span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">HiveTest</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</div><div class="line">    <span class="keyword">val</span> conf = <span class="keyword">new</span> <span class="type">SparkConf</span>().setAppName(<span class="string">"test"</span>).setMaster(<span class="string">"local[2]"</span>)</div><div class="line">    <span class="keyword">val</span> sc = <span class="keyword">new</span> <span class="type">SparkContext</span>(conf)</div><div class="line">    <span class="keyword">val</span> sqlContext = <span class="keyword">new</span> <span class="type">HiveContext</span>(sc)</div><div class="line">    sqlContext.sql(<span class="string">"SELECT * FROM bdwh_tbl.tbl_s057_car_gps_position limit 1"</span>).collect.foreach(println)</div><div class="line">	sc.stop()</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">java.lang.RuntimeException: Unable to instantiate org.apache.hadoop.hive.ql.metadata.Session</div></pre></td></tr></table></figure>
+<p>这是因为在创建<code>SQLContext</code>实例的时候，要求spark编译的Hive版本和HiveMetaStore里面记录的Hive版本一致，我们可以通过配置<code>hive.metastore.schema.verification</code>参数来取消这种验证，这个参数的默认值是true，我们可以取消验证，配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;property&gt;  </div><div class="line">   &lt;name&gt;hive.metastore.schema.verification&lt;/name&gt;  </div><div class="line">   &lt;value&gt;false&lt;/value&gt;  </div><div class="line">    &lt;description&gt;  </div><div class="line">    Enforce metastore schema version consistency.  </div><div class="line">    True: Verify that version information stored in metastore matches with one from Hive jars.  Also disable automatic  </div><div class="line">          schema migration attempt. Users are required to manully migrate schema after Hive upgrade which ensures  </div><div class="line">          proper metastore schema migration. (Default)  </div><div class="line">    False: Warn if the version information stored in metastore doesn&apos;t match with one from in Hive jars.  </div><div class="line">    &lt;/description&gt;  </div><div class="line"> &lt;/property&gt;</div></pre></td></tr></table></figure>
+<p>再报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Could not connect to meta store using any of the URIs provided. Most recent failure: org.apache.thrift.transport.TTransportException: java.net.UnknownHostException: slave1</div></pre></td></tr></table></figure>
+<h1 id="控制日志输出级别"><a href="#控制日志输出级别" class="headerlink" title="控制日志输出级别"></a>控制日志输出级别</h1><p>修改log4j.properties</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">log4j.rootCategory=WARN, console</div></pre></td></tr></table></figure>
+<p>默认是<code>INFO, console</code>，</p>
+<p>更丰富的可以是<code>STDOUT, DEBUG, INFO, console</code></p>
+<p>精简的是<code>WARN, console</code></p>
+<h1 id="no-snappyjava-in-java-library-path"><a href="#no-snappyjava-in-java-library-path" class="headerlink" title="no snappyjava in java.library.path"></a>no snappyjava in java.library.path</h1><p><a href="https://stackoverflow.com/questions/30039976/unsatisfiedlinkerror-no-snappyjava-in-java-library-path-when-running-spark-mlli" target="_blank" rel="noopener">https://stackoverflow.com/questions/30039976/unsatisfiedlinkerror-no-snappyjava-in-java-library-path-when-running-spark-mlli</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;org.apache.spark&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;spark-core_2.10&lt;/artifactId&gt;</div><div class="line">    &lt;version&gt;$&#123;spark.version&#125;&lt;/version&gt;</div><div class="line">    &lt;exclusions&gt;</div><div class="line">        &lt;exclusion&gt;</div><div class="line">           &lt;groupId&gt;org.xerial.snappy&lt;/groupId&gt;</div><div class="line">           &lt;artifactId&gt;snappy-java&lt;/artifactId&gt;</div><div class="line">        &lt;/exclusion&gt;</div><div class="line">    &lt;/exclusions&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
+<p>and then adding</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;org.xerial.snappy&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;snappy-java&lt;/artifactId&gt;</div><div class="line">    &lt;version&gt;1.0.5&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
+<h2 id=""><a href="#" class="headerlink" title=" "></a> </h2>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/算法与数据结构/优先级队列/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/07/12/算法与数据结构/优先级队列/" class="post-title-link" itemprop="url">优先级队列</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-02-18 10:04:47" itemprop="dateModified" datetime="2018-02-18T10:04:47+08:00">2018-02-18</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法与数据结构/" itemprop="url" rel="index"><span itemprop="name">算法与数据结构</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2017/07/12/算法与数据结构/优先级队列/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/算法与数据结构/优先级队列/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">PriorityQueue</span>[<span class="type">E</span>](<span class="params">top: <span class="type">Int</span></span>) </span>&#123;</div><div class="line">  <span class="keyword">import</span> <span class="type">PriorityQueue</span>.<span class="type">Entry</span></div><div class="line"></div><div class="line">  <span class="keyword">private</span> <span class="keyword">var</span> nsize = <span class="number">0</span></div><div class="line">  <span class="keyword">private</span> <span class="keyword">val</span> heap = <span class="type">Array</span>.ofDim[<span class="type">Entry</span>[<span class="type">E</span>]](top+<span class="number">1</span>)</div><div class="line"></div><div class="line">  <span class="comment">/**</span></div><div class="line">   * Adds an Object to a PriorityQueue in log(size) time. It returns the</div><div class="line">   * object (if any) that was dropped off the heap because it was full. This</div><div class="line">   * can be the given parameter (in case it is smaller than the full heap's</div><div class="line">   * minimum, and couldn't be added), or another object that was previously</div><div class="line">   * the smallest value in the heap and now has been replaced by a larger one,</div><div class="line">   * or null if the queue wasn't yet full with maxSize elements.</div><div class="line">   */</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">add</span></span>(key: <span class="type">Double</span>, value: <span class="type">E</span>): <span class="type">Option</span>[<span class="type">Entry</span>[<span class="type">E</span>]] = &#123;</div><div class="line">    <span class="keyword">if</span> (nsize &lt; top) &#123;</div><div class="line">      nsize += <span class="number">1</span></div><div class="line">      heap(nsize) = <span class="type">Entry</span>(key, value)</div><div class="line">      upHeap</div><div class="line">      <span class="type">None</span></div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (nsize &gt; <span class="number">0</span> &amp;&amp; key &gt;= heap(<span class="number">1</span>).key) &#123;</div><div class="line">      <span class="keyword">val</span> old = heap(<span class="number">1</span>)</div><div class="line">      heap(<span class="number">1</span>) = <span class="type">Entry</span>(key, value)</div><div class="line">      updateTop</div><div class="line">      <span class="type">Some</span>(old)</div><div class="line">    &#125; <span class="keyword">else</span> <span class="type">Some</span>(<span class="type">Entry</span>(key, value))</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">values</span></span>(): <span class="type">List</span>[<span class="type">E</span>] = &#123;</div><div class="line">    <span class="keyword">val</span> entries = <span class="type">Array</span>.ofDim[<span class="type">Entry</span>[<span class="type">E</span>]](nsize)</div><div class="line">    <span class="type">System</span>.arraycopy(heap, <span class="number">1</span>, entries, <span class="number">0</span>, nsize)</div><div class="line">    entries sortBy(-_.key) map(_.value) toList</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">/**</span></div><div class="line">   * Removes and returns the least element of the PriorityQueue in log(size)</div><div class="line">   * time.</div><div class="line">   */</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">pop</span></span>(): <span class="type">Option</span>[<span class="type">Entry</span>[<span class="type">E</span>]] = &#123;</div><div class="line">    <span class="keyword">if</span> (nsize &gt; <span class="number">0</span>) &#123;</div><div class="line">      <span class="keyword">val</span> result = heap(<span class="number">1</span>)</div><div class="line">      heap(<span class="number">1</span>) = heap(nsize)</div><div class="line">      heap(nsize) = <span class="literal">null</span></div><div class="line">      nsize -= <span class="number">1</span></div><div class="line">      downHeap</div><div class="line">      <span class="type">Some</span>(result)</div><div class="line">    &#125; <span class="keyword">else</span> <span class="type">None</span></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">/** Returns the number of elements currently stored in the PriorityQueue. */</span></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">size</span></span>(): <span class="type">Int</span> = nsize</div><div class="line"></div><div class="line">  <span class="comment">/**</span></div><div class="line">   * Should be called when the Object at top changes values. Still log(n)</div><div class="line">   * worst case, but it's at least twice as fast to</div><div class="line">   *</div><div class="line">   * &lt;pre&gt;</div><div class="line">   * pq.top().change();</div><div class="line">   * pq.updateTop();</div><div class="line">   * &lt;/pre&gt;</div><div class="line">   *</div><div class="line">   * instead of</div><div class="line">   *</div><div class="line">   * &lt;pre&gt;</div><div class="line">   * o = pq.pop();</div><div class="line">   * o.change();</div><div class="line">   * pq.push(o);</div><div class="line">   * &lt;/pre&gt;</div><div class="line">   *</div><div class="line">   * @return the new 'top' element.</div><div class="line">   */</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">updateTop</span></span>(): <span class="type">Entry</span>[<span class="type">E</span>] = &#123;</div><div class="line">    downHeap</div><div class="line">    heap(<span class="number">1</span>)</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">private</span> <span class="function"><span class="keyword">def</span> <span class="title">upHeap</span></span>(): <span class="type">Unit</span> = &#123;</div><div class="line">    <span class="keyword">var</span> i = nsize</div><div class="line">    <span class="keyword">val</span> node = heap(i)</div><div class="line">    <span class="keyword">var</span> j = i &gt;&gt;&gt; <span class="number">1</span></div><div class="line">    <span class="keyword">while</span> (j &gt; <span class="number">0</span> &amp;&amp; node.key &lt; heap(j).key) &#123;</div><div class="line">      heap(i) = heap(j)</div><div class="line">      i = j</div><div class="line">      j = j &gt;&gt;&gt; <span class="number">1</span></div><div class="line">    &#125;</div><div class="line">    heap(i) = node</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">private</span> <span class="function"><span class="keyword">def</span> <span class="title">downHeap</span></span>(): <span class="type">Unit</span> = &#123;</div><div class="line">    <span class="keyword">var</span> i = <span class="number">1</span></div><div class="line">    <span class="keyword">val</span> node = heap(i)</div><div class="line">    <span class="keyword">var</span> j = i &lt;&lt; <span class="number">1</span></div><div class="line">    <span class="keyword">var</span> k = j + <span class="number">1</span></div><div class="line">    <span class="keyword">if</span> (k &lt;= nsize &amp;&amp; heap(k).key &lt; heap(j).key) &#123;</div><div class="line">      j = k</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">while</span> (j &lt;= nsize &amp;&amp; heap(j).key &lt; node.key) &#123;</div><div class="line">      heap(i) = heap(j)</div><div class="line">      i = j</div><div class="line">      j = i &lt;&lt; <span class="number">1</span></div><div class="line">      k = j + <span class="number">1</span></div><div class="line">      <span class="keyword">if</span> (k &lt;= nsize &amp;&amp; heap(k).key &lt; heap(j).key) &#123;</div><div class="line">        j = k</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">    heap(i) = node</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">PriorityQueue</span> </span>&#123;</div><div class="line">  <span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>[<span class="type">E</span>](<span class="params">key: <span class="type">Double</span>, value: <span class="type">E</span></span>)</span></div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]) &#123;</div><div class="line">    <span class="keyword">val</span> pq = <span class="keyword">new</span> <span class="type">PriorityQueue</span>[(<span class="type">Int</span>, <span class="type">Double</span>)](<span class="number">4</span>)</div><div class="line">    <span class="keyword">val</span> ds = <span class="type">Array</span>[<span class="type">Double</span>](<span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.7</span>, <span class="number">0.2</span>, <span class="number">0.2</span>, <span class="number">0.3</span>, <span class="number">0.3</span>, <span class="number">0.5</span>, <span class="number">0.5</span>, <span class="number">0.5</span>)</div><div class="line">    <span class="keyword">for</span> (i &lt;- <span class="number">0</span> until ds.length) &#123;</div><div class="line">      <span class="keyword">val</span> e = pq.add(ds(i), (i, ds(i)))</div><div class="line">      println((i, ds(i)) + <span class="string">" =&gt; "</span> + e)</div><div class="line">    &#125;</div><div class="line">    println(pq.values)</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 
           
         
@@ -2259,7 +2025,7 @@ K_e=\begin{bmatrix}
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark笔记-local开发/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/面试刷题/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -2279,7 +2045,7 @@ K_e=\begin{bmatrix}
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/hadoop-spark/spark/spark笔记-local开发/" class="post-title-link" itemprop="url">spark笔记-local开发</a>
+                <a href="/2017/07/12/机器学习/面试刷题/" class="post-title-link" itemprop="url">面试刷题</a>
               
             
           </h1>
@@ -2319,7 +2085,7 @@ K_e=\begin{bmatrix}
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-11-13 10:00:42" itemprop="dateModified" datetime="2018-11-13T10:00:42+08:00">2018-11-13</time>
+                <time title="修改时间：2018-03-17 20:50:31" itemprop="dateModified" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
               </span>
             
           
@@ -2333,7 +2099,7 @@ K_e=\begin{bmatrix}
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
 
                 
                 
@@ -2351,8 +2117,8 @@ K_e=\begin{bmatrix}
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/hadoop-spark/spark/spark笔记-local开发/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/spark/spark笔记-local开发/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/机器学习/面试刷题/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/面试刷题/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -2385,47 +2151,323 @@ K_e=\begin{bmatrix}
       
         
           
-            <h1 id="mac安装spark环境"><a href="#mac安装spark环境" class="headerlink" title="mac安装spark环境"></a>mac安装spark环境</h1><p><a href="https://blog.csdn.net/python_tty/article/details/72820469" target="_blank" rel="noopener">https://blog.csdn.net/python_tty/article/details/72820469</a></p>
-<h2 id="安装scala"><a href="#安装scala" class="headerlink" title="安装scala"></a>安装scala</h2><p><a href="https://downloads.lightbend.com/scala/2.10.7/scala-2.10.7.tgz" target="_blank" rel="noopener">2.10.7</a></p>
-<p>下载后放到<code>david/david/opt/scala</code></p>
-<p>修改<code>.bash_profile</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export SCALA_HOME=&quot;/Users/david/david/opt/scala-2.10.7&quot;</div><div class="line">export PATH=&quot;$SCALA_HOME/bin:$PATH&quot;</div></pre></td></tr></table></figure>
-<h2 id="下载spark"><a href="#下载spark" class="headerlink" title="下载spark"></a>下载spark</h2><p><a href="http://spark.apache.org/downloads.html" target="_blank" rel="noopener">http://spark.apache.org/downloads.html</a></p>
-<p>下载的是1.6.3的版本</p>
-<p>加到环境变量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export SPARK_HOME=&quot;/Users/david/david/opt/spark-1.6.3-bin-hadoop2.6&quot;</div><div class="line">export PATH=&quot;$SPARK_HOME/bin:$PATH&quot;</div></pre></td></tr></table></figure>
-<h2 id="允许ssh"><a href="#允许ssh" class="headerlink" title="允许ssh"></a>允许ssh</h2><h2 id="启动spark-shell"><a href="#启动spark-shell" class="headerlink" title="启动spark-shell"></a>启动spark-shell</h2><p>进入到spark安装目录的sbin/目录下，执行 ./start-all 启动spark </p>
-<p>进入到spark安装目录的bin/目录下，执行 ./spark-shell，看spark 是否安装成功</p>
-<h1 id="spark开发环境"><a href="#spark开发环境" class="headerlink" title="spark开发环境"></a>spark开发环境</h1><p>一、环境</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">			&lt;groupId&gt;org.apache.spark&lt;/groupId&gt;</div><div class="line">			&lt;artifactId&gt;spark-core_2.10&lt;/artifactId&gt;</div><div class="line">			&lt;version&gt;1.6.1&lt;/version&gt;</div><div class="line">		&lt;/dependency&gt;</div></pre></td></tr></table></figure>
-<p>二、编写local的spark程序<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">import org.apache.log4j.&#123; Level, Logger &#125;</div><div class="line">import org.apache.spark.&#123; SparkConf, SparkContext &#125;</div><div class="line"></div><div class="line">def main(args: Array[String]): Unit = &#123;</div><div class="line">    //关闭一些不必要的日志</div><div class="line">    Logger.getLogger(&quot;org.apache.spark&quot;).setLevel(Level.WARN)</div><div class="line">    Logger.getLogger(&quot;org.eclipse.jetty.server&quot;).setLevel(Level.OFF)</div><div class="line">    </div><div class="line">    val conf = new SparkConf().setAppName(&quot;wordSegname&quot;).setMaster(&quot;local[4]&quot;).</div><div class="line">    set(&quot;spark.sql.shuffle.partitions&quot;,&quot;10&quot;).set(&quot;spark.network.timeout&quot;,&quot;30s&quot;)</div><div class="line">    .set(&quot;spark.shuffle.compress&quot;,&quot;true&quot;).set(&quot;spark.shuffle.spill.compress&quot;,&quot;true&quot;)</div><div class="line">    .set(&quot;spark.shuffle.manager&quot;,&quot;sort&quot;)</div><div class="line">    val sc = new SparkContext(conf)</div><div class="line">  &#125;</div></pre></td></tr></table></figure></p>
-<p>程序示例<code>[WordTest.scala](../../../../code/spark/spark-buzzads/src/main/scala/com/iclick/word_segmentation/WordTest.scala)</code></p>
-<h1 id="spark数据操作"><a href="#spark数据操作" class="headerlink" title="spark数据操作"></a>spark数据操作</h1><h2 id="sparkRDD"><a href="#sparkRDD" class="headerlink" title="sparkRDD"></a>sparkRDD</h2><h3 id="创建RDD"><a href="#创建RDD" class="headerlink" title="创建RDD"></a>创建RDD</h3><p>1、数据集合</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">    var data = Array(1,2,3,4,5,6,7,8,9)</div><div class="line">    var disData = sc.parallelize(data,3)</div></pre></td></tr></table></figure>
-<p>创建一个RDD，包括1-9，分在3个分区</p>
-<p>2、外部数据源</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">textFile(path:String, minPartitions:Int) //第一个指定路径，第二个指定分区</div></pre></td></tr></table></figure>
-<h3 id="RDD转换"><a href="#RDD转换" class="headerlink" title="RDD转换"></a>RDD转换</h3><p>1、map，对每个元素执行一个指定函数产生新的RDD<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">val rdd1 = sc.parallelize(1 to 9, 3)</div><div class="line">val rdd2 = rdd1.map(x =&gt; x*2)</div></pre></td></tr></table></figure></p>
-<h1 id="spark-hive-local"><a href="#spark-hive-local" class="headerlink" title="spark hive local"></a>spark hive local</h1><p>local的spark连接测试服务器的hive</p>
-<p>1、复制hive环境上的<code>hdfs-site.xml</code>和<code>hive-site.xml</code>到项目的resource，如果有不识别的hostname则修改</p>
-<p>2、写法类似于</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.mljr.spark.gps.sample</div><div class="line"></div><div class="line"><span class="keyword">import</span> org.apache.spark.&#123;<span class="type">SparkConf</span>, <span class="type">SparkContext</span>&#125;</div><div class="line"><span class="keyword">import</span> org.apache.spark.sql.hive.<span class="type">HiveContext</span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">HiveTest</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</div><div class="line">    <span class="keyword">val</span> conf = <span class="keyword">new</span> <span class="type">SparkConf</span>().setAppName(<span class="string">"test"</span>).setMaster(<span class="string">"local[2]"</span>)</div><div class="line">    <span class="keyword">val</span> sc = <span class="keyword">new</span> <span class="type">SparkContext</span>(conf)</div><div class="line">    <span class="keyword">val</span> sqlContext = <span class="keyword">new</span> <span class="type">HiveContext</span>(sc)</div><div class="line">    sqlContext.sql(<span class="string">"SELECT * FROM bdwh_tbl.tbl_s057_car_gps_position limit 1"</span>).collect.foreach(println)</div><div class="line">	sc.stop()</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">java.lang.RuntimeException: Unable to instantiate org.apache.hadoop.hive.ql.metadata.Session</div></pre></td></tr></table></figure>
-<p>这是因为在创建<code>SQLContext</code>实例的时候，要求spark编译的Hive版本和HiveMetaStore里面记录的Hive版本一致，我们可以通过配置<code>hive.metastore.schema.verification</code>参数来取消这种验证，这个参数的默认值是true，我们可以取消验证，配置如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;property&gt;  </div><div class="line">   &lt;name&gt;hive.metastore.schema.verification&lt;/name&gt;  </div><div class="line">   &lt;value&gt;false&lt;/value&gt;  </div><div class="line">    &lt;description&gt;  </div><div class="line">    Enforce metastore schema version consistency.  </div><div class="line">    True: Verify that version information stored in metastore matches with one from Hive jars.  Also disable automatic  </div><div class="line">          schema migration attempt. Users are required to manully migrate schema after Hive upgrade which ensures  </div><div class="line">          proper metastore schema migration. (Default)  </div><div class="line">    False: Warn if the version information stored in metastore doesn&apos;t match with one from in Hive jars.  </div><div class="line">    &lt;/description&gt;  </div><div class="line"> &lt;/property&gt;</div></pre></td></tr></table></figure>
-<p>再报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Could not connect to meta store using any of the URIs provided. Most recent failure: org.apache.thrift.transport.TTransportException: java.net.UnknownHostException: slave1</div></pre></td></tr></table></figure>
-<h1 id="控制日志输出级别"><a href="#控制日志输出级别" class="headerlink" title="控制日志输出级别"></a>控制日志输出级别</h1><p>修改log4j.properties</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">log4j.rootCategory=WARN, console</div></pre></td></tr></table></figure>
-<p>默认是<code>INFO, console</code>，</p>
-<p>更丰富的可以是<code>STDOUT, DEBUG, INFO, console</code></p>
-<p>精简的是<code>WARN, console</code></p>
-<h1 id="no-snappyjava-in-java-library-path"><a href="#no-snappyjava-in-java-library-path" class="headerlink" title="no snappyjava in java.library.path"></a>no snappyjava in java.library.path</h1><p><a href="https://stackoverflow.com/questions/30039976/unsatisfiedlinkerror-no-snappyjava-in-java-library-path-when-running-spark-mlli" target="_blank" rel="noopener">https://stackoverflow.com/questions/30039976/unsatisfiedlinkerror-no-snappyjava-in-java-library-path-when-running-spark-mlli</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;org.apache.spark&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;spark-core_2.10&lt;/artifactId&gt;</div><div class="line">    &lt;version&gt;$&#123;spark.version&#125;&lt;/version&gt;</div><div class="line">    &lt;exclusions&gt;</div><div class="line">        &lt;exclusion&gt;</div><div class="line">           &lt;groupId&gt;org.xerial.snappy&lt;/groupId&gt;</div><div class="line">           &lt;artifactId&gt;snappy-java&lt;/artifactId&gt;</div><div class="line">        &lt;/exclusion&gt;</div><div class="line">    &lt;/exclusions&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
-<p>and then adding</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;org.xerial.snappy&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;snappy-java&lt;/artifactId&gt;</div><div class="line">    &lt;version&gt;1.0.5&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
-<h2 id=""><a href="#" class="headerlink" title=" "></a> </h2>
+            <ol>
+<li><a href="https://zhuanlan.zhihu.com/p/29965072" target="_blank" rel="noopener">那些深度学习《面试》你可能需要知道的</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/29969587" target="_blank" rel="noopener">如何准备机器学习工程师的面试 ？</a></li>
+<li><a href="https://link.zhihu.com/?target=https%3A//mp.weixin.qq.com/mp/homepage%3F__biz%3DMzI4MTQ2NjU5NA%3D%3D%26hid%3D1%26sn%3D93c4875b14fa5ad6f174829b2b8b4463%26scene%3D18%26devicetype%3DiPhone%2BOS9.3.5%26version%3D16051327%26lang%3Dzh_CN%26nettype%3D3G%2B%26ascene%3D7%26session_us%3Dgh_58f9504ddd59%26fontScale%3D100%26pass_ticket%3Dg8f%252FuIJqlsyfsGEdnZPm0SWWYRiZWOQHMp6bSSJ39kpkzb%252BgyByne%252BKNjMf%252Fo4pp%26wx_header%3D1%26scene%3D1" target="_blank" rel="noopener">七月在线实验室—-BAT机器学习面试题</a></li>
+<li><a href="https://www.zhihu.com/question/23259302" target="_blank" rel="noopener">如何准备机器学习工程师的面试 ？</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/27238249" target="_blank" rel="noopener">读完这21个机器学习面试问题和答案，入职率提升99%</a></li>
+<li><a href="https://www.zhihu.com/question/25565713#answer-8243688" target="_blank" rel="noopener">国内互联网公司机器学习数据挖掘类的职位面试主要考察什么方面的东西？</a></li>
+<li>….等等</li>
+</ol>
+<p>如何判断一个而链表中是否有环？<br>给定一棵二叉查找树中的两个元素，求它们的最近公共祖先。<br>给一个栈排序<br>基于比较的排序算法的时间复杂度是什么？证明？<br>如何求一个带权图中两个结点直接按的最短路径？如果有些权值是负的怎么办？<br>求一个字符串中所有的回文子串。<br>对这些问题你都要能够推导你的解法的时间和空间复杂度（大 O 表示法），并且尽量用最低的复杂度解决。<br><strong>只有通过大量的练习才能将这些不同类型的问题烂熟于胸，从而在面试中迅速地给出一个高效的解法。常用的算法面试准备平台有 InterviewBit、LeetCode、Interview Cake、Pramp、<a href="http://interviewing.io/" target="_blank" rel="noopener">http://interviewing.io</a> 等。</strong></p>
+<p>概率论和统计典型问题</p>
+<p>给出一个群体中男性和女性各自的平均身高，求整个群体的平均身高。<br>一次调查表明意大利三分之一的汽车都是法拉利，并且在那之中一半的车都是红色的。如果你在意大利的街头看到一辆红色的汽车驶来，请问它是法拉利的可能性有多大？<br>你试图找出在自己的网站上放置版头的最佳方案。变量包括版头的尺寸（大、中、小）以及放置的位置（顶部、中间、底部）。假定需要 95% 的置信水平，请问你至少需要多少次访问和点击来确定某个方案比其他的组合都要好？<br><strong>很多机器学习算法都以概率论和统计作为理论基础。对于这些基础知识有清晰的概念是极为重要的。当然同时你也要能够将这些抽象的概念与现实联系起来。</strong><br>数据建模和评估典型问题</p>
+<p>一位农民想搞明白是什么因素影响了他的牛奶产量。他记录了每天的气温（30 - 40 度）、湿度（60 - 90%）、饲料消耗（2000 - 2500 千克）以及牛奶产量（500 - 1000 升）。<br>假设问题是要预测每天的牛奶产量，你会如何处理数据并建立模型？<br>这是一个什么类型的机器学习问题？<br>你的公司在开发一个面部表情识别系统。这个系统接受 1920 x 1080 的图片作为输入，并告诉用户图片中的人脸处于以下哪种情绪状态：平常、高兴、悲伤、愤怒和恐惧。当图片中没有人脸时系统要能够分辨这种情况。<br>这是一个什么类型的机器学习问题？<br>如果每个像素点由 3 个值来表示（RGB），那么输入数据的原始维度有多大？有办法降维吗？<br>如何对系统的输出进行编码？为什么？<br>过去几个世纪的气象数据展现出一种循环的气温模式：一会升高一会下降。对于这样的数据（一个年平均气温的序列），你会如何建模并预测未来 5 年的平均气温？<br>你在一家在线新闻网站工作，需要从各处收集文本，并将不同来源的内容聚集成一篇报道。你会如何设计这样一个系统？会用到哪些机器学习技术？<br><strong>应用机器学习算法和库</strong></p>
+<p>你用一个给定的数据集训练一个单隐层的神经网络，发现网络的权值在训练中强烈地震荡（有时在负值和正值之间变化）。为了解决这个问题你需要调整哪个参数？<br>支持向量机的训练在本质上是在最优化哪个值？<br>LASSO 回归用 L1-norm 作为惩罚项，而岭回归（Ridge Regression）则使用 L2-norm 作为惩罚项。这两者哪个更有可能得到一个稀疏（某些项的系数为 0）的模型？<br>在用反向传播法训练一个 10 层的神经网络时，你发现前 3 层的权值完全没有变化，而 4 ~ 6 层的权值则变化得非常慢。这是为什么？如何解决？<br>你手上有一个关于小麦产出的数据集，包括年降雨量 R、平均海拔 A 以及小麦产量 O。你经过初步分析认为产量跟年降雨量的平方以及平均海报的对数之间存在关系，即：O = β_0 + β_1 x R^2 + β_2 x log(A)。能用线性回归求出系数 β 吗？<br>你可以通过像 Kaggle 比赛那样的数据科学和机器学习挑战来了解各种各样的问题和它们之间的细微差别。多多参加这些比赛，并尝试应用不同的机器学习模型。<br>软件工程和系统设计典型问题</p>
+<p>你有一个电商网站，当用户点击一个商品打开详情页面时，你想基于商品特征和用户的购买历史为用户推荐 5 个其他的商品显示在页面的底部。你需要哪些服务和数据表来实现这个功能？请写一个查询语句或一段过程式代码来返回所要推荐的 5 个商品。<br>对于 YouTube 那样的在线视频网站，你会收集哪些数据来衡量用户的参与度和视频的人气度？<br>一个简单的垃圾邮件检测系统是这样的：它每次处理一封邮件，统计不同单词的出现频率（Term frequency），并将这些频率与之前已经被标注为垃圾 / 正常邮件的那些频率进行比较。现在需要对这系统进行拓展来处理海量的邮件流量，请设计一个 Map-Reduce 方案在一个集群上部署这个系统。<br>你要生成一个实时的热力图，来展示用户正在浏览和点击一个网页的哪些部分。在客户端和服务端分别需要哪些组件 / 服务 / API 来实现这个功能？</p>
+<p><a href="http://blog.csdn.net/u010496169/article/details/73743973" target="_blank" rel="noopener">机器学习岗位面试问题汇总 之 集成学习</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/工具和环境/Hexo + Github 搭建博客入门/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/07/12/工具和环境/Hexo + Github 搭建博客入门/" class="post-title-link" itemprop="url">Hexo + Github 搭建博客入门</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-03 16:56:00" itemprop="dateModified" datetime="2019-07-03T16:56:00+08:00">2019-07-03</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/工具和环境/" itemprop="url" rel="index"><span itemprop="name">工具和环境</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2017/07/12/工具和环境/Hexo + Github 搭建博客入门/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/工具和环境/Hexo + Github 搭建博客入门/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1、安装node-js"><a href="#1、安装node-js" class="headerlink" title="1、安装node.js"></a>1、安装node.js</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo add-apt-repository ppa:chris-lea/node.js</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></div><div class="line"><span class="meta">#</span><span class="bash">原方法没有这一步，但是后面的操作会提示npm <span class="built_in">command</span> not found</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install npm</span></div></pre></td></tr></table></figure>
+<h1 id="2、安装hexo"><a href="#2、安装hexo" class="headerlink" title="2、安装hexo"></a>2、安装hexo</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo npm install hexo -g</span></div></pre></td></tr></table></figure>
+<p>如果是mac，要用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo npm install hexo --no-optional</div></pre></td></tr></table></figure>
+<p>不然会报错<strong>Error: Cannot find module ‘./build/Release/DTraceProviderBindings’] code: ‘MODULE_NOT_FOUND’</strong>这个错误。</p>
+<p>如果报权限错误，需要用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo npm install --unsafe-perm --verbose -g hexo</div></pre></td></tr></table></figure>
+<h1 id="3、初始博客的根目录"><a href="#3、初始博客的根目录" class="headerlink" title="3、初始博客的根目录"></a>3、初始博客的根目录</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> ~/myblog</span></div><div class="line"><span class="meta">$</span><span class="bash"> hexo init</span></div></pre></td></tr></table></figure>
+<p>mac的根目录在</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/Users/david/david/myblog</div></pre></td></tr></table></figure>
+<h1 id="4、在github上新建仓库"><a href="#4、在github上新建仓库" class="headerlink" title="4、在github上新建仓库"></a>4、在github上新建仓库</h1><p>名称必须是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gitusername.github.io</div></pre></td></tr></table></figure>
+<p>我的就是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Schwimmer.github.io</div></pre></td></tr></table></figure>
+<p>并将本地的SSH KEY添加到git上（略）</p>
+<h1 id="5、让博客可以发布到git"><a href="#5、让博客可以发布到git" class="headerlink" title="5、让博客可以发布到git"></a>5、让博客可以发布到git</h1><p>1）安装hexo-deployer-Git（不然会出现ERROR Deployer not found: git）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-deployer-git --save</div></pre></td></tr></table></figure>
+<p>2） 配置你hexo博客根目录下的_config.yml文件(应该是最下面一行，修改成你的github)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: git@github.com:Schwimmer/Schwimmer.github.io.git</div><div class="line">  branch: master</div></pre></td></tr></table></figure>
+<blockquote>
+<p> tips</p>
+<p> 冒号后面一定要跟空格</p>
+</blockquote>
+<h1 id="6、hexo常用命令"><a href="#6、hexo常用命令" class="headerlink" title="6、hexo常用命令"></a>6、hexo常用命令</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">hexo clean #清除缓存</div><div class="line">hexo new &quot;title&quot; #新建文章</div><div class="line">hexo g #生成html，或hexo generate</div><div class="line">hexo s #在本地启动服务，启动后访问localhost:4000就可以打开，或hexo server</div><div class="line">hexo d #发布到git，发布后访问https://schwimmer.github.io/就可以打开，或hexo deploy</div></pre></td></tr></table></figure>
+<blockquote>
+<p> tips</p>
+<p> 我目前用的新建文章的方法，就是直接在source/_posts/下面新建md文件</p>
+<p> 可以偷懒写成</p>
+<p> cd ~/myblog</p>
+<p> hexo clean;hexo g;hexo s</p>
+<p> 或</p>
+<p> hexo clean;hexo g;hexo d</p>
+</blockquote>
+<h1 id="7、支持数学公式"><a href="#7、支持数学公式" class="headerlink" title="7、支持数学公式"></a>7、支持数学公式</h1><p>更新：</p>
+<p>现在用</p>
+<p><a href="http://blog.csdn.net/u014630987/article/details/78670258" target="_blank" rel="noopener">如何在 hexo 中支持 Mathjax？</a></p>
+<p><a href="http://blog.csdn.net/emptyset110/article/details/50123231" target="_blank" rel="noopener">搭建一个支持LaTEX的hexo博客</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-math --save</div></pre></td></tr></table></figure>
+<p>这时如果你会发现出了一些问题，原因是hexo先用marked.<a href="http://lib.csdn.net/base/javascript" target="_blank" rel="noopener">js</a>渲染，然后再交给MathJax渲染。在marked.js渲染的时候下划线<code>_</code>是被escape掉并且换成了<code>&lt;em&gt;</code>标签，即斜体字，另外LaTeX中的<code>\\</code>也会被转义成一个<code>\</code>，这样会导致MathJax渲染时不认为它是一个换行符了。</p>
+<p>为了使Marked.js与MathJax共存，打开node_modules/marked/lib/marked.js并做如下改动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Step 1:</div><div class="line">  escape: /^\\([\\`*&#123;&#125;\[\]()# +\-.!_&gt;])/,11替换成</div><div class="line">  escape: /^\\([`*\[\]()# +\-.!_&gt;])/,11这一步是在原基础上取消了对\\,\&#123;,\&#125;的转义(escape)</div><div class="line">Step 2:</div><div class="line">  em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,11替换成</div><div class="line">  em:/^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML&quot;&gt;&lt;/script&gt;</div></pre></td></tr></table></figure>
+<h1 id="8、安装主题"><a href="#8、安装主题" class="headerlink" title="8、安装主题"></a>8、安装主题</h1><p>转自：<a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="noopener">NexT主题安装教程</a></p>
+<h1 id="9、文章阅读计数"><a href="#9、文章阅读计数" class="headerlink" title="9、文章阅读计数"></a>9、文章阅读计数</h1><p>转自：<a href="http://www.jianshu.com/p/702a7aec4d00" target="_blank" rel="noopener">Hexo添加不蒜子和LeanCloud统计无标题文章</a></p>
+<p>找到站点的<code>themes/next/layout/_partials</code>目录下的<code>footer.swig</code>文件。插入代码如下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&#123;% if theme.copyright %&#125;</div><div class="line">&lt;div class=&quot;powered-by&quot;&gt;</div><div class="line">  &#123;&#123; __(&apos;footer.powered&apos;, &apos;&lt;a class=&quot;theme-link&quot; href=&quot;https://hexo.io&quot;&gt;Hexo&lt;/a&gt;&apos;) &#125;&#125;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">&lt;div class=&quot;theme-info&quot;&gt;</div><div class="line">  &#123;&#123; __(&apos;footer.theme&apos;) &#125;&#125; -</div><div class="line">  &lt;a class=&quot;theme-link&quot; href=&quot;https://github.com/iissnan/hexo-theme-next&quot;&gt;</div><div class="line">    NexT.&#123;&#123; theme.scheme &#125;&#125;</div><div class="line">  &lt;/a&gt;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line"># 此位置插入以下代码</div><div class="line">&lt;div&gt;</div><div class="line">&lt;script async src=&quot;https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js&quot;&gt;&lt;/script&gt;</div><div class="line"></div><div class="line">本站总访问量 &lt;span id=&quot;busuanzi_value_site_pv&quot;&gt;&lt;/span&gt; 次&amp;nbsp&amp;nbsp&amp;nbsp</div><div class="line">本站访客数&lt;span id=&quot;busuanzi_value_site_uv&quot;&gt;&lt;/span&gt;人次</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">&#123;% endif %&#125;</div></pre></td></tr></table></figure>
+<h1 id="10、增加图片"><a href="#10、增加图片" class="headerlink" title="10、增加图片"></a>10、增加图片</h1><p>1 把主页配置文件<code>_config.yml</code> 里的<code>post_asset_folder:</code>这个选项设置为<code>true</code></p>
+<p>2 在你的hexo目录下执行这样一句话<code>npm install hexo-asset-image --save</code>，这是下载安装一个可以上传本地图片的插件，来自dalao：<a href="https://github.com/CodeFalling/hexo-asset-image" target="_blank" rel="noopener">dalao的git</a></p>
+<p>3 等待一小段时间后，再运行<code>hexo n &quot;xxxx&quot;</code>来生成md博文时，<code>/source/_posts</code>文件夹内除了<code>xxxx.md</code>文件还有一个<strong>同名的文件夹</strong></p>
+<p>4 最后在<code>xxxx.md</code>中想引入图片时，先把图片复制到xxxx这个文件夹中，然后只需要在xxxx.md中按照markdown的格式引入图片：</p>
+<p><code>![你想输入的替代文字](xxxx/图片名.jpg)</code></p>
+<p><strong>注意：</strong>xxxx是这个md文件的名字，也是同名文件夹的名字，你想引入的图片就只需要放入xxxx这个文件夹内就好了，很像引用相对路径。</p>
+<p>5 最后检查一下，<code>hexo g</code>生成页面后，进入<code>public\2017\02\26\index.html</code>文件中查看相关字段，可以发现，html标签内的语句是<code>&lt;img src=&quot;2017/02/26/xxxx/图片名.jpg&quot;&gt;</code>，而不是<code>&lt;img src=&quot;xxxx/图片名.jpg&gt;</code>。这很重要，关乎你的网页是否可以真正加载你想插入的图片。</p>
+<h1 id="11、sitemap-插件"><a href="#11、sitemap-插件" class="headerlink" title="11、sitemap 插件"></a>11、sitemap 插件</h1><p><a href="https://www.jianshu.com/p/86557c34b671" target="_blank" rel="noopener">Hexo Seo优化让你的博客在google搜索排名第一</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;meta name=&quot;google-site-verification&quot; content=&quot;Mx7Ikp0IpBtTbSpHDTBV0_CMJA-E8CLn8NRIrwyq5m4&quot; /&gt;</div><div class="line">&lt;meta name=&quot;baidu-site-verification&quot; content=&quot;ZBTsWx4NdC&quot; /&gt;</div></pre></td></tr></table></figure>
+<h1 id="12、首页显示文章摘要"><a href="#12、首页显示文章摘要" class="headerlink" title="12、首页显示文章摘要"></a>12、首页显示文章摘要</h1><ul>
+<li>进入hexo博客项目的themes/next目录</li>
+<li>用文本编辑器打开_config.yml文件</li>
+<li>搜索”auto_excerpt”,找到如下部分：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># Automatically Excerpt. Not recommand.</div><div class="line"># Please use &lt;!-- more --&gt; in the post to control excerpt accurately.</div><div class="line">auto_excerpt:</div><div class="line">  enable: false</div><div class="line">  length: 150</div></pre></td></tr></table></figure>
+<ul>
+<li>把enable改为对应的false改为true，然后<code>hexo d -g</code>，再进主页，问题就解决了！</li>
+</ul>
+<h1 id="13、启用分类和标签"><a href="#13、启用分类和标签" class="headerlink" title="13、启用分类和标签"></a>13、启用分类和标签</h1><p>1、在博客的开头要加上</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">title: Hexo + Github 搭建博客入门</div><div class="line">date: 2017-07-12 11:49:53</div><div class="line">categories: &quot;工具和环境&quot;</div><div class="line">tags: </div><div class="line"> - hexo</div><div class="line">description:</div></pre></td></tr></table></figure>
+<p>2、修改主题配置文档</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">menu:</div><div class="line">  home: /</div><div class="line">  categories: /categories</div><div class="line">  #about: /about</div><div class="line">  archives: /archives</div><div class="line">  tags: /tags</div></pre></td></tr></table></figure>
+<p>3、hexo加上page</p>
+<p>如分类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo new page categories</div></pre></td></tr></table></figure>
+<p>然后打开<code>source/categories/index.md</code>，增加一行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">type: &quot;categories&quot;</div></pre></td></tr></table></figure>
+<p>增加标签也是一样</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo new page tags</div></pre></td></tr></table></figure>
+<p>然后打开<code>source/tags/index.md</code>，增加一行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">type: &quot;tags&quot;</div></pre></td></tr></table></figure>
+<p>谷歌与百度的站点地图，前者适用于其他搜索引擎，用来手动提交以增加收录</p>
+<p>安装：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">npm install hexo-generator-sitemap@1 --save</div><div class="line">npm install hexo-generator-baidu-sitemap@0.1.1 --save</div></pre></td></tr></table></figure>
+<p><code>_config.yml</code>添加代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">baidusitemap:</div><div class="line">  path: baidusitemap.xml</div></pre></td></tr></table></figure>
+<p>谷歌的<code>sitemap.xml</code>不需要写到配置文件中，自动生效。</p>
+<p>在主页后面加<code>/baidusitemap.xml</code>可以看到baidusitemap（谷歌同理），将该网址它提交给百度搜索：<a href="http://zhanzhang.baidu.com/?castk=LTE%3D" target="_blank" rel="noopener">百度站长平台</a>，贴吧账号无法在这里使用。</p>
+<p>不过由于Github禁止了百度爬虫，百度无法抓取其中的URL：</p>
+<h1 id="添加评论"><a href="#添加评论" class="headerlink" title="添加评论"></a>添加评论</h1><h3 id="Disqus"><a href="#Disqus" class="headerlink" title="Disqus"></a>Disqus</h3><p>Disqus is a global comment system that improves discussion on websites and connects conversations across the web.</p>
+<ol>
+<li><p>Create an account and log into Disqus. Once logged in, click the <code>GET STARTED</code> button on the homepage, then select <code>I want to install Disqus on my site</code> option and you will see the <code>Create a new site</code> interface.</p>
+</li>
+<li><p>Enter your <code>Website Name</code>, which will serve as your Disqus shortname, and select a Category from the drop-down menu. Then click <code>Create Site</code> button.</p>
+</li>
+<li><p>Choose <code>I don&#39;t see my platform listed, install manually with Universal Code</code>, configure Disqus for your site, and click <code>Complete Setup</code> button.</p>
+</li>
+<li><p>Set the value<code>enable</code> to <code>true</code>, add the obtained Disqus shortname (<code>shortname</code>), and edit other configurations in <code>disqus</code> section in the theme config file as following:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">next/_config.yml</div><div class="line">disqus:</div><div class="line">  enable: false</div><div class="line">  shortname: your-short-disqus-name</div><div class="line">  count: true</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="绑定代码到Coding"><a href="#绑定代码到Coding" class="headerlink" title="绑定代码到Coding"></a>绑定代码到Coding</h1><p>创建coding仓库</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4093388-383ab28e2c2b2e84.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt=""></p>
+<p>上传公钥</p>
+<p><a href="https://coding.net/user/account/setting/keys" target="_blank" rel="noopener">https://coding.net/user/account/setting/keys</a></p>
+<p>测试SSH Key 是否配置成功</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ssh -T git@git.coding.net</div></pre></td></tr></table></figure>
+<p>用来部署Hexo博客的Coding项目地址为：<code>git@git.coding.net:ddxy1986/DavidXu-Blog</code></p>
+<p>deploy的配置改为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: </div><div class="line">    github: git@github.com:Schwimmer/Schwimmer.github.io.git</div><div class="line">    coding: git@git.coding.net:ddxy1986/DavidXu-Blog</div><div class="line">  branch: master</div></pre></td></tr></table></figure>
+<h2 id="配置Coding项目的Pages服务"><a href="#配置Coding项目的Pages服务" class="headerlink" title="配置Coding项目的Pages服务"></a>配置Coding项目的Pages服务</h2><h3 id="开启Coding项目的Pages服务"><a href="#开启Coding项目的Pages服务" class="headerlink" title="开启Coding项目的Pages服务"></a>开启Coding项目的Pages服务</h3><p><img src="https://upload-images.jianshu.io/upload_images/4093388-1ab23c0ef7e753ea.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt=""></p>
+<h1 id="踩过的坑"><a href="#踩过的坑" class="headerlink" title="踩过的坑"></a>踩过的坑</h1><p>1）若启动时报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> Error: Warning: Permanently added &apos;github.com,192.30.253.112&apos; (RSA) to the list of known hosts.</div><div class="line">sign_and_send_pubkey: signing failed: agent refused operation</div><div class="line">Permission denied (publickey).</div><div class="line">fatal: Could not read from remote repository.</div></pre></td></tr></table></figure>
+<p>处理是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ eval &quot;$(ssh-agent -s)&quot;</div><div class="line">$ ssh-add</div></pre></td></tr></table></figure>
+<p>2）生成html时报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">end of the stream or a document separator is expected</div></pre></td></tr></table></figure>
+<h2 id="更新next主题后，菜单不是中文也不是英文"><a href="#更新next主题后，菜单不是中文也不是英文" class="headerlink" title="更新next主题后，菜单不是中文也不是英文"></a>更新next主题后，菜单不是中文也不是英文</h2><p>next主题的所有语言配置文件都在\themes\next\languages文件夹下，原来中文对应的是zh-Hans.yml，更新之后变成了<code>zh-CN.yml</code>。</p>
+<p>而语言的配置信息再主目录的_config.yml文件，于是找到这里</p>
+<p><img src="/2017/07/12/工具和环境/Hexo + Github 搭建博客入门/pic/377adab44aed2e73180cc7b68e01a18b86d6fa47.jpg" alt="img"></p>
+<p>将其改为<code>zh-CN</code>，解决问题。</p>
+<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><p><a href="http://blog.csdn.net/kesarchen/article/details/50579550" target="_blank" rel="noopener">ubuntu下使用hexo搭建博客</a> </p>
+
           
         
       
@@ -2758,6 +2800,32 @@ K_e=\begin{bmatrix}
 
 
         
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
 
 
 

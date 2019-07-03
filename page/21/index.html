@@ -328,7 +328,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/31/地理信息挖掘/经纬度判断城市/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/31/hadoop-spark/数据仓库框架对比/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -348,7 +348,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/03/31/地理信息挖掘/经纬度判断城市/" class="post-title-link" itemprop="url">经纬度判断城市</a>
+                <a href="/2018/03/31/hadoop-spark/数据仓库框架对比/" class="post-title-link" itemprop="url">数据仓库框架对比</a>
               
             
           </h1>
@@ -378,20 +378,6 @@
           
 
           
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-04-10 18:32:46" itemprop="dateModified" datetime="2018-04-10T18:32:46+08:00">2018-04-10</time>
-              </span>
-            
-          
 
           
             <span class="post-meta-item">
@@ -402,7 +388,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/地理信息挖掘/" itemprop="url" rel="index"><span itemprop="name">地理信息挖掘</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
 
                 
                 
@@ -420,8 +406,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/31/地理信息挖掘/经纬度判断城市/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/31/地理信息挖掘/经纬度判断城市/" itemprop="commentCount"></span>
+                <a href="/2018/03/31/hadoop-spark/数据仓库框架对比/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/31/hadoop-spark/数据仓库框架对比/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -454,16 +440,34 @@
       
         
           
-            <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/geo-poi/src/main/java/com/iclick/geo/search/Geolocation.java</div></pre></td></tr></table></figure>
-<p>有数据<code>district_v2.tar.gz</code> 包括每个行政区划的边界经纬度和中心经纬度</p>
-<h2 id="district-v2的结构"><a href="#district-v2的结构" class="headerlink" title="district_v2的结构"></a>district_v2的结构</h2><p>爬去的高德的数据</p>
-<p>每行对应一个城市的区县</p>
-<p>citycode 城市代码</p>
-<p>adcode是全国行政区划代码</p>
-<p>code编码数据来源于国家标准行政区划代码（adcode）映射表《》</p>
-<p>解析数据，将每个district的边界坐标保存到<code>districts</code> 。对于一个经纬度，遍历每个district，判断点是否在多边形内，找到所属行政区划。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**  </span></div><div class="line"> * 判断目标点是否在多边形内(由多个点组成)&lt;br/&gt;  </div><div class="line"> *   </div><div class="line"> * <span class="doctag">@param</span> px 目标点的经度坐标  </div><div class="line"> * <span class="doctag">@param</span> py 目标点的纬度坐标  </div><div class="line"> * <span class="doctag">@param</span> polygonXA 多边形的经度坐标集合  </div><div class="line"> * <span class="doctag">@param</span> polygonYA 多边形的纬度坐标集合  </div><div class="line"> * <span class="doctag">@return</span>  </div><div class="line"> */  </div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isPointInPolygon</span> <span class="params">( <span class="keyword">double</span> px , <span class="keyword">double</span> py , ArrayList&lt;Double&gt; polygonXA , ArrayList&lt;Double&gt; polygonYA )</span>    </span></div><div class="line">&#123;    </div><div class="line">    <span class="keyword">boolean</span> isInside = <span class="keyword">false</span>;    </div><div class="line">    <span class="keyword">double</span> ESP = <span class="number">1e-9</span>;    </div><div class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;    </div><div class="line">    <span class="keyword">double</span> linePoint1x;    </div><div class="line">    <span class="keyword">double</span> linePoint1y;    </div><div class="line">    <span class="keyword">double</span> linePoint2x = <span class="number">180</span>;    </div><div class="line">    <span class="keyword">double</span> linePoint2y;    </div><div class="line">  </div><div class="line">    linePoint1x = px;    </div><div class="line">    linePoint1y = py;    </div><div class="line">    linePoint2y = py;    </div><div class="line">  </div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; polygonXA.size() - <span class="number">1</span>; i++)    </div><div class="line">    &#123;    </div><div class="line">        <span class="keyword">double</span> cx1 = polygonXA.get(i);    </div><div class="line">        <span class="keyword">double</span> cy1 = polygonYA.get(i);    </div><div class="line">        <span class="keyword">double</span> cx2 = polygonXA.get(i + <span class="number">1</span>);    </div><div class="line">        <span class="keyword">double</span> cy2 = polygonYA.get(i + <span class="number">1</span>);   </div><div class="line">        <span class="comment">//如果目标点在任何一条线上  </span></div><div class="line">        <span class="keyword">if</span> ( isPointOnLine(px, py, cx1, cy1, cx2, cy2) )    </div><div class="line">        &#123;    </div><div class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;    </div><div class="line">        &#125;  </div><div class="line">        <span class="comment">//如果线段的长度无限小(趋于零)那么这两点实际是重合的，不足以构成一条线段  </span></div><div class="line">        <span class="keyword">if</span> ( Math.abs(cy2 - cy1) &lt; ESP )    </div><div class="line">        &#123;    </div><div class="line">            <span class="keyword">continue</span>;    </div><div class="line">        &#125;    </div><div class="line">        <span class="comment">//第一个点是否在以目标点为基础衍生的平行纬度线  </span></div><div class="line">        <span class="keyword">if</span> ( isPointOnLine(cx1, cy1, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </div><div class="line">        &#123;    </div><div class="line">            <span class="comment">//第二个点在第一个的下方,靠近赤道纬度为零(最小纬度)  </span></div><div class="line">            <span class="keyword">if</span> ( cy1 &gt; cy2 )    </div><div class="line">                count++;    </div><div class="line">        &#125;  </div><div class="line">        <span class="comment">//第二个点是否在以目标点为基础衍生的平行纬度线  </span></div><div class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ( isPointOnLine(cx2, cy2, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </div><div class="line">        &#123;    </div><div class="line">            <span class="comment">//第二个点在第一个的上方,靠近极点(南极或北极)纬度为90(最大纬度)  </span></div><div class="line">            <span class="keyword">if</span> ( cy2 &gt; cy1 )    </div><div class="line">                count++;    </div><div class="line">        &#125;  </div><div class="line">        <span class="comment">//由两点组成的线段是否和以目标点为基础衍生的平行纬度线相交  </span></div><div class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ( isIntersect(cx1, cy1, cx2, cy2, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </div><div class="line">        &#123;    </div><div class="line">            count++;    </div><div class="line">        &#125;    </div><div class="line">    &#125;    </div><div class="line">    <span class="keyword">if</span> ( count % <span class="number">2</span> == <span class="number">1</span> )    </div><div class="line">    &#123;    </div><div class="line">        isInside = <span class="keyword">true</span>;    </div><div class="line">    &#125;    </div><div class="line">  </div><div class="line">    <span class="keyword">return</span> isInside;    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>也可以用geojson配合qgis的api，geojson文件为<code>BOUNT_poly.geojson</code></p>
+            <p><a href="https://www.zhihu.com/question/41541395?sort=created" target="_blank" rel="noopener">presto、druid、sparkSQL、kylin的对比分析，如性能、架构等，有什么异同？</a></p>
+<ul>
+<li><p>商业系统</p>
+</li>
+<li><ul>
+<li>InfoBright</li>
+<li>Greenplum（已开源）、HP Vertica、TeraData、Palo、ExaData、RedShift、BigQuery（Dremel）</li>
+</ul>
+</li>
+<li><p>开源实现</p>
+</li>
+<li><ul>
+<li>Impala、Presto、Spark SQL、Drill、Hawq</li>
+<li>Druid、Pinot</li>
+<li>Kylin</li>
+</ul>
+</li>
+</ul>
+<p>presto、druid、sparkSQL、kylin可以分为三类。</p>
+<ul>
+<li>presto和spark sql都是解决分布式查询问题，提供SQL查询能力，但数据加载不一定能保证实时。</li>
+<li>Druid是保证数据实时写入，但查询上不支持SQL，或者说目前只支持部分SQL，我个人觉得适合用于工业大数据，比如一堆传感器实时写数据的场景。</li>
+<li>Kylin是MOLAP，就是将数据先进行预聚合，然后把多维查询变成了key-value查询。基本思路是预先对数据作多维索引，查询时只扫描索引而不访问原始数据从而提速。</li>
+</ul>
+<p>大数据查询目前来讲可以大体分为三类：</p>
+<p>1、基于hbase预聚合的。适合<strong>相对固定的业务报表类需求</strong>。需要指定预聚合的指标，在数据接入的时候根据指定的指标进行聚合运算，只需要统计少量维度即可满足业务报表需求。比如Opentsdb,Kylin,Druid等</p>
+<p>2、基于Parquet列式存储的，基本是完全基于内存的并行计算，Parquet系能降低存储空间，提高IO效率，以离线处理为主，<strong>很难提高数据写的实时性，超大表的join支持可能不够好</strong>。spark sql也算类似，但它在内存不足时可以spill disk来支持超大数据查询和join。比如Presto, Drill，Impala等</p>
+<p>3、基于lucene外部索引的，比如ElasticSearch和Solr,能够满足的的查询场景远多于传统的数据库存储，但对于日志、行为类时序数据，所有的搜索请求都也必须搜索所有的分片，另外，对于聚合分析场景的支持也是软肋    </p>
 
           
         
@@ -1029,6 +1033,206 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/31/地理信息挖掘/经纬度找POI/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/03/31/地理信息挖掘/经纬度找POI/" class="post-title-link" itemprop="url">经纬度找POI</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-03-31 10:28:31" itemprop="dateCreated datePublished" datetime="2018-03-31T10:28:31+08:00">2018-03-31</time>
+            </span>
+          
+
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/地理信息挖掘/" itemprop="url" rel="index"><span itemprop="name">地理信息挖掘</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/03/31/地理信息挖掘/经纬度找POI/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/31/地理信息挖掘/经纬度找POI/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="定时任务"><a href="#定时任务" class="headerlink" title="定时任务"></a>定时任务</h1><p>每天有定时任务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">00 07 * * * source /etc/profile; python /opt/pig_home/mobile_poi/lbspoi.py &gt;&gt; /opt/pig_home/mobile_poi/lbs.log 2&gt;&amp;1</div></pre></td></tr></table></figure>
+<h2 id="generate-mobile-geo-info"><a href="#generate-mobile-geo-info" class="headerlink" title="generate_mobile_geo_info"></a>generate_mobile_geo_info</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">USE</span> <span class="keyword">default</span>;</div><div class="line">                ADD JAR hdfs://iclick/zyz/udf/zyz_udf2.jar;</div><div class="line">                <span class="keyword">CREATE</span> <span class="keyword">TEMPORARY</span> <span class="keyword">FUNCTION</span> get_region <span class="keyword">as</span> <span class="string">'org.apache.hadoop.hive.ql.udf.Ip2GeoCodeUDF'</span>;</div><div class="line">                <span class="keyword">INSERT</span> OVERWRITE <span class="keyword">TABLE</span> shortdata.mobile_poi_raw <span class="keyword">partition</span>(day_id=<span class="string">'%s'</span>,city)</div><div class="line">                <span class="keyword">SELECT</span></div><div class="line">                    zuid, gps, ip, ts, slot_id, city_code <span class="keyword">AS</span> city</div><div class="line">                <span class="keyword">FROM</span></div><div class="line">                  (</div><div class="line">                    <span class="keyword">SELECT</span></div><div class="line">                      region_code, city_code</div><div class="line">                    <span class="keyword">FROM</span></div><div class="line">                      persona.pois_city_dict</div><div class="line">                  ) a <span class="keyword">join</span> (</div><div class="line">                    <span class="keyword">SELECT</span></div><div class="line">                      zuid,gps,ip,ts,slot_id,get_region(ip) region_code,day_id</div><div class="line">                    <span class="keyword">FROM</span></div><div class="line">                      nobid</div><div class="line">                    <span class="keyword">WHERE</span></div><div class="line">                      day_id=<span class="string">'%s'</span></div><div class="line">                      <span class="keyword">AND</span> gps!=<span class="string">''</span></div><div class="line">                      <span class="keyword">AND</span> dt!=<span class="number">0</span></div><div class="line">                      <span class="keyword">AND</span> <span class="keyword">length</span>(zuid)=<span class="number">32</span></div><div class="line">                      <span class="keyword">AND</span> ip!=<span class="string">''</span></div><div class="line">                      <span class="keyword">AND</span> slot_id !=<span class="string">''</span></div><div class="line">                  ) b</div><div class="line">                <span class="keyword">on</span>(a.region_code=b.region_code);</div></pre></td></tr></table></figure>
+<p>从<code>persona.pois_city_dict</code> 取地理编码region_code和城市区号city_code，从<code>nobid</code>中取zuid，gps等，通过region_code做join，结果放到<code>shortdata.mobile_poi_raw</code> ，包括<code>zuid, gps, ip, ts, slot_id, city_code</code></p>
+<h2 id="check-raw-data"><a href="#check-raw-data" class="headerlink" title="check_raw_data"></a>check_raw_data</h2><p>检查</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/shortdata/mobile_poi_raw/day_id=%s</div></pre></td></tr></table></figure>
+<p>是否有数据</p>
+<h2 id="create-mobile-es-index"><a href="#create-mobile-es-index" class="headerlink" title="create_mobile_es_index"></a>create_mobile_es_index</h2><p>ES中创建索引</p>
+<h2 id="generate-poi-content"><a href="#generate-poi-content" class="headerlink" title="generate_poi_content"></a>generate_poi_content</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hadoop fs -ls /shortdata/mobile_poi_raw/day_id=%s|awk -F&apos;city=&apos; &apos;NF==2&#123;print $2&#125;&apos;</div></pre></td></tr></table></figure>
+<p>目录下找出所有的城市的区号。对于每个区号，执行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pig -p MOBILE_POI_RAW=/shortdata/mobile_poi_raw/day_id=%s/city=%s -p CITY_CODE=%s -p MOBILE_POI_INFO=/shortdata/persona/mobile_poi/%s/%s /opt/pig_home/mobile_poi/GeneratePoiContent.pig</div></pre></td></tr></table></figure>
+<p><code>MOBILE_POI_RAW</code>的字段包括数据如<code>mid,geo,ip,timestamp,ban</code>，ban不知道是什么。数据例如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">(0072e62dcb59f4193a87c57b52f72f40,0.000000_-0.000000,223.104.106.193,1522251854,9641490506058567536)</div><div class="line">(00a416a2bf6155061378554128e6d34e,0.000000_-0.000000,223.104.63.204,1522177840,2079384033841789443)</div><div class="line">(00a78ac01d879f209f0d9ca1c44c8e7f,116.272537_39.905327,114.248.119.130,1522242470,12150475897216517376)</div><div class="line">(012ddc44478c6d828ab151b6ca683916,0.000000_-0.000000,117.157.192.13,1522193641,11414853793502166973)</div><div class="line">(025f2ed81db51d3d99d9a47bf9aeb9a0,0.000000_-0.000000,47.94.140.78,1522187326,18293937070879238797)</div><div class="line">(02bf4d8bdc38ac1f6fdd52209e84039c,115.123116_35.816261,223.104.108.158,1522242477,17879387064476989398)</div><div class="line">(02c18f312fa72708909183b040e74e13,120.034416_32.183392,36.149.39.178,1522181536,16092911831591004172)</div><div class="line">(03279dff09e62f9eaba637fa43744dd6,0.000000_-0.000000,223.72.77.105,1522201115,692495996220981070)</div><div class="line">(034cd47c18e030379ac5bdfaa4c2f1cb,106.306679_26.233530,223.104.95.36,1522191134,2612)</div></pre></td></tr></table></figure>
+<p>后面会对<code>mid,geo,ip,timestamp</code>去重，ban就去掉了。</p>
+<p>有一个关键的UDF</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">DEFINE getPoiContent com.buzzinate.pig.udf.util.SearchPoiContentHdfs();</div><div class="line"></div><div class="line">mobile_poi_city = FOREACH mobile_poi GENERATE mid,FLATTEN(getPoiContent('$CITY_CODE',mid,timestamp,ip,geo,50.0)) as content;</div></pre></td></tr></table></figure>
+<p><code>SearchPoiContentHdfs</code> 首先初始化<code>/geo-poi/src/main/java/com/iclick/geo/search/GeoPois.java</code> 。初始化时要加载POI文件，如<code>010.csv</code>，然后添加到前缀树<code>TrieTree</code> 中。</p>
+<p>然后给定一个经纬度坐标和搜索范围，搜索POI点。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@param</span> rlng     WGS84坐标系的经度</div><div class="line"> * <span class="doctag">@param</span> rlat     WGS84坐标系的纬度</div><div class="line"> * <span class="doctag">@param</span> accuracy 匹配精度</div><div class="line"> * <span class="doctag">@return</span> 匹配到的POI列表</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> List&lt;POINode&gt; <span class="title">search</span><span class="params">(<span class="keyword">double</span> rlng, <span class="keyword">double</span> rlat, <span class="keyword">double</span> accuracy, TrieTree trieTree)</span> </span>&#123;</div><div class="line">  <span class="comment">// 转成火星坐标系</span></div><div class="line">    Double[] gc = GPSTransform.wgs84Togcj02(rlng, rlat);</div><div class="line">    Double lng = gc[<span class="number">0</span>];</div><div class="line">    Double lat = gc[<span class="number">1</span>];</div><div class="line">    List&lt;POINode&gt; pois = <span class="keyword">new</span> ArrayList&lt;POINode&gt;();</div><div class="line">    HashSet&lt;String&gt; fn = <span class="keyword">new</span> HashSet&lt;String&gt;();</div><div class="line">  <span class="comment">// 根据精度误差，得到geohash编码长度</span></div><div class="line">    <span class="keyword">int</span> rlen = getAccuracyRange(accuracy);</div><div class="line">    String shash = <span class="string">""</span>;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        shash = GeoHash.encodeHash(lat, lng, rlen);</div><div class="line">        fn.add(shash);</div><div class="line">    &#125; <span class="keyword">catch</span> (IllegalArgumentException e) &#123;</div><div class="line">        <span class="keyword">return</span> pois;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (String nbour : GeoHash.neighbours(shash)) &#123;</div><div class="line">        fn.add(nbour.substring(<span class="number">0</span>, rlen));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (String thash : fn) &#123;</div><div class="line">        <span class="keyword">for</span> (Entry&lt;String, LinkedList&lt;POINode&gt;&gt; entry : trieTree.getPrefixString(thash).entrySet()) &#123;</div><div class="line">            <span class="keyword">if</span> (entry.getValue() != <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="keyword">for</span> (POINode poi : entry.getValue()) &#123;</div><div class="line">                    Double distance = PointUtils.distance(lng, lat, poi.lng, poi.lat);</div><div class="line">                    <span class="keyword">if</span> (distance &lt;= accuracy) &#123;</div><div class="line">                        pois.add(poi);</div><div class="line">                        poi.setDistance(distance);</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> pois;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>首先要进行坐标转换，<code>GPSTransform</code></p>
+<p><code>getAccuracyRange</code>的代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"> <span class="comment">/*</span></div><div class="line">  * 根据精度误差，得到geohash编码长度</div><div class="line">  *</div><div class="line">  * accuracy: 精度误差</div><div class="line">  *</div><div class="line">  */</div><div class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getAccuracyRange</span><span class="params">(<span class="keyword">double</span> accuracy)</span> </span>&#123;</div><div class="line">     <span class="comment">/*</span></div><div class="line">      *</div><div class="line">* 具体的计算方法：</div><div class="line">Latitude的范围是：-90 到 +90</div><div class="line">Longitude的范围：-180 到 +180</div><div class="line">地球参考球体的周长：40075016.68米</div><div class="line">geohash长度	Lat位数	Lng位数	Lat误差	Lng误差	km误差</div><div class="line">1	2	3	±23	±23	±2500</div><div class="line">2	5	5	± 2.8	±5.6	±630</div><div class="line">3	7	8	± 0.70	± 0.7	±78</div><div class="line">4	10	10	± 0.087	± 0.18	±20</div><div class="line">5	12	13	± 0.022	± 0.022	±2.4</div><div class="line">6	15	15	± 0.0027	± 0.0055	±0.61</div><div class="line">7	17	18	±0.00068	±0.00068	±0.076</div><div class="line">8	20	20	±0.000086	±0.000172	±0.01911</div><div class="line">9	22	23	±0.000021	±0.000021	±0.00478</div><div class="line">10	25	25	±0.00000268	±0.00000536	±0.0005971</div><div class="line">11	27	28	±0.00000067	±0.00000067	±0.0001492</div><div class="line">12	30	30	±0.00000008	±0.00000017	±0.0000186</div><div class="line">*/</div><div class="line">     <span class="keyword">if</span> (accuracy &gt; <span class="number">76</span>) &#123;  <span class="comment">//当精度要求大于76米的时候，geohash长度为６</span></div><div class="line">         <span class="keyword">return</span> <span class="number">6</span>;</div><div class="line">     &#125; <span class="keyword">else</span> <span class="keyword">if</span> (accuracy &gt; <span class="number">19</span>) &#123; <span class="comment">//当精度要求19米 &lt; 76米的时候，geohash长度为７</span></div><div class="line">         <span class="keyword">return</span> <span class="number">7</span>;</div><div class="line">     &#125; <span class="keyword">else</span> &#123; <span class="comment">//当精度要求 &lt; 19米的时候，geohash长度为8</span></div><div class="line">         <span class="keyword">return</span> <span class="number">8</span>;</div><div class="line">     &#125;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+<p>将经纬度转成geohash，找到邻近的geohash。对每个邻近的遍历前缀树，找到邻近的POI点，提取符合要求的。</p>
+<p>看每个cookie的经纬度最近的POI是什么，最后得出每个POI的分布</p>
+<h3 id="3-1-ES的index"><a href="#3-1-ES的index" class="headerlink" title="3.1 ES的index"></a>3.1 ES的index</h3><p>1、<code>pois_v2</code> ：所有的POI信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  &quot;name&quot;: &quot;华光庙大街二巷8号&quot;,</div><div class="line">  &quot;citycode&quot;: &quot;020&quot;,</div><div class="line">  &quot;city&quot;: &quot;广州市&quot;,</div><div class="line">  &quot;district&quot;: &quot;番禺区&quot;,</div><div class="line">  &quot;street&quot;: &quot;钟村镇&quot;,</div><div class="line">  &quot;location&quot;: &quot;22.984817,113.309482&quot;,</div><div class="line">  &quot;slatlng&quot;: &quot;22.984817,113.309482&quot;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>2、<code>lbs_v2</code> ：每个cookie的位置属于哪个POI</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">          &quot;id&quot;: &quot;17fa0f7bc0e06a5f9cac64547ce5b24b&quot;,</div><div class="line">          &quot;ip&quot;: &quot;223.73.116.54&quot;,</div><div class="line">          &quot;citycode&quot;: &quot;020&quot;,</div><div class="line">          &quot;location&quot;: &quot;23.1024,113.28197&quot;,</div><div class="line">          &quot;slatlng&quot;: &quot;23.1024,113.28197&quot;,</div><div class="line">          &quot;city&quot;: &quot;广州市&quot;,</div><div class="line">          &quot;district&quot;: &quot;海珠区&quot;,</div><div class="line">          &quot;street&quot;: &quot;滨江街道&quot;,</div><div class="line">          &quot;name&quot;: &quot;万寿门诊部&quot;,</div><div class="line">          &quot;create_time&quot;: &quot;2017-12-05 21:03:25&quot;,</div><div class="line">          &quot;index_time&quot;: &quot;2017-12-05&quot;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="3-2-查询"><a href="#3-2-查询" class="headerlink" title="3.2 查询"></a>3.2 查询</h3><p>LBS api的使用：</p>
+<h4 id="3-2-1-通过POI点的关键词、城市找到按经纬度分布的POI数量"><a href="#3-2-1-通过POI点的关键词、城市找到按经纬度分布的POI数量" class="headerlink" title="3.2.1 通过POI点的关键词、城市找到按经纬度分布的POI数量"></a>3.2.1 通过POI点的关键词、城市找到按经纬度分布的POI数量</h4><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line">GET pois_v2/_search</div><div class="line">&#123;</div><div class="line">  "size" : 10000,</div><div class="line">  "query" : &#123;</div><div class="line">    "bool" : &#123;</div><div class="line">      "filter" : [</div><div class="line">        &#123;</div><div class="line">          "terms" : &#123;</div><div class="line">            "citycode" : [</div><div class="line">              "010"</div><div class="line">            ],</div><div class="line">            "boost" : 1.0</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">      ],</div><div class="line">      "should" : [</div><div class="line">        &#123;</div><div class="line">          "match_phrase" : &#123;</div><div class="line">            "name" : &#123;</div><div class="line">              "query" : "星巴克",</div><div class="line">              "slop" : 0,</div><div class="line">              "boost" : 1.0</div><div class="line">            &#125;</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">      ],</div><div class="line">      "disable_coord" : true,</div><div class="line">      "adjust_pure_negative" : true,</div><div class="line">      "minimum_should_match" : "1",</div><div class="line">      "boost" : 1.0</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  "aggregations" : &#123;</div><div class="line">    "geo" : &#123;</div><div class="line">      "terms" : &#123;</div><div class="line">        "field" : "slatlng",</div><div class="line">        "size" : 10000,</div><div class="line">        "shard_size" : -1,</div><div class="line">        "min_doc_count" : 1,</div><div class="line">        "shard_min_doc_count" : 0,</div><div class="line">        "show_term_doc_count_error" : false,</div><div class="line">        "order" : [</div><div class="line">          &#123;</div><div class="line">            "_count" : "desc"</div><div class="line">          &#125;,</div><div class="line">          &#123;</div><div class="line">            "_term" : "asc"</div><div class="line">          &#125;</div><div class="line">        ]</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  "ext" : &#123; &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="3-2-2-通过关键词、城市，查询每个区，每个街道的POI点有多少PV和UV"><a href="#3-2-2-通过关键词、城市，查询每个区，每个街道的POI点有多少PV和UV" class="headerlink" title="3.2.2 通过关键词、城市，查询每个区，每个街道的POI点有多少PV和UV"></a>3.2.2 通过关键词、城市，查询每个区，每个街道的POI点有多少PV和UV</h4><p>DSL为：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div></pre></td><td class="code"><pre><div class="line">GET lbs_v2/_search</div><div class="line">&#123;</div><div class="line">  "size" : 0,</div><div class="line">  "query" : &#123;</div><div class="line">    "bool" : &#123;</div><div class="line">      "filter" : [</div><div class="line">        &#123;</div><div class="line">          "terms" : &#123;</div><div class="line">            "citycode" : [</div><div class="line">              "010"</div><div class="line">            ],</div><div class="line">            "boost" : 1.0</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">      ],</div><div class="line">      "should" : [</div><div class="line">        &#123;</div><div class="line">          "match_phrase" : &#123;</div><div class="line">            "name" : &#123;</div><div class="line">              "query" : "星巴克",</div><div class="line">              "slop" : 0,</div><div class="line">              "boost" : 1.0</div><div class="line">            &#125;</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">      ],</div><div class="line">      "disable_coord" : true,</div><div class="line">      "adjust_pure_negative" : true,</div><div class="line">      "minimum_should_match" : "1",</div><div class="line">      "boost" : 1.0</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  "aggregations" : &#123;</div><div class="line">    "city" : &#123;</div><div class="line">      "terms" : &#123;</div><div class="line">        "field" : "city",</div><div class="line">        "size" : 1000,</div><div class="line">        "shard_size" : -1,</div><div class="line">        "min_doc_count" : 1,</div><div class="line">        "shard_min_doc_count" : 0,</div><div class="line">        "show_term_doc_count_error" : false,</div><div class="line">        "order" : [</div><div class="line">          &#123;</div><div class="line">            "_count" : "desc"</div><div class="line">          &#125;,</div><div class="line">          &#123;</div><div class="line">            "_term" : "asc"</div><div class="line">          &#125;</div><div class="line">        ]</div><div class="line">      &#125;,</div><div class="line">      "aggregations" : &#123;</div><div class="line">        "district" : &#123;</div><div class="line">          "terms" : &#123;</div><div class="line">            "field" : "district",</div><div class="line">            "size" : 30,</div><div class="line">            "shard_size" : -1,</div><div class="line">            "min_doc_count" : 1,</div><div class="line">            "shard_min_doc_count" : 0,</div><div class="line">            "show_term_doc_count_error" : false,</div><div class="line">            "order" : [</div><div class="line">              &#123;</div><div class="line">                "_count" : "desc"</div><div class="line">              &#125;,</div><div class="line">              &#123;</div><div class="line">                "_term" : "asc"</div><div class="line">              &#125;</div><div class="line">            ]</div><div class="line">          &#125;,</div><div class="line">          "aggregations" : &#123;</div><div class="line">            "street" : &#123;</div><div class="line">              "terms" : &#123;</div><div class="line">                "field" : "street",</div><div class="line">                "size" : 30,</div><div class="line">                "shard_size" : -1,</div><div class="line">                "min_doc_count" : 1,</div><div class="line">                "shard_min_doc_count" : 0,</div><div class="line">                "show_term_doc_count_error" : false,</div><div class="line">                "order" : [</div><div class="line">                  &#123;</div><div class="line">                    "_count" : "desc"</div><div class="line">                  &#125;,</div><div class="line">                  &#123;</div><div class="line">                    "_term" : "asc"</div><div class="line">                  &#125;</div><div class="line">                ]</div><div class="line">              &#125;,</div><div class="line">              "aggregations" : &#123;</div><div class="line">                "uniq" : &#123;</div><div class="line">                  "cardinality" : &#123;</div><div class="line">                    "field" : "id"</div><div class="line">                  &#125;</div><div class="line">                &#125;</div><div class="line">              &#125;</div><div class="line">            &#125;,</div><div class="line">            "uniq" : &#123;</div><div class="line">              "cardinality" : &#123;</div><div class="line">                "field" : "id"</div><div class="line">              &#125;</div><div class="line">            &#125;</div><div class="line">          &#125;</div><div class="line">        &#125;,</div><div class="line">        "poi" : &#123;</div><div class="line">          "terms" : &#123;</div><div class="line">            "field" : "slatlng",</div><div class="line">            "size" : 10000,</div><div class="line">            "shard_size" : -1,</div><div class="line">            "min_doc_count" : 1,</div><div class="line">            "shard_min_doc_count" : 0,</div><div class="line">            "show_term_doc_count_error" : false,</div><div class="line">            "order" : [</div><div class="line">              &#123;</div><div class="line">                "_count" : "desc"</div><div class="line">              &#125;,</div><div class="line">              &#123;</div><div class="line">                "_term" : "asc"</div><div class="line">              &#125;</div><div class="line">            ]</div><div class="line">          &#125;,</div><div class="line">          "aggregations" : &#123;</div><div class="line">            "uniq" : &#123;</div><div class="line">              "cardinality" : &#123;</div><div class="line">                "field" : "id"</div><div class="line">              &#125;</div><div class="line">            &#125;</div><div class="line">          &#125;</div><div class="line">        &#125;,</div><div class="line">        "uniq" : &#123;</div><div class="line">          "cardinality" : &#123;</div><div class="line">            "field" : "id"</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    &#125;,</div><div class="line">    "uniq" : &#123;</div><div class="line">      "cardinality" : &#123;</div><div class="line">        "field" : "id"</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  "ext" : &#123; &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/31/地理信息挖掘/GeoHash/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1176,206 +1380,6 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line">Geohash.bounds = function(geohash) &#123;</div><div class="line">    if (geohash.length === 0) throw new Error(&apos;Invalid geohash&apos;);</div><div class="line"></div><div class="line">    geohash = geohash.toLowerCase();</div><div class="line"></div><div class="line">    var evenBit = true;</div><div class="line">    var latMin =  -90, latMax =  90;</div><div class="line">    var lonMin = -180, lonMax = 180;</div><div class="line"></div><div class="line">    for (var i=0; i&lt;geohash.length; i++) &#123;</div><div class="line">        var chr = geohash.charAt(i);</div><div class="line">        var idx = Geohash.base32.indexOf(chr);</div><div class="line">        if (idx == -1) throw new Error(&apos;Invalid geohash&apos;);</div><div class="line"></div><div class="line">        for (var n=4; n&gt;=0; n--) &#123;</div><div class="line">            var bitN = idx &gt;&gt; n &amp; 1;</div><div class="line">            if (evenBit) &#123;</div><div class="line">                // longitude</div><div class="line">                var lonMid = (lonMin+lonMax) / 2;</div><div class="line">                if (bitN == 1) &#123;</div><div class="line">                    lonMin = lonMid;</div><div class="line">                &#125; else &#123;</div><div class="line">                    lonMax = lonMid;</div><div class="line">                &#125;</div><div class="line">            &#125; else &#123;</div><div class="line">                // latitude</div><div class="line">                var latMid = (latMin+latMax) / 2;</div><div class="line">                if (bitN == 1) &#123;</div><div class="line">                    latMin = latMid;</div><div class="line">                &#125; else &#123;</div><div class="line">                    latMax = latMid;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            evenBit = !evenBit;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    var bounds = &#123;</div><div class="line">        sw: &#123; lat: latMin, lon: lonMin &#125;,</div><div class="line">        ne: &#123; lat: latMax, lon: lonMax &#125;,</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    return bounds;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
 <p>参考</p>
 <p><a href="https://my.oschina.net/shipley/blog/704964" target="_blank" rel="noopener">Geohash介绍及针对具体需求的改良</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/31/地理信息挖掘/经纬度找POI/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/03/31/地理信息挖掘/经纬度找POI/" class="post-title-link" itemprop="url">经纬度找POI</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-03-31 10:28:31" itemprop="dateCreated datePublished" datetime="2018-03-31T10:28:31+08:00">2018-03-31</time>
-            </span>
-          
-
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/地理信息挖掘/" itemprop="url" rel="index"><span itemprop="name">地理信息挖掘</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/31/地理信息挖掘/经纬度找POI/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/31/地理信息挖掘/经纬度找POI/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="定时任务"><a href="#定时任务" class="headerlink" title="定时任务"></a>定时任务</h1><p>每天有定时任务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">00 07 * * * source /etc/profile; python /opt/pig_home/mobile_poi/lbspoi.py &gt;&gt; /opt/pig_home/mobile_poi/lbs.log 2&gt;&amp;1</div></pre></td></tr></table></figure>
-<h2 id="generate-mobile-geo-info"><a href="#generate-mobile-geo-info" class="headerlink" title="generate_mobile_geo_info"></a>generate_mobile_geo_info</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">USE</span> <span class="keyword">default</span>;</div><div class="line">                ADD JAR hdfs://iclick/zyz/udf/zyz_udf2.jar;</div><div class="line">                <span class="keyword">CREATE</span> <span class="keyword">TEMPORARY</span> <span class="keyword">FUNCTION</span> get_region <span class="keyword">as</span> <span class="string">'org.apache.hadoop.hive.ql.udf.Ip2GeoCodeUDF'</span>;</div><div class="line">                <span class="keyword">INSERT</span> OVERWRITE <span class="keyword">TABLE</span> shortdata.mobile_poi_raw <span class="keyword">partition</span>(day_id=<span class="string">'%s'</span>,city)</div><div class="line">                <span class="keyword">SELECT</span></div><div class="line">                    zuid, gps, ip, ts, slot_id, city_code <span class="keyword">AS</span> city</div><div class="line">                <span class="keyword">FROM</span></div><div class="line">                  (</div><div class="line">                    <span class="keyword">SELECT</span></div><div class="line">                      region_code, city_code</div><div class="line">                    <span class="keyword">FROM</span></div><div class="line">                      persona.pois_city_dict</div><div class="line">                  ) a <span class="keyword">join</span> (</div><div class="line">                    <span class="keyword">SELECT</span></div><div class="line">                      zuid,gps,ip,ts,slot_id,get_region(ip) region_code,day_id</div><div class="line">                    <span class="keyword">FROM</span></div><div class="line">                      nobid</div><div class="line">                    <span class="keyword">WHERE</span></div><div class="line">                      day_id=<span class="string">'%s'</span></div><div class="line">                      <span class="keyword">AND</span> gps!=<span class="string">''</span></div><div class="line">                      <span class="keyword">AND</span> dt!=<span class="number">0</span></div><div class="line">                      <span class="keyword">AND</span> <span class="keyword">length</span>(zuid)=<span class="number">32</span></div><div class="line">                      <span class="keyword">AND</span> ip!=<span class="string">''</span></div><div class="line">                      <span class="keyword">AND</span> slot_id !=<span class="string">''</span></div><div class="line">                  ) b</div><div class="line">                <span class="keyword">on</span>(a.region_code=b.region_code);</div></pre></td></tr></table></figure>
-<p>从<code>persona.pois_city_dict</code> 取地理编码region_code和城市区号city_code，从<code>nobid</code>中取zuid，gps等，通过region_code做join，结果放到<code>shortdata.mobile_poi_raw</code> ，包括<code>zuid, gps, ip, ts, slot_id, city_code</code></p>
-<h2 id="check-raw-data"><a href="#check-raw-data" class="headerlink" title="check_raw_data"></a>check_raw_data</h2><p>检查</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/shortdata/mobile_poi_raw/day_id=%s</div></pre></td></tr></table></figure>
-<p>是否有数据</p>
-<h2 id="create-mobile-es-index"><a href="#create-mobile-es-index" class="headerlink" title="create_mobile_es_index"></a>create_mobile_es_index</h2><p>ES中创建索引</p>
-<h2 id="generate-poi-content"><a href="#generate-poi-content" class="headerlink" title="generate_poi_content"></a>generate_poi_content</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hadoop fs -ls /shortdata/mobile_poi_raw/day_id=%s|awk -F&apos;city=&apos; &apos;NF==2&#123;print $2&#125;&apos;</div></pre></td></tr></table></figure>
-<p>目录下找出所有的城市的区号。对于每个区号，执行</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pig -p MOBILE_POI_RAW=/shortdata/mobile_poi_raw/day_id=%s/city=%s -p CITY_CODE=%s -p MOBILE_POI_INFO=/shortdata/persona/mobile_poi/%s/%s /opt/pig_home/mobile_poi/GeneratePoiContent.pig</div></pre></td></tr></table></figure>
-<p><code>MOBILE_POI_RAW</code>的字段包括数据如<code>mid,geo,ip,timestamp,ban</code>，ban不知道是什么。数据例如</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">(0072e62dcb59f4193a87c57b52f72f40,0.000000_-0.000000,223.104.106.193,1522251854,9641490506058567536)</div><div class="line">(00a416a2bf6155061378554128e6d34e,0.000000_-0.000000,223.104.63.204,1522177840,2079384033841789443)</div><div class="line">(00a78ac01d879f209f0d9ca1c44c8e7f,116.272537_39.905327,114.248.119.130,1522242470,12150475897216517376)</div><div class="line">(012ddc44478c6d828ab151b6ca683916,0.000000_-0.000000,117.157.192.13,1522193641,11414853793502166973)</div><div class="line">(025f2ed81db51d3d99d9a47bf9aeb9a0,0.000000_-0.000000,47.94.140.78,1522187326,18293937070879238797)</div><div class="line">(02bf4d8bdc38ac1f6fdd52209e84039c,115.123116_35.816261,223.104.108.158,1522242477,17879387064476989398)</div><div class="line">(02c18f312fa72708909183b040e74e13,120.034416_32.183392,36.149.39.178,1522181536,16092911831591004172)</div><div class="line">(03279dff09e62f9eaba637fa43744dd6,0.000000_-0.000000,223.72.77.105,1522201115,692495996220981070)</div><div class="line">(034cd47c18e030379ac5bdfaa4c2f1cb,106.306679_26.233530,223.104.95.36,1522191134,2612)</div></pre></td></tr></table></figure>
-<p>后面会对<code>mid,geo,ip,timestamp</code>去重，ban就去掉了。</p>
-<p>有一个关键的UDF</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">DEFINE getPoiContent com.buzzinate.pig.udf.util.SearchPoiContentHdfs();</div><div class="line"></div><div class="line">mobile_poi_city = FOREACH mobile_poi GENERATE mid,FLATTEN(getPoiContent('$CITY_CODE',mid,timestamp,ip,geo,50.0)) as content;</div></pre></td></tr></table></figure>
-<p><code>SearchPoiContentHdfs</code> 首先初始化<code>/geo-poi/src/main/java/com/iclick/geo/search/GeoPois.java</code> 。初始化时要加载POI文件，如<code>010.csv</code>，然后添加到前缀树<code>TrieTree</code> 中。</p>
-<p>然后给定一个经纬度坐标和搜索范围，搜索POI点。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@param</span> rlng     WGS84坐标系的经度</div><div class="line"> * <span class="doctag">@param</span> rlat     WGS84坐标系的纬度</div><div class="line"> * <span class="doctag">@param</span> accuracy 匹配精度</div><div class="line"> * <span class="doctag">@return</span> 匹配到的POI列表</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> List&lt;POINode&gt; <span class="title">search</span><span class="params">(<span class="keyword">double</span> rlng, <span class="keyword">double</span> rlat, <span class="keyword">double</span> accuracy, TrieTree trieTree)</span> </span>&#123;</div><div class="line">  <span class="comment">// 转成火星坐标系</span></div><div class="line">    Double[] gc = GPSTransform.wgs84Togcj02(rlng, rlat);</div><div class="line">    Double lng = gc[<span class="number">0</span>];</div><div class="line">    Double lat = gc[<span class="number">1</span>];</div><div class="line">    List&lt;POINode&gt; pois = <span class="keyword">new</span> ArrayList&lt;POINode&gt;();</div><div class="line">    HashSet&lt;String&gt; fn = <span class="keyword">new</span> HashSet&lt;String&gt;();</div><div class="line">  <span class="comment">// 根据精度误差，得到geohash编码长度</span></div><div class="line">    <span class="keyword">int</span> rlen = getAccuracyRange(accuracy);</div><div class="line">    String shash = <span class="string">""</span>;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        shash = GeoHash.encodeHash(lat, lng, rlen);</div><div class="line">        fn.add(shash);</div><div class="line">    &#125; <span class="keyword">catch</span> (IllegalArgumentException e) &#123;</div><div class="line">        <span class="keyword">return</span> pois;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (String nbour : GeoHash.neighbours(shash)) &#123;</div><div class="line">        fn.add(nbour.substring(<span class="number">0</span>, rlen));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (String thash : fn) &#123;</div><div class="line">        <span class="keyword">for</span> (Entry&lt;String, LinkedList&lt;POINode&gt;&gt; entry : trieTree.getPrefixString(thash).entrySet()) &#123;</div><div class="line">            <span class="keyword">if</span> (entry.getValue() != <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="keyword">for</span> (POINode poi : entry.getValue()) &#123;</div><div class="line">                    Double distance = PointUtils.distance(lng, lat, poi.lng, poi.lat);</div><div class="line">                    <span class="keyword">if</span> (distance &lt;= accuracy) &#123;</div><div class="line">                        pois.add(poi);</div><div class="line">                        poi.setDistance(distance);</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> pois;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>首先要进行坐标转换，<code>GPSTransform</code></p>
-<p><code>getAccuracyRange</code>的代码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"> <span class="comment">/*</span></div><div class="line">  * 根据精度误差，得到geohash编码长度</div><div class="line">  *</div><div class="line">  * accuracy: 精度误差</div><div class="line">  *</div><div class="line">  */</div><div class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getAccuracyRange</span><span class="params">(<span class="keyword">double</span> accuracy)</span> </span>&#123;</div><div class="line">     <span class="comment">/*</span></div><div class="line">      *</div><div class="line">* 具体的计算方法：</div><div class="line">Latitude的范围是：-90 到 +90</div><div class="line">Longitude的范围：-180 到 +180</div><div class="line">地球参考球体的周长：40075016.68米</div><div class="line">geohash长度	Lat位数	Lng位数	Lat误差	Lng误差	km误差</div><div class="line">1	2	3	±23	±23	±2500</div><div class="line">2	5	5	± 2.8	±5.6	±630</div><div class="line">3	7	8	± 0.70	± 0.7	±78</div><div class="line">4	10	10	± 0.087	± 0.18	±20</div><div class="line">5	12	13	± 0.022	± 0.022	±2.4</div><div class="line">6	15	15	± 0.0027	± 0.0055	±0.61</div><div class="line">7	17	18	±0.00068	±0.00068	±0.076</div><div class="line">8	20	20	±0.000086	±0.000172	±0.01911</div><div class="line">9	22	23	±0.000021	±0.000021	±0.00478</div><div class="line">10	25	25	±0.00000268	±0.00000536	±0.0005971</div><div class="line">11	27	28	±0.00000067	±0.00000067	±0.0001492</div><div class="line">12	30	30	±0.00000008	±0.00000017	±0.0000186</div><div class="line">*/</div><div class="line">     <span class="keyword">if</span> (accuracy &gt; <span class="number">76</span>) &#123;  <span class="comment">//当精度要求大于76米的时候，geohash长度为６</span></div><div class="line">         <span class="keyword">return</span> <span class="number">6</span>;</div><div class="line">     &#125; <span class="keyword">else</span> <span class="keyword">if</span> (accuracy &gt; <span class="number">19</span>) &#123; <span class="comment">//当精度要求19米 &lt; 76米的时候，geohash长度为７</span></div><div class="line">         <span class="keyword">return</span> <span class="number">7</span>;</div><div class="line">     &#125; <span class="keyword">else</span> &#123; <span class="comment">//当精度要求 &lt; 19米的时候，geohash长度为8</span></div><div class="line">         <span class="keyword">return</span> <span class="number">8</span>;</div><div class="line">     &#125;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
-<p>将经纬度转成geohash，找到邻近的geohash。对每个邻近的遍历前缀树，找到邻近的POI点，提取符合要求的。</p>
-<p>看每个cookie的经纬度最近的POI是什么，最后得出每个POI的分布</p>
-<h3 id="3-1-ES的index"><a href="#3-1-ES的index" class="headerlink" title="3.1 ES的index"></a>3.1 ES的index</h3><p>1、<code>pois_v2</code> ：所有的POI信息</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  &quot;name&quot;: &quot;华光庙大街二巷8号&quot;,</div><div class="line">  &quot;citycode&quot;: &quot;020&quot;,</div><div class="line">  &quot;city&quot;: &quot;广州市&quot;,</div><div class="line">  &quot;district&quot;: &quot;番禺区&quot;,</div><div class="line">  &quot;street&quot;: &quot;钟村镇&quot;,</div><div class="line">  &quot;location&quot;: &quot;22.984817,113.309482&quot;,</div><div class="line">  &quot;slatlng&quot;: &quot;22.984817,113.309482&quot;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>2、<code>lbs_v2</code> ：每个cookie的位置属于哪个POI</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">          &quot;id&quot;: &quot;17fa0f7bc0e06a5f9cac64547ce5b24b&quot;,</div><div class="line">          &quot;ip&quot;: &quot;223.73.116.54&quot;,</div><div class="line">          &quot;citycode&quot;: &quot;020&quot;,</div><div class="line">          &quot;location&quot;: &quot;23.1024,113.28197&quot;,</div><div class="line">          &quot;slatlng&quot;: &quot;23.1024,113.28197&quot;,</div><div class="line">          &quot;city&quot;: &quot;广州市&quot;,</div><div class="line">          &quot;district&quot;: &quot;海珠区&quot;,</div><div class="line">          &quot;street&quot;: &quot;滨江街道&quot;,</div><div class="line">          &quot;name&quot;: &quot;万寿门诊部&quot;,</div><div class="line">          &quot;create_time&quot;: &quot;2017-12-05 21:03:25&quot;,</div><div class="line">          &quot;index_time&quot;: &quot;2017-12-05&quot;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="3-2-查询"><a href="#3-2-查询" class="headerlink" title="3.2 查询"></a>3.2 查询</h3><p>LBS api的使用：</p>
-<h4 id="3-2-1-通过POI点的关键词、城市找到按经纬度分布的POI数量"><a href="#3-2-1-通过POI点的关键词、城市找到按经纬度分布的POI数量" class="headerlink" title="3.2.1 通过POI点的关键词、城市找到按经纬度分布的POI数量"></a>3.2.1 通过POI点的关键词、城市找到按经纬度分布的POI数量</h4><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line">GET pois_v2/_search</div><div class="line">&#123;</div><div class="line">  "size" : 10000,</div><div class="line">  "query" : &#123;</div><div class="line">    "bool" : &#123;</div><div class="line">      "filter" : [</div><div class="line">        &#123;</div><div class="line">          "terms" : &#123;</div><div class="line">            "citycode" : [</div><div class="line">              "010"</div><div class="line">            ],</div><div class="line">            "boost" : 1.0</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">      ],</div><div class="line">      "should" : [</div><div class="line">        &#123;</div><div class="line">          "match_phrase" : &#123;</div><div class="line">            "name" : &#123;</div><div class="line">              "query" : "星巴克",</div><div class="line">              "slop" : 0,</div><div class="line">              "boost" : 1.0</div><div class="line">            &#125;</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">      ],</div><div class="line">      "disable_coord" : true,</div><div class="line">      "adjust_pure_negative" : true,</div><div class="line">      "minimum_should_match" : "1",</div><div class="line">      "boost" : 1.0</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  "aggregations" : &#123;</div><div class="line">    "geo" : &#123;</div><div class="line">      "terms" : &#123;</div><div class="line">        "field" : "slatlng",</div><div class="line">        "size" : 10000,</div><div class="line">        "shard_size" : -1,</div><div class="line">        "min_doc_count" : 1,</div><div class="line">        "shard_min_doc_count" : 0,</div><div class="line">        "show_term_doc_count_error" : false,</div><div class="line">        "order" : [</div><div class="line">          &#123;</div><div class="line">            "_count" : "desc"</div><div class="line">          &#125;,</div><div class="line">          &#123;</div><div class="line">            "_term" : "asc"</div><div class="line">          &#125;</div><div class="line">        ]</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  "ext" : &#123; &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h4 id="3-2-2-通过关键词、城市，查询每个区，每个街道的POI点有多少PV和UV"><a href="#3-2-2-通过关键词、城市，查询每个区，每个街道的POI点有多少PV和UV" class="headerlink" title="3.2.2 通过关键词、城市，查询每个区，每个街道的POI点有多少PV和UV"></a>3.2.2 通过关键词、城市，查询每个区，每个街道的POI点有多少PV和UV</h4><p>DSL为：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div></pre></td><td class="code"><pre><div class="line">GET lbs_v2/_search</div><div class="line">&#123;</div><div class="line">  "size" : 0,</div><div class="line">  "query" : &#123;</div><div class="line">    "bool" : &#123;</div><div class="line">      "filter" : [</div><div class="line">        &#123;</div><div class="line">          "terms" : &#123;</div><div class="line">            "citycode" : [</div><div class="line">              "010"</div><div class="line">            ],</div><div class="line">            "boost" : 1.0</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">      ],</div><div class="line">      "should" : [</div><div class="line">        &#123;</div><div class="line">          "match_phrase" : &#123;</div><div class="line">            "name" : &#123;</div><div class="line">              "query" : "星巴克",</div><div class="line">              "slop" : 0,</div><div class="line">              "boost" : 1.0</div><div class="line">            &#125;</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">      ],</div><div class="line">      "disable_coord" : true,</div><div class="line">      "adjust_pure_negative" : true,</div><div class="line">      "minimum_should_match" : "1",</div><div class="line">      "boost" : 1.0</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  "aggregations" : &#123;</div><div class="line">    "city" : &#123;</div><div class="line">      "terms" : &#123;</div><div class="line">        "field" : "city",</div><div class="line">        "size" : 1000,</div><div class="line">        "shard_size" : -1,</div><div class="line">        "min_doc_count" : 1,</div><div class="line">        "shard_min_doc_count" : 0,</div><div class="line">        "show_term_doc_count_error" : false,</div><div class="line">        "order" : [</div><div class="line">          &#123;</div><div class="line">            "_count" : "desc"</div><div class="line">          &#125;,</div><div class="line">          &#123;</div><div class="line">            "_term" : "asc"</div><div class="line">          &#125;</div><div class="line">        ]</div><div class="line">      &#125;,</div><div class="line">      "aggregations" : &#123;</div><div class="line">        "district" : &#123;</div><div class="line">          "terms" : &#123;</div><div class="line">            "field" : "district",</div><div class="line">            "size" : 30,</div><div class="line">            "shard_size" : -1,</div><div class="line">            "min_doc_count" : 1,</div><div class="line">            "shard_min_doc_count" : 0,</div><div class="line">            "show_term_doc_count_error" : false,</div><div class="line">            "order" : [</div><div class="line">              &#123;</div><div class="line">                "_count" : "desc"</div><div class="line">              &#125;,</div><div class="line">              &#123;</div><div class="line">                "_term" : "asc"</div><div class="line">              &#125;</div><div class="line">            ]</div><div class="line">          &#125;,</div><div class="line">          "aggregations" : &#123;</div><div class="line">            "street" : &#123;</div><div class="line">              "terms" : &#123;</div><div class="line">                "field" : "street",</div><div class="line">                "size" : 30,</div><div class="line">                "shard_size" : -1,</div><div class="line">                "min_doc_count" : 1,</div><div class="line">                "shard_min_doc_count" : 0,</div><div class="line">                "show_term_doc_count_error" : false,</div><div class="line">                "order" : [</div><div class="line">                  &#123;</div><div class="line">                    "_count" : "desc"</div><div class="line">                  &#125;,</div><div class="line">                  &#123;</div><div class="line">                    "_term" : "asc"</div><div class="line">                  &#125;</div><div class="line">                ]</div><div class="line">              &#125;,</div><div class="line">              "aggregations" : &#123;</div><div class="line">                "uniq" : &#123;</div><div class="line">                  "cardinality" : &#123;</div><div class="line">                    "field" : "id"</div><div class="line">                  &#125;</div><div class="line">                &#125;</div><div class="line">              &#125;</div><div class="line">            &#125;,</div><div class="line">            "uniq" : &#123;</div><div class="line">              "cardinality" : &#123;</div><div class="line">                "field" : "id"</div><div class="line">              &#125;</div><div class="line">            &#125;</div><div class="line">          &#125;</div><div class="line">        &#125;,</div><div class="line">        "poi" : &#123;</div><div class="line">          "terms" : &#123;</div><div class="line">            "field" : "slatlng",</div><div class="line">            "size" : 10000,</div><div class="line">            "shard_size" : -1,</div><div class="line">            "min_doc_count" : 1,</div><div class="line">            "shard_min_doc_count" : 0,</div><div class="line">            "show_term_doc_count_error" : false,</div><div class="line">            "order" : [</div><div class="line">              &#123;</div><div class="line">                "_count" : "desc"</div><div class="line">              &#125;,</div><div class="line">              &#123;</div><div class="line">                "_term" : "asc"</div><div class="line">              &#125;</div><div class="line">            ]</div><div class="line">          &#125;,</div><div class="line">          "aggregations" : &#123;</div><div class="line">            "uniq" : &#123;</div><div class="line">              "cardinality" : &#123;</div><div class="line">                "field" : "id"</div><div class="line">              &#125;</div><div class="line">            &#125;</div><div class="line">          &#125;</div><div class="line">        &#125;,</div><div class="line">        "uniq" : &#123;</div><div class="line">          "cardinality" : &#123;</div><div class="line">            "field" : "id"</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    &#125;,</div><div class="line">    "uniq" : &#123;</div><div class="line">      "cardinality" : &#123;</div><div class="line">        "field" : "id"</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  "ext" : &#123; &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 
           
         
@@ -2619,6 +2623,32 @@
 
 
         
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
 
 
 
