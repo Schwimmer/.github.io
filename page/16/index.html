@@ -328,6 +328,420 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/08/12/机器学习/特征工程/特征分析/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/08/12/机器学习/特征工程/特征分析/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-12 22:59:18" itemprop="dateCreated datePublished" datetime="2018-08-12T22:59:18+08:00">2018-08-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-09-12 12:59:14" itemprop="dateModified" datetime="2018-09-12T12:59:14+08:00">2018-09-12</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/08/12/机器学习/特征工程/特征分析/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/08/12/机器学习/特征工程/特征分析/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>如何构造出对模型有帮助的特征？</p>
+<p>如何判断特征取值的不同角度对模型有没有作用？</p>
+<p>如何看特征之间相互有没有影响？</p>
+<p>如何看对模型最重要的特征？</p>
+<h1 id="特征工程思维图"><a href="#特征工程思维图" class="headerlink" title="特征工程思维图"></a>特征工程思维图</h1><p>!(/Users/david/david/00projects/00markdown/项目文档/pic/特征工程思维图.jpg)</p>
+<h1 id="风控模型的常规思路"><a href="#风控模型的常规思路" class="headerlink" title="风控模型的常规思路"></a>风控模型的常规思路</h1><p><img src="/2018/08/12/机器学习/特征工程/特征分析/Users/david/david/myblog/source/_posts/pic/风控模型的常规思路.jpeg" alt=""></p>
+<h1 id="特征选择工具"><a href="#特征选择工具" class="headerlink" title="特征选择工具"></a>特征选择工具</h1><h1 id="WillKoehrsen-feature-selector"><a href="#WillKoehrsen-feature-selector" class="headerlink" title="WillKoehrsen/feature-selector"></a><a href="https://github.com/WillKoehrsen" target="_blank" rel="noopener">WillKoehrsen</a>/<strong>feature-selector</strong></h1><p><a href="https://github.com/WillKoehrsen/feature-selector" target="_blank" rel="noopener">https://github.com/WillKoehrsen/feature-selector</a></p>
+<h1 id="看分布"><a href="#看分布" class="headerlink" title="看分布"></a>看分布</h1><p>某个特征的正负样本数值分布比较均匀，不算好特征；若不均匀，可以使用</p>
+<p>或者若越高/越低会影响逾期与否，也是好特征。</p>
+<h1 id="GBDT筛选"><a href="#GBDT筛选" class="headerlink" title="GBDT筛选"></a>GBDT筛选</h1><p>扔进去gbdt看一波重要性分析，然后分析一下皮尔森系数，淘汰一下不重要的特征和相关程度高的特征</p>
+<h1 id="越细粒度的特征越重要"><a href="#越细粒度的特征越重要" class="headerlink" title="越细粒度的特征越重要"></a>越细粒度的特征越重要</h1><p>特征组合就是将特征粒度变细。比如aid只有173维，age有3维，特征组合之后变成了173*3，这个时候粒度就变细了。粒度越细，越容易定位到某一个单独的用户。</p>
+<h2 id="类别特征与数值特征的组合"><a href="#类别特征与数值特征的组合" class="headerlink" title="类别特征与数值特征的组合"></a>类别特征与数值特征的组合</h2><p>用N1和N2表示数值特征，用C1和C2表示类别特征，利用pandas的groupby操作，可以创造出以下几种有意义的新特征：（其中，C2还可以是离散化了的N1）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">median(N1)_by(C1)  \\ 中位数</div><div class="line">mean(N1)_by(C1)  \\ 算术平均数</div><div class="line">mode(N1)_by(C1)  \\ 众数</div><div class="line">min(N1)_by(C1)  \\ 最小值</div><div class="line">max(N1)_by(C1)  \\ 最大值</div><div class="line">std(N1)_by(C1)  \\ 标准差</div><div class="line">var(N1)_by(C1)  \\ 方差</div><div class="line">freq(C2)_by(C1)  \\ 频数</div><div class="line"></div><div class="line">freq(C1) \\这个不需要groupby也有意义</div></pre></td></tr></table></figure>
+<p>仅仅将已有的类别和数值特征进行以上的有效组合，就能够<strong>大量增加优秀的可用特征</strong>。</p>
+<p>将这种方法和线性组合等基础特征工程方法结合（仅用于决策树），可以得到更多有意义的特征，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">N1 - median(N1)_by(C1)</div><div class="line">N1 - mean(N1)_by(C1)</div></pre></td></tr></table></figure>
+<h2 id="用基因编程创造新特征"><a href="#用基因编程创造新特征" class="headerlink" title="用基因编程创造新特征"></a>用基因编程创造新特征</h2><p><a href="https://link.zhihu.com/?target=http%3A//gplearn.readthedocs.io/en/stable/index.html" target="_blank" rel="noopener">Welcome to gplearn’s documentation!</a></p>
+<p>基于genetic programming的symbolic regression，具体的原理和实现参见文档。目前，python环境下最好用的基因编程库为gplearn。基因编程的两大用法：</p>
+<ul>
+<li>转换（transformation）：把已有的特征进行组合转换，组合的方式（一元、二元、多元算子）可以由用户自行定义，也可以使用库中自带的函数（如加减乘除、min、max、三角函数、指数、对数）。组合的目的，是创造出和目标y值最“相关”的新特征。这种相关程度可以用spearman或者pearson的相关系数进行测量。spearman多用于决策树（免疫单特征单调变换），pearson多用于线性回归等其他算法。</li>
+<li>回归（regression）：原理同上，只不过直接用于回归而已。</li>
+</ul>
+<h1 id="用决策树创造新特征"><a href="#用决策树创造新特征" class="headerlink" title="用决策树创造新特征"></a>用决策树创造新特征</h1><p>在决策树系列的算法中（单棵决策树、gbdt、随机森林），每一个样本都会被映射到决策树的一片叶子上。因此，我们可以把样本经过每一棵决策树映射后的index（自然数）或one-hot-vector（哑编码得到的稀疏矢量）作为一项新的特征，加入到模型中。</p>
+<p>具体实现：apply()以及decision_path()方法，在scikit-learn和xgboost里都可以用。</p>
+<h1 id="决策树、基于决策树的ensemble"><a href="#决策树、基于决策树的ensemble" class="headerlink" title="决策树、基于决策树的ensemble"></a>决策树、基于决策树的ensemble</h1><ul>
+<li>spearman correlation coefficient</li>
+</ul>
+<h1 id="线性模型、SVM、神经网络"><a href="#线性模型、SVM、神经网络" class="headerlink" title="线性模型、SVM、神经网络"></a>线性模型、SVM、神经网络</h1><ul>
+<li>对数（log）</li>
+<li>pearson correlation coefficient</li>
+</ul>
+<h1 id="数据泄露（Data-Leakage）"><a href="#数据泄露（Data-Leakage）" class="headerlink" title="数据泄露（Data Leakage）"></a>数据泄露（Data Leakage）</h1><p>在数据挖掘中，<strong>数据泄露</strong>（<strong>leakage</strong>）指的是：本来不应该出现在X里的、和目标y有关的数据，出现在了X中。如此一来，机器学习算法就会有好到不真实的表现。</p>
+<p>Kaggle Wiki链接：<a href="https://link.zhihu.com/?target=https%3A//www.kaggle.com/wiki/Leakage" target="_blank" rel="noopener">Leakage | Kaggle</a></p>
+<p><strong>6.1. 数据泄露的种类以及影响分析</strong></p>
+<ul>
+<li><strong>测试集数据被泄露到训练集</strong>：过拟合，模型在现实中的表现远不如test accuracy；测试集失去意义。</li>
+<li><strong>正确的预测（y）被泄露到测试集</strong>：严重过拟合，训练出的模型毫无用处，比赛组织者的极大失败</li>
+<li><strong>未来的信息被泄露到过去</strong>：时间序列相关，现实中模型将无法有效根据过去情况预测未来。</li>
+<li><strong>模型可以获得一些不该获得的信息</strong>，比如和目标变量有较大关系的变量、现实里接触不到的变量。例子：y是“病人是否患有癌症”，但是X包括了“病人是否接受肿瘤切除手术”。</li>
+<li><strong>反向工程，去匿名化</strong>，去除数据集中的随机打乱操作，社会工程学。这种行为是数据比赛明令禁止的，而且在现实中也涉嫌侵犯隐私。例子：反向工程“随机的”用户编码，得出用户的真名。</li>
+<li><strong>第三方信息</strong>。例子：已知坐标，利用geocoder类型的服务推出所在城市；在预测金融市场时加入第三方的政策新闻的特征。</li>
+</ul>
+<p><strong>6.2. 有效发现和利用数据泄露</strong></p>
+<p>数据泄露可以分为两大类：</p>
+<ol>
+<li>由于自己的疏忽，在交叉验证、训练过程中，产生的数据泄露。这种情况属于失误，应当尽量避免。</li>
+<li>在数据竞赛中，找到了理论上不能使用（但是也没有明令禁止）的额外数据，从而提升分数。</li>
+</ol>
+<p>避免第一种数据泄露的方法，可以参考kaggle的各类比赛。假设有大量数据，我们可以把未处理的数据分为<strong>训练集</strong>和<strong>测试集</strong>，其中，测试集包括Public LB和Private LB两部分。</p>
+<ul>
+<li>在模型的训练、选择和交叉验证时，我们只能接触训练集。</li>
+<li>在对自己的模型非常自信时，可以偶尔在Public LB上验证。</li>
+<li>只有模型即将被用于正式商业用途时，才能看模型在Private LB上的表现。</li>
+</ul>
+<p>交叉验证误差、public LB误差、private LB误差：如果后者的误差值<strong>显著高于</strong>前者，那么需要考虑过拟合或第一类数据泄露。</p>
+<p>第二类的数据泄露，属于旁门左道。本质上，这相当于在模型训练阶段，干了数据收集阶段的工作。搜集原始数据，或是自己提供数据举办竞赛（试图避免他人利用数据泄露）时，可以参考这种思路。</p>
+<ul>
+<li>文件夹的创造时间。</li>
+<li>看似乱码的字符串（如各类id）可能有统计分布的规律。</li>
+<li>地理位置信息：如果提供了坐标，则可反向地理编码，得出相关地理信息。</li>
+</ul>
+<p>这类数据可能会导致过拟合。</p>
+<h1 id="特征选择利器-Boruta"><a href="#特征选择利器-Boruta" class="headerlink" title="特征选择利器: Boruta"></a>特征选择利器: Boruta</h1><p><a href="https://zhuanlan.zhihu.com/p/33730850" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/33730850</a></p>
+<h1 id="大规模特征构建实践总结"><a href="#大规模特征构建实践总结" class="headerlink" title="大规模特征构建实践总结"></a>大规模特征构建实践总结</h1><p><a href="https://zhuanlan.zhihu.com/p/37547126" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/37547126</a></p>
+<h1 id="利用-gplearn-进行特征工程"><a href="#利用-gplearn-进行特征工程" class="headerlink" title="利用 gplearn 进行特征工程"></a>利用 gplearn 进行特征工程</h1><p><a href="https://zhuanlan.zhihu.com/p/39377036" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/39377036</a></p>
+<h1 id="米筐科技（RiceQuant）策略研究报告：特征选择方法探析—沪深300指数的集成特征选择和聚类分析"><a href="#米筐科技（RiceQuant）策略研究报告：特征选择方法探析—沪深300指数的集成特征选择和聚类分析" class="headerlink" title="米筐科技（RiceQuant）策略研究报告：特征选择方法探析—沪深300指数的集成特征选择和聚类分析"></a>米筐科技（RiceQuant）策略研究报告：特征选择方法探析—沪深300指数的集成特征选择和聚类分析</h1><p><a href="https://zhuanlan.zhihu.com/p/21406355" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/21406355</a></p>
+<h1 id="探索性数据分析套路解读"><a href="#探索性数据分析套路解读" class="headerlink" title="探索性数据分析套路解读"></a>探索性数据分析套路解读</h1><p><a href="https://zhuanlan.zhihu.com/p/29364225" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/29364225</a></p>
+<h1 id="《探索性数据分析》翻译"><a href="#《探索性数据分析》翻译" class="headerlink" title="《探索性数据分析》翻译"></a>《探索性数据分析》翻译</h1><p><a href="https://zhuanlan.zhihu.com/p/26928750" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/26928750</a></p>
+<p>参考</p>
+<p><a href="https://zhuanlan.zhihu.com/p/38341881" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/38341881</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/26444240" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/26444240</a></p>
+<h1 id="最小冗余最大关联特征选择"><a href="#最小冗余最大关联特征选择" class="headerlink" title="最小冗余最大关联特征选择"></a>最小冗余最大关联特征选择</h1><p><a href="https://medium.com/ai%C2%B3-theory-practice-business/three-effective-feature-selection-strategies-e1f86f331fb1" target="_blank" rel="noopener">https://medium.com/ai%C2%B3-theory-practice-business/three-effective-feature-selection-strategies-e1f86f331fb1</a></p>
+<p>将所有的想法整合起来就能得出我们的算法，即 mRMR 特征选择。算法背后的考虑是，同时最小化特征的冗余并最大化特征的关联。因此，我们需要计算冗余和关联的方程：</p>
+<p><img src="/2018/08/12/机器学习/特征工程/特征分析/var/folders/hc/vtcjc69d3bq5ckqpfvbsxkc00000gn/T/abnerworks.Typora/image-20180912113608177.png" alt="image-20180912113608177"></p>
+<p><img src="https://cdn-images-1.medium.com/max/1600/1*gNYHYZX-4GTybD5fuHc8Sg.png" alt=""></p>
+<h2 id="基于单特征因子的隐马尔科夫模型在商品期货上的应用"><a href="#基于单特征因子的隐马尔科夫模型在商品期货上的应用" class="headerlink" title="基于单特征因子的隐马尔科夫模型在商品期货上的应用"></a>基于单特征因子的隐马尔科夫模型在商品期货上的应用</h2><p><a href="https://mp.weixin.qq.com/s?src=3&amp;timestamp=1536718793&amp;ver=1&amp;signature=mXrKo-NTo9B7kWkxdnmtU8hyNP*zcC2eakm1gbJYZAFhWCAVxzu9gWE4uC7CS1gyevwV-VXNzQ3HrnRFDipJwdBMuaWGrXS7tRzVqk1BHcCL1H7tgymi8rDrNLUDG8XBLz2azHMykg4Ncczyo4XxPh*pmRpSXTFeUBYH56Pyvtw=" target="_blank" rel="noopener">https://mp.weixin.qq.com/s?src=3&amp;timestamp=1536718793&amp;ver=1&amp;signature=mXrKo-NTo9B7kWkxdnmtU8hyNP*zcC2eakm1gbJYZAFhWCAVxzu9gWE4uC7CS1gyevwV-VXNzQ3HrnRFDipJwdBMuaWGrXS7tRzVqk1BHcCL1H7tgymi8rDrNLUDG8XBLz2azHMykg4Ncczyo4XxPh*pmRpSXTFeUBYH56Pyvtw=</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/08/08/hadoop-spark/spark/dataframe操作/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/08/08/hadoop-spark/spark/dataframe操作/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-08 10:17:30" itemprop="dateCreated datePublished" datetime="2018-08-08T10:17:30+08:00">2018-08-08</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-03-07 11:52:03" itemprop="dateModified" datetime="2019-03-07T11:52:03+08:00">2019-03-07</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/08/08/hadoop-spark/spark/dataframe操作/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/08/08/hadoop-spark/spark/dataframe操作/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Row转map"><a href="#Row转map" class="headerlink" title="Row转map"></a>Row转map</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">val df = Seq((1, 2.0, &quot;a&quot;)).toDF(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;)    </div><div class="line">val row = df.first</div><div class="line"></div><div class="line">row.getValuesMap[Any](row.schema.fieldNames)</div><div class="line">// res19: Map[String,Any] = Map(A -&gt; 1, B -&gt; 2.0, C -&gt; a)</div></pre></td></tr></table></figure>
+<p>这样就可以遍历row的每一列和取值了</p>
+<h1 id="创建DF"><a href="#创建DF" class="headerlink" title="创建DF"></a>创建DF</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">val df = hiveContext.createDataFrame(Seq(</div><div class="line">      (0.0762357,3.5,1.4,0.2,1.0),</div><div class="line">      (0.226728,3.0,1.4,0.2,1.0),</div><div class="line">      (4.7,3.2,1.3,0.2,1.0),</div><div class="line">      (4.6,3.1,1.5,0.2,1.0),</div><div class="line">      (5.0,3.6,1.4,0.2,1.0),</div><div class="line">      (5.4,3.9,1.7,0.4,1.0),</div><div class="line">      (4.6,3.4,1.4,0.3,1.0),</div><div class="line">      (5.0,3.4,1.5,0.2,1.0),</div><div class="line">      (4.4,2.9,1.4,0.2,1.0),</div><div class="line">      (4.9,3.1,1.5,0.1,1.0),</div><div class="line">      (5.4,3.7,1.5,0.2,1.0),</div><div class="line">      (4.8,3.4,1.6,0.2,1.0),</div><div class="line">      (4.8,3.0,1.4,0.1,1.0),</div><div class="line">      (4.3,3.0,1.1,0.1,1.0)</div><div class="line">    )).toDF(&quot;mobile_city_code&quot;, &quot;feature2&quot;, &quot;feature3&quot;, &quot;feature4&quot;, &quot;label&quot;)</div></pre></td></tr></table></figure>
+<h1 id="读取csv文件为df"><a href="#读取csv文件为df" class="headerlink" title="读取csv文件为df"></a>读取csv文件为df</h1><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//读取csv，由于HUE下载的数据表头带有表名，需要去掉。例如stg_d001_t_jxl_behavior.call_cnt --&gt;&gt; call_cnt</span></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">readCsv</span></span>(sc:<span class="type">SparkContext</span>, csvPath:<span class="type">String</span>)=&#123;</div><div class="line">    <span class="keyword">val</span> sqlContext = <span class="keyword">new</span> <span class="type">SQLContext</span>(sc)</div><div class="line">    <span class="keyword">var</span> dataset = sqlContext.read.format(<span class="string">"com.databricks.spark.csv"</span>)</div><div class="line">      .option(<span class="string">"header"</span>,<span class="string">"true"</span>) <span class="comment">//这里如果在csv第一行有属性的话，没有就是"false"</span></div><div class="line">      <span class="comment">//.option("inferSchema",true.toString)//这是自动推断属性列的数据类型。不要打开</span></div><div class="line">      .load(csvPath)<span class="comment">//文件的路径</span></div><div class="line">    dataset</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/08/06/机器学习/OneHot编码/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1814,397 +2228,6 @@ IV=\sum_{i=0}^N IV_i</script><p>IV衡量的是某一个变量的信息量，从�
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/07/10/机器学习/lightGBM/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/07/10/机器学习/lightGBM/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-07-10 11:51:05" itemprop="dateCreated datePublished" datetime="2018-07-10T11:51:05+08:00">2018-07-10</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-09-14 12:59:15" itemprop="dateModified" datetime="2018-09-14T12:59:15+08:00">2018-09-14</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/07/10/机器学习/lightGBM/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/07/10/机器学习/lightGBM/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>LightGBM 中文文档: <a href="http://lightgbm.apachecn.org/cn/latest/" target="_blank" rel="noopener">http://lightgbm.apachecn.org/cn/latest/</a></p>
-<p> LightGBM 英文文档: <a href="http://lightgbm.apachecn.org/en/latest/" target="_blank" rel="noopener">http://lightgbm.apachecn.org/en/latest/</a></p>
-<p>LightGBM 官方文档: <a href="https://lightgbm.readthedocs.io/en/latest/" target="_blank" rel="noopener">https://lightgbm.readthedocs.io/en/latest/</a></p>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>LightGBM 依赖于 <strong>OpenMP</strong> 进行编译, 然而 Apple Clang 不支持它.</p>
-<p>请使用以下命令来安装 <strong>gcc/g++</strong> :</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">brew install cmake</div><div class="line">brew install gcc --without-multilib</div></pre></td></tr></table></figure>
-<p>然后安装 LightGBM:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">git clone --recursive https://github.com/Microsoft/LightGBM ; cd LightGBM</div><div class="line">export CXX=g++-8 CC=gcc-8</div><div class="line">mkdir build ; cd build</div><div class="line">cmake ..</div><div class="line">make -j4</div></pre></td></tr></table></figure>
-<blockquote>
-<p><code>cmake ..</code> 这一步之后报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&gt; CMake Error at /usr/local/Cellar/cmake/3.11.4/share/cmake/Modules/CMakeDetermineCCompiler.cmake:48 (message):</div><div class="line">&gt;   Could not find compiler set in environment variable CC:</div><div class="line">&gt; </div><div class="line">&gt;   gcc-7.</div><div class="line">&gt; Call Stack (most recent call first):</div><div class="line">&gt;   CMakeLists.txt:9 (PROJECT)</div><div class="line">&gt; </div><div class="line">&gt; </div><div class="line">&gt; CMake Error: CMAKE_C_COMPILER not set, after EnableLanguage</div><div class="line">&gt; CMake Error: CMAKE_CXX_COMPILER not set, after EnableLanguage</div><div class="line">&gt; -- Configuring incomplete, errors occurred!</div><div class="line">&gt; See also &quot;/Users/david/david/git/LightGBM/build/CMakeFiles/CMakeOutput.log&quot;.</div><div class="line">&gt;</div></pre></td></tr></table></figure>
-</blockquote>
-<p>&gt;</p>
-<blockquote>
-<p><a href="https://github.com/Microsoft/LightGBM/issues/118官方的解答并不适用，看了下发现gcc的版本已经自动装到8了，所以将export这里改成了" target="_blank" rel="noopener">https://github.com/Microsoft/LightGBM/issues/118官方的解答并不适用，看了下发现gcc的版本已经自动装到8了，所以将export这里改成了</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; export CXX=g++-8 CC=gcc-8</div><div class="line">&gt;</div></pre></td></tr></table></figure>
-</blockquote>
-<p>&gt;</p>
-<blockquote>
-<p>然后通过</p>
-</blockquote>
-<p>或者直接用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip install lightgbm</div></pre></td></tr></table></figure>
-<p>安装</p>
-<h2 id="训练数据格式"><a href="#训练数据格式" class="headerlink" title="训练数据格式"></a>训练数据格式</h2><p>LightGBM 支持 <a href="https://en.wikipedia.org/wiki/Comma-separated_values" target="_blank" rel="noopener">CSV</a>, <a href="https://en.wikipedia.org/wiki/Tab-separated_values" target="_blank" rel="noopener">TSV</a> 和 <a href="https://www.csie.ntu.edu.tw/~cjlin/libsvm/" target="_blank" rel="noopener">LibSVM</a> 格式的输入数据文件。</p>
-<p>Label 是第一列的数据，文件中是不包含 header（标题） 的。</p>
-<p>LightGBM 可以直接使用 categorical feature（类别特征）（不需要单独编码）。 <a href="http://stat-computing.org/dataexpo/2009/" target="_blank" rel="noopener">Expo data</a> 实验显示，与 one-hot 编码相比，其速度提高了 8 倍。</p>
-<h3 id="权重和-Query-Group-数据"><a href="#权重和-Query-Group-数据" class="headerlink" title="权重和 Query/Group 数据"></a>权重和 Query/Group 数据</h3><p>LightGBM 也支持加权训练，它需要一个额外的 <a href="http://lightgbm.apachecn.org/cn/latest/Parameters.html#io-parameters" target="_blank" rel="noopener">加权数据</a> 。 它需要额外的 <a href="http://lightgbm.apachecn.org/cn/latest/Parameters.html#io-parameters" target="_blank" rel="noopener">query 数据</a> 用于排名任务。</p>
-<p>11/3/2016 更新:</p>
-<ol>
-<li>现在支持 header（标题）输入</li>
-<li>可以指定 label 列，权重列和 query/group id 列。 索引和列都支持</li>
-<li>可以指定一个被忽略的列的列表</li>
-</ol>
-<h2 id="参数快速查看"><a href="#参数快速查看" class="headerlink" title="参数快速查看"></a>参数快速查看</h2><p>参数格式是 <code>key1=value1 key2=value2 ...</code> 。 参数可以在配置文件和命令行中。</p>
-<p>想要了解全部的参数， 请参阅 <a href="http://lightgbm.apachecn.org/cn/latest/Parameters.html" target="_blank" rel="noopener">Parameters（参数）</a>.</p>
-<h2 id="运行-LightGBM"><a href="#运行-LightGBM" class="headerlink" title="运行 LightGBM"></a>运行 LightGBM</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./lightgbm config=your_config_file other_args ...</div></pre></td></tr></table></figure>
-<p><a href="https://blog.csdn.net/m0_37477175/article/details/80567010" target="_blank" rel="noopener">使用lightgbm画并保存Feature Importance</a></p>
-<p><a href="https://blog.csdn.net/m0_37922734/article/details/80677736" target="_blank" rel="noopener">【lightgbm 使用经验总结教训】</a></p>
-<h1 id=""><a href="#" class="headerlink" title=" "></a> </h1><p><a href="https://cloud.tencent.com/info/user/necther" target="_blank" rel="noopener">对xgboost和lightgbm的理解及其调参应该关注的点</a></p>
-<h1 id="调参"><a href="#调参" class="headerlink" title="调参"></a>调参</h1><h2 id="官方文档的调参"><a href="#官方文档的调参" class="headerlink" title="官方文档的调参"></a>官方文档的调参</h2><p><a href="http://lightgbm.apachecn.org/cn/latest/Parameters-Tuning.html" target="_blank" rel="noopener">http://lightgbm.apachecn.org/cn/latest/Parameters-Tuning.html</a></p>
-<h3 id="针对-Leaf-wise-最佳优先-树的参数优化"><a href="#针对-Leaf-wise-最佳优先-树的参数优化" class="headerlink" title="针对 Leaf-wise (最佳优先) 树的参数优化"></a>针对 Leaf-wise (最佳优先) 树的参数优化</h3><p><code>num_leaves</code>. 这是控制树模型复杂度的主要参数</p>
-<h2 id="CV调参"><a href="#CV调参" class="headerlink" title="CV调参"></a>CV调参</h2><p><a href="https://github.com/wanglei5205/Machine_learning/blob/master/Boosting--LightGBM/lgb-python/2.lightgbm%E8%B0%83%E5%8F%82%E6%A1%88%E4%BE%8B.py" target="_blank" rel="noopener">https://github.com/wanglei5205/Machine_learning/blob/master/Boosting--LightGBM/lgb-python/2.lightgbm%E8%B0%83%E5%8F%82%E6%A1%88%E4%BE%8B.py</a></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># -*- coding: utf-8 -*-</span></div><div class="line"><span class="string">"""</span></div><div class="line"># 作者：wanglei5205</div><div class="line"># 邮箱：wanglei5205@126.com</div><div class="line"># 博客：http://cnblogs.com/wanglei5205</div><div class="line"># github：http://github.com/wanglei5205</div><div class="line">"""</div><div class="line"><span class="comment">### 导入模块</span></div><div class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"><span class="keyword">import</span> lightgbm <span class="keyword">as</span> lgb</div><div class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> metrics</div><div class="line"></div><div class="line"><span class="comment">### 载入数据</span></div><div class="line">print(<span class="string">'载入数据'</span>)</div><div class="line">dataset1 = pd.read_csv(<span class="string">'G:/ML/ML_match/IJCAI/data3.22/3.22ICJAI/data/7_train_data1.csv'</span>)</div><div class="line">dataset2 = pd.read_csv(<span class="string">'G:/ML/ML_match/IJCAI/data3.22/3.22ICJAI/data/7_train_data2.csv'</span>)</div><div class="line">dataset3 = pd.read_csv(<span class="string">'G:/ML/ML_match/IJCAI/data3.22/3.22ICJAI/data/7_train_data3.csv'</span>)</div><div class="line">dataset4 = pd.read_csv(<span class="string">'G:/ML/ML_match/IJCAI/data3.22/3.22ICJAI/data/7_train_data4.csv'</span>)</div><div class="line">dataset5 = pd.read_csv(<span class="string">'G:/ML/ML_match/IJCAI/data3.22/3.22ICJAI/data/7_train_data5.csv'</span>)</div><div class="line"></div><div class="line">print(<span class="string">'数据去重'</span>)</div><div class="line">dataset1.drop_duplicates(inplace=<span class="keyword">True</span>)</div><div class="line">dataset2.drop_duplicates(inplace=<span class="keyword">True</span>)</div><div class="line">dataset3.drop_duplicates(inplace=<span class="keyword">True</span>)</div><div class="line">dataset4.drop_duplicates(inplace=<span class="keyword">True</span>)</div><div class="line">dataset5.drop_duplicates(inplace=<span class="keyword">True</span>)</div><div class="line"></div><div class="line">print(<span class="string">'数据合并'</span>)</div><div class="line">trains = pd.concat([dataset1,dataset2],axis=<span class="number">0</span>)</div><div class="line">trains = pd.concat([trains,dataset3],axis=<span class="number">0</span>)</div><div class="line">trains = pd.concat([trains,dataset4],axis=<span class="number">0</span>)</div><div class="line"></div><div class="line">online_test = dataset5</div><div class="line"></div><div class="line"><span class="comment">### 数据拆分(训练集+验证集+测试集)</span></div><div class="line">print(<span class="string">'数据拆分'</span>)</div><div class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</div><div class="line">train_xy,offline_test = train_test_split(trains,test_size = <span class="number">0.2</span>,random_state=<span class="number">21</span>)</div><div class="line">train,val = train_test_split(train_xy,test_size = <span class="number">0.2</span>,random_state=<span class="number">21</span>)</div><div class="line"></div><div class="line"><span class="comment"># 训练集</span></div><div class="line">y_train = train.is_trade                                               <span class="comment"># 训练集标签</span></div><div class="line">X_train = train.drop([<span class="string">'instance_id'</span>,<span class="string">'is_trade'</span>],axis=<span class="number">1</span>)                <span class="comment"># 训练集特征矩阵</span></div><div class="line"></div><div class="line"><span class="comment"># 验证集</span></div><div class="line">y_val = val.is_trade                                                   <span class="comment"># 验证集标签</span></div><div class="line">X_val = val.drop([<span class="string">'instance_id'</span>,<span class="string">'is_trade'</span>],axis=<span class="number">1</span>)                    <span class="comment"># 验证集特征矩阵</span></div><div class="line"></div><div class="line"><span class="comment"># 测试集</span></div><div class="line">offline_test_X = offline_test.drop([<span class="string">'instance_id'</span>,<span class="string">'is_trade'</span>],axis=<span class="number">1</span>)  <span class="comment"># 线下测试特征矩阵</span></div><div class="line">online_test_X  = online_test.drop([<span class="string">'instance_id'</span>],axis=<span class="number">1</span>)              <span class="comment"># 线上测试特征矩阵</span></div><div class="line"></div><div class="line"><span class="comment">### 数据转换</span></div><div class="line">print(<span class="string">'数据转换'</span>)</div><div class="line">lgb_train = lgb.Dataset(X_train, y_train, free_raw_data=<span class="keyword">False</span>)</div><div class="line">lgb_eval = lgb.Dataset(X_val, y_val, reference=lgb_train,free_raw_data=<span class="keyword">False</span>)</div><div class="line"></div><div class="line"><span class="comment">### 设置初始参数--不含交叉验证参数</span></div><div class="line">print(<span class="string">'设置参数'</span>)</div><div class="line">params = &#123;</div><div class="line">          <span class="string">'boosting_type'</span>: <span class="string">'gbdt'</span>,</div><div class="line">          <span class="string">'objective'</span>: <span class="string">'binary'</span>,</div><div class="line">          <span class="string">'metric'</span>: <span class="string">'binary_logloss'</span>,</div><div class="line">          &#125;</div><div class="line"></div><div class="line"><span class="comment">### 交叉验证(调参)</span></div><div class="line">print(<span class="string">'交叉验证'</span>)</div><div class="line">min_merror = float(<span class="string">'Inf'</span>)</div><div class="line">best_params = &#123;&#125;</div><div class="line"></div><div class="line"><span class="comment"># 准确率</span></div><div class="line">print(<span class="string">"调参1：提高准确率"</span>)</div><div class="line"><span class="keyword">for</span> num_leaves <span class="keyword">in</span> range(<span class="number">20</span>,<span class="number">200</span>,<span class="number">5</span>):</div><div class="line">    <span class="keyword">for</span> max_depth <span class="keyword">in</span> range(<span class="number">3</span>,<span class="number">8</span>,<span class="number">1</span>):</div><div class="line">        params[<span class="string">'num_leaves'</span>] = num_leaves</div><div class="line">        params[<span class="string">'max_depth'</span>] = max_depth</div><div class="line"></div><div class="line">        cv_results = lgb.cv(</div><div class="line">                            params,</div><div class="line">                            lgb_train,</div><div class="line">                            seed=<span class="number">2018</span>,</div><div class="line">                            nfold=<span class="number">3</span>,</div><div class="line">                            metrics=[<span class="string">'binary_error'</span>],</div><div class="line">                            early_stopping_rounds=<span class="number">10</span>,</div><div class="line">                            verbose_eval=<span class="keyword">True</span></div><div class="line">                            )</div><div class="line"></div><div class="line">        mean_merror = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).min()</div><div class="line">        boost_rounds = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).argmin()</div><div class="line"></div><div class="line">        <span class="keyword">if</span> mean_merror &lt; min_merror:</div><div class="line">            min_merror = mean_merror</div><div class="line">            best_params[<span class="string">'num_leaves'</span>] = num_leaves</div><div class="line">            best_params[<span class="string">'max_depth'</span>] = max_depth</div><div class="line"></div><div class="line">params[<span class="string">'num_leaves'</span>] = best_params[<span class="string">'num_leaves'</span>]</div><div class="line">params[<span class="string">'max_depth'</span>] = best_params[<span class="string">'max_depth'</span>]</div><div class="line"></div><div class="line"><span class="comment"># 过拟合</span></div><div class="line">print(<span class="string">"调参2：降低过拟合"</span>)</div><div class="line"><span class="keyword">for</span> max_bin <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">255</span>,<span class="number">5</span>):</div><div class="line">    <span class="keyword">for</span> min_data_in_leaf <span class="keyword">in</span> range(<span class="number">10</span>,<span class="number">200</span>,<span class="number">5</span>):</div><div class="line">            params[<span class="string">'max_bin'</span>] = max_bin</div><div class="line">            params[<span class="string">'min_data_in_leaf'</span>] = min_data_in_leaf</div><div class="line"></div><div class="line">            cv_results = lgb.cv(</div><div class="line">                                params,</div><div class="line">                                lgb_train,</div><div class="line">                                seed=<span class="number">42</span>,</div><div class="line">                                nfold=<span class="number">3</span>,</div><div class="line">                                metrics=[<span class="string">'binary_error'</span>],</div><div class="line">                                early_stopping_rounds=<span class="number">3</span>,</div><div class="line">                                verbose_eval=<span class="keyword">True</span></div><div class="line">                                )</div><div class="line"></div><div class="line">            mean_merror = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).min()</div><div class="line">            boost_rounds = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).argmin()</div><div class="line"></div><div class="line">            <span class="keyword">if</span> mean_merror &lt; min_merror:</div><div class="line">                min_merror = mean_merror</div><div class="line">                best_params[<span class="string">'max_bin'</span>]= max_bin</div><div class="line">                best_params[<span class="string">'min_data_in_leaf'</span>] = min_data_in_leaf</div><div class="line"></div><div class="line">params[<span class="string">'min_data_in_leaf'</span>] = best_params[<span class="string">'min_data_in_leaf'</span>]</div><div class="line">params[<span class="string">'max_bin'</span>] = best_params[<span class="string">'max_bin'</span>]</div><div class="line"></div><div class="line">print(<span class="string">"调参3：降低过拟合"</span>)</div><div class="line"><span class="keyword">for</span> feature_fraction <span class="keyword">in</span> [<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">0.6</span>,<span class="number">0.7</span>,<span class="number">0.8</span>,<span class="number">0.9</span>,<span class="number">1.0</span>]:</div><div class="line">    <span class="keyword">for</span> bagging_fraction <span class="keyword">in</span> [<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">0.6</span>,<span class="number">0.7</span>,<span class="number">0.8</span>,<span class="number">0.9</span>,<span class="number">1.0</span>]:</div><div class="line">        <span class="keyword">for</span> bagging_freq <span class="keyword">in</span> range(<span class="number">0</span>,<span class="number">50</span>,<span class="number">5</span>):</div><div class="line">            params[<span class="string">'feature_fraction'</span>] = feature_fraction</div><div class="line">            params[<span class="string">'bagging_fraction'</span>] = bagging_fraction</div><div class="line">            params[<span class="string">'bagging_freq'</span>] = bagging_freq</div><div class="line"></div><div class="line">            cv_results = lgb.cv(</div><div class="line">                                params,</div><div class="line">                                lgb_train,</div><div class="line">                                seed=<span class="number">42</span>,</div><div class="line">                                nfold=<span class="number">3</span>,</div><div class="line">                                metrics=[<span class="string">'binary_error'</span>],</div><div class="line">                                early_stopping_rounds=<span class="number">3</span>,</div><div class="line">                                verbose_eval=<span class="keyword">True</span></div><div class="line">                                )</div><div class="line"></div><div class="line">            mean_merror = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).min()</div><div class="line">            boost_rounds = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).argmin()</div><div class="line"></div><div class="line">            <span class="keyword">if</span> mean_merror &lt; min_merror:</div><div class="line">                min_merror = mean_merror</div><div class="line">                best_params[<span class="string">'feature_fraction'</span>] = feature_fraction</div><div class="line">                best_params[<span class="string">'bagging_fraction'</span>] = bagging_fraction</div><div class="line">                best_params[<span class="string">'bagging_freq'</span>] = bagging_freq</div><div class="line"></div><div class="line">params[<span class="string">'feature_fraction'</span>] = best_params[<span class="string">'feature_fraction'</span>]</div><div class="line">params[<span class="string">'bagging_fraction'</span>] = best_params[<span class="string">'bagging_fraction'</span>]</div><div class="line">params[<span class="string">'bagging_freq'</span>] = best_params[<span class="string">'bagging_freq'</span>]</div><div class="line"></div><div class="line">print(<span class="string">"调参4：降低过拟合"</span>)</div><div class="line"><span class="keyword">for</span> lambda_l1 <span class="keyword">in</span> [<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">0.6</span>,<span class="number">0.7</span>,<span class="number">0.8</span>,<span class="number">0.9</span>,<span class="number">1.0</span>]:</div><div class="line">    <span class="keyword">for</span> lambda_l2 <span class="keyword">in</span> [<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">0.6</span>,<span class="number">0.7</span>,<span class="number">0.8</span>,<span class="number">0.9</span>,<span class="number">1.0</span>]:</div><div class="line">        <span class="keyword">for</span> min_split_gain <span class="keyword">in</span> [<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">0.6</span>,<span class="number">0.7</span>,<span class="number">0.8</span>,<span class="number">0.9</span>,<span class="number">1.0</span>]:</div><div class="line">            params[<span class="string">'lambda_l1'</span>] = lambda_l1</div><div class="line">            params[<span class="string">'lambda_l2'</span>] = lambda_l2</div><div class="line">            params[<span class="string">'min_split_gain'</span>] = min_split_gain</div><div class="line"></div><div class="line">            cv_results = lgb.cv(</div><div class="line">                                params,</div><div class="line">                                lgb_train,</div><div class="line">                                seed=<span class="number">42</span>,</div><div class="line">                                nfold=<span class="number">3</span>,</div><div class="line">                                metrics=[<span class="string">'binary_error'</span>],</div><div class="line">                                early_stopping_rounds=<span class="number">3</span>,</div><div class="line">                                verbose_eval=<span class="keyword">True</span></div><div class="line">                                )</div><div class="line"></div><div class="line">            mean_merror = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).min()</div><div class="line">            boost_rounds = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).argmin()</div><div class="line"></div><div class="line">            <span class="keyword">if</span> mean_merror &lt; min_merror:</div><div class="line">                min_merror = mean_merror</div><div class="line">                best_params[<span class="string">'lambda_l1'</span>] = lambda_l1</div><div class="line">                best_params[<span class="string">'lambda_l2'</span>] = lambda_l2</div><div class="line">                best_params[<span class="string">'min_split_gain'</span>] = min_split_gain</div><div class="line"></div><div class="line">params[<span class="string">'lambda_l1'</span>] = best_params[<span class="string">'lambda_l1'</span>]</div><div class="line">params[<span class="string">'lambda_l2'</span>] = best_params[<span class="string">'lambda_l2'</span>]</div><div class="line">params[<span class="string">'min_split_gain'</span>] = best_params[<span class="string">'min_split_gain'</span>]</div><div class="line"></div><div class="line"></div><div class="line">print(best_params)</div><div class="line"></div><div class="line"><span class="comment">### 训练</span></div><div class="line">params[<span class="string">'learning_rate'</span>]=<span class="number">0.01</span></div><div class="line">lgb.train(</div><div class="line">          params,                     <span class="comment"># 参数字典</span></div><div class="line">          lgb_train,                  <span class="comment"># 训练集</span></div><div class="line">          valid_sets=lgb_eval,        <span class="comment"># 验证集</span></div><div class="line">          num_boost_round=<span class="number">2000</span>,       <span class="comment"># 迭代次数</span></div><div class="line">          early_stopping_rounds=<span class="number">50</span>    <span class="comment"># 早停次数</span></div><div class="line">          )</div><div class="line"></div><div class="line"><span class="comment">### 线下预测</span></div><div class="line"><span class="keyword">print</span> (<span class="string">"线下预测"</span>)</div><div class="line">preds_offline = lgb.predict(offline_test_X, num_iteration=lgb.best_iteration) <span class="comment"># 输出概率</span></div><div class="line">offline=offline_test[[<span class="string">'instance_id'</span>,<span class="string">'is_trade'</span>]]</div><div class="line">offline[<span class="string">'preds'</span>]=preds_offline</div><div class="line">offline.is_trade = offline[<span class="string">'is_trade'</span>].astype(np.float64)</div><div class="line">print(<span class="string">'log_loss'</span>, metrics.log_loss(offline.is_trade, offline.preds))</div><div class="line"></div><div class="line"><span class="comment">### 线上预测</span></div><div class="line">print(<span class="string">"线上预测"</span>)</div><div class="line">preds_online =  lgb.predict(online_test_X, num_iteration=lgb.best_iteration)  <span class="comment"># 输出概率</span></div><div class="line">online=online_test[[<span class="string">'instance_id'</span>]]</div><div class="line">online[<span class="string">'preds'</span>]=preds_online</div><div class="line">online.rename(columns=&#123;<span class="string">'preds'</span>:<span class="string">'predicted_score'</span>&#125;,inplace=<span class="keyword">True</span>)           <span class="comment"># 更改列名</span></div><div class="line">online.to_csv(<span class="string">"./data/20180405.txt"</span>,index=<span class="keyword">None</span>,sep=<span class="string">' '</span>)                   <span class="comment"># 保存结果</span></div><div class="line"></div><div class="line"><span class="comment">### 保存模型</span></div><div class="line"><span class="keyword">from</span> sklearn.externals <span class="keyword">import</span> joblib</div><div class="line">joblib.dump(lgb,<span class="string">'lgb.pkl'</span>)</div><div class="line"></div><div class="line"><span class="comment">### 特征选择</span></div><div class="line">df = pd.DataFrame(X_train.columns.tolist(), columns=[<span class="string">'feature'</span>])</div><div class="line">df[<span class="string">'importance'</span>]=list(lgb.feature_importance())                           <span class="comment"># 特征分数</span></div><div class="line">df = df.sort_values(by=<span class="string">'importance'</span>,ascending=<span class="keyword">False</span>)                      <span class="comment"># 特征排序</span></div><div class="line">df.to_csv(<span class="string">"./data/feature_score_20180331.csv"</span>,index=<span class="keyword">None</span>,encoding=<span class="string">'gbk'</span>)  <span class="comment"># 保存分数</span></div></pre></td></tr></table></figure>
-<h1 id="样本集处理"><a href="#样本集处理" class="headerlink" title="样本集处理"></a>样本集处理</h1><p>加载样本集，去掉app_code和日期列，保存为新样本集</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">df04 = pd.read_csv(<span class="string">'3dtrain_aprilnew.csv'</span>, header=<span class="number">0</span>)</div><div class="line">df04 = df04.drop(df04.columns[[<span class="number">0</span>,<span class="number">-2</span>]], axis=<span class="number">1</span>)</div><div class="line">print(df04.shape)</div><div class="line"><span class="comment"># print(df04['main_unittype_3days'] &gt; 0)</span></div><div class="line">df04 = df04[df04[<span class="string">'main_unittype_3days'</span>] &gt; <span class="number">0</span>]</div><div class="line">df04 = df04.drop(df04.columns[[<span class="string">'all_district_entropy_avg_3days'</span>, <span class="string">'all_max_distance_with_guarantee_now_unit_address_max_3days'</span>, <span class="string">'all_max_distance_with_guarantee_now_unit_address_min_3days'</span>, <span class="string">'all_max_distance_with_guarantee_now_unit_address_avg_3days'</span>, <span class="string">'all_max_distance_with_guarantee_now_unit_address_sd_3days'</span>, <span class="string">'all_max_distance_with_now_address_max_3days'</span>, <span class="string">'all_max_distance_with_now_address_min_3days'</span>, <span class="string">'all_max_distance_with_now_address_avg_3days'</span>, <span class="string">'all_max_distance_with_now_address_sd_3days'</span>, <span class="string">'all_min_time_between_accon_accoff_avg_3days'</span>, <span class="string">'all_min_time_between_accon_accoff_sd_3days'</span>, <span class="string">'all_overspeed120_time_before_dawn_sd_3days'</span>, <span class="string">'all_overspeed120_time_daytime_sd_3days'</span>, <span class="string">'all_total_time_near_now_unit_address_max_3days'</span>, <span class="string">'all_total_time_near_now_unit_address_min_3days'</span>, <span class="string">'all_total_time_near_now_unit_address_avg_3days'</span>, <span class="string">'all_total_time_near_now_unit_address_sd_3days'</span>, <span class="string">'topone_district_most_per_3days'</span>, <span class="string">'main_unittype_3days'</span>, <span class="string">'is_unittype_changed_3days'</span>]], axis=<span class="number">1</span>)</div><div class="line"><span class="comment"># df04 = df04[(True - (df04['days_samewith_now_address_3days'] == "-0.0507071"))]</span></div><div class="line"><span class="comment"># df04 = df04[df04["is_gps_yx_lost_nighttime_district_3days"] != "-0.0507071"]</span></div><div class="line"><span class="comment"># df04.loc[df04['days_samewith_now_address_3days'] != "-0.0507071"]</span></div><div class="line">print(df04.head)</div><div class="line"><span class="comment"># df04.to_csv('3dtrain_april_yx.csv', index=False)</span></div><div class="line"></div><div class="line"></div><div class="line">df05 = pd.read_csv(<span class="string">'3dpredict_maynew.csv'</span>, header=<span class="number">0</span>)</div><div class="line">print(df05.shape)</div><div class="line">df05 = df05.drop(df05.columns[[<span class="number">0</span>,<span class="number">-2</span>]], axis=<span class="number">1</span>)</div><div class="line">df05 = df05[df05[<span class="string">'main_unittype_3days'</span>] &gt; <span class="number">0</span>]</div><div class="line">print(df05.shape)</div><div class="line">df05.to_csv(<span class="string">'3dpredict_may_yx.csv'</span>, index=<span class="keyword">False</span>)</div></pre></td></tr></table></figure>
-<h1 id="从最佳迭代开始预测"><a href="#从最佳迭代开始预测" class="headerlink" title="从最佳迭代开始预测"></a>从最佳迭代开始预测</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">y_pred = gbm.predict(X_test, num_iteration=gbm.best_iteration)</div></pre></td></tr></table></figure>
-<h1 id="lightgbm算法优化-不平衡二分类问题（附代码）"><a href="#lightgbm算法优化-不平衡二分类问题（附代码）" class="headerlink" title="lightgbm算法优化-不平衡二分类问题（附代码）"></a>lightgbm算法优化-不平衡二分类问题（附代码）</h1><p><a href="https://yq.aliyun.com/articles/529970" target="_blank" rel="noopener">https://yq.aliyun.com/articles/529970</a></p>
-<h1 id="减少打印日志"><a href="#减少打印日志" class="headerlink" title="减少打印日志"></a>减少打印日志</h1><p>设置verbosity</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">params = &#123;</div><div class="line">            &apos;boosting_type&apos;: &apos;gbdt&apos;,</div><div class="line">            &apos;objective&apos;: &apos;binary&apos;,</div><div class="line">            &apos;metric&apos;: &apos;binary_logloss&apos;,</div><div class="line">            &apos;verbosity&apos;: -1,</div><div class="line">        &#125;</div></pre></td></tr></table></figure>
-<h1 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h1><h3 id="进程被killed"><a href="#进程被killed" class="headerlink" title="进程被killed"></a>进程被killed</h3><p>执行到cv时就显示Killed，被python杀死，可能是内存不够了</p>
-<p><a href="https://stackoverflow.com/questions/726690/what-killed-my-process-and-why" target="_blank" rel="noopener">https://stackoverflow.com/questions/726690/what-killed-my-process-and-why</a></p>
-<h1 id="Java调用"><a href="#Java调用" class="headerlink" title="Java调用"></a>Java调用</h1><p><a href="https://blog.csdn.net/luoyexuge/article/details/80087952" target="_blank" rel="noopener">https://blog.csdn.net/luoyexuge/article/details/80087952</a></p>
-<h1 id="处理离散特征"><a href="#处理离散特征" class="headerlink" title="处理离散特征"></a>处理离散特征</h1><p>而Lightgbm可以直接支持category特征的处理，在用pandas结构使用LGB时可以指定哪一列是类别型数据，省去one-hot的步骤。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">data[item] = data[item].astype(&quot;category&quot;).cat.codes +1</div><div class="line"></div><div class="line">train, test, y_train, y_test = train_test_split(data.drop([&quot;ARRIVAL_DELAY&quot;], axis=1), data[&quot;ARRIVAL_DELAY&quot;],</div><div class="line"></div><div class="line">random_state=10, test_size=0.25)</div></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/07/10/hadoop-spark/spark/pyspark笔记/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/07/10/hadoop-spark/spark/pyspark笔记/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-07-10 11:38:12" itemprop="dateCreated datePublished" datetime="2018-07-10T11:38:12+08:00">2018-07-10</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-11-14 18:10:24" itemprop="dateModified" datetime="2018-11-14T18:10:24+08:00">2018-11-14</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/07/10/hadoop-spark/spark/pyspark笔记/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/07/10/hadoop-spark/spark/pyspark笔记/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>操作Dataframe与pandas</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># -*- coding: utf-8 -*-</span></div><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"><span class="keyword">from</span> pyspark.sql <span class="keyword">import</span> SparkSession</div><div class="line"><span class="keyword">from</span> pyspark.sql <span class="keyword">import</span> SQLContext</div><div class="line"><span class="keyword">from</span> pyspark <span class="keyword">import</span> SparkContext</div><div class="line"> </div><div class="line"><span class="comment">#初始化数据</span></div><div class="line"> </div><div class="line"><span class="comment">#初始化pandas DataFrame</span></div><div class="line">df = pd.DataFrame([[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>], [<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]], index=[<span class="string">'row1'</span>, <span class="string">'row2'</span>], columns=[<span class="string">'c1'</span>, <span class="string">'c2'</span>, <span class="string">'c3'</span>])</div><div class="line"> </div><div class="line"><span class="comment">#打印数据</span></div><div class="line"><span class="keyword">print</span> df</div><div class="line"> </div><div class="line"><span class="comment">#初始化spark DataFrame</span></div><div class="line">sc = SparkContext()</div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</div><div class="line">    spark = SparkSession\</div><div class="line">        .builder\</div><div class="line">        .appName(<span class="string">"testDataFrame"</span>)\</div><div class="line">        .getOrCreate()</div><div class="line"> </div><div class="line">sentenceData = spark.createDataFrame([</div><div class="line">    (<span class="number">0.0</span>, <span class="string">"I like Spark"</span>),</div><div class="line">    (<span class="number">1.0</span>, <span class="string">"Pandas is useful"</span>),</div><div class="line">    (<span class="number">2.0</span>, <span class="string">"They are coded by Python "</span>)</div><div class="line">], [<span class="string">"label"</span>, <span class="string">"sentence"</span>])</div><div class="line"> </div><div class="line"><span class="comment">#显示数据</span></div><div class="line">sentenceData.select(<span class="string">"label"</span>).show()</div><div class="line"> </div><div class="line"><span class="comment">#spark.DataFrame 转换成 pandas.DataFrame</span></div><div class="line">sqlContest = SQLContext(sc)</div><div class="line">spark_df = sqlContest.createDataFrame(df)</div><div class="line"> </div><div class="line"><span class="comment">#显示数据</span></div><div class="line">spark_df.select(<span class="string">"c1"</span>).show()</div><div class="line"> </div><div class="line"> </div><div class="line"><span class="comment"># pandas.DataFrame 转换成 spark.DataFrame</span></div><div class="line">pandas_df = sentenceData.toPandas()</div><div class="line"> </div><div class="line"><span class="comment">#打印数据</span></div><div class="line"><span class="keyword">print</span> pandas_df</div></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2251,7 +2274,7 @@ IV=\sum_{i=0}^N IV_i</script><p>IV衡量的是某一个变量的信息量，从�
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">314</span>
+                    <span class="site-state-item-count">316</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2302,7 +2325,9 @@ IV=\sum_{i=0}^N IV_i</script><p>IV衡量的是某一个变量的信息量，从�
                     
                       
                     
-                    <span class="site-state-item-count">17</span>
+                      
+                    
+                    <span class="site-state-item-count">18</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -2653,6 +2678,35 @@ IV=\sum_{i=0}^N IV_i</script><p>IV衡量的是某一个变量的信息量，从�
   
 
   
+  
+
+  
+  
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+  
+
 
   
 

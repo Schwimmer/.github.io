@@ -328,6 +328,350 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/08/29/hadoop-spark/python操作hdfs/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/08/29/hadoop-spark/python操作hdfs/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-29 09:34:48" itemprop="dateCreated datePublished" datetime="2018-08-29T09:34:48+08:00">2018-08-29</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-08-30 17:00:53" itemprop="dateModified" datetime="2018-08-30T17:00:53+08:00">2018-08-30</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/08/29/hadoop-spark/python操作hdfs/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/08/29/hadoop-spark/python操作hdfs/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://www.cnblogs.com/Jims2016/p/8047914.html" target="_blank" rel="noopener">https://www.cnblogs.com/Jims2016/p/8047914.html</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!coding:utf-8</span></div><div class="line"><span class="keyword">import</span> sys </div><div class="line"><span class="keyword">from</span> hdfs.client <span class="keyword">import</span> Client</div><div class="line"></div><div class="line"><span class="comment">#设置utf-8模式</span></div><div class="line">reload(sys)</div><div class="line">sys.setdefaultencoding( <span class="string">"utf-8"</span> )</div><div class="line"></div><div class="line"><span class="comment">#关于python操作hdfs的API可以查看官网:</span></div><div class="line"><span class="comment">#https://hdfscli.readthedocs.io/en/latest/api.html</span></div><div class="line"></div><div class="line">    </div><div class="line"><span class="comment">#读取hdfs文件内容,将每行存入数组返回</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">read_hdfs_file</span><span class="params">(client,filename)</span>:</span></div><div class="line">    <span class="comment">#with client.read('samples.csv', encoding='utf-8', delimiter='\n') as reader:</span></div><div class="line">    <span class="comment">#  for line in reader:</span></div><div class="line">    <span class="comment">#pass</span></div><div class="line">    lines = []</div><div class="line">    <span class="keyword">with</span> client.read(filename, encoding=<span class="string">'utf-8'</span>, delimiter=<span class="string">'\n'</span>) <span class="keyword">as</span> reader:</div><div class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> reader:</div><div class="line">            <span class="comment">#pass</span></div><div class="line">            <span class="comment">#print line.strip()</span></div><div class="line">            lines.append(line.strip())</div><div class="line">    <span class="keyword">return</span> lines</div><div class="line">    </div><div class="line"><span class="comment">#创建目录</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">mkdirs</span><span class="params">(client,hdfs_path)</span> :</span></div><div class="line">    client.makedirs(hdfs_path)</div><div class="line"> </div><div class="line"><span class="comment">#删除hdfs文件</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">delete_hdfs_file</span><span class="params">(client,hdfs_path)</span>:</span></div><div class="line">    client.delete(hdfs_path)</div><div class="line">    </div><div class="line"><span class="comment">#上传文件到hdfs</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">put_to_hdfs</span><span class="params">(client,local_path,hdfs_path)</span>:</span></div><div class="line">    client.upload(hdfs_path, local_path,cleanup=<span class="keyword">True</span>)</div><div class="line">    </div><div class="line"><span class="comment">#从hdfs获取文件到本地</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_from_hdfs</span><span class="params">(client,hdfs_path,local_path)</span>:</span></div><div class="line">    download(hdfs_path, local_path, overwrite=<span class="keyword">False</span>)</div><div class="line"></div><div class="line"><span class="comment">#追加数据到hdfs文件    </span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">append_to_hdfs</span><span class="params">(client,hdfs_path,data)</span>:</span></div><div class="line">    client.write(hdfs_path, data,overwrite=<span class="keyword">False</span>,append=<span class="keyword">True</span>)</div><div class="line">    </div><div class="line"><span class="comment">#覆盖数据写到hdfs文件</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">write_to_hdfs</span><span class="params">(client,hdfs_path,data)</span>:</span></div><div class="line">    client.write(hdfs_path, data,overwrite=<span class="keyword">True</span>,append=<span class="keyword">False</span>)</div><div class="line">  </div><div class="line"><span class="comment">#移动或者修改文件  </span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">move_or_rename</span><span class="params">(client,hdfs_src_path, hdfs_dst_path)</span>:</span></div><div class="line">    client.rename(hdfs_src_path, hdfs_dst_path)</div><div class="line">   </div><div class="line"><span class="comment">#返回目录下的文件</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">list</span><span class="params">(client,hdfs_path)</span>:</span></div><div class="line">    <span class="keyword">return</span> client.list(hdfs_path, status=<span class="keyword">False</span>)</div><div class="line"> </div><div class="line"><span class="comment">#client = Client(url, root=None, proxy=None, timeout=None, session=None) </span></div><div class="line"><span class="comment">#client = Client("http://hadoop:50070")</span></div><div class="line">   </div><div class="line"><span class="comment">#move_or_rename(client,'/input/2.csv', '/input/emp.csv')</span></div><div class="line"><span class="comment">#read_hdfs_file(client,'/input/emp.csv')</span></div><div class="line"><span class="comment">#put_to_hdfs(client,'/home/shutong/hdfs/1.csv','/input/')</span></div><div class="line"><span class="comment">#append_to_hdfs(client,'/input/emp.csv','我爱你'+'\n')</span></div><div class="line"><span class="comment">#write_to_hdfs(client,'/input/emp.csv','我爱你'+'\n')</span></div><div class="line"><span class="comment">#read_hdfs_file(client,'/input/emp.csv')</span></div><div class="line"><span class="comment">#move_or_rename(client,'/input/emp.csv', '/input/2.csv')</span></div><div class="line"><span class="comment">#mkdirs(client,'/input/python')</span></div><div class="line"><span class="comment">#print list(client,'/input/')</span></div><div class="line"><span class="comment">#chown(client,'/input/1.csv', 'root')</span></div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># 若路径已存在，则删除再创建</div><div class="line">is_path_exist = client.status(hdfs_path=hdfs_path,strict=False)</div><div class="line">if is_path_exist != None:</div><div class="line">    delete_hdfs_file(client, hdfs_path)</div><div class="line">mkdirs(client, hdfs_path)</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/08/27/工具和环境/excel技巧/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/08/27/工具和环境/excel技巧/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-27 14:50:45" itemprop="dateCreated datePublished" datetime="2018-08-27T14:50:45+08:00">2018-08-27</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-09-29 11:22:07" itemprop="dateModified" datetime="2018-09-29T11:22:07+08:00">2018-09-29</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/08/27/工具和环境/excel技巧/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/08/27/工具和环境/excel技巧/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="使用Excel求两列的交集"><a href="#使用Excel求两列的交集" class="headerlink" title="使用Excel求两列的交集"></a>使用Excel求两列的交集</h1><p><a href="https://jingyan.baidu.com/article/c1a3101ea6c0afde656debca.html" target="_blank" rel="noopener">https://jingyan.baidu.com/article/c1a3101ea6c0afde656debca.html</a></p>
+<p>第一步，选择一个空的单元格。图中的A、B列是原始数据列，C列是选择的单元格列，又来存储结果。我们利用公式“=IF(COUNTIF(B:B,A2)&gt;0,A2,0)”来求交集，即查找“A2”在B列里面有吗？如果有，则把C列的单元格设置为A2的值，如果不是则设为0（0是可以选择的）。</p>
+<p>第二步，扩展单元格。当我们在C2里面设置好公式之后，把鼠标放在C2单元格右下角，回出现一个“+”符号，然后按住鼠标下拉，会把同样的公式应用到C列。可以快速的求A、B列的交集。如果数据记录太多，用鼠标不方便，可以在出现“+”符号的地方双击左键回自动应用。</p>
+<p>第三步，筛选。当我们做好上面的处理之后，C列会有0和非0两个值（如果交集结果有0，那就再选一个数字作为处理结果）。我们选择C1单元格，然后点击筛选。然后C1会变成筛选项。</p>
+<p>第四步，设置筛选条件。我们点击C1的下拉栏，设置筛选条件。由于不好截图，只能文字描述下了。点击下拉栏，会出现条件选项，如果不符合你的要求，就选择自定义，如图所示。</p>
+<p>如果检验B1在A列中是否存在：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">=IF(COUNTIF(A:A,B1)&gt;0,B1,0)</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/08/24/机器学习/综合性讲解/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1671,420 +2015,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/08/12/机器学习/特征工程/特征分析/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/08/12/机器学习/特征工程/特征分析/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-08-12 22:59:18" itemprop="dateCreated datePublished" datetime="2018-08-12T22:59:18+08:00">2018-08-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-09-12 12:59:14" itemprop="dateModified" datetime="2018-09-12T12:59:14+08:00">2018-09-12</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/08/12/机器学习/特征工程/特征分析/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/08/12/机器学习/特征工程/特征分析/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>如何构造出对模型有帮助的特征？</p>
-<p>如何判断特征取值的不同角度对模型有没有作用？</p>
-<p>如何看特征之间相互有没有影响？</p>
-<p>如何看对模型最重要的特征？</p>
-<h1 id="特征工程思维图"><a href="#特征工程思维图" class="headerlink" title="特征工程思维图"></a>特征工程思维图</h1><p>!(/Users/david/david/00projects/00markdown/项目文档/pic/特征工程思维图.jpg)</p>
-<h1 id="风控模型的常规思路"><a href="#风控模型的常规思路" class="headerlink" title="风控模型的常规思路"></a>风控模型的常规思路</h1><p><img src="/2018/08/12/机器学习/特征工程/特征分析/Users/david/david/myblog/source/_posts/pic/风控模型的常规思路.jpeg" alt=""></p>
-<h1 id="特征选择工具"><a href="#特征选择工具" class="headerlink" title="特征选择工具"></a>特征选择工具</h1><h1 id="WillKoehrsen-feature-selector"><a href="#WillKoehrsen-feature-selector" class="headerlink" title="WillKoehrsen/feature-selector"></a><a href="https://github.com/WillKoehrsen" target="_blank" rel="noopener">WillKoehrsen</a>/<strong>feature-selector</strong></h1><p><a href="https://github.com/WillKoehrsen/feature-selector" target="_blank" rel="noopener">https://github.com/WillKoehrsen/feature-selector</a></p>
-<h1 id="看分布"><a href="#看分布" class="headerlink" title="看分布"></a>看分布</h1><p>某个特征的正负样本数值分布比较均匀，不算好特征；若不均匀，可以使用</p>
-<p>或者若越高/越低会影响逾期与否，也是好特征。</p>
-<h1 id="GBDT筛选"><a href="#GBDT筛选" class="headerlink" title="GBDT筛选"></a>GBDT筛选</h1><p>扔进去gbdt看一波重要性分析，然后分析一下皮尔森系数，淘汰一下不重要的特征和相关程度高的特征</p>
-<h1 id="越细粒度的特征越重要"><a href="#越细粒度的特征越重要" class="headerlink" title="越细粒度的特征越重要"></a>越细粒度的特征越重要</h1><p>特征组合就是将特征粒度变细。比如aid只有173维，age有3维，特征组合之后变成了173*3，这个时候粒度就变细了。粒度越细，越容易定位到某一个单独的用户。</p>
-<h2 id="类别特征与数值特征的组合"><a href="#类别特征与数值特征的组合" class="headerlink" title="类别特征与数值特征的组合"></a>类别特征与数值特征的组合</h2><p>用N1和N2表示数值特征，用C1和C2表示类别特征，利用pandas的groupby操作，可以创造出以下几种有意义的新特征：（其中，C2还可以是离散化了的N1）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">median(N1)_by(C1)  \\ 中位数</div><div class="line">mean(N1)_by(C1)  \\ 算术平均数</div><div class="line">mode(N1)_by(C1)  \\ 众数</div><div class="line">min(N1)_by(C1)  \\ 最小值</div><div class="line">max(N1)_by(C1)  \\ 最大值</div><div class="line">std(N1)_by(C1)  \\ 标准差</div><div class="line">var(N1)_by(C1)  \\ 方差</div><div class="line">freq(C2)_by(C1)  \\ 频数</div><div class="line"></div><div class="line">freq(C1) \\这个不需要groupby也有意义</div></pre></td></tr></table></figure>
-<p>仅仅将已有的类别和数值特征进行以上的有效组合，就能够<strong>大量增加优秀的可用特征</strong>。</p>
-<p>将这种方法和线性组合等基础特征工程方法结合（仅用于决策树），可以得到更多有意义的特征，如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">N1 - median(N1)_by(C1)</div><div class="line">N1 - mean(N1)_by(C1)</div></pre></td></tr></table></figure>
-<h2 id="用基因编程创造新特征"><a href="#用基因编程创造新特征" class="headerlink" title="用基因编程创造新特征"></a>用基因编程创造新特征</h2><p><a href="https://link.zhihu.com/?target=http%3A//gplearn.readthedocs.io/en/stable/index.html" target="_blank" rel="noopener">Welcome to gplearn’s documentation!</a></p>
-<p>基于genetic programming的symbolic regression，具体的原理和实现参见文档。目前，python环境下最好用的基因编程库为gplearn。基因编程的两大用法：</p>
-<ul>
-<li>转换（transformation）：把已有的特征进行组合转换，组合的方式（一元、二元、多元算子）可以由用户自行定义，也可以使用库中自带的函数（如加减乘除、min、max、三角函数、指数、对数）。组合的目的，是创造出和目标y值最“相关”的新特征。这种相关程度可以用spearman或者pearson的相关系数进行测量。spearman多用于决策树（免疫单特征单调变换），pearson多用于线性回归等其他算法。</li>
-<li>回归（regression）：原理同上，只不过直接用于回归而已。</li>
-</ul>
-<h1 id="用决策树创造新特征"><a href="#用决策树创造新特征" class="headerlink" title="用决策树创造新特征"></a>用决策树创造新特征</h1><p>在决策树系列的算法中（单棵决策树、gbdt、随机森林），每一个样本都会被映射到决策树的一片叶子上。因此，我们可以把样本经过每一棵决策树映射后的index（自然数）或one-hot-vector（哑编码得到的稀疏矢量）作为一项新的特征，加入到模型中。</p>
-<p>具体实现：apply()以及decision_path()方法，在scikit-learn和xgboost里都可以用。</p>
-<h1 id="决策树、基于决策树的ensemble"><a href="#决策树、基于决策树的ensemble" class="headerlink" title="决策树、基于决策树的ensemble"></a>决策树、基于决策树的ensemble</h1><ul>
-<li>spearman correlation coefficient</li>
-</ul>
-<h1 id="线性模型、SVM、神经网络"><a href="#线性模型、SVM、神经网络" class="headerlink" title="线性模型、SVM、神经网络"></a>线性模型、SVM、神经网络</h1><ul>
-<li>对数（log）</li>
-<li>pearson correlation coefficient</li>
-</ul>
-<h1 id="数据泄露（Data-Leakage）"><a href="#数据泄露（Data-Leakage）" class="headerlink" title="数据泄露（Data Leakage）"></a>数据泄露（Data Leakage）</h1><p>在数据挖掘中，<strong>数据泄露</strong>（<strong>leakage</strong>）指的是：本来不应该出现在X里的、和目标y有关的数据，出现在了X中。如此一来，机器学习算法就会有好到不真实的表现。</p>
-<p>Kaggle Wiki链接：<a href="https://link.zhihu.com/?target=https%3A//www.kaggle.com/wiki/Leakage" target="_blank" rel="noopener">Leakage | Kaggle</a></p>
-<p><strong>6.1. 数据泄露的种类以及影响分析</strong></p>
-<ul>
-<li><strong>测试集数据被泄露到训练集</strong>：过拟合，模型在现实中的表现远不如test accuracy；测试集失去意义。</li>
-<li><strong>正确的预测（y）被泄露到测试集</strong>：严重过拟合，训练出的模型毫无用处，比赛组织者的极大失败</li>
-<li><strong>未来的信息被泄露到过去</strong>：时间序列相关，现实中模型将无法有效根据过去情况预测未来。</li>
-<li><strong>模型可以获得一些不该获得的信息</strong>，比如和目标变量有较大关系的变量、现实里接触不到的变量。例子：y是“病人是否患有癌症”，但是X包括了“病人是否接受肿瘤切除手术”。</li>
-<li><strong>反向工程，去匿名化</strong>，去除数据集中的随机打乱操作，社会工程学。这种行为是数据比赛明令禁止的，而且在现实中也涉嫌侵犯隐私。例子：反向工程“随机的”用户编码，得出用户的真名。</li>
-<li><strong>第三方信息</strong>。例子：已知坐标，利用geocoder类型的服务推出所在城市；在预测金融市场时加入第三方的政策新闻的特征。</li>
-</ul>
-<p><strong>6.2. 有效发现和利用数据泄露</strong></p>
-<p>数据泄露可以分为两大类：</p>
-<ol>
-<li>由于自己的疏忽，在交叉验证、训练过程中，产生的数据泄露。这种情况属于失误，应当尽量避免。</li>
-<li>在数据竞赛中，找到了理论上不能使用（但是也没有明令禁止）的额外数据，从而提升分数。</li>
-</ol>
-<p>避免第一种数据泄露的方法，可以参考kaggle的各类比赛。假设有大量数据，我们可以把未处理的数据分为<strong>训练集</strong>和<strong>测试集</strong>，其中，测试集包括Public LB和Private LB两部分。</p>
-<ul>
-<li>在模型的训练、选择和交叉验证时，我们只能接触训练集。</li>
-<li>在对自己的模型非常自信时，可以偶尔在Public LB上验证。</li>
-<li>只有模型即将被用于正式商业用途时，才能看模型在Private LB上的表现。</li>
-</ul>
-<p>交叉验证误差、public LB误差、private LB误差：如果后者的误差值<strong>显著高于</strong>前者，那么需要考虑过拟合或第一类数据泄露。</p>
-<p>第二类的数据泄露，属于旁门左道。本质上，这相当于在模型训练阶段，干了数据收集阶段的工作。搜集原始数据，或是自己提供数据举办竞赛（试图避免他人利用数据泄露）时，可以参考这种思路。</p>
-<ul>
-<li>文件夹的创造时间。</li>
-<li>看似乱码的字符串（如各类id）可能有统计分布的规律。</li>
-<li>地理位置信息：如果提供了坐标，则可反向地理编码，得出相关地理信息。</li>
-</ul>
-<p>这类数据可能会导致过拟合。</p>
-<h1 id="特征选择利器-Boruta"><a href="#特征选择利器-Boruta" class="headerlink" title="特征选择利器: Boruta"></a>特征选择利器: Boruta</h1><p><a href="https://zhuanlan.zhihu.com/p/33730850" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/33730850</a></p>
-<h1 id="大规模特征构建实践总结"><a href="#大规模特征构建实践总结" class="headerlink" title="大规模特征构建实践总结"></a>大规模特征构建实践总结</h1><p><a href="https://zhuanlan.zhihu.com/p/37547126" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/37547126</a></p>
-<h1 id="利用-gplearn-进行特征工程"><a href="#利用-gplearn-进行特征工程" class="headerlink" title="利用 gplearn 进行特征工程"></a>利用 gplearn 进行特征工程</h1><p><a href="https://zhuanlan.zhihu.com/p/39377036" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/39377036</a></p>
-<h1 id="米筐科技（RiceQuant）策略研究报告：特征选择方法探析—沪深300指数的集成特征选择和聚类分析"><a href="#米筐科技（RiceQuant）策略研究报告：特征选择方法探析—沪深300指数的集成特征选择和聚类分析" class="headerlink" title="米筐科技（RiceQuant）策略研究报告：特征选择方法探析—沪深300指数的集成特征选择和聚类分析"></a>米筐科技（RiceQuant）策略研究报告：特征选择方法探析—沪深300指数的集成特征选择和聚类分析</h1><p><a href="https://zhuanlan.zhihu.com/p/21406355" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/21406355</a></p>
-<h1 id="探索性数据分析套路解读"><a href="#探索性数据分析套路解读" class="headerlink" title="探索性数据分析套路解读"></a>探索性数据分析套路解读</h1><p><a href="https://zhuanlan.zhihu.com/p/29364225" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/29364225</a></p>
-<h1 id="《探索性数据分析》翻译"><a href="#《探索性数据分析》翻译" class="headerlink" title="《探索性数据分析》翻译"></a>《探索性数据分析》翻译</h1><p><a href="https://zhuanlan.zhihu.com/p/26928750" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/26928750</a></p>
-<p>参考</p>
-<p><a href="https://zhuanlan.zhihu.com/p/38341881" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/38341881</a></p>
-<p><a href="https://zhuanlan.zhihu.com/p/26444240" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/26444240</a></p>
-<h1 id="最小冗余最大关联特征选择"><a href="#最小冗余最大关联特征选择" class="headerlink" title="最小冗余最大关联特征选择"></a>最小冗余最大关联特征选择</h1><p><a href="https://medium.com/ai%C2%B3-theory-practice-business/three-effective-feature-selection-strategies-e1f86f331fb1" target="_blank" rel="noopener">https://medium.com/ai%C2%B3-theory-practice-business/three-effective-feature-selection-strategies-e1f86f331fb1</a></p>
-<p>将所有的想法整合起来就能得出我们的算法，即 mRMR 特征选择。算法背后的考虑是，同时最小化特征的冗余并最大化特征的关联。因此，我们需要计算冗余和关联的方程：</p>
-<p><img src="/2018/08/12/机器学习/特征工程/特征分析/var/folders/hc/vtcjc69d3bq5ckqpfvbsxkc00000gn/T/abnerworks.Typora/image-20180912113608177.png" alt="image-20180912113608177"></p>
-<p><img src="https://cdn-images-1.medium.com/max/1600/1*gNYHYZX-4GTybD5fuHc8Sg.png" alt=""></p>
-<h2 id="基于单特征因子的隐马尔科夫模型在商品期货上的应用"><a href="#基于单特征因子的隐马尔科夫模型在商品期货上的应用" class="headerlink" title="基于单特征因子的隐马尔科夫模型在商品期货上的应用"></a>基于单特征因子的隐马尔科夫模型在商品期货上的应用</h2><p><a href="https://mp.weixin.qq.com/s?src=3&amp;timestamp=1536718793&amp;ver=1&amp;signature=mXrKo-NTo9B7kWkxdnmtU8hyNP*zcC2eakm1gbJYZAFhWCAVxzu9gWE4uC7CS1gyevwV-VXNzQ3HrnRFDipJwdBMuaWGrXS7tRzVqk1BHcCL1H7tgymi8rDrNLUDG8XBLz2azHMykg4Ncczyo4XxPh*pmRpSXTFeUBYH56Pyvtw=" target="_blank" rel="noopener">https://mp.weixin.qq.com/s?src=3&amp;timestamp=1536718793&amp;ver=1&amp;signature=mXrKo-NTo9B7kWkxdnmtU8hyNP*zcC2eakm1gbJYZAFhWCAVxzu9gWE4uC7CS1gyevwV-VXNzQ3HrnRFDipJwdBMuaWGrXS7tRzVqk1BHcCL1H7tgymi8rDrNLUDG8XBLz2azHMykg4Ncczyo4XxPh*pmRpSXTFeUBYH56Pyvtw=</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/08/08/hadoop-spark/spark/dataframe操作/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/08/08/hadoop-spark/spark/dataframe操作/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-08-08 10:17:30" itemprop="dateCreated datePublished" datetime="2018-08-08T10:17:30+08:00">2018-08-08</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-03-07 11:52:03" itemprop="dateModified" datetime="2019-03-07T11:52:03+08:00">2019-03-07</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/08/08/hadoop-spark/spark/dataframe操作/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/08/08/hadoop-spark/spark/dataframe操作/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Row转map"><a href="#Row转map" class="headerlink" title="Row转map"></a>Row转map</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">val df = Seq((1, 2.0, &quot;a&quot;)).toDF(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;)    </div><div class="line">val row = df.first</div><div class="line"></div><div class="line">row.getValuesMap[Any](row.schema.fieldNames)</div><div class="line">// res19: Map[String,Any] = Map(A -&gt; 1, B -&gt; 2.0, C -&gt; a)</div></pre></td></tr></table></figure>
-<p>这样就可以遍历row的每一列和取值了</p>
-<h1 id="创建DF"><a href="#创建DF" class="headerlink" title="创建DF"></a>创建DF</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">val df = hiveContext.createDataFrame(Seq(</div><div class="line">      (0.0762357,3.5,1.4,0.2,1.0),</div><div class="line">      (0.226728,3.0,1.4,0.2,1.0),</div><div class="line">      (4.7,3.2,1.3,0.2,1.0),</div><div class="line">      (4.6,3.1,1.5,0.2,1.0),</div><div class="line">      (5.0,3.6,1.4,0.2,1.0),</div><div class="line">      (5.4,3.9,1.7,0.4,1.0),</div><div class="line">      (4.6,3.4,1.4,0.3,1.0),</div><div class="line">      (5.0,3.4,1.5,0.2,1.0),</div><div class="line">      (4.4,2.9,1.4,0.2,1.0),</div><div class="line">      (4.9,3.1,1.5,0.1,1.0),</div><div class="line">      (5.4,3.7,1.5,0.2,1.0),</div><div class="line">      (4.8,3.4,1.6,0.2,1.0),</div><div class="line">      (4.8,3.0,1.4,0.1,1.0),</div><div class="line">      (4.3,3.0,1.1,0.1,1.0)</div><div class="line">    )).toDF(&quot;mobile_city_code&quot;, &quot;feature2&quot;, &quot;feature3&quot;, &quot;feature4&quot;, &quot;label&quot;)</div></pre></td></tr></table></figure>
-<h1 id="读取csv文件为df"><a href="#读取csv文件为df" class="headerlink" title="读取csv文件为df"></a>读取csv文件为df</h1><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//读取csv，由于HUE下载的数据表头带有表名，需要去掉。例如stg_d001_t_jxl_behavior.call_cnt --&gt;&gt; call_cnt</span></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">readCsv</span></span>(sc:<span class="type">SparkContext</span>, csvPath:<span class="type">String</span>)=&#123;</div><div class="line">    <span class="keyword">val</span> sqlContext = <span class="keyword">new</span> <span class="type">SQLContext</span>(sc)</div><div class="line">    <span class="keyword">var</span> dataset = sqlContext.read.format(<span class="string">"com.databricks.spark.csv"</span>)</div><div class="line">      .option(<span class="string">"header"</span>,<span class="string">"true"</span>) <span class="comment">//这里如果在csv第一行有属性的话，没有就是"false"</span></div><div class="line">      <span class="comment">//.option("inferSchema",true.toString)//这是自动推断属性列的数据类型。不要打开</span></div><div class="line">      .load(csvPath)<span class="comment">//文件的路径</span></div><div class="line">    dataset</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2131,7 +2061,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">314</span>
+                    <span class="site-state-item-count">316</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2182,7 +2112,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">17</span>
+                      
+                    
+                    <span class="site-state-item-count">18</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -2533,6 +2465,35 @@
   
 
   
+  
+
+  
+  
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+  
+
 
   
 

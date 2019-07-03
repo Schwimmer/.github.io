@@ -328,6 +328,397 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/07/10/机器学习/lightGBM/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/07/10/机器学习/lightGBM/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-07-10 11:51:05" itemprop="dateCreated datePublished" datetime="2018-07-10T11:51:05+08:00">2018-07-10</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-09-14 12:59:15" itemprop="dateModified" datetime="2018-09-14T12:59:15+08:00">2018-09-14</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/07/10/机器学习/lightGBM/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/07/10/机器学习/lightGBM/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>LightGBM 中文文档: <a href="http://lightgbm.apachecn.org/cn/latest/" target="_blank" rel="noopener">http://lightgbm.apachecn.org/cn/latest/</a></p>
+<p> LightGBM 英文文档: <a href="http://lightgbm.apachecn.org/en/latest/" target="_blank" rel="noopener">http://lightgbm.apachecn.org/en/latest/</a></p>
+<p>LightGBM 官方文档: <a href="https://lightgbm.readthedocs.io/en/latest/" target="_blank" rel="noopener">https://lightgbm.readthedocs.io/en/latest/</a></p>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>LightGBM 依赖于 <strong>OpenMP</strong> 进行编译, 然而 Apple Clang 不支持它.</p>
+<p>请使用以下命令来安装 <strong>gcc/g++</strong> :</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">brew install cmake</div><div class="line">brew install gcc --without-multilib</div></pre></td></tr></table></figure>
+<p>然后安装 LightGBM:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">git clone --recursive https://github.com/Microsoft/LightGBM ; cd LightGBM</div><div class="line">export CXX=g++-8 CC=gcc-8</div><div class="line">mkdir build ; cd build</div><div class="line">cmake ..</div><div class="line">make -j4</div></pre></td></tr></table></figure>
+<blockquote>
+<p><code>cmake ..</code> 这一步之后报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&gt; CMake Error at /usr/local/Cellar/cmake/3.11.4/share/cmake/Modules/CMakeDetermineCCompiler.cmake:48 (message):</div><div class="line">&gt;   Could not find compiler set in environment variable CC:</div><div class="line">&gt; </div><div class="line">&gt;   gcc-7.</div><div class="line">&gt; Call Stack (most recent call first):</div><div class="line">&gt;   CMakeLists.txt:9 (PROJECT)</div><div class="line">&gt; </div><div class="line">&gt; </div><div class="line">&gt; CMake Error: CMAKE_C_COMPILER not set, after EnableLanguage</div><div class="line">&gt; CMake Error: CMAKE_CXX_COMPILER not set, after EnableLanguage</div><div class="line">&gt; -- Configuring incomplete, errors occurred!</div><div class="line">&gt; See also &quot;/Users/david/david/git/LightGBM/build/CMakeFiles/CMakeOutput.log&quot;.</div><div class="line">&gt;</div></pre></td></tr></table></figure>
+</blockquote>
+<p>&gt;</p>
+<blockquote>
+<p><a href="https://github.com/Microsoft/LightGBM/issues/118官方的解答并不适用，看了下发现gcc的版本已经自动装到8了，所以将export这里改成了" target="_blank" rel="noopener">https://github.com/Microsoft/LightGBM/issues/118官方的解答并不适用，看了下发现gcc的版本已经自动装到8了，所以将export这里改成了</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; export CXX=g++-8 CC=gcc-8</div><div class="line">&gt;</div></pre></td></tr></table></figure>
+</blockquote>
+<p>&gt;</p>
+<blockquote>
+<p>然后通过</p>
+</blockquote>
+<p>或者直接用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip install lightgbm</div></pre></td></tr></table></figure>
+<p>安装</p>
+<h2 id="训练数据格式"><a href="#训练数据格式" class="headerlink" title="训练数据格式"></a>训练数据格式</h2><p>LightGBM 支持 <a href="https://en.wikipedia.org/wiki/Comma-separated_values" target="_blank" rel="noopener">CSV</a>, <a href="https://en.wikipedia.org/wiki/Tab-separated_values" target="_blank" rel="noopener">TSV</a> 和 <a href="https://www.csie.ntu.edu.tw/~cjlin/libsvm/" target="_blank" rel="noopener">LibSVM</a> 格式的输入数据文件。</p>
+<p>Label 是第一列的数据，文件中是不包含 header（标题） 的。</p>
+<p>LightGBM 可以直接使用 categorical feature（类别特征）（不需要单独编码）。 <a href="http://stat-computing.org/dataexpo/2009/" target="_blank" rel="noopener">Expo data</a> 实验显示，与 one-hot 编码相比，其速度提高了 8 倍。</p>
+<h3 id="权重和-Query-Group-数据"><a href="#权重和-Query-Group-数据" class="headerlink" title="权重和 Query/Group 数据"></a>权重和 Query/Group 数据</h3><p>LightGBM 也支持加权训练，它需要一个额外的 <a href="http://lightgbm.apachecn.org/cn/latest/Parameters.html#io-parameters" target="_blank" rel="noopener">加权数据</a> 。 它需要额外的 <a href="http://lightgbm.apachecn.org/cn/latest/Parameters.html#io-parameters" target="_blank" rel="noopener">query 数据</a> 用于排名任务。</p>
+<p>11/3/2016 更新:</p>
+<ol>
+<li>现在支持 header（标题）输入</li>
+<li>可以指定 label 列，权重列和 query/group id 列。 索引和列都支持</li>
+<li>可以指定一个被忽略的列的列表</li>
+</ol>
+<h2 id="参数快速查看"><a href="#参数快速查看" class="headerlink" title="参数快速查看"></a>参数快速查看</h2><p>参数格式是 <code>key1=value1 key2=value2 ...</code> 。 参数可以在配置文件和命令行中。</p>
+<p>想要了解全部的参数， 请参阅 <a href="http://lightgbm.apachecn.org/cn/latest/Parameters.html" target="_blank" rel="noopener">Parameters（参数）</a>.</p>
+<h2 id="运行-LightGBM"><a href="#运行-LightGBM" class="headerlink" title="运行 LightGBM"></a>运行 LightGBM</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./lightgbm config=your_config_file other_args ...</div></pre></td></tr></table></figure>
+<p><a href="https://blog.csdn.net/m0_37477175/article/details/80567010" target="_blank" rel="noopener">使用lightgbm画并保存Feature Importance</a></p>
+<p><a href="https://blog.csdn.net/m0_37922734/article/details/80677736" target="_blank" rel="noopener">【lightgbm 使用经验总结教训】</a></p>
+<h1 id=""><a href="#" class="headerlink" title=" "></a> </h1><p><a href="https://cloud.tencent.com/info/user/necther" target="_blank" rel="noopener">对xgboost和lightgbm的理解及其调参应该关注的点</a></p>
+<h1 id="调参"><a href="#调参" class="headerlink" title="调参"></a>调参</h1><h2 id="官方文档的调参"><a href="#官方文档的调参" class="headerlink" title="官方文档的调参"></a>官方文档的调参</h2><p><a href="http://lightgbm.apachecn.org/cn/latest/Parameters-Tuning.html" target="_blank" rel="noopener">http://lightgbm.apachecn.org/cn/latest/Parameters-Tuning.html</a></p>
+<h3 id="针对-Leaf-wise-最佳优先-树的参数优化"><a href="#针对-Leaf-wise-最佳优先-树的参数优化" class="headerlink" title="针对 Leaf-wise (最佳优先) 树的参数优化"></a>针对 Leaf-wise (最佳优先) 树的参数优化</h3><p><code>num_leaves</code>. 这是控制树模型复杂度的主要参数</p>
+<h2 id="CV调参"><a href="#CV调参" class="headerlink" title="CV调参"></a>CV调参</h2><p><a href="https://github.com/wanglei5205/Machine_learning/blob/master/Boosting--LightGBM/lgb-python/2.lightgbm%E8%B0%83%E5%8F%82%E6%A1%88%E4%BE%8B.py" target="_blank" rel="noopener">https://github.com/wanglei5205/Machine_learning/blob/master/Boosting--LightGBM/lgb-python/2.lightgbm%E8%B0%83%E5%8F%82%E6%A1%88%E4%BE%8B.py</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># -*- coding: utf-8 -*-</span></div><div class="line"><span class="string">"""</span></div><div class="line"># 作者：wanglei5205</div><div class="line"># 邮箱：wanglei5205@126.com</div><div class="line"># 博客：http://cnblogs.com/wanglei5205</div><div class="line"># github：http://github.com/wanglei5205</div><div class="line">"""</div><div class="line"><span class="comment">### 导入模块</span></div><div class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"><span class="keyword">import</span> lightgbm <span class="keyword">as</span> lgb</div><div class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> metrics</div><div class="line"></div><div class="line"><span class="comment">### 载入数据</span></div><div class="line">print(<span class="string">'载入数据'</span>)</div><div class="line">dataset1 = pd.read_csv(<span class="string">'G:/ML/ML_match/IJCAI/data3.22/3.22ICJAI/data/7_train_data1.csv'</span>)</div><div class="line">dataset2 = pd.read_csv(<span class="string">'G:/ML/ML_match/IJCAI/data3.22/3.22ICJAI/data/7_train_data2.csv'</span>)</div><div class="line">dataset3 = pd.read_csv(<span class="string">'G:/ML/ML_match/IJCAI/data3.22/3.22ICJAI/data/7_train_data3.csv'</span>)</div><div class="line">dataset4 = pd.read_csv(<span class="string">'G:/ML/ML_match/IJCAI/data3.22/3.22ICJAI/data/7_train_data4.csv'</span>)</div><div class="line">dataset5 = pd.read_csv(<span class="string">'G:/ML/ML_match/IJCAI/data3.22/3.22ICJAI/data/7_train_data5.csv'</span>)</div><div class="line"></div><div class="line">print(<span class="string">'数据去重'</span>)</div><div class="line">dataset1.drop_duplicates(inplace=<span class="keyword">True</span>)</div><div class="line">dataset2.drop_duplicates(inplace=<span class="keyword">True</span>)</div><div class="line">dataset3.drop_duplicates(inplace=<span class="keyword">True</span>)</div><div class="line">dataset4.drop_duplicates(inplace=<span class="keyword">True</span>)</div><div class="line">dataset5.drop_duplicates(inplace=<span class="keyword">True</span>)</div><div class="line"></div><div class="line">print(<span class="string">'数据合并'</span>)</div><div class="line">trains = pd.concat([dataset1,dataset2],axis=<span class="number">0</span>)</div><div class="line">trains = pd.concat([trains,dataset3],axis=<span class="number">0</span>)</div><div class="line">trains = pd.concat([trains,dataset4],axis=<span class="number">0</span>)</div><div class="line"></div><div class="line">online_test = dataset5</div><div class="line"></div><div class="line"><span class="comment">### 数据拆分(训练集+验证集+测试集)</span></div><div class="line">print(<span class="string">'数据拆分'</span>)</div><div class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</div><div class="line">train_xy,offline_test = train_test_split(trains,test_size = <span class="number">0.2</span>,random_state=<span class="number">21</span>)</div><div class="line">train,val = train_test_split(train_xy,test_size = <span class="number">0.2</span>,random_state=<span class="number">21</span>)</div><div class="line"></div><div class="line"><span class="comment"># 训练集</span></div><div class="line">y_train = train.is_trade                                               <span class="comment"># 训练集标签</span></div><div class="line">X_train = train.drop([<span class="string">'instance_id'</span>,<span class="string">'is_trade'</span>],axis=<span class="number">1</span>)                <span class="comment"># 训练集特征矩阵</span></div><div class="line"></div><div class="line"><span class="comment"># 验证集</span></div><div class="line">y_val = val.is_trade                                                   <span class="comment"># 验证集标签</span></div><div class="line">X_val = val.drop([<span class="string">'instance_id'</span>,<span class="string">'is_trade'</span>],axis=<span class="number">1</span>)                    <span class="comment"># 验证集特征矩阵</span></div><div class="line"></div><div class="line"><span class="comment"># 测试集</span></div><div class="line">offline_test_X = offline_test.drop([<span class="string">'instance_id'</span>,<span class="string">'is_trade'</span>],axis=<span class="number">1</span>)  <span class="comment"># 线下测试特征矩阵</span></div><div class="line">online_test_X  = online_test.drop([<span class="string">'instance_id'</span>],axis=<span class="number">1</span>)              <span class="comment"># 线上测试特征矩阵</span></div><div class="line"></div><div class="line"><span class="comment">### 数据转换</span></div><div class="line">print(<span class="string">'数据转换'</span>)</div><div class="line">lgb_train = lgb.Dataset(X_train, y_train, free_raw_data=<span class="keyword">False</span>)</div><div class="line">lgb_eval = lgb.Dataset(X_val, y_val, reference=lgb_train,free_raw_data=<span class="keyword">False</span>)</div><div class="line"></div><div class="line"><span class="comment">### 设置初始参数--不含交叉验证参数</span></div><div class="line">print(<span class="string">'设置参数'</span>)</div><div class="line">params = &#123;</div><div class="line">          <span class="string">'boosting_type'</span>: <span class="string">'gbdt'</span>,</div><div class="line">          <span class="string">'objective'</span>: <span class="string">'binary'</span>,</div><div class="line">          <span class="string">'metric'</span>: <span class="string">'binary_logloss'</span>,</div><div class="line">          &#125;</div><div class="line"></div><div class="line"><span class="comment">### 交叉验证(调参)</span></div><div class="line">print(<span class="string">'交叉验证'</span>)</div><div class="line">min_merror = float(<span class="string">'Inf'</span>)</div><div class="line">best_params = &#123;&#125;</div><div class="line"></div><div class="line"><span class="comment"># 准确率</span></div><div class="line">print(<span class="string">"调参1：提高准确率"</span>)</div><div class="line"><span class="keyword">for</span> num_leaves <span class="keyword">in</span> range(<span class="number">20</span>,<span class="number">200</span>,<span class="number">5</span>):</div><div class="line">    <span class="keyword">for</span> max_depth <span class="keyword">in</span> range(<span class="number">3</span>,<span class="number">8</span>,<span class="number">1</span>):</div><div class="line">        params[<span class="string">'num_leaves'</span>] = num_leaves</div><div class="line">        params[<span class="string">'max_depth'</span>] = max_depth</div><div class="line"></div><div class="line">        cv_results = lgb.cv(</div><div class="line">                            params,</div><div class="line">                            lgb_train,</div><div class="line">                            seed=<span class="number">2018</span>,</div><div class="line">                            nfold=<span class="number">3</span>,</div><div class="line">                            metrics=[<span class="string">'binary_error'</span>],</div><div class="line">                            early_stopping_rounds=<span class="number">10</span>,</div><div class="line">                            verbose_eval=<span class="keyword">True</span></div><div class="line">                            )</div><div class="line"></div><div class="line">        mean_merror = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).min()</div><div class="line">        boost_rounds = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).argmin()</div><div class="line"></div><div class="line">        <span class="keyword">if</span> mean_merror &lt; min_merror:</div><div class="line">            min_merror = mean_merror</div><div class="line">            best_params[<span class="string">'num_leaves'</span>] = num_leaves</div><div class="line">            best_params[<span class="string">'max_depth'</span>] = max_depth</div><div class="line"></div><div class="line">params[<span class="string">'num_leaves'</span>] = best_params[<span class="string">'num_leaves'</span>]</div><div class="line">params[<span class="string">'max_depth'</span>] = best_params[<span class="string">'max_depth'</span>]</div><div class="line"></div><div class="line"><span class="comment"># 过拟合</span></div><div class="line">print(<span class="string">"调参2：降低过拟合"</span>)</div><div class="line"><span class="keyword">for</span> max_bin <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">255</span>,<span class="number">5</span>):</div><div class="line">    <span class="keyword">for</span> min_data_in_leaf <span class="keyword">in</span> range(<span class="number">10</span>,<span class="number">200</span>,<span class="number">5</span>):</div><div class="line">            params[<span class="string">'max_bin'</span>] = max_bin</div><div class="line">            params[<span class="string">'min_data_in_leaf'</span>] = min_data_in_leaf</div><div class="line"></div><div class="line">            cv_results = lgb.cv(</div><div class="line">                                params,</div><div class="line">                                lgb_train,</div><div class="line">                                seed=<span class="number">42</span>,</div><div class="line">                                nfold=<span class="number">3</span>,</div><div class="line">                                metrics=[<span class="string">'binary_error'</span>],</div><div class="line">                                early_stopping_rounds=<span class="number">3</span>,</div><div class="line">                                verbose_eval=<span class="keyword">True</span></div><div class="line">                                )</div><div class="line"></div><div class="line">            mean_merror = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).min()</div><div class="line">            boost_rounds = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).argmin()</div><div class="line"></div><div class="line">            <span class="keyword">if</span> mean_merror &lt; min_merror:</div><div class="line">                min_merror = mean_merror</div><div class="line">                best_params[<span class="string">'max_bin'</span>]= max_bin</div><div class="line">                best_params[<span class="string">'min_data_in_leaf'</span>] = min_data_in_leaf</div><div class="line"></div><div class="line">params[<span class="string">'min_data_in_leaf'</span>] = best_params[<span class="string">'min_data_in_leaf'</span>]</div><div class="line">params[<span class="string">'max_bin'</span>] = best_params[<span class="string">'max_bin'</span>]</div><div class="line"></div><div class="line">print(<span class="string">"调参3：降低过拟合"</span>)</div><div class="line"><span class="keyword">for</span> feature_fraction <span class="keyword">in</span> [<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">0.6</span>,<span class="number">0.7</span>,<span class="number">0.8</span>,<span class="number">0.9</span>,<span class="number">1.0</span>]:</div><div class="line">    <span class="keyword">for</span> bagging_fraction <span class="keyword">in</span> [<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">0.6</span>,<span class="number">0.7</span>,<span class="number">0.8</span>,<span class="number">0.9</span>,<span class="number">1.0</span>]:</div><div class="line">        <span class="keyword">for</span> bagging_freq <span class="keyword">in</span> range(<span class="number">0</span>,<span class="number">50</span>,<span class="number">5</span>):</div><div class="line">            params[<span class="string">'feature_fraction'</span>] = feature_fraction</div><div class="line">            params[<span class="string">'bagging_fraction'</span>] = bagging_fraction</div><div class="line">            params[<span class="string">'bagging_freq'</span>] = bagging_freq</div><div class="line"></div><div class="line">            cv_results = lgb.cv(</div><div class="line">                                params,</div><div class="line">                                lgb_train,</div><div class="line">                                seed=<span class="number">42</span>,</div><div class="line">                                nfold=<span class="number">3</span>,</div><div class="line">                                metrics=[<span class="string">'binary_error'</span>],</div><div class="line">                                early_stopping_rounds=<span class="number">3</span>,</div><div class="line">                                verbose_eval=<span class="keyword">True</span></div><div class="line">                                )</div><div class="line"></div><div class="line">            mean_merror = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).min()</div><div class="line">            boost_rounds = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).argmin()</div><div class="line"></div><div class="line">            <span class="keyword">if</span> mean_merror &lt; min_merror:</div><div class="line">                min_merror = mean_merror</div><div class="line">                best_params[<span class="string">'feature_fraction'</span>] = feature_fraction</div><div class="line">                best_params[<span class="string">'bagging_fraction'</span>] = bagging_fraction</div><div class="line">                best_params[<span class="string">'bagging_freq'</span>] = bagging_freq</div><div class="line"></div><div class="line">params[<span class="string">'feature_fraction'</span>] = best_params[<span class="string">'feature_fraction'</span>]</div><div class="line">params[<span class="string">'bagging_fraction'</span>] = best_params[<span class="string">'bagging_fraction'</span>]</div><div class="line">params[<span class="string">'bagging_freq'</span>] = best_params[<span class="string">'bagging_freq'</span>]</div><div class="line"></div><div class="line">print(<span class="string">"调参4：降低过拟合"</span>)</div><div class="line"><span class="keyword">for</span> lambda_l1 <span class="keyword">in</span> [<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">0.6</span>,<span class="number">0.7</span>,<span class="number">0.8</span>,<span class="number">0.9</span>,<span class="number">1.0</span>]:</div><div class="line">    <span class="keyword">for</span> lambda_l2 <span class="keyword">in</span> [<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">0.6</span>,<span class="number">0.7</span>,<span class="number">0.8</span>,<span class="number">0.9</span>,<span class="number">1.0</span>]:</div><div class="line">        <span class="keyword">for</span> min_split_gain <span class="keyword">in</span> [<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">0.6</span>,<span class="number">0.7</span>,<span class="number">0.8</span>,<span class="number">0.9</span>,<span class="number">1.0</span>]:</div><div class="line">            params[<span class="string">'lambda_l1'</span>] = lambda_l1</div><div class="line">            params[<span class="string">'lambda_l2'</span>] = lambda_l2</div><div class="line">            params[<span class="string">'min_split_gain'</span>] = min_split_gain</div><div class="line"></div><div class="line">            cv_results = lgb.cv(</div><div class="line">                                params,</div><div class="line">                                lgb_train,</div><div class="line">                                seed=<span class="number">42</span>,</div><div class="line">                                nfold=<span class="number">3</span>,</div><div class="line">                                metrics=[<span class="string">'binary_error'</span>],</div><div class="line">                                early_stopping_rounds=<span class="number">3</span>,</div><div class="line">                                verbose_eval=<span class="keyword">True</span></div><div class="line">                                )</div><div class="line"></div><div class="line">            mean_merror = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).min()</div><div class="line">            boost_rounds = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).argmin()</div><div class="line"></div><div class="line">            <span class="keyword">if</span> mean_merror &lt; min_merror:</div><div class="line">                min_merror = mean_merror</div><div class="line">                best_params[<span class="string">'lambda_l1'</span>] = lambda_l1</div><div class="line">                best_params[<span class="string">'lambda_l2'</span>] = lambda_l2</div><div class="line">                best_params[<span class="string">'min_split_gain'</span>] = min_split_gain</div><div class="line"></div><div class="line">params[<span class="string">'lambda_l1'</span>] = best_params[<span class="string">'lambda_l1'</span>]</div><div class="line">params[<span class="string">'lambda_l2'</span>] = best_params[<span class="string">'lambda_l2'</span>]</div><div class="line">params[<span class="string">'min_split_gain'</span>] = best_params[<span class="string">'min_split_gain'</span>]</div><div class="line"></div><div class="line"></div><div class="line">print(best_params)</div><div class="line"></div><div class="line"><span class="comment">### 训练</span></div><div class="line">params[<span class="string">'learning_rate'</span>]=<span class="number">0.01</span></div><div class="line">lgb.train(</div><div class="line">          params,                     <span class="comment"># 参数字典</span></div><div class="line">          lgb_train,                  <span class="comment"># 训练集</span></div><div class="line">          valid_sets=lgb_eval,        <span class="comment"># 验证集</span></div><div class="line">          num_boost_round=<span class="number">2000</span>,       <span class="comment"># 迭代次数</span></div><div class="line">          early_stopping_rounds=<span class="number">50</span>    <span class="comment"># 早停次数</span></div><div class="line">          )</div><div class="line"></div><div class="line"><span class="comment">### 线下预测</span></div><div class="line"><span class="keyword">print</span> (<span class="string">"线下预测"</span>)</div><div class="line">preds_offline = lgb.predict(offline_test_X, num_iteration=lgb.best_iteration) <span class="comment"># 输出概率</span></div><div class="line">offline=offline_test[[<span class="string">'instance_id'</span>,<span class="string">'is_trade'</span>]]</div><div class="line">offline[<span class="string">'preds'</span>]=preds_offline</div><div class="line">offline.is_trade = offline[<span class="string">'is_trade'</span>].astype(np.float64)</div><div class="line">print(<span class="string">'log_loss'</span>, metrics.log_loss(offline.is_trade, offline.preds))</div><div class="line"></div><div class="line"><span class="comment">### 线上预测</span></div><div class="line">print(<span class="string">"线上预测"</span>)</div><div class="line">preds_online =  lgb.predict(online_test_X, num_iteration=lgb.best_iteration)  <span class="comment"># 输出概率</span></div><div class="line">online=online_test[[<span class="string">'instance_id'</span>]]</div><div class="line">online[<span class="string">'preds'</span>]=preds_online</div><div class="line">online.rename(columns=&#123;<span class="string">'preds'</span>:<span class="string">'predicted_score'</span>&#125;,inplace=<span class="keyword">True</span>)           <span class="comment"># 更改列名</span></div><div class="line">online.to_csv(<span class="string">"./data/20180405.txt"</span>,index=<span class="keyword">None</span>,sep=<span class="string">' '</span>)                   <span class="comment"># 保存结果</span></div><div class="line"></div><div class="line"><span class="comment">### 保存模型</span></div><div class="line"><span class="keyword">from</span> sklearn.externals <span class="keyword">import</span> joblib</div><div class="line">joblib.dump(lgb,<span class="string">'lgb.pkl'</span>)</div><div class="line"></div><div class="line"><span class="comment">### 特征选择</span></div><div class="line">df = pd.DataFrame(X_train.columns.tolist(), columns=[<span class="string">'feature'</span>])</div><div class="line">df[<span class="string">'importance'</span>]=list(lgb.feature_importance())                           <span class="comment"># 特征分数</span></div><div class="line">df = df.sort_values(by=<span class="string">'importance'</span>,ascending=<span class="keyword">False</span>)                      <span class="comment"># 特征排序</span></div><div class="line">df.to_csv(<span class="string">"./data/feature_score_20180331.csv"</span>,index=<span class="keyword">None</span>,encoding=<span class="string">'gbk'</span>)  <span class="comment"># 保存分数</span></div></pre></td></tr></table></figure>
+<h1 id="样本集处理"><a href="#样本集处理" class="headerlink" title="样本集处理"></a>样本集处理</h1><p>加载样本集，去掉app_code和日期列，保存为新样本集</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">df04 = pd.read_csv(<span class="string">'3dtrain_aprilnew.csv'</span>, header=<span class="number">0</span>)</div><div class="line">df04 = df04.drop(df04.columns[[<span class="number">0</span>,<span class="number">-2</span>]], axis=<span class="number">1</span>)</div><div class="line">print(df04.shape)</div><div class="line"><span class="comment"># print(df04['main_unittype_3days'] &gt; 0)</span></div><div class="line">df04 = df04[df04[<span class="string">'main_unittype_3days'</span>] &gt; <span class="number">0</span>]</div><div class="line">df04 = df04.drop(df04.columns[[<span class="string">'all_district_entropy_avg_3days'</span>, <span class="string">'all_max_distance_with_guarantee_now_unit_address_max_3days'</span>, <span class="string">'all_max_distance_with_guarantee_now_unit_address_min_3days'</span>, <span class="string">'all_max_distance_with_guarantee_now_unit_address_avg_3days'</span>, <span class="string">'all_max_distance_with_guarantee_now_unit_address_sd_3days'</span>, <span class="string">'all_max_distance_with_now_address_max_3days'</span>, <span class="string">'all_max_distance_with_now_address_min_3days'</span>, <span class="string">'all_max_distance_with_now_address_avg_3days'</span>, <span class="string">'all_max_distance_with_now_address_sd_3days'</span>, <span class="string">'all_min_time_between_accon_accoff_avg_3days'</span>, <span class="string">'all_min_time_between_accon_accoff_sd_3days'</span>, <span class="string">'all_overspeed120_time_before_dawn_sd_3days'</span>, <span class="string">'all_overspeed120_time_daytime_sd_3days'</span>, <span class="string">'all_total_time_near_now_unit_address_max_3days'</span>, <span class="string">'all_total_time_near_now_unit_address_min_3days'</span>, <span class="string">'all_total_time_near_now_unit_address_avg_3days'</span>, <span class="string">'all_total_time_near_now_unit_address_sd_3days'</span>, <span class="string">'topone_district_most_per_3days'</span>, <span class="string">'main_unittype_3days'</span>, <span class="string">'is_unittype_changed_3days'</span>]], axis=<span class="number">1</span>)</div><div class="line"><span class="comment"># df04 = df04[(True - (df04['days_samewith_now_address_3days'] == "-0.0507071"))]</span></div><div class="line"><span class="comment"># df04 = df04[df04["is_gps_yx_lost_nighttime_district_3days"] != "-0.0507071"]</span></div><div class="line"><span class="comment"># df04.loc[df04['days_samewith_now_address_3days'] != "-0.0507071"]</span></div><div class="line">print(df04.head)</div><div class="line"><span class="comment"># df04.to_csv('3dtrain_april_yx.csv', index=False)</span></div><div class="line"></div><div class="line"></div><div class="line">df05 = pd.read_csv(<span class="string">'3dpredict_maynew.csv'</span>, header=<span class="number">0</span>)</div><div class="line">print(df05.shape)</div><div class="line">df05 = df05.drop(df05.columns[[<span class="number">0</span>,<span class="number">-2</span>]], axis=<span class="number">1</span>)</div><div class="line">df05 = df05[df05[<span class="string">'main_unittype_3days'</span>] &gt; <span class="number">0</span>]</div><div class="line">print(df05.shape)</div><div class="line">df05.to_csv(<span class="string">'3dpredict_may_yx.csv'</span>, index=<span class="keyword">False</span>)</div></pre></td></tr></table></figure>
+<h1 id="从最佳迭代开始预测"><a href="#从最佳迭代开始预测" class="headerlink" title="从最佳迭代开始预测"></a>从最佳迭代开始预测</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">y_pred = gbm.predict(X_test, num_iteration=gbm.best_iteration)</div></pre></td></tr></table></figure>
+<h1 id="lightgbm算法优化-不平衡二分类问题（附代码）"><a href="#lightgbm算法优化-不平衡二分类问题（附代码）" class="headerlink" title="lightgbm算法优化-不平衡二分类问题（附代码）"></a>lightgbm算法优化-不平衡二分类问题（附代码）</h1><p><a href="https://yq.aliyun.com/articles/529970" target="_blank" rel="noopener">https://yq.aliyun.com/articles/529970</a></p>
+<h1 id="减少打印日志"><a href="#减少打印日志" class="headerlink" title="减少打印日志"></a>减少打印日志</h1><p>设置verbosity</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">params = &#123;</div><div class="line">            &apos;boosting_type&apos;: &apos;gbdt&apos;,</div><div class="line">            &apos;objective&apos;: &apos;binary&apos;,</div><div class="line">            &apos;metric&apos;: &apos;binary_logloss&apos;,</div><div class="line">            &apos;verbosity&apos;: -1,</div><div class="line">        &#125;</div></pre></td></tr></table></figure>
+<h1 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h1><h3 id="进程被killed"><a href="#进程被killed" class="headerlink" title="进程被killed"></a>进程被killed</h3><p>执行到cv时就显示Killed，被python杀死，可能是内存不够了</p>
+<p><a href="https://stackoverflow.com/questions/726690/what-killed-my-process-and-why" target="_blank" rel="noopener">https://stackoverflow.com/questions/726690/what-killed-my-process-and-why</a></p>
+<h1 id="Java调用"><a href="#Java调用" class="headerlink" title="Java调用"></a>Java调用</h1><p><a href="https://blog.csdn.net/luoyexuge/article/details/80087952" target="_blank" rel="noopener">https://blog.csdn.net/luoyexuge/article/details/80087952</a></p>
+<h1 id="处理离散特征"><a href="#处理离散特征" class="headerlink" title="处理离散特征"></a>处理离散特征</h1><p>而Lightgbm可以直接支持category特征的处理，在用pandas结构使用LGB时可以指定哪一列是类别型数据，省去one-hot的步骤。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">data[item] = data[item].astype(&quot;category&quot;).cat.codes +1</div><div class="line"></div><div class="line">train, test, y_train, y_test = train_test_split(data.drop([&quot;ARRIVAL_DELAY&quot;], axis=1), data[&quot;ARRIVAL_DELAY&quot;],</div><div class="line"></div><div class="line">random_state=10, test_size=0.25)</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/07/10/hadoop-spark/spark/pyspark笔记/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/07/10/hadoop-spark/spark/pyspark笔记/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-07-10 11:38:12" itemprop="dateCreated datePublished" datetime="2018-07-10T11:38:12+08:00">2018-07-10</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-11-14 18:10:24" itemprop="dateModified" datetime="2018-11-14T18:10:24+08:00">2018-11-14</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/07/10/hadoop-spark/spark/pyspark笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/07/10/hadoop-spark/spark/pyspark笔记/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>操作Dataframe与pandas</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># -*- coding: utf-8 -*-</span></div><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"><span class="keyword">from</span> pyspark.sql <span class="keyword">import</span> SparkSession</div><div class="line"><span class="keyword">from</span> pyspark.sql <span class="keyword">import</span> SQLContext</div><div class="line"><span class="keyword">from</span> pyspark <span class="keyword">import</span> SparkContext</div><div class="line"> </div><div class="line"><span class="comment">#初始化数据</span></div><div class="line"> </div><div class="line"><span class="comment">#初始化pandas DataFrame</span></div><div class="line">df = pd.DataFrame([[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>], [<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]], index=[<span class="string">'row1'</span>, <span class="string">'row2'</span>], columns=[<span class="string">'c1'</span>, <span class="string">'c2'</span>, <span class="string">'c3'</span>])</div><div class="line"> </div><div class="line"><span class="comment">#打印数据</span></div><div class="line"><span class="keyword">print</span> df</div><div class="line"> </div><div class="line"><span class="comment">#初始化spark DataFrame</span></div><div class="line">sc = SparkContext()</div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</div><div class="line">    spark = SparkSession\</div><div class="line">        .builder\</div><div class="line">        .appName(<span class="string">"testDataFrame"</span>)\</div><div class="line">        .getOrCreate()</div><div class="line"> </div><div class="line">sentenceData = spark.createDataFrame([</div><div class="line">    (<span class="number">0.0</span>, <span class="string">"I like Spark"</span>),</div><div class="line">    (<span class="number">1.0</span>, <span class="string">"Pandas is useful"</span>),</div><div class="line">    (<span class="number">2.0</span>, <span class="string">"They are coded by Python "</span>)</div><div class="line">], [<span class="string">"label"</span>, <span class="string">"sentence"</span>])</div><div class="line"> </div><div class="line"><span class="comment">#显示数据</span></div><div class="line">sentenceData.select(<span class="string">"label"</span>).show()</div><div class="line"> </div><div class="line"><span class="comment">#spark.DataFrame 转换成 pandas.DataFrame</span></div><div class="line">sqlContest = SQLContext(sc)</div><div class="line">spark_df = sqlContest.createDataFrame(df)</div><div class="line"> </div><div class="line"><span class="comment">#显示数据</span></div><div class="line">spark_df.select(<span class="string">"c1"</span>).show()</div><div class="line"> </div><div class="line"> </div><div class="line"><span class="comment"># pandas.DataFrame 转换成 spark.DataFrame</span></div><div class="line">pandas_df = sentenceData.toPandas()</div><div class="line"> </div><div class="line"><span class="comment">#打印数据</span></div><div class="line"><span class="keyword">print</span> pandas_df</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/07/03/机器学习/特征工程相关算法/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1956,413 +2347,6 @@ IV=\sum_{i=0}^N IV_i</script><p>IV衡量的是某一个变量的信息量，从�
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/06/22/hadoop-spark/mllib/卡方/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/06/22/hadoop-spark/mllib/卡方/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-06-22 10:18:47" itemprop="dateCreated datePublished" datetime="2018-06-22T10:18:47+08:00">2018-06-22</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-06-25 16:39:38" itemprop="dateModified" datetime="2018-06-25T16:39:38+08:00">2018-06-25</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/06/22/hadoop-spark/mllib/卡方/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/06/22/hadoop-spark/mllib/卡方/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>1.6版本下可行的例子</p>
-<p>参考<a href="http://dblab.xmu.edu.cn/blog/1475-2/" target="_blank" rel="noopener">http://dblab.xmu.edu.cn/blog/1475-2/</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">// 创造实验数据，这是一个具有三个样本，四个特征维度的数据集，标签有1，0两种。1.6中，标签必须是double型</div><div class="line">val df = sqlContext.createDataFrame(Seq(</div><div class="line">       (1, Vectors.dense(0.0, 0.0, 18.0, 1.0), 1.0),</div><div class="line">       (2, Vectors.dense(0.0, 1.0, 12.0, 0.0), 0.0),</div><div class="line">       (3, Vectors.dense(1.0, 0.0, 15.0, 0.1), 0.0)</div><div class="line">         )).toDF(&quot;id&quot;, &quot;features&quot;, &quot;label&quot;)</div><div class="line">    df.show()</div><div class="line"></div><div class="line">    val selector = new ChiSqSelector().</div><div class="line">      setNumTopFeatures(1).</div><div class="line">      setFeaturesCol(&quot;features&quot;).</div><div class="line">      setLabelCol(&quot;label&quot;).</div><div class="line">      setOutputCol(&quot;selected_features&quot;)</div><div class="line">    val select_model = selector.fit(df)</div><div class="line">    val result = select_model.transform(df)</div><div class="line">    result.show()</div></pre></td></tr></table></figure>
-<p>源码的主要逻辑在</p>
-<p><code>ChiSqTest.chiSquaredFeatures</code></p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">chiSquaredFeatures</span></span>(data: <span class="type">RDD</span>[<span class="type">LabeledPoint</span>],</div><div class="line">      methodName: <span class="type">String</span> = <span class="type">PEARSON</span>.name): <span class="type">Array</span>[<span class="type">ChiSqTestResult</span>] = &#123;</div><div class="line">    <span class="keyword">val</span> maxCategories = <span class="number">10000</span></div><div class="line">    <span class="keyword">val</span> numCols = data.first().features.size</div><div class="line">    <span class="keyword">val</span> results = <span class="keyword">new</span> <span class="type">Array</span>[<span class="type">ChiSqTestResult</span>](numCols)</div><div class="line">    <span class="keyword">var</span> labels: <span class="type">Map</span>[<span class="type">Double</span>, <span class="type">Int</span>] = <span class="literal">null</span></div><div class="line">    <span class="comment">// at most 1000 columns at a time</span></div><div class="line">    <span class="keyword">val</span> batchSize = <span class="number">1000</span></div><div class="line">    <span class="keyword">var</span> batch = <span class="number">0</span></div><div class="line">    <span class="keyword">while</span> (batch * batchSize &lt; numCols) &#123;</div><div class="line">      <span class="comment">// The following block of code can be cleaned up and made public as</span></div><div class="line">      <span class="comment">// chiSquared(data: RDD[(V1, V2)])</span></div><div class="line">      <span class="keyword">val</span> startCol = batch * batchSize</div><div class="line">      <span class="keyword">val</span> endCol = startCol + math.min(batchSize, numCols - startCol)</div><div class="line">      <span class="keyword">val</span> pairCounts = data.mapPartitions &#123; iter =&gt;</div><div class="line">        <span class="keyword">val</span> distinctLabels = mutable.<span class="type">HashSet</span>.empty[<span class="type">Double</span>]</div><div class="line">        <span class="keyword">val</span> allDistinctFeatures: <span class="type">Map</span>[<span class="type">Int</span>, mutable.<span class="type">HashSet</span>[<span class="type">Double</span>]] =</div><div class="line">          <span class="type">Map</span>((startCol until endCol).map(col =&gt; (col, mutable.<span class="type">HashSet</span>.empty[<span class="type">Double</span>])): _*)</div><div class="line">        <span class="keyword">var</span> i = <span class="number">1</span></div><div class="line">        iter.flatMap &#123; <span class="keyword">case</span> <span class="type">LabeledPoint</span>(label, features) =&gt;</div><div class="line">          <span class="keyword">if</span> (i % <span class="number">1000</span> == <span class="number">0</span>) &#123;</div><div class="line">            <span class="keyword">if</span> (distinctLabels.size &gt; maxCategories) &#123;</div><div class="line">              <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">SparkException</span>(<span class="string">s"Chi-square test expect factors (categorical values) but "</span></div><div class="line">                + <span class="string">s"found more than <span class="subst">$maxCategories</span> distinct label values."</span>)</div><div class="line">            &#125;</div><div class="line">            allDistinctFeatures.foreach &#123; <span class="keyword">case</span> (col, distinctFeatures) =&gt;</div><div class="line">              <span class="keyword">if</span> (distinctFeatures.size &gt; maxCategories) &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">SparkException</span>(<span class="string">s"Chi-square test expect factors (categorical values) but "</span></div><div class="line">                  + <span class="string">s"found more than <span class="subst">$maxCategories</span> distinct values in column <span class="subst">$col</span>."</span>)</div><div class="line">              &#125;</div><div class="line">            &#125;</div><div class="line">          &#125;</div><div class="line">          i += <span class="number">1</span></div><div class="line">          distinctLabels += label</div><div class="line">          features.toArray.view.zipWithIndex.slice(startCol, endCol).map &#123; <span class="keyword">case</span> (feature, col) =&gt;</div><div class="line">            allDistinctFeatures(col) += feature</div><div class="line">            (col, feature, label)</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">      &#125;.countByValue()</div><div class="line"></div><div class="line">      <span class="keyword">if</span> (labels == <span class="literal">null</span>) &#123;</div><div class="line">        <span class="comment">// Do this only once for the first column since labels are invariant across features.</span></div><div class="line">        labels =</div><div class="line">          pairCounts.keys.filter(_._1 == startCol).map(_._3).toArray.distinct.zipWithIndex.toMap</div><div class="line">      &#125;</div><div class="line">      <span class="keyword">val</span> numLabels = labels.size</div><div class="line">      pairCounts.keys.groupBy(_._1).map &#123; <span class="keyword">case</span> (col, keys) =&gt;</div><div class="line">        <span class="keyword">val</span> features = keys.map(_._2).toArray.distinct.zipWithIndex.toMap</div><div class="line">        <span class="keyword">val</span> numRows = features.size</div><div class="line">        <span class="keyword">val</span> contingency = <span class="keyword">new</span> <span class="type">BDM</span>(numRows, numLabels, <span class="keyword">new</span> <span class="type">Array</span>[<span class="type">Double</span>](numRows * numLabels))</div><div class="line">        keys.foreach &#123; <span class="keyword">case</span> (_, feature, label) =&gt;</div><div class="line">          <span class="keyword">val</span> i = features(feature)</div><div class="line">          <span class="keyword">val</span> j = labels(label)</div><div class="line">          contingency(i, j) += pairCounts((col, feature, label))</div><div class="line">        &#125;</div><div class="line">        results(col) = chiSquaredMatrix(<span class="type">Matrices</span>.fromBreeze(contingency), methodName)</div><div class="line">      &#125;</div><div class="line">      batch += <span class="number">1</span></div><div class="line">    &#125;</div><div class="line">    results</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
-<p>报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Chi-squared statistic undefined for input matrix due to0 sum in column [1].</div></pre></td></tr></table></figure>
-<p>某个特征都是0的时候，卡方不能计算</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/06/21/机器学习/特征工程-ChiMerge/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/06/21/机器学习/特征工程-ChiMerge/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-06-21 15:48:34 / 修改时间：16:04:09" itemprop="dateCreated datePublished" datetime="2018-06-21T15:48:34+08:00">2018-06-21</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/06/21/机器学习/特征工程-ChiMerge/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/06/21/机器学习/特征工程-ChiMerge/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>ChiMerge 是监督的、自底向上的(即基于合并的)数据离散化方法。它依赖于<a href="http://wiki.mbalib.com/wiki/%E5%8D%A1%E6%96%B9%E6%A3%80%E9%AA%8C" target="_blank" rel="noopener">卡方分析</a>：具有最小卡方值的相邻区间合并在一起，直到满足确定的停止准则。</p>
-<p>基本思想：对于精确的离散化，相对类频率在一个区间内应当完全一致。因此，如果两个相邻的区间具有非常类似的类分布，则这两个区间可以合并；否则，它们应当保持分开。而低卡方值表明它们具有相似的类分布。</p>
-<p>参考：</p>
-<ol>
-<li><p><a href="http://www.aaai.org/Papers/AAAI/1992/AAAI92-019.pdf" target="_blank" rel="noopener">ChiMerge:Discretization of numeric attributs</a></p>
-</li>
-<li><p><a href="http://www.docin.com/p-239779866.html" target="_blank" rel="noopener">Chi算法</a></p>
-</li>
-</ol>
-<p><a href="http://www.aaai.org/Papers/AAAI/1992/AAAI92-019.pdf" target="_blank" rel="noopener">参考1</a>的要点：</p>
-<p>1、 最简单的离散算法是： 等宽区间。 从最小值到最大值之间,，均分为N等份， 这样， 如果 A, B为最小最大值， 则每个区间的长度为w=(B-A) / N, 则区间边界值为 A+W, A+2W, …. A+(N-1)W.</p>
-<p>2、 还有一种简单算法，等频区间。区间的边界值要经过选择，使得每个区间包含大致相等的实例数量。比如说 N=10，每个区间应该包含大约10%的实例。</p>
-<p>3、 以上两种算法有弊端：比如，等宽区间划分，划分为5区间，最高工资为50000，则所有工资低于10000的人都被划分到同一区间。等频区间可能正好相反，所有工资高于</p>
-<p>50000的人都会被划分到50000这一区间中。这两种算法都忽略了实例所属的类型，落在正确区间里的偶然性很大。</p>
-<p>4、 C4、CART、PVM算法在离散属性时会考虑类信息，但是是在算法实施的过程中间，而不是在预处理阶段。例如，C4算法（ID3决策树系列的一种），将数值属性离散为两个区间，而取这两个区间时，该属性的信息增益是最大的。</p>
-<p>5、 评价一个离散算法是否有效很难，因为不知道什么是最高效的分类。</p>
-<p>6、 离散化的主要目的是：消除数值属性以及为数值属性定义准确的类别。</p>
-<p>7、 高质量的离散化应该是：区间内一致，区间之间区分明显。</p>
-<p>8、 ChiMerge算法用卡方统计量来决定相邻区间是否一致或者是否区别明显。如果经过验证，类别属性独立于其中一个区间，则这个区间就要被合并。</p>
-<p>9、 ChiMerge算法包括2部分：1、初始化，2、自底向上合并，当满足停止条件的时候，区间合并停止。</p>
-<p>第一步：初始化</p>
-<p>根据要离散的属性对实例进行排序：每个实例属于一个区间</p>
-<p>第二步：合并区间，又包括两步骤</p>
-<p>(1) 计算每一对相邻区间的卡方值</p>
-<p>(2) 将卡方值最小的一对区间合并</p>
-<p>预先设定一个卡方的阈值，在阈值之下的区间都合并，阈值之上的区间保持分区间。</p>
-<p>卡方的计算公式：<img src="http://www.forkosh.com/mathtex.cgi?%20%5Cchi%5E2=%5Csum%5E%7Bm%7D_%7Bi=1%7D%5Csum%5E%7Bk%7D_%7Bj=1%7D%5Cfrac%7B(A_%7Bij%7D-E_%7Bij%7D" alt="img">%5E2%7D%7BE_%7Bij%7D%7D)</p>
-<p>参数说明；</p>
-<p>m=2（每次比较的区间数是2个）</p>
-<p>k=类别数量</p>
-<p>Aij=第i区间第j类的实例的数量</p>
-<p>Ri=第i区间的实例数量</p>
-<p><img src="http://www.forkosh.com/mathtex.cgi?%20R_i=%5Csum_%7Bj=1%7D%5Ek%20Aij" alt="img"></p>
-<p>Cj=第j类的实例数量</p>
-<p><img src="http://www.forkosh.com/mathtex.cgi?%20C_j=%5Csum_%7Bi=1%7D%5Em%20A_%7Bij%7D" alt="img"></p>
-<p>N=总的实例数量</p>
-<p><img src="http://www.forkosh.com/mathtex.cgi?%20N=%5Csum_%7Bj=1%7D%5Ek%20C_j" alt="img"></p>
-<p>Eij= Aij的期望频率</p>
-<p><img src="http://www.forkosh.com/mathtex.cgi?%20E_%7Bij%7D=%5Cfrac%7BN_i*C_j%7D%7BN%7D" alt="img"></p>
-<p>10、卡方阈值的确定：先选择显著性水平，再由公式得到对应的卡方值。得到卡方值需要指定自由度，自由度比类别数量小1。例如，有3类，自由度为2，则90%置信度（10%显著性水平)下，卡方的值为4.6。阈值的意义在于，类别和属性独立时，有90%的可能性，计算得到的卡方值会小于4.6，这样，大于阈值的卡方值就说明属性和类不是相互独立的，不能合并。如果阈值选的大，区间合并就会进行很多次，离散后的区间数量少、区间大。用户可以不考虑卡方阈值，此时，用户可以考虑这两个参数：最小区间数，最大区间数。用户指定区间数量的上限和下限，最多几个区间，最少几个区间。</p>
-<p>11、 ChiMerge算法推荐使用.90、.95、.99置信度，最大区间数取10到15之间.</p>
-<p>举例：</p>
-<p>取<a href="http://archive.ics.uci.edu/ml/datasets/Iris" target="_blank" rel="noopener">鸢尾花数据集</a>作为待离散化的数据集合，使用ChiMerge算法，对四个数值属性分别进行离散化，令停机准则为max_interval=6。（韩家炜 数据挖掘概念与技术 第三版 习题3.12）</p>
-<p>下面是我用Python写的程序，大致分两步：</p>
-<p>第一步，整理数据</p>
-<p>读入鸢尾花数据集，构造可以在其上使用ChiMerge的数据结构，即, 形如 [(‘4.3’, [1, 0, 0]), (‘4.4’, [3, 0, 0]),…]的列表，每一个元素是一个元组，元组的第一项是字符串，表示区间左端点，元组的第二项是一个列表，表示在此区间各个类别的实例数目；</p>
-<p>第二步，离散化</p>
-<p>使用ChiMerge方法对具有最小卡方值的相邻区间进行合并，直到满足最大区间数(max_interval)为6</p>
-<p>程序最终返回区间的分裂点</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div></pre></td><td class="code"><pre><div class="line">__author__ = <span class="string">"Yinlong Zhao (zhaoyl[at]sjtu[dot]edu[dot]cn)"</span></div><div class="line">__date__ = <span class="string">"$Date: 2013/03/25 $"</span></div><div class="line"></div><div class="line"><span class="keyword">from</span> time <span class="keyword">import</span> ctime</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">read</span><span class="params">(file)</span>:</span></div><div class="line">    <span class="string">'''read raw date from a file '''</span></div><div class="line">    Instances=[]</div><div class="line">    fp=open(file,<span class="string">'r'</span>)</div><div class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> fp:</div><div class="line">        line=line.strip(<span class="string">'\n'</span>) <span class="comment">#discard '\n'</span></div><div class="line">        <span class="keyword">if</span> line!=<span class="string">''</span>:</div><div class="line">            Instances.append(line.split(<span class="string">','</span>))</div><div class="line">    fp.close()</div><div class="line">    <span class="keyword">return</span>(Instances)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">split</span><span class="params">(Instances,i)</span>:</span></div><div class="line">    <span class="string">''' Split the 4 attibutes, collect the data of the ith attributs, i=0,1,2,3</span></div><div class="line">        Return a list like [['0.2', 'Iris-setosa'], ['0.2', 'Iris-setosa'],...]'''</div><div class="line">    log=[]</div><div class="line">    <span class="keyword">for</span> r <span class="keyword">in</span> Instances:</div><div class="line">        log.append([r[i],r[<span class="number">4</span>]])</div><div class="line">    <span class="keyword">return</span>(log)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">count</span><span class="params">(log)</span>:</span></div><div class="line">    <span class="string">'''Count the number of the same record</span></div><div class="line">       Return a list like [['4.3', 'Iris-setosa', 1], ['4.4', 'Iris-setosa', 3],...]'''</div><div class="line">    log_cnt=[]</div><div class="line">    log.sort(key=<span class="keyword">lambda</span> log:log[<span class="number">0</span>])</div><div class="line">    i=<span class="number">0</span></div><div class="line">    <span class="keyword">while</span>(i&lt;len(log)):</div><div class="line">        cnt=log.count(log[i])<span class="comment">#count the number of the same record</span></div><div class="line">        record=log[i][:]</div><div class="line">        record.append(cnt) <span class="comment"># the return value of append is None</span></div><div class="line">        log_cnt.append(record)</div><div class="line">        i+=cnt<span class="comment">#count the next diferent item </span></div><div class="line">    <span class="keyword">return</span>(log_cnt)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">build</span><span class="params">(log_cnt)</span>:</span></div><div class="line">    <span class="string">'''Build a structure (a list of truples) that ChiMerge algorithm works properly on it '''</span></div><div class="line">    log_dic=&#123;&#125;</div><div class="line">    <span class="keyword">for</span> record <span class="keyword">in</span> log_cnt:</div><div class="line">        <span class="keyword">if</span> record[<span class="number">0</span>] <span class="keyword">not</span> <span class="keyword">in</span> log_dic.keys():</div><div class="line">            log_dic[record[<span class="number">0</span>]]=[<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>]</div><div class="line">        <span class="keyword">if</span> record[<span class="number">1</span>]==<span class="string">'Iris-setosa'</span>:</div><div class="line">            log_dic[record[<span class="number">0</span>]][<span class="number">0</span>]=record[<span class="number">2</span>]</div><div class="line">        <span class="keyword">elif</span> record[<span class="number">1</span>]==<span class="string">'Iris-versicolor'</span>:</div><div class="line">            log_dic[record[<span class="number">0</span>]][<span class="number">1</span>]=record[<span class="number">2</span>]</div><div class="line">        <span class="keyword">elif</span> record[<span class="number">1</span>]==<span class="string">'Iris-virginica'</span>:</div><div class="line">            log_dic[record[<span class="number">0</span>]][<span class="number">2</span>]=record[<span class="number">2</span>]</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            <span class="keyword">raise</span> TypeError(<span class="string">"Data Exception"</span>)</div><div class="line">    log_truple=sorted(log_dic.items())</div><div class="line">    <span class="keyword">return</span>(log_truple)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">collect</span><span class="params">(Instances,i)</span>:</span></div><div class="line">    <span class="string">''' collect data for discretization '''</span></div><div class="line">    log=split(Instances,i)</div><div class="line">    log_cnt=count(log)</div><div class="line">    log_tuple=build(log_cnt)</div><div class="line">    <span class="keyword">return</span>(log_tuple)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">combine</span><span class="params">(a,b)</span>:</span></div><div class="line">    <span class="string">'''  a=('4.4', [3, 1, 0]), b=('4.5', [1, 0, 2])</span></div><div class="line">         combine(a,b)=('4.4', [4, 1, 2])  '''</div><div class="line">    c=a[:] <span class="comment"># c[0]=a[0]</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(a[<span class="number">1</span>])):</div><div class="line">        c[<span class="number">1</span>][i]+=b[<span class="number">1</span>][i]</div><div class="line">    <span class="keyword">return</span>(c)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">chi2</span><span class="params">(A)</span>:</span></div><div class="line">    <span class="string">''' Compute the Chi-Square value '''</span>   </div><div class="line">    m=len(A);</div><div class="line">    k=len(A[<span class="number">0</span>])</div><div class="line">    R=[]</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(m):</div><div class="line">        sum=<span class="number">0</span></div><div class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(k):</div><div class="line">            sum+=A[i][j]</div><div class="line">        R.append(sum)</div><div class="line">    C=[]</div><div class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> range(k):</div><div class="line">        sum=<span class="number">0</span></div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(m):</div><div class="line">            sum+=A[i][j]</div><div class="line">        C.append(sum)</div><div class="line">    N=<span class="number">0</span></div><div class="line">    <span class="keyword">for</span> ele <span class="keyword">in</span> C:</div><div class="line">        N+=ele</div><div class="line">    res=<span class="number">0</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(m):</div><div class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(k):</div><div class="line">            Eij=R[i]*C[j]/N</div><div class="line">            <span class="keyword">if</span> Eij!=<span class="number">0</span>:</div><div class="line">                res=res+(A[i][j]-Eij)**<span class="number">2</span>/Eij</div><div class="line">    <span class="keyword">return</span> res</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">ChiMerge</span><span class="params">(log_tuple,max_interval)</span>:</span></div><div class="line">    <span class="string">''' ChiMerge algorithm  '''</span></div><div class="line">    <span class="string">''' Return split points '''</span>    </div><div class="line">    num_interval=len(log_tuple)</div><div class="line">    <span class="keyword">while</span>(num_interval&gt;max_interval):               </div><div class="line">        num_pair=num_interval<span class="number">-1</span></div><div class="line">        chi_values=[]</div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(num_pair):</div><div class="line">            arr=[log_tuple[i][<span class="number">1</span>],log_tuple[i+<span class="number">1</span>][<span class="number">1</span>]]</div><div class="line">            chi_values.append(chi2(arr))</div><div class="line">        min_chi=min(chi_values) <span class="comment"># get the minimum chi value </span></div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(num_pair<span class="number">-1</span>,<span class="number">-1</span>,<span class="number">-1</span>): <span class="comment"># treat from the last one</span></div><div class="line">            <span class="keyword">if</span> chi_values[i]==min_chi:</div><div class="line">                log_tuple[i]=combine(log_tuple[i],log_tuple[i+<span class="number">1</span>]) <span class="comment"># combine the two adjacent intervals</span></div><div class="line">                log_tuple[i+<span class="number">1</span>]=<span class="string">'Merged'</span></div><div class="line">        <span class="keyword">while</span>(<span class="string">'Merged'</span> <span class="keyword">in</span> log_tuple): <span class="comment"># remove the merged record</span></div><div class="line">            log_tuple.remove(<span class="string">'Merged'</span>)</div><div class="line">        num_interval=len(log_tuple)</div><div class="line">    split_points=[record[<span class="number">0</span>] <span class="keyword">for</span> record <span class="keyword">in</span> log_tuple]</div><div class="line">    <span class="keyword">return</span>(split_points)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">discrete</span><span class="params">(path)</span>:</span></div><div class="line">    <span class="string">''' ChiMerege discretization of the Iris plants database '''</span></div><div class="line">    Instances=read(path)</div><div class="line">    max_interval=<span class="number">6</span></div><div class="line">    num_log=<span class="number">4</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(num_log):</div><div class="line">        log_tuple=collect(Instances,i) <span class="comment"># collect data for discretization</span></div><div class="line">        split_points=ChiMerge(log_tuple,max_interval) <span class="comment"># discretize data using ChiMerge algorithm </span></div><div class="line">        print(split_points)</div><div class="line">    </div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__==<span class="string">'__main__'</span>:</div><div class="line">    print(<span class="string">'Start: '</span> + ctime())</div><div class="line">    discrete(<span class="string">'c:\\Python33\\iris.data'</span>)</div><div class="line">    print(<span class="string">'End: '</span> + ctime())</div></pre></td></tr></table></figure>
-<p>函数说明：</p>
-<ol>
-<li>collect(Instances,i)</li>
-</ol>
-<p>读入鸢尾花数据集，取第i个特征构造一个数据结构，以便使用ChiMerge算法。这个数据结构 形如 [(‘4.3’, [1, 0, 0]), (‘4.4’, [3, 0, 0]),…]的列表，每一个元素是一个元组，元组的第一项是字符串，表示区间左端点，元组的第二项是一个列表，表示在此区间各个类别的实例数目</p>
-<ol>
-<li>ChiMerge(log_tuple,max_interval)</li>
-</ol>
-<p>ChiMerge算法，返回区间的分裂点</p>
-<p>程序运行结果：</p>
-<p><strong>[python]</strong> <a href="https://blog.csdn.net/zhaoyl03/article/details/8689440#" target="_blank" rel="noopener">view plain</a> <a href="https://blog.csdn.net/zhaoyl03/article/details/8689440#" target="_blank" rel="noopener">copy</a></p>
-<ol>
-<li>>&gt;&gt; ================================ RESTART ================================  </li>
-<li>>&gt;&gt;   </li>
-<li>Start: Mon Mar 25 21:31:40 2013  </li>
-<li>[‘4.3’, ‘4.9’, ‘5.0’, ‘5.5’, ‘5.8’, ‘7.1’]  </li>
-<li>[‘2.0’, ‘2.3’, ‘2.5’, ‘2.9’, ‘3.0’, ‘3.4’]  </li>
-<li>[‘1.0’, ‘3.0’, ‘4.5’, ‘4.8’, ‘5.0’, ‘5.2’]  </li>
-<li>[‘0.1’, ‘1.0’, ‘1.4’, ‘1.7’, ‘1.8’, ‘1.9’]  </li>
-<li>End: Mon Mar 25 21:31:40 2013  </li>
-<li>>&gt;&gt;   </li>
-</ol>
-<p>本文出自：</p>
-<p><a href="http://blog.csdn.net/zhaoyl03/article/details/8689440" target="_blank" rel="noopener">http://blog.csdn.net/zhaoyl03/article/details/8689440</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2409,7 +2393,7 @@ IV=\sum_{i=0}^N IV_i</script><p>IV衡量的是某一个变量的信息量，从�
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">314</span>
+                    <span class="site-state-item-count">316</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2460,7 +2444,9 @@ IV=\sum_{i=0}^N IV_i</script><p>IV衡量的是某一个变量的信息量，从�
                     
                       
                     
-                    <span class="site-state-item-count">17</span>
+                      
+                    
+                    <span class="site-state-item-count">18</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -2811,6 +2797,35 @@ IV=\sum_{i=0}^N IV_i</script><p>IV衡量的是某一个变量的信息量，从�
   
 
   
+  
+
+  
+  
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+  
+
 
   
 
