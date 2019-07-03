@@ -328,546 +328,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/05/10/hadoop-spark/spark/代码片段/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/05/10/hadoop-spark/spark/代码片段/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-05-10 12:58:55 / 修改时间：13:04:35" itemprop="dateCreated datePublished" datetime="2018-05-10T12:58:55+08:00">2018-05-10</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/05/10/hadoop-spark/spark/代码片段/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/05/10/hadoop-spark/spark/代码片段/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <hr>
-<hr>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">scala&gt; val cm = c.map(e =&gt; (e._1, (e._2, 0)))</div><div class="line">cm: org.apache.spark.rdd.RDD[(String, (Int, Int))] = MapPartitionsRDD[25] at map at &lt;console&gt;:23</div><div class="line"> </div><div class="line">scala&gt; val cr = cm.reduceByKey((e1, e2) =&gt; (e1._1 + e2._1, e1._1/2 + e2._1/2))</div><div class="line">cr: org.apache.spark.rdd.RDD[(String, (Int, Int))] = ShuffledRDD[26] at reduceByKey at &lt;console&gt;:25</div><div class="line"> </div><div class="line">scala&gt; val cz = cr.map(e =&gt; (e._1, e._2._1, e._2._2))</div><div class="line">cz: org.apache.spark.rdd.RDD[(String, Int, Int)] = MapPartitionsRDD[27] at map at &lt;console&gt;:27</div><div class="line"> </div><div class="line">scala&gt; cz.collect</div><div class="line">res15: Array[(String, Int, Int)] = Array((b,3,1), (a,6,2), (c,1,0))</div><div class="line"> </div><div class="line">scala&gt; val c = sc.parallelize(List((&quot;a&quot;, 1), (&quot;a&quot;, 2), (&quot;a&quot;, 3), (&quot;b&quot;, 1), (&quot;b&quot;, 2), (&quot;c&quot;, 1)))</div><div class="line">c: org.apache.spark.rdd.RDD[(String, Int)] = ParallelCollectionRDD[28] at parallelize at &lt;console&gt;:21</div></pre></td></tr></table></figure>
-<h1 id="sort"><a href="#sort" class="headerlink" title="sort"></a>sort</h1><p><a href="https://blog.csdn.net/greahuang/article/details/46551649" target="_blank" rel="noopener">https://blog.csdn.net/greahuang/article/details/46551649</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">scala&gt; val data = List((1,4),(4,8),(0,4),(12,8))</div><div class="line"></div><div class="line">scala&gt; val rdd = sc.parallelize(data)</div><div class="line"></div><div class="line">scala&gt; rdd.sortByKey().collect</div><div class="line"></div><div class="line">Array[(Int, Int)] = Array( (0,4), (1,4), (4,8),(12,8))</div><div class="line"></div><div class="line">重写 ordering</div><div class="line"></div><div class="line">implicit val st = new Ordering[Int]&#123;override def compare(a:Int,b:Int)=a.toString.compare(b.toString)&#125;</div><div class="line"></div><div class="line">Array[(Int, Int)] = Array((0,4), (1,4), (12,8), (4,8))</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">val rdd = rdd1.union(rdd2)</div><div class="line"></div><div class="line">if (!deleteDirIfExisted(fileSystem, new Path(&quot;hdfs:/**/result_t1&quot;))) &#123;</div><div class="line">  throw new BusinessRuntimeException(&quot;Output path in hdfs :%s delete failed!&quot;)</div><div class="line">&#125;</div><div class="line">rdd.sortBy(line =&gt;sortBasicRddAlgo(line),true,1)</div><div class="line">  .saveAsTextFile(&quot;hdfs:/**/result_t1&quot;)</div></pre></td></tr></table></figure>
-<p><a href="https://blog.csdn.net/jiangpeng59/article/details/52938465" target="_blank" rel="noopener">https://blog.csdn.net/jiangpeng59/article/details/52938465</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">val conf = new SparkConf()  </div><div class="line">val sc = new SparkContext(conf)  </div><div class="line">val array = Array((1, 6, 3), (2, 3, 3), (1, 1, 2), (1, 3, 5), (2, 1, 2))  </div><div class="line">val rdd1 = sc.parallelize(array)  </div><div class="line">//设置元素(e1,e3)为key,value为原来的整体  </div><div class="line">val rdd2 = rdd1.map(f =&gt; ((f._1, f._3), f))  </div><div class="line">//利用sortByKey排序的对key的特性  </div><div class="line">val rdd3 = rdd2.sortByKey()  </div><div class="line">val rdd4 = rdd3.values.collect</div></pre></td></tr></table></figure>
-<h1 id="groupbykey"><a href="#groupbykey" class="headerlink" title="groupbykey"></a>groupbykey</h1><p><a href="https://www.2cto.com/net/201704/623475.html" target="_blank" rel="noopener">https://www.2cto.com/net/201704/623475.html</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">/* 同类合并、计算 */</div><div class="line"> </div><div class="line">val source = Source.fromFile(&quot;E:test.txt&quot;).getLines.toArray</div><div class="line"> </div><div class="line">val sourceRDD = sc.parallelize(source) /* spark单机读取数据 */</div><div class="line"> </div><div class="line">sourceRDD.map &#123;</div><div class="line"> </div><div class="line">line =&gt;</div><div class="line"> </div><div class="line">val lines = line.split(&quot;,&quot;) /* 拆分数据 */</div><div class="line"> </div><div class="line">(s&quot;$&#123;lines(0)&#125;&quot;, s&quot;$&#123;lines(1)&#125;,$&#123;lines(2)&#125;,$&#123;lines(3)&#125;&quot;) /* 找出同样的数据为K，需要进行计算的为V，拼成map */</div><div class="line"> </div><div class="line">&#125;.groupByKey.map &#123; /* 分组，最重要的就是这，同类的数据分组到一起，后面只需要计算V了 */</div><div class="line"> </div><div class="line">case (k, v) =&gt;</div><div class="line"> </div><div class="line">var a, b, c = 0 /* 定义几个存数据的变量，恩，这很java，一般scala中很少见到var */</div><div class="line"> </div><div class="line">v.foreach &#123; /* 遍历需要计算的V */</div><div class="line"> </div><div class="line">x =&gt;</div><div class="line"> </div><div class="line">val r = x.split(&quot;,&quot;) /* 将V拆分 */</div><div class="line"> </div><div class="line">a += r(0).toInt /* 计算 */</div><div class="line"> </div><div class="line">b += r(1).toInt</div><div class="line"> </div><div class="line">c += r(2).toInt</div><div class="line"> </div><div class="line">&#125;</div><div class="line"> </div><div class="line">s&quot;$k,$a,$b,$c&quot; /* 拼字符串，返回数据 */</div><div class="line"> </div><div class="line">&#125;.foreach(println)</div></pre></td></tr></table></figure>
-<h1 id="map排序"><a href="#map排序" class="headerlink" title="map排序"></a>map排序</h1><p><a href="http://www.aboutyun.com/thread-22942-1-1.html" target="_blank" rel="noopener">http://www.aboutyun.com/thread-22942-1-1.html</a></p>
-<p><a href="https://segmentfault.com/q/1010000006598344" target="_blank" rel="noopener">spark 怎么对一个内容为一批Iterable[Double]的Rdd中的每一个Iterable[Double]做增值修改</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/05/10/hadoop-spark/spark/combinebykey-groupbykey/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/05/10/hadoop-spark/spark/combinebykey-groupbykey/" class="post-title-link" itemprop="url">combinebykey-groupbykey</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-05-10 10:05:46" itemprop="dateCreated datePublished" datetime="2018-05-10T10:05:46+08:00">2018-05-10</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-03-18 10:08:59" itemprop="dateModified" datetime="2019-03-18T10:08:59+08:00">2019-03-18</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/spark/" itemprop="url" rel="index"><span itemprop="name">spark</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/05/10/hadoop-spark/spark/combinebykey-groupbykey/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/05/10/hadoop-spark/spark/combinebykey-groupbykey/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="combineByKey"><a href="#combineByKey" class="headerlink" title="combineByKey"></a>combineByKey</h1><p><a href="https://blog.csdn.net/bitcarmanlee/article/details/77573560" target="_blank" rel="noopener">https://blog.csdn.net/bitcarmanlee/article/details/77573560</a></p>
-<p>函数原型</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">def combineByKey[C](</div><div class="line">      createCombiner: V =&gt; C,</div><div class="line">      mergeValue: (C, V) =&gt; C,</div><div class="line">      mergeCombiners: (C, C) =&gt; C): RDD[(K, C)] = self.withScope &#123;</div><div class="line">    combineByKeyWithClassTag(createCombiner, mergeValue, mergeCombiners)(null)</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
-<p>可以看出，combineByKey是典型的K-V类型的算子，而且是一个transformation操作。与其他transformation操作一样，combineByKey也不会触发作业的提交。combineByKey函数主要有三个参数，而且这三个参数都是函数：<br>createCombiner: V =&gt; C 产生一个combiner的函数，将RDD[K,V]中的V转换成一个新的值C1<br>mergeValue: (C, V) =&gt; C 合并value的函数，将一个C1类型的值与一个V合并成一个新的C类型的值，假设这个新的C类型的值为C2<br>mergeCombiners: (C, C) =&gt; C) 将两个C类型的值合并为一个C类型的值</p>
-<p>整个函数最后的输出为RDD[(K, C)]</p>
-<p>示例</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">def t1(sc: SparkContext) = &#123;</div><div class="line">        val inputpath = &quot;XXX&quot;</div><div class="line">        sc.textFile(inputpath).</div><div class="line">            filter &#123; x =&gt;</div><div class="line">                val lines = x.split(&quot;\t&quot;)</div><div class="line">                lines.length == 2 &amp;&amp; lines(1).length &gt; 0</div><div class="line">            &#125;</div><div class="line">            .map &#123; x =&gt;</div><div class="line">                val lines = x.split(&quot;\t&quot;)</div><div class="line">                val (city, uuid) = (lines(0), lines(1))</div><div class="line">                (city, uuid)</div><div class="line">            &#125;</div><div class="line">            .combineByKey((v: String) =&gt; &#123;</div><div class="line">                val set = new java.util.HashSet[String]()</div><div class="line">                set.add(v)</div><div class="line">                set</div><div class="line">            &#125;,</div><div class="line">                (x: java.util.HashSet[String], v: String) =&gt; &#123;</div><div class="line">                    x.add(v)</div><div class="line">                    x</div><div class="line">                &#125;,</div><div class="line">                (x: java.util.HashSet[String], y: java.util.HashSet[String]) =&gt; &#123;</div><div class="line">                    x.addAll(y)</div><div class="line">                    x</div><div class="line">                &#125;)</div><div class="line">            .map(x =&gt; (x._1, x._2.size()))</div><div class="line">            .sortBy(_._2, false)</div><div class="line">            .take(10)</div><div class="line">            .foreach(println)</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>转自<a href="https://www.iteblog.com/archives/1357.html" target="_blank" rel="noopener">https://www.iteblog.com/archives/1357.html</a></p>
-<p>你可以想象一个非常大的数据集，在使用 reduceByKey 和 groupByKey 时他们的差别会被放大更多倍。以下函数应该优先于 groupByKey ：<br>　　（1）、<code>combineByKey</code>组合数据，但是组合之后的数据类型与输入时值的类型不一样。<br>　　（2）、<code>foldByKey</code>合并每一个 key 的所有值，在级联函数和“零值”中使用。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/05/04/hadoop-spark/spark/SparkSession-SparkContext/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/05/04/hadoop-spark/spark/SparkSession-SparkContext/" class="post-title-link" itemprop="url">SparkSession-SparkContext</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-05-04 09:40:26 / 修改时间：09:45:23" itemprop="dateCreated datePublished" datetime="2018-05-04T09:40:26+08:00">2018-05-04</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/spark/" itemprop="url" rel="index"><span itemprop="name">spark</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/05/04/hadoop-spark/spark/SparkSession-SparkContext/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/05/04/hadoop-spark/spark/SparkSession-SparkContext/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>参考：<a href="http://www.cnblogs.com/Forever-Road/p/7351245.html" target="_blank" rel="noopener">SparkContext、SparkConf和SparkSession的初始化</a></p>
-<h1 id="SparkContext和SparkConf"><a href="#SparkContext和SparkConf" class="headerlink" title="SparkContext和SparkConf"></a>SparkContext和SparkConf</h1><p>任何<a href="http://lib.csdn.net/base/spark" target="_blank" rel="noopener">Spark</a>程序都是SparkContext开始的，SparkContext的初始化需要一个SparkConf对象，SparkConf包含了Spark集群配置的各种参数。</p>
-<h1 id="SparkSession"><a href="#SparkSession" class="headerlink" title="SparkSession"></a>SparkSession</h1><p>Since:</p>
-<p>2.0.0</p>
-<p>SparkSession实质上是SQLContext和HiveContext的组合（未来可能还会加上StreamingContext），所以在SQLContext和HiveContext上可用的API在SparkSession上同样是可以使用的。SparkSession内部封装了sparkContext，所以计算实际上是由sparkContext完成的。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">val warehouseLocation = &quot;D:\\workSpace_IDEA_NEW\\day2017-10-12\\spark-warehouse&quot;</div><div class="line">      //todo:1、创建sparkSession</div><div class="line">     val spark: SparkSession = SparkSession.builder()</div><div class="line">       .appName(&quot;HiveSupport&quot;)</div><div class="line">       .master(&quot;local[2]&quot;)</div><div class="line">       .config(&quot;spark.sql.warehouse.dir&quot;, warehouseLocation)</div><div class="line">       .enableHiveSupport() //开启支持hive</div><div class="line">       .getOrCreate()</div><div class="line">    spark.sparkContext.setLogLevel(&quot;WARN&quot;)  //设置日志输出级别</div></pre></td></tr></table></figure>
-<p>SparkSession从csv读数据</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">val dq = sparkSession.read.option(&quot;header&quot;, &quot;true&quot;).csv(&quot;src/main/resources/scala.csv&quot;)</div></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/05/03/hadoop-spark/spark/spark读写hive/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2258,6 +1718,540 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/04/10/地理信息挖掘/地图开放平台/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/04/10/地理信息挖掘/地图开放平台/" class="post-title-link" itemprop="url">地图开放平台</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-04-10 18:28:24 / 修改时间：18:38:15" itemprop="dateCreated datePublished" datetime="2018-04-10T18:28:24+08:00">2018-04-10</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/地理信息挖掘/" itemprop="url" rel="index"><span itemprop="name">地理信息挖掘</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/04/10/地理信息挖掘/地图开放平台/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/04/10/地理信息挖掘/地图开放平台/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="百度地图开放平台"><a href="#百度地图开放平台" class="headerlink" title="百度地图开放平台"></a>百度地图开放平台</h1><p><a href="http://lbsyun.baidu.com/index.php?title=open/dev-res" target="_blank" rel="noopener">http://lbsyun.baidu.com/index.php?title=open/dev-res</a></p>
+<h1 id="高德开放平台"><a href="#高德开放平台" class="headerlink" title="高德开放平台"></a>高德开放平台</h1><p><a href="http://lbs.amap.com/api/webservice/guide/api/search" target="_blank" rel="noopener">http://lbs.amap.com/api/webservice/guide/api/search</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/04/09/工具和环境/idea技巧/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/04/09/工具和环境/idea技巧/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-04-09 23:04:41" itemprop="dateCreated datePublished" datetime="2018-04-09T23:04:41+08:00">2018-04-09</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-02-13 14:00:10" itemprop="dateModified" datetime="2019-02-13T14:00:10+08:00">2019-02-13</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/04/09/工具和环境/idea技巧/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/04/09/工具和环境/idea技巧/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="cannot-resolve-symbol"><a href="#cannot-resolve-symbol" class="headerlink" title="cannot resolve symbol"></a>cannot resolve symbol</h1><p>用idea跑spark的单机项目，总是提示</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cannot resolve symbol apache</div></pre></td></tr></table></figure>
+<p>但maven的.m2目录下是有这个文件夹和jar包的，试过网上各种办法，包括</p>
+<p>点击File | Invalidate Caches，清理了缓存重启IDEA</p>
+<p>最后结果是靠</p>
+<p>项目右键-&gt;maven -&gt; Reimport</p>
+<h1 id="go-to-class"><a href="#go-to-class" class="headerlink" title="go to class"></a>go to class</h1><p>command+o</p>
+<h1 id="代码片段快捷键"><a href="#代码片段快捷键" class="headerlink" title="代码片段快捷键"></a>代码片段快捷键</h1><p><a href="https://blog.csdn.net/tiantiandjava/article/details/42269173" target="_blank" rel="noopener">https://blog.csdn.net/tiantiandjava/article/details/42269173</a></p>
+<p>更多的提示可以CTRL + j 可以查看，mac系统下是command＋j。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/04/08/hadoop-spark/spark/使用spark DStream的foreachRDD时要注意哪些坑/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/04/08/hadoop-spark/spark/使用spark DStream的foreachRDD时要注意哪些坑/" class="post-title-link" itemprop="url">使用spark DStream的foreachRDD时要注意哪些坑</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-04-08 11:49:59 / 修改时间：11:52:28" itemprop="dateCreated datePublished" datetime="2018-04-08T11:49:59+08:00">2018-04-08</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/spark/" itemprop="url" rel="index"><span itemprop="name">spark</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/04/08/hadoop-spark/spark/使用spark DStream的foreachRDD时要注意哪些坑/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/04/08/hadoop-spark/spark/使用spark DStream的foreachRDD时要注意哪些坑/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>转自<a href="https://www.cnblogs.com/realzjx/p/5853094.html" target="_blank" rel="noopener">使用spark DStream的foreachRDD时要注意哪些坑？</a></p>
+<p>答案： 两个坑， 性能坑和线程坑</p>
+<p>DStream是抽象类，它把连续的数据流拆成很多的小RDD数据块， 这叫做“微批次”， spark的流式处理， 都是“微批次处理”。 DStream内部实现上有批次处理时间间隔，滑动窗口等机制来保证每个微批次的时间间隔里， 数据流以RDD的形式发送给spark做进一步处理。因此， 在一个为批次的处理时间间隔里， DStream只产生一个RDD。 </p>
+<p>可以利用dstream.foreachRDD把数据发送给外部系统。 但是想要正确地， 有效率的使用它， 必须理解一下背后的机制。通常向外部系统写数据需要一个Connection对象（通过它与外部服务器交互）。程序员可能会想当然地在spark上创建一个connection对象， 然后在spark线程里用这个对象来存RDD。比如下面的程序：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">dstream.foreachRDD &#123; rdd =&gt;</div><div class="line">  val connection = createNewConnection()  // executed at the driver</div><div class="line">  rdd.foreach &#123; record =&gt;</div><div class="line">    connection.send(record) // executed at the worker</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个代码会产生执行错误， 因为rdd是分布式存储的，它是一个数据结构，它是一组指向集群数据的指针， <strong>rdd.foreach会在集群里的不同机器上创建spark工作线程， 而connection对象则不会在集群里的各个机器之间传递， 所以有些spark工作线程就会产生connection对象没有被初始化的执行错误</strong>。 解决的办法可以是在spark worker里为每一个worker创建一个connection对象， 但是如果你这么做， 程序要为每一条record创建一次connection，显然效率和性能都非常差。</p>
+<p>另一种改进方法是<strong>为每个spark分区创建一个connection对象，同时维护一个全局的静态的连接池对象</strong>， 这样就可以最好的复用connection。 另外需要注意： 虽然有多个connection对象， 但在同一时间只有一个connection.send(record)执行， 因为在同一个时间里， 只有 一个微批次的RDD产生出来。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">dstream.foreachRDD &#123; rdd =&gt;</div><div class="line">  rdd.foreachPartition &#123; partitionOfRecords =&gt;</div><div class="line">    // ConnectionPool is a static, lazily initialized pool of connections</div><div class="line">    val connection = ConnectionPool.getConnection()</div><div class="line">    partitionOfRecords.foreach(record =&gt; connection.send(record))</div><div class="line">    ConnectionPool.returnConnection(connection)  // return to the pool for future reuse</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>有人问了个问题，为什么foreachRDD里有两层嵌套的foreach? 为什么dstream.foreachRDD里还要再套一层rdd.foreach</p>
+<p>可以这么理解, DStream.foreachRDD 是一个输出操作符，它返回的不是RDD里的一行数据， 而是输出DStream后面的RDD,在一个时间间隔里， 只返回一个RDD的“微批次”， 为了访问这个“微批次”RDD里的数据， 我们还需要在RDD数据对象上做进一步操作.。 参考下面的代码实例， 更容易理解。</p>
+<p>给顶一个 RDD [Security, Prices]数据结构</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">dstream.foreachRDD &#123; pricesRDD =&gt;  // Loop over RDD</div><div class="line"></div><div class="line">  val x= pricesRDD.count</div><div class="line"></div><div class="line">  if (x &gt; 0)  // RDD has data</div><div class="line"></div><div class="line">  &#123;</div><div class="line"></div><div class="line">    for(line &lt;- pricesRDD.collect.toArray) // Look for each record in the RDD</div><div class="line"></div><div class="line">    &#123;</div><div class="line"></div><div class="line">      var index = line._2.split(&apos;,&apos;).view(0).toInt          // That is the index</div><div class="line"></div><div class="line">      var timestamp = line._2.split(&apos;,&apos;).view(1).toString   // This is the timestamp from source</div><div class="line"></div><div class="line">      var security =  line._2.split(&apos;,&apos;).view(12.toString   // This is the name of the security</div><div class="line"></div><div class="line">      var price = line._2.split(&apos;,&apos;).view(3).toFloat        // This is the price of the security</div><div class="line"></div><div class="line">      if (price.toFloat &gt; 90.0)</div><div class="line"></div><div class="line">      &#123;</div><div class="line"></div><div class="line">       // Do something here</div><div class="line"></div><div class="line">       // Sent notification, write to HDFS etc</div><div class="line"></div><div class="line">      &#125;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">  &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -2304,7 +2298,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">316</span>
+                    <span class="site-state-item-count">313</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2357,7 +2351,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">18</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">20</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>

@@ -328,220 +328,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/机器学习笔记-熵/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/03/17/机器学习/机器学习笔记-熵/" class="post-title-link" itemprop="url">熵</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-03-17 20:50:31" itemprop="dateCreated datePublished" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
-            </span>
-          
-
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/17/机器学习/机器学习笔记-熵/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/机器学习笔记-熵/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="熵"><a href="#熵" class="headerlink" title="熵"></a>熵</h1><h1 id="1、什么是信息量？"><a href="#1、什么是信息量？" class="headerlink" title="1、什么是信息量？"></a>1、什么是信息量？</h1><p>假设X是一个<strong>离散型随机变量</strong>，其取值集合为X，概率分布函数为$p(x) = P(X=x), x \in X$，定义$X=x_0$的信息量为：</p>
-<script type="math/tex; mode=display">
-I(x_0) = -log(p(x_0))</script><p>可以理解为，一个事件发生的概率越大，携带的信息量越小。当$p(x_0)=1$时，信息量为0。</p>
-<h1 id="2、什么是熵？"><a href="#2、什么是熵？" class="headerlink" title="2、什么是熵？"></a>2、什么是熵？</h1><p>第一，假设存在一个随机变量<img src="https://www.zhihu.com/equation?tex=x" alt="x">，可以问一下自己当我们观测到该随机变量的一个样本时，我们可以接受到多少信息量呢？毫无疑问，当我们被告知一个极不可能发生的事情发生了，那我们就接收到了更多的信息；而当我们观测到一个非常常见的事情发生了，那么我们就接收到了相对较少的信息量。因此信息的量度应该依赖于概率分布<img src="https://www.zhihu.com/equation?tex=p%28x%29" alt="p(x)">，<strong>所以说熵<img src="https://www.zhihu.com/equation?tex=h%28x%29" alt="h(x)">的定义应该是概率的单调函数。</strong> </p>
-<p>第二，假设两个随机变量<img src="https://www.zhihu.com/equation?tex=x" alt="x">和<img src="https://www.zhihu.com/equation?tex=y" alt="y">是相互独立的，那么分别观测两个变量得到的信息量应该和同时观测两个变量的信息量是相同的，即：$H(X+Y)=H(X)+H(Y)$ 。而从概率上来讲，两个独立随机变量就意味着$p(x,y)=p(x)p(y)$，所以此处可以得出结论熵的定义<img src="https://www.zhihu.com/equation?tex=h" alt="h">应该是概率<img src="https://www.zhihu.com/equation?tex=p%28x%29" alt="p(x)">的<img src="https://www.zhihu.com/equation?tex=log%0A" alt="log">函数。因此一个随机变量的熵可以使用如下定义：</p>
-<p>设$X \in {x_1,x_2,…,x_n} $ 为一个离散随机变量，其概率分布为$P(X=x_i)=p_i$。则X的熵为</p>
-<script type="math/tex; mode=display">
-H(X)=-\sum_{i=1}^np_i\log p_i</script><p>其中，当$p_i=0$时，熵为0。</p>
-<p><strong>此处的负号仅仅是用来保证熵（即信息量）是正数或者为零。而<img src="https://www.zhihu.com/equation?tex=log" alt="log">函数基的选择是任意的</strong>（<em>信息论中基常常选择为2，因此信息的单位为比特bits；而机器学习中基常常选择为自然常数，因此单位常常被称为nats</em>）。</p>
-<p><strong>用熵来评价整个随机变量x平均的信息量，而平均最好的量度就是随机变量的期望</strong>。</p>
-<p>熵的取值范围是</p>
-<script type="math/tex; mode=display">
-0 \leq H(X) \leq \log n</script><p>两个随机变量一起发生的熵就是<strong>联合熵</strong></p>
-<h1 id="3、条件熵"><a href="#3、条件熵" class="headerlink" title="3、条件熵"></a>3、条件熵</h1><p>设$Y \in {y_1,y_2,…,y_m}$为随机变量，在已知X的条件下，Y的条件熵（conditional entropy）为</p>
-<script type="math/tex; mode=display">
-H(Y|X) = \sum_{i=1}^n p(x_i)H(Y|X=x_i) = -\sum_{i=1}^np(x_i) \sum_{j=1}^m p(y_j|x_i)\log p(y_j|x_i)</script><p>表示在已知X的条件下，Y的条件概率分布的熵对X的数学期望。</p>
-<h1 id="4、交叉熵"><a href="#4、交叉熵" class="headerlink" title="4、交叉熵"></a>4、交叉熵</h1><p>例如：</p>
-<blockquote>
-<p>箱子里面有小球任意个，但其中1/2是橙色球，1/4是紫色球，1/8是蓝色球及1/8是青色球。我从中拿出一个球，你猜我手中的球是什么颜色的？</p>
-</blockquote>
-<p>知道了每种颜色小球的比例，比如橙色占比二分之一，如果我猜橙色，很有可能第一次就猜中了。所以，根据策略2，1/2的概率是橙色球，小明需要猜一次，1/4的概率是紫色球，小明需要猜两次，1/8的概率是蓝色球，小明需要猜三次，1/8的概率是青色球，小明需要猜三次，所以小明预期的猜题次数为：</p>
-<p>H = 1/2 <em> 1 + 1/4 </em> 2 + 1/8 <em> 3 + 1/8 </em> 3=  1.75</p>
-<p>针对概率为p的小球，需要猜球的次数$=log_2 \frac 1 p$ 。例如1/8是蓝色球，次数就是3。则预期的猜题次数就是熵。</p>
-<p>因此，每个系统都会有一个真实的概率分布（<strong>真实分布</strong>）。根据真实分布，可以找到一个最优策略，以最小的代价消除系统的不确定性，这个不确定性的值就是熵（比如猜题次数，编码长度）。</p>
-<p>如果小明不知道真实分布，认为小球的分布为（1/4，1/4，1/4，1/4），这个分布就是<strong>非真实分布</strong>。此时，小明猜中任何一种颜色的小球都需要猜两次，即1/2 <em> 2 + 1/4 </em> 2 + 1/8 <em> 2 + 1/8 </em> 2 = 2。</p>
-<p>当我们使用非最优策略消除系统的不确定性，所需要付出的努力的大小我们该如何去衡量呢？</p>
-<p>这就需要引入<strong>交叉熵，其用来衡量在给定的真实分布下，使用非真实分布所指定的策略消除系统的不确定性所需要付出的努力的大小</strong>。</p>
-<p>交叉熵的公式为：</p>
-<script type="math/tex; mode=display">
-H = \sum_{i=1}^N p_i log_2 \frac 1 {q_i}</script><p>其中，$p_i$是真实分布，$q_i$是非真实分布。</p>
-<p>因此，交叉熵越低，这个策略就越好，最低的交叉熵也就是使用了真实分布所计算出来的信息熵，因为此时$p_i=q_i$ ，交叉熵 = 信息熵。</p>
-<p>这也是为什么在机器学习中的分类算法中，我们总是最小化交叉熵，因为交叉熵越低，就证明由算法所产生的策略最接近最优策略，也间接证明我们算法所算出的非真实分布越接近真实分布。</p>
-<h1 id="5、相对熵-KL散度"><a href="#5、相对熵-KL散度" class="headerlink" title="5、相对熵(KL散度)"></a>5、相对熵(KL散度)</h1><p>最后，我们如何去衡量不同策略之间的差异呢？这就需要用到<strong>相对熵，其用来衡量两个取值为正的函数或概率分布之间的差异</strong>，即：</p>
-<script type="math/tex; mode=display">
-KL(f(x) || g(x)) = \sum_{x \in X} f(x) * log_2 \frac {f(x)} {g(x)}</script><p>现在，假设我们想知道某个策略和最优策略之间的差异，我们就可以用相对熵来衡量这两者之间的差异。即，相对熵 = 某个策略的交叉熵 - 信息熵（根据系统真实分布计算而得的信息熵，为最优策略），公式如下：</p>
-<script type="math/tex; mode=display">
-KL(p || q) = H(p,q)-H(p) = \sum_{k=1}^N p_k log_2 \frac 1 {q_k} - \sum_{k=1}^N p_k log_2 \frac 1 {p_k} = \sum_{k=1}^N p_k log_2 \frac {p_k} {q_k}</script><p><strong>互信息是相对熵的特殊形式</strong>。如果变量不是独立的，可以通过考察联合概率分布和边缘概率分布乘积之间的相对熵，来判断它们是否接近于相对独立。此时，散度表示为</p>
-<p><img src="http://img.blog.csdn.net/20170619101153719?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcGlwaXNvcnJ5/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></p>
-<p>这被称为变量 x 和变量 y 之间的互信息( mutual information )。根据 Kullback-Leibler 散度的性质,我们看到 I[x, y] ≥ 0 ,当且仅当 x 和 y 相互独立时等号成立。经过推导，得互信息公式为</p>
-<p><img src="http://www.2cto.com/uploadfile/Collfiles/20160617/20160617091445667.png" alt=""></p>
-<p>互信息不能归一化，对连续变量计算不方便（连续变量需要先离散化）。最大信息系数首先寻求一种最优离散化方式，然后把互信息取值转换成一种度量方式，取值区间在[0，1]。</p>
-<h1 id="6、总结"><a href="#6、总结" class="headerlink" title="6、总结"></a>6、总结</h1><p>熵：衡量不确定性的度量</p>
-<p>联合熵：X、Y在一起时的不确定性度量</p>
-<p>条件熵：X确定时，Y的不确定性度量。也就是在X发生的前提下，新发生Y带来的熵</p>
-<p>交叉熵：衡量p和q的相似性，越小越相似</p>
-<p>相对熵：p和q的不相似度量。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/人群画像/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1083,176 +869,6 @@ KL(p || q) = H(p,q)-H(p) = \sum_{k=1}^N p_k log_2 \frac 1 {q_k} - \sum_{k=1}^N p
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/BP神经网络/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/03/17/机器学习/BP神经网络/" class="post-title-link" itemprop="url">BP神经网络</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-03-17 20:50:31" itemprop="dateCreated datePublished" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
-            </span>
-          
-
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/17/机器学习/BP神经网络/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/BP神经网络/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://www.cnblogs.com/wjy-lulu/p/6511616.html" target="_blank" rel="noopener">https://www.cnblogs.com/wjy-lulu/p/6511616.html</a></p>
-<p><a href="https://www.cnblogs.com/biaoyu/archive/2015/06/20/4591304.html" target="_blank" rel="noopener">https://www.cnblogs.com/biaoyu/archive/2015/06/20/4591304.html</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/SVM/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1574,6 +1190,176 @@ A_{m \times n} = U_{m \times m}\Sigma_{m \times n} V^T_{n \times n} \approx U_{m
 <p>对于奇异值,它跟我们特征分解中的特征值类似，在奇异值矩阵中也是按照从大到小排列，而且奇异值的减少特别的快，在很多情况下，前10%甚至1%的奇异值的和就占了全部的奇异值之和的99%以上的比例。也就是说，我们也可以用最大的k个的奇异值和对应的左右奇异向量来近似描述矩阵。也就是说：</p>
 <script type="math/tex; mode=display">
 A_{m \times n} = U_{m \times m}\Sigma_{m \times n} V^T_{n \times n} \approx U_{m \times k}\Sigma_{k \times k} V^T_{k \times n}</script>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/BP神经网络/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/03/17/机器学习/BP神经网络/" class="post-title-link" itemprop="url">BP神经网络</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-03-17 20:50:31" itemprop="dateCreated datePublished" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
+            </span>
+          
+
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/03/17/机器学习/BP神经网络/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/BP神经网络/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://www.cnblogs.com/wjy-lulu/p/6511616.html" target="_blank" rel="noopener">https://www.cnblogs.com/wjy-lulu/p/6511616.html</a></p>
+<p><a href="https://www.cnblogs.com/biaoyu/archive/2015/06/20/4591304.html" target="_blank" rel="noopener">https://www.cnblogs.com/biaoyu/archive/2015/06/20/4591304.html</a></p>
+
           
         
       
@@ -2394,6 +2180,178 @@ Table(i) = w_k, \ where\  m_i \in I_k,\ i=1,2,...,M-1</script><p>那么，采样
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/Elastic Search/iau的ES使用场景/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/03/17/Elastic Search/iau的ES使用场景/" class="post-title-link" itemprop="url">iau的ES使用场景</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-03-17 20:50:31" itemprop="dateCreated datePublished" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
+            </span>
+          
+
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Elastic-Search/" itemprop="url" rel="index"><span itemprop="name">Elastic Search</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/03/17/Elastic Search/iau的ES使用场景/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/Elastic Search/iau的ES使用场景/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>比较brand和competitor的交叉人群</p>
+<p>分别算出brand和competitor的人群，然后再计算包含brand和competitor的人群，就得出交叉人群。</p>
+<p>比较brand和competitor的距离</p>
+<p>就是比较brand和competitor的每个产品和对方关键词的相关度。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -2440,7 +2398,7 @@ Table(i) = w_k, \ where\  m_i \in I_k,\ i=1,2,...,M-1</script><p>那么，采样
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">316</span>
+                    <span class="site-state-item-count">313</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2493,7 +2451,11 @@ Table(i) = w_k, \ where\  m_i \in I_k,\ i=1,2,...,M-1</script><p>那么，采样
                     
                       
                     
-                    <span class="site-state-item-count">18</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">20</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>

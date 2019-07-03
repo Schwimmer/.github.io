@@ -328,571 +328,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/06/22/hadoop-spark/mllib/卡方/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/06/22/hadoop-spark/mllib/卡方/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-06-22 10:18:47" itemprop="dateCreated datePublished" datetime="2018-06-22T10:18:47+08:00">2018-06-22</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-06-25 16:39:38" itemprop="dateModified" datetime="2018-06-25T16:39:38+08:00">2018-06-25</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/06/22/hadoop-spark/mllib/卡方/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/06/22/hadoop-spark/mllib/卡方/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>1.6版本下可行的例子</p>
-<p>参考<a href="http://dblab.xmu.edu.cn/blog/1475-2/" target="_blank" rel="noopener">http://dblab.xmu.edu.cn/blog/1475-2/</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">// 创造实验数据，这是一个具有三个样本，四个特征维度的数据集，标签有1，0两种。1.6中，标签必须是double型</div><div class="line">val df = sqlContext.createDataFrame(Seq(</div><div class="line">       (1, Vectors.dense(0.0, 0.0, 18.0, 1.0), 1.0),</div><div class="line">       (2, Vectors.dense(0.0, 1.0, 12.0, 0.0), 0.0),</div><div class="line">       (3, Vectors.dense(1.0, 0.0, 15.0, 0.1), 0.0)</div><div class="line">         )).toDF(&quot;id&quot;, &quot;features&quot;, &quot;label&quot;)</div><div class="line">    df.show()</div><div class="line"></div><div class="line">    val selector = new ChiSqSelector().</div><div class="line">      setNumTopFeatures(1).</div><div class="line">      setFeaturesCol(&quot;features&quot;).</div><div class="line">      setLabelCol(&quot;label&quot;).</div><div class="line">      setOutputCol(&quot;selected_features&quot;)</div><div class="line">    val select_model = selector.fit(df)</div><div class="line">    val result = select_model.transform(df)</div><div class="line">    result.show()</div></pre></td></tr></table></figure>
-<p>源码的主要逻辑在</p>
-<p><code>ChiSqTest.chiSquaredFeatures</code></p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">chiSquaredFeatures</span></span>(data: <span class="type">RDD</span>[<span class="type">LabeledPoint</span>],</div><div class="line">      methodName: <span class="type">String</span> = <span class="type">PEARSON</span>.name): <span class="type">Array</span>[<span class="type">ChiSqTestResult</span>] = &#123;</div><div class="line">    <span class="keyword">val</span> maxCategories = <span class="number">10000</span></div><div class="line">    <span class="keyword">val</span> numCols = data.first().features.size</div><div class="line">    <span class="keyword">val</span> results = <span class="keyword">new</span> <span class="type">Array</span>[<span class="type">ChiSqTestResult</span>](numCols)</div><div class="line">    <span class="keyword">var</span> labels: <span class="type">Map</span>[<span class="type">Double</span>, <span class="type">Int</span>] = <span class="literal">null</span></div><div class="line">    <span class="comment">// at most 1000 columns at a time</span></div><div class="line">    <span class="keyword">val</span> batchSize = <span class="number">1000</span></div><div class="line">    <span class="keyword">var</span> batch = <span class="number">0</span></div><div class="line">    <span class="keyword">while</span> (batch * batchSize &lt; numCols) &#123;</div><div class="line">      <span class="comment">// The following block of code can be cleaned up and made public as</span></div><div class="line">      <span class="comment">// chiSquared(data: RDD[(V1, V2)])</span></div><div class="line">      <span class="keyword">val</span> startCol = batch * batchSize</div><div class="line">      <span class="keyword">val</span> endCol = startCol + math.min(batchSize, numCols - startCol)</div><div class="line">      <span class="keyword">val</span> pairCounts = data.mapPartitions &#123; iter =&gt;</div><div class="line">        <span class="keyword">val</span> distinctLabels = mutable.<span class="type">HashSet</span>.empty[<span class="type">Double</span>]</div><div class="line">        <span class="keyword">val</span> allDistinctFeatures: <span class="type">Map</span>[<span class="type">Int</span>, mutable.<span class="type">HashSet</span>[<span class="type">Double</span>]] =</div><div class="line">          <span class="type">Map</span>((startCol until endCol).map(col =&gt; (col, mutable.<span class="type">HashSet</span>.empty[<span class="type">Double</span>])): _*)</div><div class="line">        <span class="keyword">var</span> i = <span class="number">1</span></div><div class="line">        iter.flatMap &#123; <span class="keyword">case</span> <span class="type">LabeledPoint</span>(label, features) =&gt;</div><div class="line">          <span class="keyword">if</span> (i % <span class="number">1000</span> == <span class="number">0</span>) &#123;</div><div class="line">            <span class="keyword">if</span> (distinctLabels.size &gt; maxCategories) &#123;</div><div class="line">              <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">SparkException</span>(<span class="string">s"Chi-square test expect factors (categorical values) but "</span></div><div class="line">                + <span class="string">s"found more than <span class="subst">$maxCategories</span> distinct label values."</span>)</div><div class="line">            &#125;</div><div class="line">            allDistinctFeatures.foreach &#123; <span class="keyword">case</span> (col, distinctFeatures) =&gt;</div><div class="line">              <span class="keyword">if</span> (distinctFeatures.size &gt; maxCategories) &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">SparkException</span>(<span class="string">s"Chi-square test expect factors (categorical values) but "</span></div><div class="line">                  + <span class="string">s"found more than <span class="subst">$maxCategories</span> distinct values in column <span class="subst">$col</span>."</span>)</div><div class="line">              &#125;</div><div class="line">            &#125;</div><div class="line">          &#125;</div><div class="line">          i += <span class="number">1</span></div><div class="line">          distinctLabels += label</div><div class="line">          features.toArray.view.zipWithIndex.slice(startCol, endCol).map &#123; <span class="keyword">case</span> (feature, col) =&gt;</div><div class="line">            allDistinctFeatures(col) += feature</div><div class="line">            (col, feature, label)</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">      &#125;.countByValue()</div><div class="line"></div><div class="line">      <span class="keyword">if</span> (labels == <span class="literal">null</span>) &#123;</div><div class="line">        <span class="comment">// Do this only once for the first column since labels are invariant across features.</span></div><div class="line">        labels =</div><div class="line">          pairCounts.keys.filter(_._1 == startCol).map(_._3).toArray.distinct.zipWithIndex.toMap</div><div class="line">      &#125;</div><div class="line">      <span class="keyword">val</span> numLabels = labels.size</div><div class="line">      pairCounts.keys.groupBy(_._1).map &#123; <span class="keyword">case</span> (col, keys) =&gt;</div><div class="line">        <span class="keyword">val</span> features = keys.map(_._2).toArray.distinct.zipWithIndex.toMap</div><div class="line">        <span class="keyword">val</span> numRows = features.size</div><div class="line">        <span class="keyword">val</span> contingency = <span class="keyword">new</span> <span class="type">BDM</span>(numRows, numLabels, <span class="keyword">new</span> <span class="type">Array</span>[<span class="type">Double</span>](numRows * numLabels))</div><div class="line">        keys.foreach &#123; <span class="keyword">case</span> (_, feature, label) =&gt;</div><div class="line">          <span class="keyword">val</span> i = features(feature)</div><div class="line">          <span class="keyword">val</span> j = labels(label)</div><div class="line">          contingency(i, j) += pairCounts((col, feature, label))</div><div class="line">        &#125;</div><div class="line">        results(col) = chiSquaredMatrix(<span class="type">Matrices</span>.fromBreeze(contingency), methodName)</div><div class="line">      &#125;</div><div class="line">      batch += <span class="number">1</span></div><div class="line">    &#125;</div><div class="line">    results</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
-<p>报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Chi-squared statistic undefined for input matrix due to0 sum in column [1].</div></pre></td></tr></table></figure>
-<p>某个特征都是0的时候，卡方不能计算</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/06/21/机器学习/特征工程-ChiMerge/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/06/21/机器学习/特征工程-ChiMerge/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-06-21 15:48:34 / 修改时间：16:04:09" itemprop="dateCreated datePublished" datetime="2018-06-21T15:48:34+08:00">2018-06-21</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/06/21/机器学习/特征工程-ChiMerge/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/06/21/机器学习/特征工程-ChiMerge/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>ChiMerge 是监督的、自底向上的(即基于合并的)数据离散化方法。它依赖于<a href="http://wiki.mbalib.com/wiki/%E5%8D%A1%E6%96%B9%E6%A3%80%E9%AA%8C" target="_blank" rel="noopener">卡方分析</a>：具有最小卡方值的相邻区间合并在一起，直到满足确定的停止准则。</p>
-<p>基本思想：对于精确的离散化，相对类频率在一个区间内应当完全一致。因此，如果两个相邻的区间具有非常类似的类分布，则这两个区间可以合并；否则，它们应当保持分开。而低卡方值表明它们具有相似的类分布。</p>
-<p>参考：</p>
-<ol>
-<li><p><a href="http://www.aaai.org/Papers/AAAI/1992/AAAI92-019.pdf" target="_blank" rel="noopener">ChiMerge:Discretization of numeric attributs</a></p>
-</li>
-<li><p><a href="http://www.docin.com/p-239779866.html" target="_blank" rel="noopener">Chi算法</a></p>
-</li>
-</ol>
-<p><a href="http://www.aaai.org/Papers/AAAI/1992/AAAI92-019.pdf" target="_blank" rel="noopener">参考1</a>的要点：</p>
-<p>1、 最简单的离散算法是： 等宽区间。 从最小值到最大值之间,，均分为N等份， 这样， 如果 A, B为最小最大值， 则每个区间的长度为w=(B-A) / N, 则区间边界值为 A+W, A+2W, …. A+(N-1)W.</p>
-<p>2、 还有一种简单算法，等频区间。区间的边界值要经过选择，使得每个区间包含大致相等的实例数量。比如说 N=10，每个区间应该包含大约10%的实例。</p>
-<p>3、 以上两种算法有弊端：比如，等宽区间划分，划分为5区间，最高工资为50000，则所有工资低于10000的人都被划分到同一区间。等频区间可能正好相反，所有工资高于</p>
-<p>50000的人都会被划分到50000这一区间中。这两种算法都忽略了实例所属的类型，落在正确区间里的偶然性很大。</p>
-<p>4、 C4、CART、PVM算法在离散属性时会考虑类信息，但是是在算法实施的过程中间，而不是在预处理阶段。例如，C4算法（ID3决策树系列的一种），将数值属性离散为两个区间，而取这两个区间时，该属性的信息增益是最大的。</p>
-<p>5、 评价一个离散算法是否有效很难，因为不知道什么是最高效的分类。</p>
-<p>6、 离散化的主要目的是：消除数值属性以及为数值属性定义准确的类别。</p>
-<p>7、 高质量的离散化应该是：区间内一致，区间之间区分明显。</p>
-<p>8、 ChiMerge算法用卡方统计量来决定相邻区间是否一致或者是否区别明显。如果经过验证，类别属性独立于其中一个区间，则这个区间就要被合并。</p>
-<p>9、 ChiMerge算法包括2部分：1、初始化，2、自底向上合并，当满足停止条件的时候，区间合并停止。</p>
-<p>第一步：初始化</p>
-<p>根据要离散的属性对实例进行排序：每个实例属于一个区间</p>
-<p>第二步：合并区间，又包括两步骤</p>
-<p>(1) 计算每一对相邻区间的卡方值</p>
-<p>(2) 将卡方值最小的一对区间合并</p>
-<p>预先设定一个卡方的阈值，在阈值之下的区间都合并，阈值之上的区间保持分区间。</p>
-<p>卡方的计算公式：<img src="http://www.forkosh.com/mathtex.cgi?%20%5Cchi%5E2=%5Csum%5E%7Bm%7D_%7Bi=1%7D%5Csum%5E%7Bk%7D_%7Bj=1%7D%5Cfrac%7B(A_%7Bij%7D-E_%7Bij%7D" alt="img">%5E2%7D%7BE_%7Bij%7D%7D)</p>
-<p>参数说明；</p>
-<p>m=2（每次比较的区间数是2个）</p>
-<p>k=类别数量</p>
-<p>Aij=第i区间第j类的实例的数量</p>
-<p>Ri=第i区间的实例数量</p>
-<p><img src="http://www.forkosh.com/mathtex.cgi?%20R_i=%5Csum_%7Bj=1%7D%5Ek%20Aij" alt="img"></p>
-<p>Cj=第j类的实例数量</p>
-<p><img src="http://www.forkosh.com/mathtex.cgi?%20C_j=%5Csum_%7Bi=1%7D%5Em%20A_%7Bij%7D" alt="img"></p>
-<p>N=总的实例数量</p>
-<p><img src="http://www.forkosh.com/mathtex.cgi?%20N=%5Csum_%7Bj=1%7D%5Ek%20C_j" alt="img"></p>
-<p>Eij= Aij的期望频率</p>
-<p><img src="http://www.forkosh.com/mathtex.cgi?%20E_%7Bij%7D=%5Cfrac%7BN_i*C_j%7D%7BN%7D" alt="img"></p>
-<p>10、卡方阈值的确定：先选择显著性水平，再由公式得到对应的卡方值。得到卡方值需要指定自由度，自由度比类别数量小1。例如，有3类，自由度为2，则90%置信度（10%显著性水平)下，卡方的值为4.6。阈值的意义在于，类别和属性独立时，有90%的可能性，计算得到的卡方值会小于4.6，这样，大于阈值的卡方值就说明属性和类不是相互独立的，不能合并。如果阈值选的大，区间合并就会进行很多次，离散后的区间数量少、区间大。用户可以不考虑卡方阈值，此时，用户可以考虑这两个参数：最小区间数，最大区间数。用户指定区间数量的上限和下限，最多几个区间，最少几个区间。</p>
-<p>11、 ChiMerge算法推荐使用.90、.95、.99置信度，最大区间数取10到15之间.</p>
-<p>举例：</p>
-<p>取<a href="http://archive.ics.uci.edu/ml/datasets/Iris" target="_blank" rel="noopener">鸢尾花数据集</a>作为待离散化的数据集合，使用ChiMerge算法，对四个数值属性分别进行离散化，令停机准则为max_interval=6。（韩家炜 数据挖掘概念与技术 第三版 习题3.12）</p>
-<p>下面是我用Python写的程序，大致分两步：</p>
-<p>第一步，整理数据</p>
-<p>读入鸢尾花数据集，构造可以在其上使用ChiMerge的数据结构，即, 形如 [(‘4.3’, [1, 0, 0]), (‘4.4’, [3, 0, 0]),…]的列表，每一个元素是一个元组，元组的第一项是字符串，表示区间左端点，元组的第二项是一个列表，表示在此区间各个类别的实例数目；</p>
-<p>第二步，离散化</p>
-<p>使用ChiMerge方法对具有最小卡方值的相邻区间进行合并，直到满足最大区间数(max_interval)为6</p>
-<p>程序最终返回区间的分裂点</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div></pre></td><td class="code"><pre><div class="line">__author__ = <span class="string">"Yinlong Zhao (zhaoyl[at]sjtu[dot]edu[dot]cn)"</span></div><div class="line">__date__ = <span class="string">"$Date: 2013/03/25 $"</span></div><div class="line"></div><div class="line"><span class="keyword">from</span> time <span class="keyword">import</span> ctime</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">read</span><span class="params">(file)</span>:</span></div><div class="line">    <span class="string">'''read raw date from a file '''</span></div><div class="line">    Instances=[]</div><div class="line">    fp=open(file,<span class="string">'r'</span>)</div><div class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> fp:</div><div class="line">        line=line.strip(<span class="string">'\n'</span>) <span class="comment">#discard '\n'</span></div><div class="line">        <span class="keyword">if</span> line!=<span class="string">''</span>:</div><div class="line">            Instances.append(line.split(<span class="string">','</span>))</div><div class="line">    fp.close()</div><div class="line">    <span class="keyword">return</span>(Instances)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">split</span><span class="params">(Instances,i)</span>:</span></div><div class="line">    <span class="string">''' Split the 4 attibutes, collect the data of the ith attributs, i=0,1,2,3</span></div><div class="line">        Return a list like [['0.2', 'Iris-setosa'], ['0.2', 'Iris-setosa'],...]'''</div><div class="line">    log=[]</div><div class="line">    <span class="keyword">for</span> r <span class="keyword">in</span> Instances:</div><div class="line">        log.append([r[i],r[<span class="number">4</span>]])</div><div class="line">    <span class="keyword">return</span>(log)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">count</span><span class="params">(log)</span>:</span></div><div class="line">    <span class="string">'''Count the number of the same record</span></div><div class="line">       Return a list like [['4.3', 'Iris-setosa', 1], ['4.4', 'Iris-setosa', 3],...]'''</div><div class="line">    log_cnt=[]</div><div class="line">    log.sort(key=<span class="keyword">lambda</span> log:log[<span class="number">0</span>])</div><div class="line">    i=<span class="number">0</span></div><div class="line">    <span class="keyword">while</span>(i&lt;len(log)):</div><div class="line">        cnt=log.count(log[i])<span class="comment">#count the number of the same record</span></div><div class="line">        record=log[i][:]</div><div class="line">        record.append(cnt) <span class="comment"># the return value of append is None</span></div><div class="line">        log_cnt.append(record)</div><div class="line">        i+=cnt<span class="comment">#count the next diferent item </span></div><div class="line">    <span class="keyword">return</span>(log_cnt)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">build</span><span class="params">(log_cnt)</span>:</span></div><div class="line">    <span class="string">'''Build a structure (a list of truples) that ChiMerge algorithm works properly on it '''</span></div><div class="line">    log_dic=&#123;&#125;</div><div class="line">    <span class="keyword">for</span> record <span class="keyword">in</span> log_cnt:</div><div class="line">        <span class="keyword">if</span> record[<span class="number">0</span>] <span class="keyword">not</span> <span class="keyword">in</span> log_dic.keys():</div><div class="line">            log_dic[record[<span class="number">0</span>]]=[<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>]</div><div class="line">        <span class="keyword">if</span> record[<span class="number">1</span>]==<span class="string">'Iris-setosa'</span>:</div><div class="line">            log_dic[record[<span class="number">0</span>]][<span class="number">0</span>]=record[<span class="number">2</span>]</div><div class="line">        <span class="keyword">elif</span> record[<span class="number">1</span>]==<span class="string">'Iris-versicolor'</span>:</div><div class="line">            log_dic[record[<span class="number">0</span>]][<span class="number">1</span>]=record[<span class="number">2</span>]</div><div class="line">        <span class="keyword">elif</span> record[<span class="number">1</span>]==<span class="string">'Iris-virginica'</span>:</div><div class="line">            log_dic[record[<span class="number">0</span>]][<span class="number">2</span>]=record[<span class="number">2</span>]</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            <span class="keyword">raise</span> TypeError(<span class="string">"Data Exception"</span>)</div><div class="line">    log_truple=sorted(log_dic.items())</div><div class="line">    <span class="keyword">return</span>(log_truple)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">collect</span><span class="params">(Instances,i)</span>:</span></div><div class="line">    <span class="string">''' collect data for discretization '''</span></div><div class="line">    log=split(Instances,i)</div><div class="line">    log_cnt=count(log)</div><div class="line">    log_tuple=build(log_cnt)</div><div class="line">    <span class="keyword">return</span>(log_tuple)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">combine</span><span class="params">(a,b)</span>:</span></div><div class="line">    <span class="string">'''  a=('4.4', [3, 1, 0]), b=('4.5', [1, 0, 2])</span></div><div class="line">         combine(a,b)=('4.4', [4, 1, 2])  '''</div><div class="line">    c=a[:] <span class="comment"># c[0]=a[0]</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(a[<span class="number">1</span>])):</div><div class="line">        c[<span class="number">1</span>][i]+=b[<span class="number">1</span>][i]</div><div class="line">    <span class="keyword">return</span>(c)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">chi2</span><span class="params">(A)</span>:</span></div><div class="line">    <span class="string">''' Compute the Chi-Square value '''</span>   </div><div class="line">    m=len(A);</div><div class="line">    k=len(A[<span class="number">0</span>])</div><div class="line">    R=[]</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(m):</div><div class="line">        sum=<span class="number">0</span></div><div class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(k):</div><div class="line">            sum+=A[i][j]</div><div class="line">        R.append(sum)</div><div class="line">    C=[]</div><div class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> range(k):</div><div class="line">        sum=<span class="number">0</span></div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(m):</div><div class="line">            sum+=A[i][j]</div><div class="line">        C.append(sum)</div><div class="line">    N=<span class="number">0</span></div><div class="line">    <span class="keyword">for</span> ele <span class="keyword">in</span> C:</div><div class="line">        N+=ele</div><div class="line">    res=<span class="number">0</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(m):</div><div class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(k):</div><div class="line">            Eij=R[i]*C[j]/N</div><div class="line">            <span class="keyword">if</span> Eij!=<span class="number">0</span>:</div><div class="line">                res=res+(A[i][j]-Eij)**<span class="number">2</span>/Eij</div><div class="line">    <span class="keyword">return</span> res</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">ChiMerge</span><span class="params">(log_tuple,max_interval)</span>:</span></div><div class="line">    <span class="string">''' ChiMerge algorithm  '''</span></div><div class="line">    <span class="string">''' Return split points '''</span>    </div><div class="line">    num_interval=len(log_tuple)</div><div class="line">    <span class="keyword">while</span>(num_interval&gt;max_interval):               </div><div class="line">        num_pair=num_interval<span class="number">-1</span></div><div class="line">        chi_values=[]</div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(num_pair):</div><div class="line">            arr=[log_tuple[i][<span class="number">1</span>],log_tuple[i+<span class="number">1</span>][<span class="number">1</span>]]</div><div class="line">            chi_values.append(chi2(arr))</div><div class="line">        min_chi=min(chi_values) <span class="comment"># get the minimum chi value </span></div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(num_pair<span class="number">-1</span>,<span class="number">-1</span>,<span class="number">-1</span>): <span class="comment"># treat from the last one</span></div><div class="line">            <span class="keyword">if</span> chi_values[i]==min_chi:</div><div class="line">                log_tuple[i]=combine(log_tuple[i],log_tuple[i+<span class="number">1</span>]) <span class="comment"># combine the two adjacent intervals</span></div><div class="line">                log_tuple[i+<span class="number">1</span>]=<span class="string">'Merged'</span></div><div class="line">        <span class="keyword">while</span>(<span class="string">'Merged'</span> <span class="keyword">in</span> log_tuple): <span class="comment"># remove the merged record</span></div><div class="line">            log_tuple.remove(<span class="string">'Merged'</span>)</div><div class="line">        num_interval=len(log_tuple)</div><div class="line">    split_points=[record[<span class="number">0</span>] <span class="keyword">for</span> record <span class="keyword">in</span> log_tuple]</div><div class="line">    <span class="keyword">return</span>(split_points)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">discrete</span><span class="params">(path)</span>:</span></div><div class="line">    <span class="string">''' ChiMerege discretization of the Iris plants database '''</span></div><div class="line">    Instances=read(path)</div><div class="line">    max_interval=<span class="number">6</span></div><div class="line">    num_log=<span class="number">4</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(num_log):</div><div class="line">        log_tuple=collect(Instances,i) <span class="comment"># collect data for discretization</span></div><div class="line">        split_points=ChiMerge(log_tuple,max_interval) <span class="comment"># discretize data using ChiMerge algorithm </span></div><div class="line">        print(split_points)</div><div class="line">    </div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__==<span class="string">'__main__'</span>:</div><div class="line">    print(<span class="string">'Start: '</span> + ctime())</div><div class="line">    discrete(<span class="string">'c:\\Python33\\iris.data'</span>)</div><div class="line">    print(<span class="string">'End: '</span> + ctime())</div></pre></td></tr></table></figure>
-<p>函数说明：</p>
-<ol>
-<li>collect(Instances,i)</li>
-</ol>
-<p>读入鸢尾花数据集，取第i个特征构造一个数据结构，以便使用ChiMerge算法。这个数据结构 形如 [(‘4.3’, [1, 0, 0]), (‘4.4’, [3, 0, 0]),…]的列表，每一个元素是一个元组，元组的第一项是字符串，表示区间左端点，元组的第二项是一个列表，表示在此区间各个类别的实例数目</p>
-<ol>
-<li>ChiMerge(log_tuple,max_interval)</li>
-</ol>
-<p>ChiMerge算法，返回区间的分裂点</p>
-<p>程序运行结果：</p>
-<p><strong>[python]</strong> <a href="https://blog.csdn.net/zhaoyl03/article/details/8689440#" target="_blank" rel="noopener">view plain</a> <a href="https://blog.csdn.net/zhaoyl03/article/details/8689440#" target="_blank" rel="noopener">copy</a></p>
-<ol>
-<li>>&gt;&gt; ================================ RESTART ================================  </li>
-<li>>&gt;&gt;   </li>
-<li>Start: Mon Mar 25 21:31:40 2013  </li>
-<li>[‘4.3’, ‘4.9’, ‘5.0’, ‘5.5’, ‘5.8’, ‘7.1’]  </li>
-<li>[‘2.0’, ‘2.3’, ‘2.5’, ‘2.9’, ‘3.0’, ‘3.4’]  </li>
-<li>[‘1.0’, ‘3.0’, ‘4.5’, ‘4.8’, ‘5.0’, ‘5.2’]  </li>
-<li>[‘0.1’, ‘1.0’, ‘1.4’, ‘1.7’, ‘1.8’, ‘1.9’]  </li>
-<li>End: Mon Mar 25 21:31:40 2013  </li>
-<li>>&gt;&gt;   </li>
-</ol>
-<p>本文出自：</p>
-<p><a href="http://blog.csdn.net/zhaoyl03/article/details/8689440" target="_blank" rel="noopener">http://blog.csdn.net/zhaoyl03/article/details/8689440</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/05/31/地理信息挖掘/地图轨迹平滑/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/05/31/地理信息挖掘/地图轨迹平滑/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-05-31 18:24:38 / 修改时间：18:26:07" itemprop="dateCreated datePublished" datetime="2018-05-31T18:24:38+08:00">2018-05-31</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/05/31/地理信息挖掘/地图轨迹平滑/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/05/31/地理信息挖掘/地图轨迹平滑/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://blog.csdn.net/lion888/article/details/52109101" target="_blank" rel="noopener">https://blog.csdn.net/lion888/article/details/52109101</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/05/31/地理信息挖掘/卡尔曼滤波/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1093,7 +528,7 @@ X_i=\Phi_{i-1}X_{i-1}+w_{i-1}</script><p>系统矩阵$\Phi_{i-1}$给出了上一
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/05/31/编程语言学习/JAVA/IP获取城市/" class="post-title-link" itemprop="url">未命名</a>
+                <a href="/2018/05/31/编程语言学习/JAVA/IP获取城市/" class="post-title-link" itemprop="url">IP获取城市</a>
               
             
           </h1>
@@ -1118,7 +553,7 @@ X_i=\Phi_{i-1}X_{i-1}+w_{i-1}</script><p>系统矩阵$\Phi_{i-1}$给出了上一
                 
               
 
-              <time title="创建时间：2018-05-31 14:57:51 / 修改时间：14:59:15" itemprop="dateCreated datePublished" datetime="2018-05-31T14:57:51+08:00">2018-05-31</time>
+              <time title="创建时间：2018-05-31 14:57:51" itemprop="dateCreated datePublished" datetime="2018-05-31T14:57:51+08:00">2018-05-31</time>
             </span>
           
 
@@ -1126,8 +561,33 @@ X_i=\Phi_{i-1}X_{i-1}+w_{i-1}</script><p>系统矩阵$\Phi_{i-1}$给出了上一
             
 
             
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-03 22:49:51" itemprop="dateModified" datetime="2019-07-03T22:49:51+08:00">2019-07-03</time>
+              </span>
+            
           
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JAVA/" itemprop="url" rel="index"><span itemprop="name">JAVA</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -2122,6 +1582,546 @@ X_i=\Phi_{i-1}X_{i-1}+w_{i-1}</script><p>系统矩阵$\Phi_{i-1}$给出了上一
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/05/10/hadoop-spark/spark/代码片段/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/05/10/hadoop-spark/spark/代码片段/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-05-10 12:58:55 / 修改时间：13:04:35" itemprop="dateCreated datePublished" datetime="2018-05-10T12:58:55+08:00">2018-05-10</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/05/10/hadoop-spark/spark/代码片段/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/05/10/hadoop-spark/spark/代码片段/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <hr>
+<hr>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">scala&gt; val cm = c.map(e =&gt; (e._1, (e._2, 0)))</div><div class="line">cm: org.apache.spark.rdd.RDD[(String, (Int, Int))] = MapPartitionsRDD[25] at map at &lt;console&gt;:23</div><div class="line"> </div><div class="line">scala&gt; val cr = cm.reduceByKey((e1, e2) =&gt; (e1._1 + e2._1, e1._1/2 + e2._1/2))</div><div class="line">cr: org.apache.spark.rdd.RDD[(String, (Int, Int))] = ShuffledRDD[26] at reduceByKey at &lt;console&gt;:25</div><div class="line"> </div><div class="line">scala&gt; val cz = cr.map(e =&gt; (e._1, e._2._1, e._2._2))</div><div class="line">cz: org.apache.spark.rdd.RDD[(String, Int, Int)] = MapPartitionsRDD[27] at map at &lt;console&gt;:27</div><div class="line"> </div><div class="line">scala&gt; cz.collect</div><div class="line">res15: Array[(String, Int, Int)] = Array((b,3,1), (a,6,2), (c,1,0))</div><div class="line"> </div><div class="line">scala&gt; val c = sc.parallelize(List((&quot;a&quot;, 1), (&quot;a&quot;, 2), (&quot;a&quot;, 3), (&quot;b&quot;, 1), (&quot;b&quot;, 2), (&quot;c&quot;, 1)))</div><div class="line">c: org.apache.spark.rdd.RDD[(String, Int)] = ParallelCollectionRDD[28] at parallelize at &lt;console&gt;:21</div></pre></td></tr></table></figure>
+<h1 id="sort"><a href="#sort" class="headerlink" title="sort"></a>sort</h1><p><a href="https://blog.csdn.net/greahuang/article/details/46551649" target="_blank" rel="noopener">https://blog.csdn.net/greahuang/article/details/46551649</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">scala&gt; val data = List((1,4),(4,8),(0,4),(12,8))</div><div class="line"></div><div class="line">scala&gt; val rdd = sc.parallelize(data)</div><div class="line"></div><div class="line">scala&gt; rdd.sortByKey().collect</div><div class="line"></div><div class="line">Array[(Int, Int)] = Array( (0,4), (1,4), (4,8),(12,8))</div><div class="line"></div><div class="line">重写 ordering</div><div class="line"></div><div class="line">implicit val st = new Ordering[Int]&#123;override def compare(a:Int,b:Int)=a.toString.compare(b.toString)&#125;</div><div class="line"></div><div class="line">Array[(Int, Int)] = Array((0,4), (1,4), (12,8), (4,8))</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">val rdd = rdd1.union(rdd2)</div><div class="line"></div><div class="line">if (!deleteDirIfExisted(fileSystem, new Path(&quot;hdfs:/**/result_t1&quot;))) &#123;</div><div class="line">  throw new BusinessRuntimeException(&quot;Output path in hdfs :%s delete failed!&quot;)</div><div class="line">&#125;</div><div class="line">rdd.sortBy(line =&gt;sortBasicRddAlgo(line),true,1)</div><div class="line">  .saveAsTextFile(&quot;hdfs:/**/result_t1&quot;)</div></pre></td></tr></table></figure>
+<p><a href="https://blog.csdn.net/jiangpeng59/article/details/52938465" target="_blank" rel="noopener">https://blog.csdn.net/jiangpeng59/article/details/52938465</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">val conf = new SparkConf()  </div><div class="line">val sc = new SparkContext(conf)  </div><div class="line">val array = Array((1, 6, 3), (2, 3, 3), (1, 1, 2), (1, 3, 5), (2, 1, 2))  </div><div class="line">val rdd1 = sc.parallelize(array)  </div><div class="line">//设置元素(e1,e3)为key,value为原来的整体  </div><div class="line">val rdd2 = rdd1.map(f =&gt; ((f._1, f._3), f))  </div><div class="line">//利用sortByKey排序的对key的特性  </div><div class="line">val rdd3 = rdd2.sortByKey()  </div><div class="line">val rdd4 = rdd3.values.collect</div></pre></td></tr></table></figure>
+<h1 id="groupbykey"><a href="#groupbykey" class="headerlink" title="groupbykey"></a>groupbykey</h1><p><a href="https://www.2cto.com/net/201704/623475.html" target="_blank" rel="noopener">https://www.2cto.com/net/201704/623475.html</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">/* 同类合并、计算 */</div><div class="line"> </div><div class="line">val source = Source.fromFile(&quot;E:test.txt&quot;).getLines.toArray</div><div class="line"> </div><div class="line">val sourceRDD = sc.parallelize(source) /* spark单机读取数据 */</div><div class="line"> </div><div class="line">sourceRDD.map &#123;</div><div class="line"> </div><div class="line">line =&gt;</div><div class="line"> </div><div class="line">val lines = line.split(&quot;,&quot;) /* 拆分数据 */</div><div class="line"> </div><div class="line">(s&quot;$&#123;lines(0)&#125;&quot;, s&quot;$&#123;lines(1)&#125;,$&#123;lines(2)&#125;,$&#123;lines(3)&#125;&quot;) /* 找出同样的数据为K，需要进行计算的为V，拼成map */</div><div class="line"> </div><div class="line">&#125;.groupByKey.map &#123; /* 分组，最重要的就是这，同类的数据分组到一起，后面只需要计算V了 */</div><div class="line"> </div><div class="line">case (k, v) =&gt;</div><div class="line"> </div><div class="line">var a, b, c = 0 /* 定义几个存数据的变量，恩，这很java，一般scala中很少见到var */</div><div class="line"> </div><div class="line">v.foreach &#123; /* 遍历需要计算的V */</div><div class="line"> </div><div class="line">x =&gt;</div><div class="line"> </div><div class="line">val r = x.split(&quot;,&quot;) /* 将V拆分 */</div><div class="line"> </div><div class="line">a += r(0).toInt /* 计算 */</div><div class="line"> </div><div class="line">b += r(1).toInt</div><div class="line"> </div><div class="line">c += r(2).toInt</div><div class="line"> </div><div class="line">&#125;</div><div class="line"> </div><div class="line">s&quot;$k,$a,$b,$c&quot; /* 拼字符串，返回数据 */</div><div class="line"> </div><div class="line">&#125;.foreach(println)</div></pre></td></tr></table></figure>
+<h1 id="map排序"><a href="#map排序" class="headerlink" title="map排序"></a>map排序</h1><p><a href="http://www.aboutyun.com/thread-22942-1-1.html" target="_blank" rel="noopener">http://www.aboutyun.com/thread-22942-1-1.html</a></p>
+<p><a href="https://segmentfault.com/q/1010000006598344" target="_blank" rel="noopener">spark 怎么对一个内容为一批Iterable[Double]的Rdd中的每一个Iterable[Double]做增值修改</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/05/10/hadoop-spark/spark/combinebykey-groupbykey/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/05/10/hadoop-spark/spark/combinebykey-groupbykey/" class="post-title-link" itemprop="url">combinebykey-groupbykey</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-05-10 10:05:46" itemprop="dateCreated datePublished" datetime="2018-05-10T10:05:46+08:00">2018-05-10</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-03-18 10:08:59" itemprop="dateModified" datetime="2019-03-18T10:08:59+08:00">2019-03-18</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/spark/" itemprop="url" rel="index"><span itemprop="name">spark</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/05/10/hadoop-spark/spark/combinebykey-groupbykey/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/05/10/hadoop-spark/spark/combinebykey-groupbykey/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="combineByKey"><a href="#combineByKey" class="headerlink" title="combineByKey"></a>combineByKey</h1><p><a href="https://blog.csdn.net/bitcarmanlee/article/details/77573560" target="_blank" rel="noopener">https://blog.csdn.net/bitcarmanlee/article/details/77573560</a></p>
+<p>函数原型</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">def combineByKey[C](</div><div class="line">      createCombiner: V =&gt; C,</div><div class="line">      mergeValue: (C, V) =&gt; C,</div><div class="line">      mergeCombiners: (C, C) =&gt; C): RDD[(K, C)] = self.withScope &#123;</div><div class="line">    combineByKeyWithClassTag(createCombiner, mergeValue, mergeCombiners)(null)</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p>可以看出，combineByKey是典型的K-V类型的算子，而且是一个transformation操作。与其他transformation操作一样，combineByKey也不会触发作业的提交。combineByKey函数主要有三个参数，而且这三个参数都是函数：<br>createCombiner: V =&gt; C 产生一个combiner的函数，将RDD[K,V]中的V转换成一个新的值C1<br>mergeValue: (C, V) =&gt; C 合并value的函数，将一个C1类型的值与一个V合并成一个新的C类型的值，假设这个新的C类型的值为C2<br>mergeCombiners: (C, C) =&gt; C) 将两个C类型的值合并为一个C类型的值</p>
+<p>整个函数最后的输出为RDD[(K, C)]</p>
+<p>示例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">def t1(sc: SparkContext) = &#123;</div><div class="line">        val inputpath = &quot;XXX&quot;</div><div class="line">        sc.textFile(inputpath).</div><div class="line">            filter &#123; x =&gt;</div><div class="line">                val lines = x.split(&quot;\t&quot;)</div><div class="line">                lines.length == 2 &amp;&amp; lines(1).length &gt; 0</div><div class="line">            &#125;</div><div class="line">            .map &#123; x =&gt;</div><div class="line">                val lines = x.split(&quot;\t&quot;)</div><div class="line">                val (city, uuid) = (lines(0), lines(1))</div><div class="line">                (city, uuid)</div><div class="line">            &#125;</div><div class="line">            .combineByKey((v: String) =&gt; &#123;</div><div class="line">                val set = new java.util.HashSet[String]()</div><div class="line">                set.add(v)</div><div class="line">                set</div><div class="line">            &#125;,</div><div class="line">                (x: java.util.HashSet[String], v: String) =&gt; &#123;</div><div class="line">                    x.add(v)</div><div class="line">                    x</div><div class="line">                &#125;,</div><div class="line">                (x: java.util.HashSet[String], y: java.util.HashSet[String]) =&gt; &#123;</div><div class="line">                    x.addAll(y)</div><div class="line">                    x</div><div class="line">                &#125;)</div><div class="line">            .map(x =&gt; (x._1, x._2.size()))</div><div class="line">            .sortBy(_._2, false)</div><div class="line">            .take(10)</div><div class="line">            .foreach(println)</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>转自<a href="https://www.iteblog.com/archives/1357.html" target="_blank" rel="noopener">https://www.iteblog.com/archives/1357.html</a></p>
+<p>你可以想象一个非常大的数据集，在使用 reduceByKey 和 groupByKey 时他们的差别会被放大更多倍。以下函数应该优先于 groupByKey ：<br>　　（1）、<code>combineByKey</code>组合数据，但是组合之后的数据类型与输入时值的类型不一样。<br>　　（2）、<code>foldByKey</code>合并每一个 key 的所有值，在级联函数和“零值”中使用。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/05/04/hadoop-spark/spark/SparkSession-SparkContext/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/05/04/hadoop-spark/spark/SparkSession-SparkContext/" class="post-title-link" itemprop="url">SparkSession-SparkContext</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-05-04 09:40:26 / 修改时间：09:45:23" itemprop="dateCreated datePublished" datetime="2018-05-04T09:40:26+08:00">2018-05-04</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/spark/" itemprop="url" rel="index"><span itemprop="name">spark</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/05/04/hadoop-spark/spark/SparkSession-SparkContext/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/05/04/hadoop-spark/spark/SparkSession-SparkContext/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>参考：<a href="http://www.cnblogs.com/Forever-Road/p/7351245.html" target="_blank" rel="noopener">SparkContext、SparkConf和SparkSession的初始化</a></p>
+<h1 id="SparkContext和SparkConf"><a href="#SparkContext和SparkConf" class="headerlink" title="SparkContext和SparkConf"></a>SparkContext和SparkConf</h1><p>任何<a href="http://lib.csdn.net/base/spark" target="_blank" rel="noopener">Spark</a>程序都是SparkContext开始的，SparkContext的初始化需要一个SparkConf对象，SparkConf包含了Spark集群配置的各种参数。</p>
+<h1 id="SparkSession"><a href="#SparkSession" class="headerlink" title="SparkSession"></a>SparkSession</h1><p>Since:</p>
+<p>2.0.0</p>
+<p>SparkSession实质上是SQLContext和HiveContext的组合（未来可能还会加上StreamingContext），所以在SQLContext和HiveContext上可用的API在SparkSession上同样是可以使用的。SparkSession内部封装了sparkContext，所以计算实际上是由sparkContext完成的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">val warehouseLocation = &quot;D:\\workSpace_IDEA_NEW\\day2017-10-12\\spark-warehouse&quot;</div><div class="line">      //todo:1、创建sparkSession</div><div class="line">     val spark: SparkSession = SparkSession.builder()</div><div class="line">       .appName(&quot;HiveSupport&quot;)</div><div class="line">       .master(&quot;local[2]&quot;)</div><div class="line">       .config(&quot;spark.sql.warehouse.dir&quot;, warehouseLocation)</div><div class="line">       .enableHiveSupport() //开启支持hive</div><div class="line">       .getOrCreate()</div><div class="line">    spark.sparkContext.setLogLevel(&quot;WARN&quot;)  //设置日志输出级别</div></pre></td></tr></table></figure>
+<p>SparkSession从csv读数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">val dq = sparkSession.read.option(&quot;header&quot;, &quot;true&quot;).csv(&quot;src/main/resources/scala.csv&quot;)</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -2168,7 +2168,7 @@ X_i=\Phi_{i-1}X_{i-1}+w_{i-1}</script><p>系统矩阵$\Phi_{i-1}$给出了上一
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">316</span>
+                    <span class="site-state-item-count">313</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2221,7 +2221,11 @@ X_i=\Phi_{i-1}X_{i-1}+w_{i-1}</script><p>系统矩阵$\Phi_{i-1}$给出了上一
                     
                       
                     
-                    <span class="site-state-item-count">18</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">20</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
