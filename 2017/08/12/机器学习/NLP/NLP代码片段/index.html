@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="根据标点拆分句子[AtomSplit.java](../../../../gitlab/user-gene/nlp/src/main/java/com/buzzinate/nlp/segment/AtomSplit.java) 12345678910111213141516171819202122	public static List&amp;lt;String&amp;gt; splitSentences(St">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP代码片段">
+<meta property="og:url" content="https://schwimmer.github.io/2017/08/12/机器学习/NLP/NLP代码片段/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="根据标点拆分句子[AtomSplit.java](../../../../gitlab/user-gene/nlp/src/main/java/com/buzzinate/nlp/segment/AtomSplit.java) 12345678910111213141516171819202122	public static List&amp;lt;String&amp;gt; splitSentences(St">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-03-31T02:28:31.009Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NLP代码片段">
+<meta name="twitter:description" content="根据标点拆分句子[AtomSplit.java](../../../../gitlab/user-gene/nlp/src/main/java/com/buzzinate/nlp/segment/AtomSplit.java) 12345678910111213141516171819202122	public static List&amp;lt;String&amp;gt; splitSentences(St">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://schwimmer.github.io/2017/08/12/机器学习/NLP/NLP代码片段/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>NLP代码片段 | Schwimmer's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br/>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br/>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-sitemap">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br/>Sitemap</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-commonweal">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/404/" rel="section"><i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br/>Commonweal 404</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/08/12/机器学习/NLP/NLP代码片段/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">NLP代码片段
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-08-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-08-12T11:49:53+08:00">2017-08-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-03-31 10:28:31" itemprop="dateModified" datetime="2018-03-31T10:28:31+08:00">2018-03-31</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="根据标点拆分句子"><a href="#根据标点拆分句子" class="headerlink" title="根据标点拆分句子"></a>根据标点拆分句子</h1><p><code>[AtomSplit.java](../../../../gitlab/user-gene/nlp/src/main/java/com/buzzinate/nlp/segment/AtomSplit.java)</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;String&gt; <span class="title">splitSentences</span><span class="params">(String text)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">		List&lt;String&gt; result = <span class="keyword">new</span> ArrayList&lt;String&gt;();</div><div class="line">		<span class="keyword">int</span> last = <span class="number">0</span>;</div><div class="line">		<span class="keyword">for</span> (Term term: Segment.split(text, ToAnalysis.USE_USER_DEFINE)) &#123;</div><div class="line">			<span class="keyword">if</span> (sentenceNatures.contains(term.getNatrue().natureStr) &amp;&amp; !isWhiteSpace(term.getName())) &#123;</div><div class="line">				<span class="keyword">if</span> (term.getOffe() &gt; last) &#123;</div><div class="line">					String snippet = text.substring(last, term.getOffe()).trim();  </div><div class="line">					<span class="keyword">if</span> (snippet.length() &gt; <span class="number">0</span>) result.add(snippet);</div><div class="line">				&#125;</div><div class="line">				last = term.getOffe() + term.getName().length();</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">if</span> (text.length() &gt; last) &#123;</div><div class="line">			String snippet = text.substring(last, text.length()).trim();  </div><div class="line">			<span class="keyword">if</span> (snippet.length() &gt; <span class="number">0</span>) result.add(snippet);</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> result;</div><div class="line">	&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isWhiteSpace</span><span class="params">(String term)</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> term.length() == <span class="number">1</span> &amp;&amp; (Character.isWhitespace(term.charAt(<span class="number">0</span>)) || term.charAt(<span class="number">0</span>) == <span class="string">'-'</span>);</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<h1 id="给每个字符标记类型"><a href="#给每个字符标记类型" class="headerlink" title="给每个字符标记类型"></a>给每个字符标记类型</h1><p><code>[AtomSplit.java](../../../../gitlab/user-gene/nlp/src/main/java/com/buzzinate/nlp/segment/AtomSplit.java)</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 给每个字符标记类型，如</div><div class="line"> * [2011(AT_NUM), -(AT_PUNC), 34(AT_NUM), -(AT_PUNC), 43(AT_NUM),  (AT_PUNC), 为(AT_CHINESE), 中(AT_CHINESE), 国(AT_CHINESE)]</div><div class="line"> * <span class="doctag">@param</span> text</div><div class="line"> * <span class="doctag">@return</span></div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Atom&gt; <span class="title">split</span><span class="params">(String text)</span> </span>&#123;</div><div class="line">	List&lt;Atom&gt; result = <span class="keyword">new</span> ArrayList&lt;Atom&gt;();</div><div class="line">	<span class="keyword">int</span> last = <span class="number">0</span>;</div><div class="line">	AtomType t = AtomType.AT_LETTER;</div><div class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; text.length(); i++) &#123;</div><div class="line">		<span class="keyword">char</span> ch = text.charAt(i);</div><div class="line">		<span class="keyword">if</span> (TextUtil.isAlphaOrDigit(ch) || ch == <span class="string">'\''</span> || ch == <span class="string">'.'</span>) &#123;</div><div class="line">			<span class="keyword">if</span> (i == last) &#123;</div><div class="line">				t = AtomType.AT_LETTER;</div><div class="line">				<span class="keyword">if</span> (Character.isDigit(ch)) t = AtomType.AT_NUM;</div><div class="line">			&#125;</div><div class="line">		&#125; <span class="keyword">else</span> <span class="keyword">if</span> (Character.isLetter(ch)) &#123;</div><div class="line">			<span class="keyword">if</span> (i &gt; last) result.add(<span class="keyword">new</span> Atom(text.substring(last, i), t));</div><div class="line">			result.add(<span class="keyword">new</span> Atom(text.substring(i, i+<span class="number">1</span>), AtomType.AT_CHINESE));</div><div class="line">			last = i + <span class="number">1</span>;</div><div class="line">		&#125; <span class="keyword">else</span> &#123;</div><div class="line">			<span class="keyword">if</span> (i &gt; last) result.add(<span class="keyword">new</span> Atom(text.substring(last, i), t));</div><div class="line">			<span class="keyword">if</span> (t != AtomType.AT_LETTER || !isConnectChar(ch)) result.add(<span class="keyword">new</span> Atom(text.substring(i, i+<span class="number">1</span>), AtomType.AT_PUNC));</div><div class="line">			last = i + <span class="number">1</span>;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">if</span> (text.length() &gt; last) result.add(<span class="keyword">new</span> Atom(text.substring(last, text.length()), t));</div><div class="line">	<span class="keyword">return</span> result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="判断字符串的语言"><a href="#判断字符串的语言" class="headerlink" title="判断字符串的语言"></a>判断字符串的语言</h1><p>有两个开源的项目可以使用。一个是Apache Tika，一个是language-detection。language-detection是google Code上开源的一个语言检测软件包，不折不扣的日货，但使用起来非常方便，其project链接如下：<a href="http://code.google.com/p/language-detection" target="_blank" rel="noopener">http://code.google.com/p/language-detection</a>。基本上，你只需要引用langdetect.jar和其依赖的jsonic-1.3.0.jar（也是日货）即可</p>
+<p><code>/rocket-iaudience-api/src/main/java/com/iclick/rocket/iaudience/api/common/LanguageDetectUtil.java</code></p>
+<h2 id="判断中文字符"><a href="#判断中文字符" class="headerlink" title="判断中文字符"></a>判断中文字符</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Character.isLetter()</div></pre></td></tr></table></figure>
+<h2 id="判断是否为英文或数字"><a href="#判断是否为英文或数字" class="headerlink" title="判断是否为英文或数字"></a>判断是否为英文或数字</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isAlphaOrDigit</span><span class="params">(<span class="keyword">char</span> ch)</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span> (ch &gt;= <span class="string">'a'</span> &amp;&amp; ch &lt;= <span class="string">'z'</span>)</div><div class="line">		<span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">	<span class="keyword">if</span> (ch &gt;= <span class="string">'A'</span> &amp;&amp; ch &lt;= <span class="string">'Z'</span>)</div><div class="line">		<span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">	<span class="keyword">if</span> (ch &gt;= <span class="string">'0'</span> &amp;&amp; ch &lt;= <span class="string">'9'</span>)</div><div class="line">		<span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">	<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="去除停用词"><a href="#去除停用词" class="headerlink" title="去除停用词"></a>去除停用词</h1><p>java</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ArrayList&lt;String&gt; wordSet = new ArrayList&lt;String&gt;();</div><div class="line">// 自动去除停用词</div><div class="line">		for (Term term : NotionalTokenizer.segment(simplePhrase)) &#123;</div><div class="line">			wordSet.add(term.word);</div><div class="line">		&#125;</div></pre></td></tr></table></figure>
+<p>python参考gensim</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">documents = [&quot;Human machine interface for lab abc computer applications&quot;,</div><div class="line">             &quot;A survey of user opinion of computer system response time&quot;,</div><div class="line">             &quot;The EPS user interface management system&quot;,</div><div class="line">             &quot;System and human system engineering testing of EPS&quot;,              </div><div class="line">             &quot;Relation of user perceived response time to error measurement&quot;,</div><div class="line">             &quot;The generation of random binary unordered trees&quot;,</div><div class="line">             &quot;The intersection graph of paths in trees&quot;,</div><div class="line">             &quot;Graph minors IV Widths of trees and well quasi ordering&quot;,</div><div class="line">             &quot;Graph minors A survey&quot;]</div><div class="line">#停用词</div><div class="line">stoplist = set(&apos;for a of the and to in&apos;.split())</div><div class="line">texts = [ [word for word in document.lower().split() if word not in stoplist ]</div><div class="line">         for document in documents ]</div><div class="line">         </div><div class="line">#删除仅出现一次的词</div><div class="line">from collections import defaultdict</div><div class="line">frequency = defaultdict(int)</div><div class="line">for text in texts:</div><div class="line">    for token in text:</div><div class="line">        frequency[token] += 1</div><div class="line">texts = [[token for token in text if frequency[token] &gt; 1 ] for text in texts]</div></pre></td></tr></table></figure>
+<h1 id="分词"><a href="#分词" class="headerlink" title="分词"></a>分词</h1><p>python用jieba</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> jieba</div><div class="line">sentences = [<span class="string">"我喜欢吃土豆"</span>,<span class="string">"土豆是个百搭的东西"</span>,<span class="string">"我不喜欢今天雾霾的北京"</span>]</div><div class="line">words=[]</div><div class="line"><span class="keyword">for</span> doc <span class="keyword">in</span> sentences:</div><div class="line"><span class="comment"># 结巴分词返回的是一个generator，要用list()转成list</span></div><div class="line">    words.append(list(jieba.cut(doc)))</div><div class="line"><span class="keyword">print</span> words</div></pre></td></tr></table></figure>
+<p>java用hanlp</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ArrayList&lt;String&gt; wordSet = new ArrayList&lt;String&gt;();</div><div class="line">// 自动去除停用词</div><div class="line">		for (Term term : NotionalTokenizer.segment(simplePhrase)) &#123;</div><div class="line">			wordSet.add(term.word);</div><div class="line">		&#125;</div></pre></td></tr></table></figure>
+<h1 id="英文词干化"><a href="#英文词干化" class="headerlink" title="英文词干化"></a>英文词干化</h1>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/12/机器学习/NLP/新词发现spark/" rel="next" title="spark笔记-新词发现">
+                <i class="fa fa-chevron-left"></i> spark笔记-新词发现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/12/机器学习/NLP/Gensim-Tutorials/" rel="prev" title="Gensim-Tutorials">
+                Gensim-Tutorials <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Schwimmer</p>
+              <div class="site-description motion-element" itemprop="description">Record and Think!</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">315</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">55</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#根据标点拆分句子"><span class="nav-number">1.</span> <span class="nav-text">根据标点拆分句子</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#给每个字符标记类型"><span class="nav-number">2.</span> <span class="nav-text">给每个字符标记类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#判断字符串的语言"><span class="nav-number">3.</span> <span class="nav-text">判断字符串的语言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#判断中文字符"><span class="nav-number">3.1.</span> <span class="nav-text">判断中文字符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#判断是否为英文或数字"><span class="nav-number">3.2.</span> <span class="nav-text">判断是否为英文或数字</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#去除停用词"><span class="nav-number">4.</span> <span class="nav-text">去除停用词</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分词"><span class="nav-number">5.</span> <span class="nav-text">分词</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#英文词干化"><span class="nav-number">6.</span> <span class="nav-text">英文词干化</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.5.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.2.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

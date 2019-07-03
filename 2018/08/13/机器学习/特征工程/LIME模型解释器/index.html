@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="LIME模型解释器LIME的git https://github.com/marcotcr/lime LIME：一种解释机器学习模型的方法 https://blog.csdn.net/happytofly/article/details/80122605#0-tsina-1-96833-397232819ff9a47a7b7e80a40613cfe1 https://blog.csdn.net/h">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Schwimmer&#39;s Blog">
+<meta property="og:url" content="https://schwimmer.github.io/2018/08/13/机器学习/特征工程/LIME模型解释器/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="LIME模型解释器LIME的git https://github.com/marcotcr/lime LIME：一种解释机器学习模型的方法 https://blog.csdn.net/happytofly/article/details/80122605#0-tsina-1-96833-397232819ff9a47a7b7e80a40613cfe1 https://blog.csdn.net/h">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-08-27T12:08:28.004Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Schwimmer&#39;s Blog">
+<meta name="twitter:description" content="LIME模型解释器LIME的git https://github.com/marcotcr/lime LIME：一种解释机器学习模型的方法 https://blog.csdn.net/happytofly/article/details/80122605#0-tsina-1-96833-397232819ff9a47a7b7e80a40613cfe1 https://blog.csdn.net/h">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://schwimmer.github.io/2018/08/13/机器学习/特征工程/LIME模型解释器/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title> | Schwimmer's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br/>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br/>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-sitemap">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br/>Sitemap</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-commonweal">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/404/" rel="section"><i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br/>Commonweal 404</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/08/13/机器学习/特征工程/LIME模型解释器/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-08-13 11:17:39" itemprop="dateCreated datePublished" datetime="2018-08-13T11:17:39+08:00">2018-08-13</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-08-27 20:08:28" itemprop="dateModified" datetime="2018-08-27T20:08:28+08:00">2018-08-27</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="LIME模型解释器"><a href="#LIME模型解释器" class="headerlink" title="LIME模型解释器"></a>LIME模型解释器</h1><p>LIME的git</p>
+<p><a href="https://github.com/marcotcr/lime" target="_blank" rel="noopener">https://github.com/marcotcr/lime</a></p>
+<p>LIME：一种解释机器学习模型的方法</p>
+<p><a href="https://blog.csdn.net/happytofly/article/details/80122605#0-tsina-1-96833-397232819ff9a47a7b7e80a40613cfe1" target="_blank" rel="noopener">https://blog.csdn.net/happytofly/article/details/80122605#0-tsina-1-96833-397232819ff9a47a7b7e80a40613cfe1</a></p>
+<p><a href="https://blog.csdn.net/hero_fantao/article/details/51116165" target="_blank" rel="noopener">https://blog.csdn.net/hero_fantao/article/details/51116165</a></p>
+<p><a href="https://wenku.baidu.com/view/cbd7ebb36aec0975f46527d3240c844769eaa0ed.html" target="_blank" rel="noopener">https://wenku.baidu.com/view/cbd7ebb36aec0975f46527d3240c844769eaa0ed.html</a></p>
+<p><a href="https://blog.csdn.net/real_myth/article/details/51136832" target="_blank" rel="noopener">https://blog.csdn.net/real_myth/article/details/51136832</a></p>
+<p>jupyter示例</p>
+<p><a href="http://marcotcr.github.io/lime/tutorials/Lime%20-%20basic%20usage%2C%20two%20class%20case.html" target="_blank" rel="noopener">http://marcotcr.github.io/lime/tutorials/Lime%20-%20basic%20usage%2C%20two%20class%20case.html</a></p>
+<p><a href="https://blog.csdn.net/a358463121/article/details/52313585" target="_blank" rel="noopener">https://blog.csdn.net/a358463121/article/details/52313585</a> 论文翻译</p>
+<h1 id="Using-lime-on-xgboost-object"><a href="#Using-lime-on-xgboost-object" class="headerlink" title="Using lime() on xgboost object"></a>Using lime() on xgboost object</h1><p><a href="https://github.com/thomasp85/lime/issues/1" target="_blank" rel="noopener">https://github.com/thomasp85/lime/issues/1</a></p>
+<h1 id="Combining-LIME-with-Gradient-Boosted-Models"><a href="#Combining-LIME-with-Gradient-Boosted-Models" class="headerlink" title="Combining LIME with Gradient Boosted Models"></a>Combining LIME with Gradient Boosted Models</h1><p><a href="https://github.com/marcotcr/lime/issues/51" target="_blank" rel="noopener">https://github.com/marcotcr/lime/issues/51</a></p>
+<h1 id="lime-lightgbm"><a href="#lime-lightgbm" class="headerlink" title="lime+lightgbm"></a>lime+lightgbm</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> lightgbm <span class="keyword">as</span> lgb</div><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div><div class="line"></div><div class="line"><span class="comment"># load or create your dataset</span></div><div class="line">print(<span class="string">'Load data...'</span>)</div><div class="line">df_train = pd.read_csv(<span class="string">'../binary_classification/binary.train'</span>, header=<span class="keyword">None</span>, sep=<span class="string">'\t'</span>)</div><div class="line">df_test = pd.read_csv(<span class="string">'../binary_classification/binary.test'</span>, header=<span class="keyword">None</span>, sep=<span class="string">'\t'</span>)</div><div class="line">W_train = pd.read_csv(<span class="string">'../binary_classification/binary.train.weight'</span>, header=<span class="keyword">None</span>)[<span class="number">0</span>]</div><div class="line">W_test = pd.read_csv(<span class="string">'../binary_classification/binary.test.weight'</span>, header=<span class="keyword">None</span>)[<span class="number">0</span>]</div><div class="line"></div><div class="line">y_train = df_train[<span class="number">0</span>]</div><div class="line">y_test = df_test[<span class="number">0</span>]</div><div class="line">X_train = df_train.drop(<span class="number">0</span>, axis=<span class="number">1</span>)</div><div class="line">X_test = df_test.drop(<span class="number">0</span>, axis=<span class="number">1</span>)</div><div class="line"></div><div class="line">num_train, num_feature = X_train.shape</div><div class="line"></div><div class="line"><span class="comment"># create dataset for lightgbm</span></div><div class="line"><span class="comment"># if you want to re-use data, remember to set free_raw_data=False</span></div><div class="line">lgb_train = lgb.Dataset(X_train, y_train,</div><div class="line">                        weight=W_train, free_raw_data=<span class="keyword">False</span>)</div><div class="line">lgb_eval = lgb.Dataset(X_test, y_test, reference=lgb_train,</div><div class="line">                       weight=W_test, free_raw_data=<span class="keyword">False</span>)</div><div class="line"></div><div class="line"><span class="comment"># specify your configurations as a dict</span></div><div class="line">params = &#123;</div><div class="line">    <span class="string">'boosting_type'</span>: <span class="string">'gbdt'</span>,</div><div class="line">    <span class="string">'objective'</span>: <span class="string">'binary'</span>,</div><div class="line">    <span class="string">'metric'</span>: <span class="string">'binary_logloss'</span>,</div><div class="line">    <span class="string">'num_leaves'</span>: <span class="number">31</span>,</div><div class="line">    <span class="string">'learning_rate'</span>: <span class="number">0.05</span>,</div><div class="line">    <span class="string">'feature_fraction'</span>: <span class="number">0.9</span>,</div><div class="line">    <span class="string">'bagging_fraction'</span>: <span class="number">0.8</span>,</div><div class="line">    <span class="string">'bagging_freq'</span>: <span class="number">5</span>,</div><div class="line">    <span class="string">'verbose'</span>: <span class="number">0</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment"># generate a feature name</span></div><div class="line">feature_name = [<span class="string">'feature_'</span> + str(col) <span class="keyword">for</span> col <span class="keyword">in</span> range(num_feature)]</div><div class="line"></div><div class="line">print(<span class="string">'Start training...'</span>)</div><div class="line"><span class="comment"># feature_name and categorical_feature</span></div><div class="line">gbm = lgb.train(params,</div><div class="line">                lgb_train,</div><div class="line">                num_boost_round=<span class="number">10</span>,</div><div class="line">                valid_sets=lgb_train,  <span class="comment"># eval training data</span></div><div class="line">                feature_name=feature_name,</div><div class="line">                categorical_feature=[<span class="number">21</span>])</div><div class="line"></div><div class="line"><span class="comment"># check feature name</span></div><div class="line">print(<span class="string">'Finish first 10 rounds...'</span>)</div><div class="line">print(<span class="string">'7th feature name is:'</span>, repr(lgb_train.feature_name[<span class="number">6</span>]))</div><div class="line"></div><div class="line"><span class="keyword">import</span> lime</div><div class="line"><span class="keyword">import</span> lime.lime_tabular</div><div class="line">explainer = lime.lime_tabular.LimeTabularExplainer(X_train.as_matrix(), y_train.as_matrix(), feature_names=feature_name, discretize_continuous=<span class="keyword">True</span>, class_names=[<span class="string">'c0'</span>, <span class="string">'c1'</span>])</div><div class="line"></div><div class="line">xtest = X_test.as_matrix()</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">predict_fn</span><span class="params">(x)</span>:</span></div><div class="line">    preds = gbm.predict(x).reshape(<span class="number">-1</span>, <span class="number">1</span>)</div><div class="line">    p0 = <span class="number">1</span> - preds</div><div class="line">    <span class="keyword">return</span> np.hstack((p0, preds))</div><div class="line">    </div><div class="line">    i = <span class="number">0</span></div><div class="line">exp = explainer.explain_instance(xtest[i], predict_fn, num_features=<span class="number">10</span>)</div><div class="line"></div><div class="line">exp.show_in_notebook()</div></pre></td></tr></table></figure>
+<h1 id="lime-iris"><a href="#lime-iris" class="headerlink" title="lime + iris"></a>lime + iris</h1><p><a href="http://marcotcr.github.io/lime/tutorials/Tutorial%20-%20continuous%20and%20categorical%20features.html" target="_blank" rel="noopener">http://marcotcr.github.io/lime/tutorials/Tutorial%20-%20continuous%20and%20categorical%20features.html</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">import sklearn</div><div class="line">import sklearn.datasets</div><div class="line">import sklearn.ensemble</div><div class="line">import numpy as np</div><div class="line">import lime</div><div class="line">import lime.lime_tabular</div><div class="line">from __future__ import print_function</div><div class="line">np.random.seed(1)</div><div class="line"></div><div class="line">iris = sklearn.datasets.load_iris()</div><div class="line"></div><div class="line">train, test, labels_train, labels_test = sklearn.model_selection.train_test_split(iris.data, iris.target, train_size=0.80)</div><div class="line">rf = sklearn.ensemble.RandomForestClassifier(n_estimators=500)</div><div class="line">rf.fit(train, labels_train)</div><div class="line">sklearn.metrics.accuracy_score(labels_test, rf.predict(test))</div><div class="line"></div><div class="line">explainer = lime.lime_tabular.LimeTabularExplainer(train, feature_names=iris.feature_names, class_names=iris.target_names, discretize_continuous=True)</div><div class="line">i = np.random.randint(0, test.shape[0])</div><div class="line">exp = explainer.explain_instance(test[i], rf.predict_proba, num_features=2, top_labels=1)</div><div class="line"></div><div class="line"></div><div class="line">exp.show_in_notebook(show_table=True, show_all=False)</div></pre></td></tr></table></figure>
+<h1 id="LIME数值型"><a href="#LIME数值型" class="headerlink" title="LIME数值型"></a>LIME数值型</h1><p><a href="https://marcotcr.github.io/lime/tutorials/Tutorial%20-%20continuous%20and%20categorical%20features.html" target="_blank" rel="noopener">https://marcotcr.github.io/lime/tutorials/Tutorial%20-%20continuous%20and%20categorical%20features.html</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">explainer = lime.lime_tabular.LimeTabularExplainer(train, feature_names=iris.feature_names, class_names=iris.target_names, discretize_continuous=True)</div></pre></td></tr></table></figure>
+<h1 id="LIME离散型和数值型兼有"><a href="#LIME离散型和数值型兼有" class="headerlink" title="LIME离散型和数值型兼有"></a>LIME离散型和数值型兼有</h1><p><a href="https://marcotcr.github.io/lime/tutorials/Tutorial%20-%20continuous%20and%20categorical%20features.html" target="_blank" rel="noopener">https://marcotcr.github.io/lime/tutorials/Tutorial%20-%20continuous%20and%20categorical%20features.html</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">explainer = lime.lime_tabular.LimeTabularExplainer(X_train.as_matrix(), mode=<span class="string">'classification'</span>, </div><div class="line">                                                   categorical_features=gbm.feature_name(), </div><div class="line">                                                   categorical_names=gbm.feature_name(),</div><div class="line">                                                   training_labels=y_train.as_matrix() , </div><div class="line">                                                   feature_names=gbm.feature_name(), </div><div class="line">                                                   kernel_width=<span class="number">3</span>,</div><div class="line">                                                   class_names=[<span class="string">'0'</span>, <span class="string">'1'</span>])</div></pre></td></tr></table></figure>
+<h1 id="LIME参数"><a href="#LIME参数" class="headerlink" title="LIME参数"></a>LIME参数</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">feature_names 训练集中的特征列名</div><div class="line">categorical_features 标记为离散型的特征列名，特征值必须是int</div><div class="line">class_names 默认是&apos;0&apos;、&apos;1&apos;</div><div class="line">discretize_continuous 如果为True，所有非离散特征</div></pre></td></tr></table></figure>
+<h1 id="LIME代码解读"><a href="#LIME代码解读" class="headerlink" title="LIME代码解读"></a>LIME代码解读</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">入口是engine.py的explain_instance</div><div class="line">输入的参数中</div><div class="line">num_features: maximum number of features present in explanation</div><div class="line"></div><div class="line">    def explain_instance(self,</div><div class="line">                         data_row,</div><div class="line">                         predict_fn,</div><div class="line">                         labels=(1,),</div><div class="line">                         top_labels=None,</div><div class="line">                         num_features=10,</div><div class="line">                         num_samples=5000,</div><div class="line">                         distance_metric=&apos;euclidean&apos;,</div><div class="line">                         model_regressor=None):</div></pre></td></tr></table></figure>
+<h1 id="代码修改"><a href="#代码修改" class="headerlink" title="代码修改"></a>代码修改</h1><h2 id="不保留两位小数"><a href="#不保留两位小数" class="headerlink" title="不保留两位小数"></a>不保留两位小数</h2><p><code>/Users/david/anaconda3/lib/python3.6/site-packages/lime/lime_tabular.py</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">values = self.convert_and_round(data_row)</div></pre></td></tr></table></figure>
+<p>这一行要注释</p>
+<p>注释后的代码在</p>
+<p><code>/Users/david/Downloads/lime-0.1.1.32.zip</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">python setup.py install</div></pre></td></tr></table></figure>
+<p>本地使用，不安装包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">/Users/david/david/code/00project/carthage/scripts/lime_tabular.py</div><div class="line">/Users/david/david/code/00project/carthage/scripts/lime_base.py</div><div class="line">/Users/david/david/code/00project/carthage/scripts/explanation.py</div><div class="line">/Users/david/david/code/00project/carthage/scripts/exceptions.py</div></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/12/机器学习/特征工程/特征分析/" rel="next" title="">
+                <i class="fa fa-chevron-left"></i> 
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/13/工具和环境/Jupyter/" rel="prev" title="">
+                 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Schwimmer</p>
+              <div class="site-description motion-element" itemprop="description">Record and Think!</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">315</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">55</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#LIME模型解释器"><span class="nav-number">1.</span> <span class="nav-text">LIME模型解释器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Using-lime-on-xgboost-object"><span class="nav-number">2.</span> <span class="nav-text">Using lime() on xgboost object</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Combining-LIME-with-Gradient-Boosted-Models"><span class="nav-number">3.</span> <span class="nav-text">Combining LIME with Gradient Boosted Models</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#lime-lightgbm"><span class="nav-number">4.</span> <span class="nav-text">lime+lightgbm</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#lime-iris"><span class="nav-number">5.</span> <span class="nav-text">lime + iris</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LIME数值型"><span class="nav-number">6.</span> <span class="nav-text">LIME数值型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LIME离散型和数值型兼有"><span class="nav-number">7.</span> <span class="nav-text">LIME离散型和数值型兼有</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LIME参数"><span class="nav-number">8.</span> <span class="nav-text">LIME参数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LIME代码解读"><span class="nav-number">9.</span> <span class="nav-text">LIME代码解读</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代码修改"><span class="nav-number">10.</span> <span class="nav-text">代码修改</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#不保留两位小数"><span class="nav-number">10.1.</span> <span class="nav-text">不保留两位小数</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.5.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.2.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

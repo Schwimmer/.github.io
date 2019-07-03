@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="任务：Pytorch官方文档（参考资料：Pytorch官方文档 5.序列化模型；6.torch接口） 任务简介：《Pytorch官方文档》 学习时长：6/4 详细说明： 本节任务资料包下载： 链接：https://pan.baidu.com/s/1U7KBXRv4V5rkvMjWQqULnw  提取码：0b3u  本节内容包括如何保存和载入模型，我们一般情况下载训练阶段保存在预测阶段载入，同时需要">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Schwimmer&#39;s Blog">
+<meta property="og:url" content="https://schwimmer.github.io/2019/06/04/深度学习笔记/Pytorch训练营/D2 序列化模型，torch接口/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="任务：Pytorch官方文档（参考资料：Pytorch官方文档 5.序列化模型；6.torch接口） 任务简介：《Pytorch官方文档》 学习时长：6/4 详细说明： 本节任务资料包下载： 链接：https://pan.baidu.com/s/1U7KBXRv4V5rkvMjWQqULnw  提取码：0b3u  本节内容包括如何保存和载入模型，我们一般情况下载训练阶段保存在预测阶段载入，同时需要">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-06-08T03:57:16.354Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Schwimmer&#39;s Blog">
+<meta name="twitter:description" content="任务：Pytorch官方文档（参考资料：Pytorch官方文档 5.序列化模型；6.torch接口） 任务简介：《Pytorch官方文档》 学习时长：6/4 详细说明： 本节任务资料包下载： 链接：https://pan.baidu.com/s/1U7KBXRv4V5rkvMjWQqULnw  提取码：0b3u  本节内容包括如何保存和载入模型，我们一般情况下载训练阶段保存在预测阶段载入，同时需要">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://schwimmer.github.io/2019/06/04/深度学习笔记/Pytorch训练营/D2 序列化模型，torch接口/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title> | Schwimmer's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br/>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br/>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-sitemap">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br/>Sitemap</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-commonweal">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/404/" rel="section"><i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br/>Commonweal 404</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/06/04/深度学习笔记/Pytorch训练营/D2 序列化模型，torch接口/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-06-04 09:22:46" itemprop="dateCreated datePublished" datetime="2019-06-04T09:22:46+08:00">2019-06-04</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-06-08 11:57:16" itemprop="dateModified" datetime="2019-06-08T11:57:16+08:00">2019-06-08</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong>任务：Pytorch官方文档（参考资料：Pytorch官方文档 5.序列化模型；6.torch接口）</strong></p>
+<p><strong>任务简介</strong>：《Pytorch官方文档》</p>
+<p><strong>学习时长：</strong>6/4</p>
+<p><strong>详细说明</strong>：</p>
+<p>本节任务资料包下载：</p>
+<p>链接：<a href="https://pan.baidu.com/s/1U7KBXRv4V5rkvMjWQqULnw" target="_blank" rel="noopener">https://pan.baidu.com/s/1U7KBXRv4V5rkvMjWQqULnw</a> </p>
+<p>提取码：0b3u </p>
+<p>本节内容包括如何保存和载入模型，我们一般情况下载训练阶段保存在预测阶段载入，同时需要了解两种方法保存模型的差异。下面是pytorch最重要的部分，对Tensor的操作，由于本节内容较多，我们分为七个部分讲解，今天主要是熟悉torch接口中1~9页的API,能够知道如何使用，知道每个函数的意义和参数的意义。</p>
+<p><strong>作业名称（详解）：</strong>保存模型的两种形式以及他们的区别？手敲今天所学API三遍</p>
+<p><strong>作业提交形式</strong>：打卡提交文字或图片，不少于20字</p>
+<p><strong>打卡截止时间：</strong>6/5</p>
+<h1 id="1、保存模型的两种形式以及他们的区别？"><a href="#1、保存模型的两种形式以及他们的区别？" class="headerlink" title="1、保存模型的两种形式以及他们的区别？"></a>1、保存模型的两种形式以及他们的区别？</h1><p>第一种，只保存和加载模型参数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">torch.save(the_model.state_dict(), PATH)</div><div class="line"></div><div class="line"><span class="comment"># 加载时</span></div><div class="line">the_model = TheModelClass(*args, **kwargs)</div><div class="line">the_model.load_state_dict(torch.load(PATH))</div></pre></td></tr></table></figure>
+<p>第二种，保存和加载整个模型</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 没有state_dict</span></div><div class="line">torch.save(the_model, PATH)</div><div class="line"></div><div class="line"><span class="comment"># 加载时</span></div><div class="line">the_model = torch.load(PATH)</div></pre></td></tr></table></figure>
+<p>第二种的不足是，序列化的数据被绑定到特定的类和固定的目录结构。缺少灵活性，可能有各种break的隐患。</p>
+<h1 id="2、Pytorch各种API"><a href="#2、Pytorch各种API" class="headerlink" title="2、Pytorch各种API"></a>2、Pytorch各种API</h1><h2 id="张量操作"><a href="#张量操作" class="headerlink" title="张量操作"></a>张量操作</h2><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"># 若obj是一个pytorch的tensor，则返回true</div><div class="line">torch.is_tensor(obj)</div><div class="line"></div><div class="line"># 判断obj是否是storage</div><div class="line"># torch.Storage是单个数据类型的连续的一维数组，每个torch.Tensor都具有相同数据类型的相应存储。他是torch.tensor底层数据结构,他除了像Tensor一样定义数值，还可以直接把文件映射到内存中进行操作</div><div class="line">torch.is_storage(obj)</div><div class="line"></div><div class="line"># 设置默认的tensor的数据类型</div><div class="line">torch.set_default_tensor_type(torch.DoubleTensor)</div><div class="line"></div><div class="line"># 返回input张量中的元素个数</div><div class="line">torch.numel(input) -&gt; int</div><div class="line"></div><div class="line"># 设置打印选项，与numpy一致</div><div class="line">torch.set_printoptions(precision=None, threshold=None, edgeitems=None, linewidth=None, profile=None)</div></pre></td></tr></table></figure>
+<h2 id="创建操作Creation-Ops"><a href="#创建操作Creation-Ops" class="headerlink" title="创建操作Creation Ops"></a>创建操作Creation Ops</h2><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div></pre></td><td class="code"><pre><div class="line"># 返回一个二维张量，对角线都是1，其他是0</div><div class="line">torch.eye(n, m=None, out=None)</div><div class="line"></div><div class="line"># 用一个值填充tensor</div><div class="line">end = torch.Tensor(4).fill_(10)</div><div class="line"></div><div class="line">"""</div><div class="line">&gt;&gt;&gt; end</div><div class="line"></div><div class="line"> 10</div><div class="line"> 10</div><div class="line"> 10</div><div class="line"> 10</div><div class="line">[torch.FloatTensor of size 4]</div><div class="line">"""</div><div class="line"></div><div class="line"># 将numpy.ndarray转为tensor，共享同一内存空间，修改一个会导致修改另一个。</div><div class="line">torch.from_numpy(ndarray) -&gt; Tensor</div><div class="line"></div><div class="line"># 返回一维张量，包含在start和end上均匀间隔的steps个点, out是结果张量</div><div class="line">torch.linspace(start, end, steps=100, out=None) -&gt; Tensor</div><div class="line"></div><div class="line"># 返回一维张量，包含在区间10^start和10^end上以对数刻度均匀间隔的steps个点。</div><div class="line">torch.logspace(start, end, steps=100, out=None) -&gt; Tensor</div><div class="line"></div><div class="line">&gt;&gt;&gt; torch.logspace(start=-10, end=10, steps=5)</div><div class="line">        1.0000e-10</div><div class="line">        1.0000e-05</div><div class="line">        1.0000e+00</div><div class="line">        1.0000e+05</div><div class="line">        1.0000e+10</div><div class="line">       [torch.FloatTensor of size 5]</div><div class="line">      </div><div class="line"># 返回一个全为1的张量，形状由可变参数sizes定义</div><div class="line">torch.ones(*size, out=None) -&gt; Tensor</div><div class="line"></div><div class="line">&gt;&gt;&gt; torch.ones(2, 3)</div><div class="line">111</div><div class="line">111</div><div class="line">[torch.FloatTensor of size 2x3]</div><div class="line"></div><div class="line"># 从区间(0,1)的均匀分布中抽取一组随机数</div><div class="line">torch.rand(*sizes, out=None) -&gt; Tensor</div><div class="line"></div><div class="line"># 下面函数也可以实现这个效果</div><div class="line">torch.Tensor(3, 3).uniform_(0,1)</div><div class="line"># 等同于</div><div class="line">torch.rand(3,3)</div><div class="line"></div><div class="line"># 从标准正态分布（均值为0，方差为1，即高斯白噪声）中抽取一组随机数。</div><div class="line">torch.randn(*size, out=None) -&gt; Tensor</div><div class="line"></div><div class="line"># 给定参数n，返回一个从0到n-1的随机整数排列</div><div class="line">torch.randperm(n, out=None) -&gt; LongTensor</div><div class="line"></div><div class="line">&gt;&gt;&gt; torch.randperm(4)</div><div class="line">2 1 3 0</div><div class="line">[torch.LongTensor of size 4]</div><div class="line"></div><div class="line"># 返回一维张量，长度为floor((end-start)/step)。包含从start到end，以step为步长的</div><div class="line">torch.arange(start, end, step=1, out=None) -&gt; Tensor</div><div class="line"></div><div class="line">&gt;&gt;&gt; torch.arange(1, 2.5, 0.5)</div><div class="line"> 1.0000</div><div class="line"> 1.5000</div><div class="line"> 2.0000</div><div class="line">[torch.FloatTensor of size 3]</div><div class="line"></div><div class="line"># 有floor((end-start)/step)+1个元素，包含在[start, end)</div><div class="line"># WARNING: 建议使用函数torch.arange</div><div class="line">torch.range(start, end, step=1, out=None) -&gt; Tensor</div><div class="line"></div><div class="line"># 返回全为标量0的张量</div><div class="line">torch.zeros(*size, out=None)</div><div class="line"></div><div class="line">&gt;&gt;&gt; torch.zeros(2, 3)</div><div class="line">000</div><div class="line">000</div><div class="line">[torch.FloatTensor of size 2x3]</div></pre></td></tr></table></figure>
+<h2 id="数学操作"><a href="#数学操作" class="headerlink" title="数学操作"></a>数学操作</h2><h3 id="torch-log1p"><a href="#torch-log1p" class="headerlink" title="torch.log1p"></a>torch.log1p</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">torch.log1p(input, out=None) → Tensor</div></pre></td></tr></table></figure>
+<p>计算 input+1input+1的自然对数 yi=log(xi+1)yi=log(xi+1)</p>
+<p>注意：对值比较小的输入，此函数比<code>torch.log()</code>更准确。</p>
+<p><a href="https://blog.csdn.net/qq_36523839/article/details/82422865" target="_blank" rel="noopener">https://blog.csdn.net/qq_36523839/article/details/82422865</a></p>
+<p>优点：</p>
+<ul>
+<li><p>在数据预处理时首先可以对偏度比较大的数据用log1p函数进行转化，使其更加服从高斯分布，此步处理可能会使我们后续的分类结果得到一个更好的结果；</p>
+</li>
+<li><p>平滑处理很容易被忽略掉，导致模型的结果总是达不到一定的标准，同样使用逼格更高的log1p能避免复值得问题——复值指一个自变量对应多个因变量；</p>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/04/深度学习笔记/Pytorch笔记/函数学习/" rel="next" title="">
+                <i class="fa fa-chevron-left"></i> 
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/04/机器学习和深度学习算法理论/优质git资源/" rel="prev" title="">
+                 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Schwimmer</p>
+              <div class="site-description motion-element" itemprop="description">Record and Think!</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">315</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">55</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1、保存模型的两种形式以及他们的区别？"><span class="nav-number">1.</span> <span class="nav-text">1、保存模型的两种形式以及他们的区别？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2、Pytorch各种API"><span class="nav-number">2.</span> <span class="nav-text">2、Pytorch各种API</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#张量操作"><span class="nav-number">2.1.</span> <span class="nav-text">张量操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建操作Creation-Ops"><span class="nav-number">2.2.</span> <span class="nav-text">创建操作Creation Ops</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数学操作"><span class="nav-number">2.3.</span> <span class="nav-text">数学操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#torch-log1p"><span class="nav-number">2.3.1.</span> <span class="nav-text">torch.log1p</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.5.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.2.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

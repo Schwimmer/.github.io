@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="https://www.cnblogs.com/Vulpers/p/7809276.html 一、 constant（常量）　　constant是TensorFlow的常量节点，通过constant方法创建，其是计算图（Computational Graph）中的起始节点，是传入数据。 创建方式 1cons = tf.constant(value=[1,2],dtype=tf.float32,sh">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Schwimmer&#39;s Blog">
+<meta property="og:url" content="https://schwimmer.github.io/2019/04/07/深度学习笔记/tensorflow/tensorflow节点/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="https://www.cnblogs.com/Vulpers/p/7809276.html 一、 constant（常量）　　constant是TensorFlow的常量节点，通过constant方法创建，其是计算图（Computational Graph）中的起始节点，是传入数据。 创建方式 1cons = tf.constant(value=[1,2],dtype=tf.float32,sh">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-07T03:06:26.156Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Schwimmer&#39;s Blog">
+<meta name="twitter:description" content="https://www.cnblogs.com/Vulpers/p/7809276.html 一、 constant（常量）　　constant是TensorFlow的常量节点，通过constant方法创建，其是计算图（Computational Graph）中的起始节点，是传入数据。 创建方式 1cons = tf.constant(value=[1,2],dtype=tf.float32,sh">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://schwimmer.github.io/2019/04/07/深度学习笔记/tensorflow/tensorflow节点/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title> | Schwimmer's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br/>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br/>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-sitemap">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br/>Sitemap</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-commonweal">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/404/" rel="section"><i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br/>Commonweal 404</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/07/深度学习笔记/tensorflow/tensorflow节点/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-04-07 10:49:56 / Modified: 11:06:26" itemprop="dateCreated datePublished" datetime="2019-04-07T10:49:56+08:00">2019-04-07</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="https://www.cnblogs.com/Vulpers/p/7809276.html" target="_blank" rel="noopener">https://www.cnblogs.com/Vulpers/p/7809276.html</a></p>
+<h1 id="一、-constant（常量）"><a href="#一、-constant（常量）" class="headerlink" title="一、 constant（常量）"></a><strong>一、 constant（常量）</strong></h1><p>　　constant是TensorFlow的常量节点，通过constant方法创建，其是计算图（Computational Graph）中的起始节点，是传入数据。</p>
+<p><strong>创建方式</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cons = tf.constant(value=[1,2],dtype=tf.float32,shape=(1,2),name=&apos;testconst&apos;, verify_shape=False)</div></pre></td></tr></table></figure>
+<p><strong>参数说明</strong></p>
+<p><strong>value</strong>：初始值，必填，必须是一个张量（1或[1,2,3]或[[1,2,3],[2,2,3]]或……）</p>
+<p><strong>dtype</strong>：数据类型，选填，默认为value的数据类型，传入参数为tensorflow下的枚举值（float32，float64…….）</p>
+<p><strong>shape</strong>：数据形状，选填，默认为value的shape，设置时不得比value小，可以比value阶数、维度更高，超过部分按value提供最后一个数字填充，示例代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</div><div class="line"></div><div class="line">sess = tf.InteractiveSession()</div><div class="line">cons1 = tf.constant([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>], shape=[<span class="number">2</span>, <span class="number">3</span>])</div><div class="line">print(sess.run(cons1))</div><div class="line"><span class="comment"># [[1 2 3]</span></div><div class="line"><span class="comment">#  [3 3 3]]</span></div></pre></td></tr></table></figure>
+<p><strong>name</strong>：常量名，选填，默认值不重复，根据创建顺序为（Const，Const_1，Const_2…….）</p>
+<p><strong>verify_shape</strong>:是否验证value的shape和指定shape相符，若设为True则进行验证，不相符时会抛出异常</p>
+<h1 id="二、placeholder（占位符）"><a href="#二、placeholder（占位符）" class="headerlink" title="二、placeholder（占位符）"></a><strong>二、placeholder（占位符）</strong></h1><p> 　　placeholder是TensorFlow的占位符节点，由placeholder方法创建，其也是一种常量，但是由用户在调用run方法时传递的，也可以将placeholder理解为一种形参。即其不像constant那样直接可以使用，需要用户传递常数值。</p>
+<p><strong>创建方式</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">X = tf.placeholder(dtype=tf.float32, shape=[144, 10], name=&apos;X&apos;)</div></pre></td></tr></table></figure>
+<p><strong>参数说明</strong></p>
+<p><strong>dtype</strong>：数据类型，必填，默认为value的数据类型，传入参数为tensorflow下的枚举值（float32，float64…….）</p>
+<p><strong>shape</strong>：数据形状，选填，不填则随传入数据的形状自行变动，可以在多次调用中传入不同形状的数据</p>
+<p><strong>name</strong>：常量名，选填，默认值不重复，根据创建顺序为（Placeholder，Placeholder_1，Placeholder_2…….）</p>
+<p><strong>示例代码</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</div><div class="line"><span class="keyword">import</span> numpy.random <span class="keyword">as</span> random</div><div class="line"></div><div class="line"><span class="comment">#占位符shape不设时会按传入参数自行匹配</span></div><div class="line">node1 = tf.placeholder(tf.float32)  <span class="comment"># , shape=[4, 5])</span></div><div class="line"><span class="comment">#也可以写成</span></div><div class="line"><span class="comment"># node1 = tf.placeholder("float")</span></div><div class="line"></div><div class="line"></div><div class="line">node2 = tf.placeholder(tf.float32)  <span class="comment"># , shape=[4, 5])</span></div><div class="line">op = tf.multiply(node1, node2)</div><div class="line">session = tf.Session()</div><div class="line">const1 = tf.constant(random.rand(<span class="number">4</span>, <span class="number">5</span>))</div><div class="line">const2 = tf.constant(random.rand(<span class="number">4</span>, <span class="number">5</span>))</div><div class="line"><span class="comment">#可以传入初始化后的常量</span></div><div class="line">print(session.run(op, &#123;node1: session.run(const1), node2: session.run(const2)&#125;))</div><div class="line"><span class="comment">#也可以直接传入张量，其实同初始化后的常量一致</span></div><div class="line">print(session.run(op, &#123;node1: random.rand(<span class="number">2</span>, <span class="number">3</span>), node2: random.rand(<span class="number">2</span>, <span class="number">3</span>)&#125;))</div></pre></td></tr></table></figure>
+<h1 id="三、Variable（变量）"><a href="#三、Variable（变量）" class="headerlink" title="三、Variable（变量）"></a><strong>三、Variable（变量）</strong></h1><p>　　Vatiable是tensorflow的变量节点，通过Variable（注：V大写）方法创建，并且需要传递初始值。在使用前需要通过tensorflow的初始化方法进行初始化。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">W = tf.Variable(initial_value=tf.zeros([<span class="number">9</span>, <span class="number">5</span>]),  <span class="comment"># 初始值，必填，张量或可以转换为张量的Python对象。初始值必须有指定一个形状，除非`validate_shape`设置为False。</span></div><div class="line">trainable=<span class="keyword">True</span>,  <span class="comment"># 如果`True`，则默认值也将变量添加到图形中集合`GraphKeys.TRAINABLE_VARIABLES`。这个集合用作“Optimizer”类使用的默认变量列表</span></div><div class="line">collections=<span class="keyword">None</span>,  <span class="comment"># 图表集合键的列表。新的变量被添加到这些集合。默认为`[GraphKeys.GLOBAL_VARIABLES]`。</span></div><div class="line">validate_shape=<span class="keyword">True</span>,  <span class="comment"># 如果`False`，允许变量用初始化未知形状的值。如果“True”，默认的形状`initial_value`必须是已知的。</span></div><div class="line">caching_device=<span class="keyword">None</span>,  <span class="comment"># 可选设备字符串，描述变量的位置应该被缓存以供阅读。默认为变量的设备。如果不是“None”，则缓存在另一个设备上。典型的用途是缓存在使用变量的Ops所在的设备上进行重复数据删除复制`Switch`和其他条件语句。</span></div><div class="line">name=<span class="string">'W'</span>,  <span class="comment"># 变量的可选名称。默认为“Variable”并获取自动去重（Variable_1,Variable_2....）。</span></div><div class="line">variable_def=<span class="keyword">None</span>, <span class="comment"># `VariableDef`协议缓冲区。如果不是“无”，则重新创建变量对象及其内容，引用变量的节点在图中，必须已经存在。图形没有改变。`variable_def`和其他参数是互斥的。</span></div><div class="line">dtype=tf.float32, <span class="comment"># 如果设置，initial_value将被转换为给定的类型。如果`None'，数据类型将被保存（如果`initial_value`是一个张量），或者“convert_to_tensor”来决定。</span></div><div class="line">expected_shape=<span class="keyword">None</span>,  <span class="comment"># 张量的Shape。如果设置，initial_value需要符合这个形状。</span></div><div class="line">import_scope=<span class="keyword">None</span>)  <span class="comment"># 可选的字符串。名称范围添加到`Variable.`仅在从协议缓冲区初始化时使用。</span></div></pre></td></tr></table></figure>
+<p>创建类似于</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">W = tf.Variable(tf.zeros([3, 10]), dtype=tf.float64, name=&apos;W&apos;)</div></pre></td></tr></table></figure>
+<p>例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># 0.0就是初始值</div><div class="line">w = tf.Variable(0.0, name=&quot;weight&quot;)</div><div class="line">b = tf.Variable(0.0, name=&quot;bias&quot;)</div></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/07/深度学习笔记/tensorflow/优化器Optimizier/" rel="next" title="">
+                <i class="fa fa-chevron-left"></i> 
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/07/深度学习笔记/tensorflow/最小二乘拟合/" rel="prev" title="">
+                 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Schwimmer</p>
+              <div class="site-description motion-element" itemprop="description">Record and Think!</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">315</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">55</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、-constant（常量）"><span class="nav-number">1.</span> <span class="nav-text">一、 constant（常量）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、placeholder（占位符）"><span class="nav-number">2.</span> <span class="nav-text">二、placeholder（占位符）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三、Variable（变量）"><span class="nav-number">3.</span> <span class="nav-text">三、Variable（变量）</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.5.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.2.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

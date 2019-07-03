@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="NLP工具Word2Vec-Java加载模型及词向量计算hdfs版 /pig-ext-lite/src/main/java/com/buzzinate/pig/util/WordVec.java 单机版 /persona/src/main/java/com/iclick/persona/nlp/word2vec/W2VContral.java 词向量聚类/home/david/gitlab/use">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NL工具">
+<meta property="og:url" content="https://schwimmer.github.io/2018/03/17/机器学习/NLP/NLP工具/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="NLP工具Word2Vec-Java加载模型及词向量计算hdfs版 /pig-ext-lite/src/main/java/com/buzzinate/pig/util/WordVec.java 单机版 /persona/src/main/java/com/iclick/persona/nlp/word2vec/W2VContral.java 词向量聚类/home/david/gitlab/use">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-03-25T08:02:08.490Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NL工具">
+<meta name="twitter:description" content="NLP工具Word2Vec-Java加载模型及词向量计算hdfs版 /pig-ext-lite/src/main/java/com/buzzinate/pig/util/WordVec.java 单机版 /persona/src/main/java/com/iclick/persona/nlp/word2vec/W2VContral.java 词向量聚类/home/david/gitlab/use">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://schwimmer.github.io/2018/03/17/机器学习/NLP/NLP工具/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>NL工具 | Schwimmer's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br/>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br/>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-sitemap">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br/>Sitemap</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-commonweal">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/404/" rel="section"><i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br/>Commonweal 404</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/NLP/NLP工具/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">NL工具
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-03-17 20:50:31" itemprop="dateCreated datePublished" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-03-25 16:02:08" itemprop="dateModified" datetime="2018-03-25T16:02:08+08:00">2018-03-25</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="NLP工具"><a href="#NLP工具" class="headerlink" title="NLP工具"></a>NLP工具</h1><h1 id="Word2Vec-Java"><a href="#Word2Vec-Java" class="headerlink" title="Word2Vec-Java"></a>Word2Vec-Java</h1><h2 id="加载模型及词向量计算"><a href="#加载模型及词向量计算" class="headerlink" title="加载模型及词向量计算"></a>加载模型及词向量计算</h2><p>hdfs版 /pig-ext-lite/src/main/java/com/buzzinate/pig/util/WordVec.java</p>
+<p>单机版 /persona/src/main/java/com/iclick/persona/nlp/word2vec/W2VContral.java</p>
+<h2 id="词向量聚类"><a href="#词向量聚类" class="headerlink" title="词向量聚类"></a>词向量聚类</h2><p>/home/david/gitlab/user-gene/domain-classify-model/src/main/java/com/buzzinate/domain/classifier/DomainClassifier.java</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">	 * 通过keams得到中心点向量</div><div class="line">	 * </div><div class="line">	 * @param wordVec</div><div class="line">	 * @return</div><div class="line">	 */</div><div class="line">	public ArrayList&lt;float[]&gt; getCenterVecByKeams(ArrayList&lt;float[]&gt; wordVec) &#123;</div><div class="line">		ArrayList&lt;float[]&gt; centerVec = new ArrayList&lt;float[]&gt;();</div><div class="line">		List&lt;Classes&gt; cls = null;</div><div class="line">		logger.info(&quot;before keams： &quot; + wordVec.size());</div><div class="line">		System.out.println(&quot;before keams： &quot; + wordVec.size());</div><div class="line">		cls = KMeansClustering.getClusteringResult(wordVec,</div><div class="line">				wordVec.subList(0, Math.min(100, wordVec.size() - 1)));</div><div class="line">		for (Classes cl : cls) &#123;</div><div class="line">			if (!Float.isNaN(WVUtils.toFloat(cl.getCenter())[0]))</div><div class="line">				centerVec.add(WVUtils.toFloat(cl.getCenter()));</div><div class="line">		&#125;</div><div class="line">		logger.info(&quot;after keams： &quot; + centerVec.size());</div><div class="line">		System.out.println(&quot;after keams： &quot; + centerVec.size());</div><div class="line">		return centerVec;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="通过向量找最近的词"><a href="#通过向量找最近的词" class="headerlink" title="通过向量找最近的词"></a>通过向量找最近的词</h2><h1 id="Ansj-seg"><a href="#Ansj-seg" class="headerlink" title="Ansj-seg"></a>Ansj-seg</h1><h2 id="添加词到自定义词典"><a href="#添加词到自定义词典" class="headerlink" title="添加词到自定义词典"></a>添加词到自定义词典</h2><p>user-gene中用的是某一版ansj的基础上修改的，使用方法是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Value value = new Value(newWord, new String[] &#123; &quot;userDefine&quot;, &quot;1000&quot; &#125;);</div><div class="line">		Library.insertWord(UserDefineRecognition.FOREST, value);</div></pre></td></tr></table></figure>
+<p>知乎找到的方法是<a href="https://www.zhihu.com/question/32226656" target="_blank" rel="noopener">https://www.zhihu.com/question/32226656</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line">作者：ansj</div><div class="line">链接：https://www.zhihu.com/question/32226656/answer/113724991</div><div class="line">来源：知乎</div><div class="line">著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</div><div class="line"></div><div class="line">package org.ansj;</div><div class="line"></div><div class="line">import java.util.List;</div><div class="line"></div><div class="line">import org.ansj.app.summary.SummaryComputer;</div><div class="line">import org.ansj.domain.Result;</div><div class="line">import org.ansj.domain.Term;</div><div class="line">import org.ansj.library.UserDefineLibrary;</div><div class="line">import org.ansj.splitWord.analysis.ToAnalysis;</div><div class="line">import org.nlpcn.commons.lang.tire.domain.Forest;</div><div class="line">import org.nlpcn.commons.lang.tire.domain.Value;</div><div class="line">import org.nlpcn.commons.lang.tire.library.Library;</div><div class="line"></div><div class="line">public class Test &#123;</div><div class="line">	public static void main(String[] args) throws Exception &#123;</div><div class="line">		</div><div class="line">		// 构造一个用户词典</div><div class="line">		Forest forest = Library.makeForest(&quot;library/default.dic&quot;);</div><div class="line">		forest = new Forest();</div><div class="line"></div><div class="line">		// 增加新词,中间按照&apos;\t&apos;隔开</div><div class="line">		UserDefineLibrary.insertWord(&quot;ansj中文分词&quot;, &quot;userDefine&quot;, 1000);</div><div class="line">		Result terms = ToAnalysis.parse(&quot;我觉得Ansj中文分词是一个不错的系统!我是王婆!&quot;);</div><div class="line">		System.out.println(&quot;增加新词例子:&quot; + terms);</div><div class="line"></div><div class="line">		// 删除词语,只能删除.用户自定义的词典.</div><div class="line">		UserDefineLibrary.removeWord(&quot;ansj中文分词&quot;);</div><div class="line">		terms = ToAnalysis.parse(&quot;我觉得ansj中文分词是一个不错的系统!我是王婆!&quot;);</div><div class="line">		System.out.println(&quot;删除用户自定义词典例子:&quot; + terms);</div><div class="line">		</div><div class="line">// 歧义词</div><div class="line">		Value value = new Value(&quot;济南下车&quot;, &quot;济南&quot;, &quot;n&quot;, &quot;下车&quot;, &quot;v&quot;);</div><div class="line">		System.out.println(ToAnalysis.parse(&quot;我经济南下车到广州.中国经济南下势头迅猛!&quot;));</div><div class="line">		Library.insertWord(UserDefineLibrary.ambiguityForest, value);</div><div class="line">		System.out.println(ToAnalysis.parse(&quot;我经济南下车到广州.中国经济南下势头迅猛!&quot;));</div><div class="line"></div><div class="line">		// 多用户词典</div><div class="line">		String str = &quot;神探夏洛克这部电影作者.是一个dota迷&quot;;</div><div class="line">		System.out.println(ToAnalysis.parse(str));</div><div class="line">		// 两个词汇 神探夏洛克 douta迷</div><div class="line">		Forest dic1 = new Forest();</div><div class="line">		Library.insertWord(dic1, new Value(&quot;神探夏洛克&quot;, &quot;define&quot;, &quot;1000&quot;));</div><div class="line">		Forest dic2 = new Forest();</div><div class="line">		Library.insertWord(dic2, new Value(&quot;dota迷&quot;, &quot;define&quot;, &quot;1000&quot;));</div><div class="line">		System.out.println(ToAnalysis.parse(str, dic1, dic2));</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果在spark下面用要修改</p>
+<h1 id="Hanlp"><a href="#Hanlp" class="headerlink" title="Hanlp"></a>Hanlp</h1><p>官方文档<a href="http://hanlp.linrunsoft.com/doc/_build/html/index.html" target="_blank" rel="noopener">http://hanlp.linrunsoft.com/doc/_build/html/index.html</a></p>
+<p><a href="https://github.com/hankcs/HanLP/releases" target="_blank" rel="noopener">https://github.com/hankcs/HanLP/releases</a></p>
+<p><strong>HanLP</strong>中的数据分为<em>词典</em>和<em>模型</em>，其中<em>词典</em>是词法分析必需的，<em>模型</em>是句法分析必需的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">data</div><div class="line">│</div><div class="line">├─dictionary</div><div class="line">└─model</div></pre></td></tr></table></figure>
+<p>配置文件的作用是告诉HanLP数据包的位置，只需修改第一行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">root=usr/home/HanLP/</div></pre></td></tr></table></figure>
+<p>为data的<strong>父目录</strong>即可</p>
+<blockquote>
+<p>一开始用1.2.9版本，一直提示找不到HanLP.properties，后来换了1.3.2，默认是项目根目录下的data目录。</p>
+</blockquote>
+<p>4.1 分词</p>
+<p><strong>标准分词</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">list&lt;Term&gt; termlist = StandardTokenizer.segment(&quot;XXXX&quot;);</div></pre></td></tr></table></figure>
+<ul>
+<li><strong>HanLP</strong>中有一系列“开箱即用”的静态分词器，以<code>Tokenizer</code>结尾。</li>
+<li><code>HanLP.segment</code>其实是对<code>StandardTokenizer.segment</code>的包装。</li>
+<li>分词结果包含词性，每个词性的意思请查阅<a href="http://www.hankcs.com/nlp/part-of-speech-tagging.html#h2-8" target="_blank" rel="noopener">《HanLP词性标注集》</a>。</li>
+<li>算法详解：<a href="http://www.hankcs.com/nlp/segment/the-word-graph-is-generated.html" target="_blank" rel="noopener">《词图的生成》</a></li>
+</ul>
+<blockquote>
+<p>词性标注（Part-of-Speech tagging 或POS tagging)：又称词类标注或者简称标注，是指为分词结果中的每个单词标注一个正确的词性的程序，也即确定每个词是名词、动词、形容词或其他词性的过程。在汉语中，词性标注比较简单，因为汉语词汇词性多变的情况比较少见，大多词语只有一个词性，或者出现频次最高的词性远远高于第二位的词性。据说，只需选取最高频词性，即可实现80%准确率的中文词性标注程序。</p>
+<p>利用HMM即可实现更高准确率的词性标注。</p>
+</blockquote>
+<p>去掉停用词、标点的分词</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">list&lt;Term&gt; termlist = NotionalTokenizer.segment()</div></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/17/Elastic Search/ES的analyzer/" rel="next" title="ES的analyzer">
+                <i class="fa fa-chevron-left"></i> ES的analyzer
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/17/Elastic Search/iau的ES使用场景/" rel="prev" title="iau的ES使用场景">
+                iau的ES使用场景 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Schwimmer</p>
+              <div class="site-description motion-element" itemprop="description">Record and Think!</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">315</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">55</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#NLP工具"><span class="nav-number">1.</span> <span class="nav-text">NLP工具</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Word2Vec-Java"><span class="nav-number">2.</span> <span class="nav-text">Word2Vec-Java</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#加载模型及词向量计算"><span class="nav-number">2.1.</span> <span class="nav-text">加载模型及词向量计算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#词向量聚类"><span class="nav-number">2.2.</span> <span class="nav-text">词向量聚类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过向量找最近的词"><span class="nav-number">2.3.</span> <span class="nav-text">通过向量找最近的词</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ansj-seg"><span class="nav-number">3.</span> <span class="nav-text">Ansj-seg</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#添加词到自定义词典"><span class="nav-number">3.1.</span> <span class="nav-text">添加词到自定义词典</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hanlp"><span class="nav-number">4.</span> <span class="nav-text">Hanlp</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.5.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.2.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-1-tensorboard1/ 各种不同的优化器本次课程，我们会讲到Tensorflow里面的优化器。 Tensorflow 中的优化器会有很多不同的种类。最基本, 也是最常用的一种就是GradientDescentOptimizer。 Tensorflow提供">
+<meta name="keywords" content="树">
+<meta property="og:type" content="article">
+<meta property="og:title" content="4-1 TensorBoard网络结构">
+<meta property="og:url" content="https://schwimmer.github.io/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-1-tensorboard1/ 各种不同的优化器本次课程，我们会讲到Tensorflow里面的优化器。 Tensorflow 中的优化器会有很多不同的种类。最基本, 也是最常用的一种就是GradientDescentOptimizer。 Tensorflow提供">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-06-03T01:31:14.646Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="4-1 TensorBoard网络结构">
+<meta name="twitter:description" content="https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-1-tensorboard1/ 各种不同的优化器本次课程，我们会讲到Tensorflow里面的优化器。 Tensorflow 中的优化器会有很多不同的种类。最基本, 也是最常用的一种就是GradientDescentOptimizer。 Tensorflow提供">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://schwimmer.github.io/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>4-1 TensorBoard网络结构 | Schwimmer's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br/>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br/>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-sitemap">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br/>Sitemap</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-commonweal">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/404/" rel="section"><i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br/>Commonweal 404</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">4-1 TensorBoard网络结构
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-06-03 09:31:14" itemprop="dateModified" datetime="2019-06-03T09:31:14+08:00">2019-06-03</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/深度学习/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-1-tensorboard1/" target="_blank" rel="noopener">https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-1-tensorboard1/</a></p>
+<h2 id="各种不同的优化器"><a href="#各种不同的优化器" class="headerlink" title="各种不同的优化器"></a>各种不同的优化器</h2><p>本次课程，我们会讲到<code>Tensorflow</code>里面的优化器。</p>
+<p>Tensorflow 中的优化器会有很多不同的种类。最基本, 也是最常用的一种就是<code>GradientDescentOptimizer</code>。</p>
+<p><code>Tensorflow</code>提供了7种优化器：</p>
+<h2 id="搭建图纸"><a href="#搭建图纸" class="headerlink" title="搭建图纸"></a>搭建图纸</h2><p>首先从 <code>Input</code> 开始：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># define placeholder for inputs to network</span></div><div class="line">xs = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>])</div><div class="line">ys = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>])</div></pre></td></tr></table></figure>
+<p>对于input我们进行如下修改： 首先，可以为<code>xs</code>指定名称为<code>x_in</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">xs= tf.placeholder(tf.float32, [None, 1],name=&apos;x_in&apos;)</div></pre></td></tr></table></figure>
+<p>然后再次对<code>ys</code>指定名称<code>y_in</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ys= tf.placeholder(tf.loat32, [None, 1],name=&apos;y_in&apos;)</div></pre></td></tr></table></figure>
+<p>使用<code>with tf.name_scope(&#39;inputs&#39;)</code>可以将<code>xs</code>和<code>ys</code>包含进来，形成一个大的图层，图层的名字就是<code>with tf.name_scope()</code>方法里的参数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">with tf.name_scope(&apos;inputs&apos;):</div><div class="line">    # define placeholder for inputs to network</div><div class="line">    xs = tf.placeholder(tf.float32, [None, 1])</div><div class="line">    ys = tf.placeholder(tf.float32, [None, 1])</div></pre></td></tr></table></figure>
+<p>接下来开始编辑<code>layer</code> ， 请看编辑前的程序片段 ：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></div><div class="line">    <span class="comment"># add one more layer and return the output of this layer</span></div><div class="line">    Weights = tf.Variable(tf.random_normal([in_size, out_size]))</div><div class="line">    biases = tf.Variable(tf.zeros([<span class="number">1</span>, out_size]) + <span class="number">0.1</span>)</div><div class="line">    Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</div><div class="line">    <span class="keyword">if</span> activation_function <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">        outputs = Wx_plus_b</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        outputs = activation_function(Wx_plus_b, )</div><div class="line">    <span class="keyword">return</span> outputs</div></pre></td></tr></table></figure>
+<p>这里的名字应该叫layer, 下面是编辑后的:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</div><div class="line">    # add one more layer and return the output of this layer</div><div class="line">    with tf.name_scope(&apos;layer&apos;):</div><div class="line">        Weights= tf.Variable(tf.random_normal([in_size, out_size]))</div><div class="line">        # and so on...</div></pre></td></tr></table></figure>
+<hr>
+<p>在定义完大的框架<code>layer</code>之后，同时也需要定义每一个’框架‘里面的小部件：(Weights biases 和 activation function): 现在现对 <code>Weights</code> 定义： 定义的方法同上，可以使用<code>tf.name.scope()</code>方法，同时也可以在<code>Weights</code>中指定名称<code>W</code>。 即为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></div><div class="line">	<span class="comment">#define layer name</span></div><div class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'layer'</span>):</div><div class="line">        <span class="comment">#define weights name </span></div><div class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'weights'</span>):</div><div class="line">            Weights= tf.Variable(tf.random_normal([in_size, out_size]),name=<span class="string">'W'</span>)</div><div class="line">        <span class="comment">#and so on......</span></div></pre></td></tr></table></figure>
+<p>接着继续定义<code>biases</code> ， 定义方式同上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</div><div class="line">    #define layer name</div><div class="line">    with tf.name_scope(&apos;layer&apos;):</div><div class="line">        #define weights name </div><div class="line">        with tf.name_scope(&apos;weights&apos;)</div><div class="line">            Weights= tf.Variable(tf.random_normal([in_size, out_size]),name=&apos;W&apos;)</div><div class="line">        # define biase</div><div class="line">        with tf.name_scope(&apos;Wx_plus_b&apos;):</div><div class="line">            Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</div><div class="line">        # and so on....</div></pre></td></tr></table></figure>
+<p><code>activation_function</code> 的话，可以暂时忽略。因为当你自己选择用 tensorflow 中的激励函数（activation function）的时候，tensorflow会默认添加名称。 最终，layer形式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</div><div class="line">    # add one more layer and return the output of this layer</div><div class="line">    with tf.name_scope(&apos;layer&apos;):</div><div class="line">        with tf.name_scope(&apos;weights&apos;):</div><div class="line">            Weights = tf.Variable(</div><div class="line">            tf.random_normal([in_size, out_size]), </div><div class="line">            name=&apos;W&apos;)</div><div class="line">        with tf.name_scope(&apos;biases&apos;):</div><div class="line">            biases = tf.Variable(</div><div class="line">            tf.zeros([1, out_size]) + 0.1, </div><div class="line">            name=&apos;b&apos;)</div><div class="line">        with tf.name_scope(&apos;Wx_plus_b&apos;):</div><div class="line">            Wx_plus_b = tf.add(</div><div class="line">            tf.matmul(inputs, Weights), </div><div class="line">            biases)</div><div class="line">        if activation_function is None:</div><div class="line">            outputs = Wx_plus_b</div><div class="line">        else:</div><div class="line">            outputs = activation_function(Wx_plus_b, )</div><div class="line">        return outputs</div></pre></td></tr></table></figure>
+<p>最后编辑<code>loss</code>部分：将<code>with tf.name_scope()</code>添加在<code>loss</code>上方，并为它起名为<code>loss</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"># the error between prediciton and real data</div><div class="line">with tf.name_scope(&apos;loss&apos;):</div><div class="line">    loss = tf.reduce_mean(</div><div class="line">    tf.reduce_sum(</div><div class="line">    tf.square(ys - prediction),</div><div class="line">    eduction_indices=[1]</div><div class="line">    ))</div></pre></td></tr></table></figure>
+<p>使用<code>with tf.name_scope()</code>再次对<code>train_step</code>部分进行编辑,如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">with tf.name_scope(&apos;train&apos;):</div><div class="line">    train_step = tf.train.GradientDescentOptimizer(0.1).minimize(loss)</div></pre></td></tr></table></figure>
+<p>我们需要使用 <code>tf.summary.FileWriter()</code> (<code>tf.train.SummaryWriter()</code> 这种方式已经在 tf &gt;= 0.12 版本中摒弃) 将上面‘绘画’出的图保存到一个目录中，以方便后期在浏览器中可以浏览。 这个方法中的第二个参数需要使用<code>sess.graph</code> ， 因此我们需要把这句话放在获取<code>session</code>的后面。 这里的<code>graph</code>是将前面定义的框架信息收集起来，然后放在<code>logs/</code>目录下面。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sess = tf.Session() # get session</div><div class="line"># tf.train.SummaryWriter soon be deprecated, use following</div><div class="line">writer = tf.summary.FileWriter(&quot;logs/&quot;, sess.graph)</div></pre></td></tr></table></figure>
+<p>请确保你的 tensorboard 指令是在你的 logs 文件根目录执行的. 如果在其他目录下, 比如 <code>Desktop</code> 等, 可能不会成功看到图. 比如在下面这个目录, 你要 cd 到 <code>project</code> 这个地方执行 <code>/project &gt; tensorboard --logdir logs</code></p>
+<p>完整代码在</p>
+<p><a href="https://github.com/MorvanZhou/tutorials/blob/master/tensorflowTUT/tf14_tensorboard/full_code.py" target="_blank" rel="noopener">https://github.com/MorvanZhou/tutorials/blob/master/tensorflowTUT/tf14_tensorboard/full_code.py</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># View more python learning tutorial on my Youtube and Youku channel!!!</span></div><div class="line"></div><div class="line"><span class="comment"># Youtube video tutorial: https://www.youtube.com/channel/UCdyjiB5H8Pu7aDTNVXTTpcg</span></div><div class="line"><span class="comment"># Youku video tutorial: http://i.youku.com/pythontutorial</span></div><div class="line"></div><div class="line"><span class="string">"""</span></div><div class="line">Please note, this code is only for python 3+. If you are using python 2+, please modify the code accordingly.</div><div class="line">"""</div><div class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span> print_function</div><div class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></div><div class="line">    <span class="comment"># add one more layer and return the output of this layer</span></div><div class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'layer'</span>):</div><div class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'weights'</span>):</div><div class="line">            Weights = tf.Variable(tf.random_normal([in_size, out_size]), name=<span class="string">'W'</span>)</div><div class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'biases'</span>):</div><div class="line">            biases = tf.Variable(tf.zeros([<span class="number">1</span>, out_size]) + <span class="number">0.1</span>, name=<span class="string">'b'</span>)</div><div class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'Wx_plus_b'</span>):</div><div class="line">            Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</div><div class="line">        <span class="keyword">if</span> activation_function <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">            outputs = Wx_plus_b</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            outputs = activation_function(Wx_plus_b, )</div><div class="line">        <span class="keyword">return</span> outputs</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment"># define placeholder for inputs to network</span></div><div class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'inputs'</span>):</div><div class="line">    xs = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>], name=<span class="string">'x_input'</span>)</div><div class="line">    ys = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>], name=<span class="string">'y_input'</span>)</div><div class="line"></div><div class="line"><span class="comment"># add hidden layer</span></div><div class="line">l1 = add_layer(xs, <span class="number">1</span>, <span class="number">10</span>, activation_function=tf.nn.relu)</div><div class="line"><span class="comment"># add output layer</span></div><div class="line">prediction = add_layer(l1, <span class="number">10</span>, <span class="number">1</span>, activation_function=<span class="keyword">None</span>)</div><div class="line"></div><div class="line"><span class="comment"># the error between prediciton and real data</span></div><div class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'loss'</span>):</div><div class="line">    loss = tf.reduce_mean(tf.reduce_sum(tf.square(ys - prediction),</div><div class="line">                                        reduction_indices=[<span class="number">1</span>]))</div><div class="line"></div><div class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'train'</span>):</div><div class="line">    train_step = tf.train.GradientDescentOptimizer(<span class="number">0.1</span>).minimize(loss)</div><div class="line"></div><div class="line">sess = tf.Session()</div><div class="line"></div><div class="line"><span class="comment"># tf.train.SummaryWriter soon be deprecated, use following</span></div><div class="line"><span class="keyword">if</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">1</span>]) &lt; <span class="number">12</span> <span class="keyword">and</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">0</span>]) &lt; <span class="number">1</span>:  <span class="comment"># tensorflow version &lt; 0.12</span></div><div class="line">    writer = tf.train.SummaryWriter(<span class="string">'logs/'</span>, sess.graph)</div><div class="line"><span class="keyword">else</span>: <span class="comment"># tensorflow version &gt;= 0.12</span></div><div class="line">    writer = tf.summary.FileWriter(<span class="string">"logs/"</span>, sess.graph)</div><div class="line"></div><div class="line"><span class="comment"># tf.initialize_all_variables() no long valid from</span></div><div class="line"><span class="comment"># 2017-03-02 if using tensorflow &gt;= 0.12</span></div><div class="line"><span class="keyword">if</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">1</span>]) &lt; <span class="number">12</span> <span class="keyword">and</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">0</span>]) &lt; <span class="number">1</span>:</div><div class="line">    init = tf.initialize_all_variables()</div><div class="line"><span class="keyword">else</span>:</div><div class="line">    init = tf.global_variables_initializer()</div><div class="line">sess.run(init)</div><div class="line"></div><div class="line"><span class="comment"># direct to the local dir and run this in terminal:</span></div><div class="line"><span class="comment"># $ tensorboard --logdir=logs</span></div></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/树/" rel="tag"># 树</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/12/hadoop-spark/spark/spark笔记-local开发/" rel="next" title="spark笔记-local开发">
+                <i class="fa fa-chevron-left"></i> spark笔记-local开发
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/12/Elastic Search/elastic-search笔记/" rel="prev" title="elastic search笔记">
+                elastic search笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Schwimmer</p>
+              <div class="site-description motion-element" itemprop="description">Record and Think!</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">315</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">55</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#各种不同的优化器"><span class="nav-number">1.</span> <span class="nav-text">各种不同的优化器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#搭建图纸"><span class="nav-number">2.</span> <span class="nav-text">搭建图纸</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.5.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.2.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
