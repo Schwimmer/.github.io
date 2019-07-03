@@ -328,7 +328,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/机器学习模型的比较/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/机器学习笔记-熵/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -348,7 +348,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/03/17/机器学习/机器学习模型的比较/" class="post-title-link" itemprop="url">机器学习模型的比较</a>
+                <a href="/2018/03/17/机器学习/机器学习笔记-熵/" class="post-title-link" itemprop="url">熵</a>
               
             
           </h1>
@@ -406,8 +406,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/17/机器学习/机器学习模型的比较/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/机器学习模型的比较/" itemprop="commentCount"></span>
+                <a href="/2018/03/17/机器学习/机器学习笔记-熵/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/机器学习笔记-熵/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -440,228 +440,52 @@
       
         
           
-            <p>转自 用于数据挖掘的分类算法有哪些，各有何优劣？ - Jason Gu的回答 - 知乎<br><a href="https://www.zhihu.com/question/24169940/answer/26952728" target="_blank" rel="noopener">https://www.zhihu.com/question/24169940/answer/26952728</a></p>
-<p><a href="https://zhuanlan.zhihu.com/p/27160995" target="_blank" rel="noopener">机器学习经典算法优缺点总结</a></p>
-<p>首先看训练集多大，</p>
-<p>贝叶斯因为模型简单，所以高偏差低方差。数据量小的时候，贝叶斯更好，因为LR容易过拟合。随着训练集增大，LR能训练出更准确的模型。</p>
+            <h1 id="熵"><a href="#熵" class="headerlink" title="熵"></a>熵</h1><h1 id="1、什么是信息量？"><a href="#1、什么是信息量？" class="headerlink" title="1、什么是信息量？"></a>1、什么是信息量？</h1><p>假设X是一个<strong>离散型随机变量</strong>，其取值集合为X，概率分布函数为$p(x) = P(X=x), x \in X$，定义$X=x_0$的信息量为：</p>
+<script type="math/tex; mode=display">
+I(x_0) = -log(p(x_0))</script><p>可以理解为，一个事件发生的概率越大，携带的信息量越小。当$p(x_0)=1$时，信息量为0。</p>
+<h1 id="2、什么是熵？"><a href="#2、什么是熵？" class="headerlink" title="2、什么是熵？"></a>2、什么是熵？</h1><p>第一，假设存在一个随机变量<img src="https://www.zhihu.com/equation?tex=x" alt="x">，可以问一下自己当我们观测到该随机变量的一个样本时，我们可以接受到多少信息量呢？毫无疑问，当我们被告知一个极不可能发生的事情发生了，那我们就接收到了更多的信息；而当我们观测到一个非常常见的事情发生了，那么我们就接收到了相对较少的信息量。因此信息的量度应该依赖于概率分布<img src="https://www.zhihu.com/equation?tex=p%28x%29" alt="p(x)">，<strong>所以说熵<img src="https://www.zhihu.com/equation?tex=h%28x%29" alt="h(x)">的定义应该是概率的单调函数。</strong> </p>
+<p>第二，假设两个随机变量<img src="https://www.zhihu.com/equation?tex=x" alt="x">和<img src="https://www.zhihu.com/equation?tex=y" alt="y">是相互独立的，那么分别观测两个变量得到的信息量应该和同时观测两个变量的信息量是相同的，即：$H(X+Y)=H(X)+H(Y)$ 。而从概率上来讲，两个独立随机变量就意味着$p(x,y)=p(x)p(y)$，所以此处可以得出结论熵的定义<img src="https://www.zhihu.com/equation?tex=h" alt="h">应该是概率<img src="https://www.zhihu.com/equation?tex=p%28x%29" alt="p(x)">的<img src="https://www.zhihu.com/equation?tex=log%0A" alt="log">函数。因此一个随机变量的熵可以使用如下定义：</p>
+<p>设$X \in {x_1,x_2,…,x_n} $ 为一个离散随机变量，其概率分布为$P(X=x_i)=p_i$。则X的熵为</p>
+<script type="math/tex; mode=display">
+H(X)=-\sum_{i=1}^np_i\log p_i</script><p>其中，当$p_i=0$时，熵为0。</p>
+<p><strong>此处的负号仅仅是用来保证熵（即信息量）是正数或者为零。而<img src="https://www.zhihu.com/equation?tex=log" alt="log">函数基的选择是任意的</strong>（<em>信息论中基常常选择为2，因此信息的单位为比特bits；而机器学习中基常常选择为自然常数，因此单位常常被称为nats</em>）。</p>
+<p><strong>用熵来评价整个随机变量x平均的信息量，而平均最好的量度就是随机变量的期望</strong>。</p>
+<p>熵的取值范围是</p>
+<script type="math/tex; mode=display">
+0 \leq H(X) \leq \log n</script><p>两个随机变量一起发生的熵就是<strong>联合熵</strong></p>
+<h1 id="3、条件熵"><a href="#3、条件熵" class="headerlink" title="3、条件熵"></a>3、条件熵</h1><p>设$Y \in {y_1,y_2,…,y_m}$为随机变量，在已知X的条件下，Y的条件熵（conditional entropy）为</p>
+<script type="math/tex; mode=display">
+H(Y|X) = \sum_{i=1}^n p(x_i)H(Y|X=x_i) = -\sum_{i=1}^np(x_i) \sum_{j=1}^m p(y_j|x_i)\log p(y_j|x_i)</script><p>表示在已知X的条件下，Y的条件概率分布的熵对X的数学期望。</p>
+<h1 id="4、交叉熵"><a href="#4、交叉熵" class="headerlink" title="4、交叉熵"></a>4、交叉熵</h1><p>例如：</p>
 <blockquote>
-<p>偏差指因模型太简单带来的估计不准确的部分。方差指因模型太复杂带来的不确定性。</p>
+<p>箱子里面有小球任意个，但其中1/2是橙色球，1/4是紫色球，1/8是蓝色球及1/8是青色球。我从中拿出一个球，你猜我手中的球是什么颜色的？</p>
 </blockquote>
-<p>LR相对于贝叶斯，不需要考虑特征是否相关。更容易增量训练。</p>
-<p>LR可解释好，某个特征的权重高，则对结果的影响也大。可以在线学习。</p>
-<p>决策树容易过拟合，使用剪树枝，或者RF。</p>
-<h1 id="Linear-SVM和LR的比较"><a href="#Linear-SVM和LR的比较" class="headerlink" title="Linear SVM和LR的比较"></a>Linear SVM和LR的比较</h1><p><a href="http://www.jishux.com/plus/view-615065-1.html" target="_blank" rel="noopener">http://www.jishux.com/plus/view-615065-1.html</a></p>
-<h2 id="从模型解决问题的方式来看"><a href="#从模型解决问题的方式来看" class="headerlink" title="从模型解决问题的方式来看"></a>从模型解决问题的方式来看</h2><p>Linear SVM直观上是trade-off两个量</p>
-<ol>
-<li>a large margin，就是两类之间可以画多宽的gap ；不妨说是正样本应该在分界平面向左gap/2（称正分界），负样本应该在分解平面向右gap/2（称负分界）</li>
-<li>L1 error penalty，对所有不满足上述条件的点做L1 penalty</li>
-</ol>
-<p>给定一个数据集，一旦完成Linear SVM的求解，所有数据点可以被归成两类</p>
-<ol>
-<li>一类是落在对应分界平面外并被正确分类的点，比如落在正分界左侧的正样本或落在负分界右侧的负样本</li>
-<li>第二类是落在gap里或被错误分类的点。</li>
-</ol>
-<p>假设一个数据集已经被Linear SVM求解，那么往这个数据集里面增加或者删除更多的一类点并不会改变重新求解的Linear SVM平面。不受数据分布的影响。</p>
-<p>求解LR模型过程中，<strong>每一个数据点对分类平面都是有影响的</strong>，它的影响力远离它到分类平面的距离指数递减。换句话说，LR的解是<strong>受数据本身分布</strong>影响的。在实际应用中，如果数据维度很高，LR模型都会配合参数的L1 regularization。</p>
-<h2 id="两者的区别"><a href="#两者的区别" class="headerlink" title="两者的区别"></a>两者的区别</h2><p>两个模型对<strong>数据和参数</strong>的敏感程度不同，Linear SVM比较依赖penalty的系数和<strong>数据表达空间的测度</strong>，而（带正则项的）LR<strong>比较依赖对参数做L1 regularization的系数</strong>。但是由于他们或多或少都是线性分类器，所以实际上对低维度数据overfitting的能力都比较有限，相比之下对高维度数据，LR的表现会更加稳定，为什么呢？因为Linear SVM在计算margin有多“宽”的时候是依赖数据表达上的距离测度的，换句话说如果这个测度不好（badly scaled，这种情况在高维数据尤为显著），所求得的所谓Large margin就没有意义了，这个问题即使换用kernel trick（比如用Gaussian kernel）也无法完全避免。所以使用Linear SVM之前一般都需要先对数据做normalization，而求解LR（without regularization）时则不需要或者结果不敏感。</p>
-<p>Linear SVM和LR都是线性分类器<br>Linear SVM不直接依赖数据分布，分类平面不受一类点影响；<strong>LR则受所有数据点的影响，如果数据不同类别strongly unbalance一般需要先对数据做balancing</strong>。<br>Linear SVM<strong>依赖数据表达的距离测度，所以需要对数据先做normalization</strong>；LR不受其影响<br>Linear SVM依赖penalty的系数，实验中需要做validation<br>Linear SVM和LR的performance都会收到outlier的影响，其敏感程度而言，谁更好很难下明确结论。</p>
-<p><strong>balance的方法</strong></p>
-<ol>
-<li>调整正、负样本在求cost时的权重，比如按比例加大正样本cost的权重。然而deep learning的训练过程是on-line的因此你需要按照batch中正、负样本的比例调整。</li>
-<li>做训练样本选取：如hard negative mining，只用负样本中的一部分。</li>
-<li>做训练样本选取：如通过data augmentation扩大正样本数量。</li>
-</ol>
-<p><strong>过拟合方面</strong></p>
-<p>LR容易欠拟合，准确度低。</p>
-<p>SVM不太容易过拟合：松弛因子+损失函数形式</p>
-<p>注意SVM的求解方法叫拉格朗日乘子法，而对于均方误差的优化方法是最小二乘法。</p>
-<h2 id="方法的选择"><a href="#方法的选择" class="headerlink" title="方法的选择"></a>方法的选择</h2><p>在Andrew NG的课里讲到过：</p>
-<ol>
-<li>如果Feature的数量很大，跟样本数量差不多，这时候选用LR或者是Linear Kernel的SVM</li>
-<li>如果Feature的数量比较小，样本数量一般，不算大也不算小，选用SVM+Gaussian Kernel</li>
-<li>如果Feature的数量比较小，而样本数量很多，需要手工添加一些feature变成第一种情况</li>
-</ol>
-<p>当你的数据非常非常非常非常非常大然后完全跑不动SVM的时候，跑LR。SVM适合于小样本学习。多大算是非常非常非常非常非常非常大？ 比如几个G，几万维特征，就勉强算大吧…而实际问题上几万个参数实在完全不算个事儿，太常见了。随随便便就得上spark。读一遍数据就老半天，一天能训练出来的模型就叫高效了。所以在新时代，LR其实反而比以前用的多了=. =</p>
-<h2 id="应用场景方面不同"><a href="#应用场景方面不同" class="headerlink" title="应用场景方面不同"></a>应用场景方面不同</h2><p>拟合程度，样本量，</p>
-<p>距离测度，数据balance</p>
-<p>模型简单易解释</p>
-<p>如果数据特征维度高，svm要使用核函数来求解</p>
-<p>Note：拉格朗日对偶没有改变最优解，但改变了算法复杂度：原问题—样本维度；对偶问题–样本数量。所以 线性分类&amp;&amp;样本维度&lt;样本数量：原问题求解（liblinear默认）； 非线性–升维—一般导致 样本维度&gt;样本数量：对偶问题求解</p>
-<h2 id="SVM适合处理什么样的数据？"><a href="#SVM适合处理什么样的数据？" class="headerlink" title="SVM适合处理什么样的数据？"></a>SVM适合处理什么样的数据？</h2><p>高维稀疏，样本少。【参数只与支持向量有关，数量少，所以需要的样本少，由于参数跟维度没有关系，所以可以处理高维问题】</p>
-<h1 id="机器学习算法选择"><a href="#机器学习算法选择" class="headerlink" title="机器学习算法选择"></a>机器学习算法选择</h1><p><a href="http://www.jishux.com/plus/view-615065-1.html" target="_blank" rel="noopener">机器学习算法小结与收割offer遇到的问题</a></p>
-<p>随机森林平均来说最强，但也只在9.9%的数据集上拿到了第一，优点是鲜有短板。SVM的平均水平紧随其后，在10.7%的数据集上拿到第一。神经网络（13.2%）和boosting（~9%）表现不错。数据维度越高，随机森林就比AdaBoost强越多，但是整体不及SVM<a href="http://img.jishux.com/jishux/2017/09/26/490ec60ad4bcb6e0992bded7407b26f4d2b11a5d.jpg_.jpg" target="_blank" rel="noopener">2</a>。数据量越大，神经网络就越强。</p>
-<h2 id="K近邻"><a href="#K近邻" class="headerlink" title="K近邻"></a>K近邻</h2><p>典型的例子是KNN，它的思路就是——对于待判断的点，找到离它最近的几个数据点，根据它们的类型决定待判断点的类型。</p>
-<p>它的特点是完全跟着数据走，没有数学模型可言。</p>
-<h2 id="随机森林"><a href="#随机森林" class="headerlink" title="随机森林"></a>随机森林</h2><h3 id="RF与传统bagging的区别"><a href="#RF与传统bagging的区别" class="headerlink" title="RF与传统bagging的区别"></a>RF与传统bagging的区别</h3><p>（1）<strong>样本采样</strong>：RF<strong>有放回</strong>选取和整体样本数目相同的样本，一般bagging用的样本&lt;总体样本数<br>（2）<strong>特征采样</strong>：RF对特征进行采样，BAGGING用全部特征</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/sklearn的一些总结/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/03/17/机器学习/sklearn的一些总结/" class="post-title-link" itemprop="url">sklearn的一些总结</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-03-17 20:50:31" itemprop="dateCreated datePublished" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
-            </span>
-          
-
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/17/机器学习/sklearn的一些总结/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/sklearn的一些总结/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>转自 <a href="http://blog.csdn.net/wang1127248268/article/details/53264041" target="_blank" rel="noopener">sklearn的一些总结</a></p>
+<p>知道了每种颜色小球的比例，比如橙色占比二分之一，如果我猜橙色，很有可能第一次就猜中了。所以，根据策略2，1/2的概率是橙色球，小明需要猜一次，1/4的概率是紫色球，小明需要猜两次，1/8的概率是蓝色球，小明需要猜三次，1/8的概率是青色球，小明需要猜三次，所以小明预期的猜题次数为：</p>
+<p>H = 1/2 <em> 1 + 1/4 </em> 2 + 1/8 <em> 3 + 1/8 </em> 3=  1.75</p>
+<p>针对概率为p的小球，需要猜球的次数$=log_2 \frac 1 p$ 。例如1/8是蓝色球，次数就是3。则预期的猜题次数就是熵。</p>
+<p>因此，每个系统都会有一个真实的概率分布（<strong>真实分布</strong>）。根据真实分布，可以找到一个最优策略，以最小的代价消除系统的不确定性，这个不确定性的值就是熵（比如猜题次数，编码长度）。</p>
+<p>如果小明不知道真实分布，认为小球的分布为（1/4，1/4，1/4，1/4），这个分布就是<strong>非真实分布</strong>。此时，小明猜中任何一种颜色的小球都需要猜两次，即1/2 <em> 2 + 1/4 </em> 2 + 1/8 <em> 2 + 1/8 </em> 2 = 2。</p>
+<p>当我们使用非最优策略消除系统的不确定性，所需要付出的努力的大小我们该如何去衡量呢？</p>
+<p>这就需要引入<strong>交叉熵，其用来衡量在给定的真实分布下，使用非真实分布所指定的策略消除系统的不确定性所需要付出的努力的大小</strong>。</p>
+<p>交叉熵的公式为：</p>
+<script type="math/tex; mode=display">
+H = \sum_{i=1}^N p_i log_2 \frac 1 {q_i}</script><p>其中，$p_i$是真实分布，$q_i$是非真实分布。</p>
+<p>因此，交叉熵越低，这个策略就越好，最低的交叉熵也就是使用了真实分布所计算出来的信息熵，因为此时$p_i=q_i$ ，交叉熵 = 信息熵。</p>
+<p>这也是为什么在机器学习中的分类算法中，我们总是最小化交叉熵，因为交叉熵越低，就证明由算法所产生的策略最接近最优策略，也间接证明我们算法所算出的非真实分布越接近真实分布。</p>
+<h1 id="5、相对熵-KL散度"><a href="#5、相对熵-KL散度" class="headerlink" title="5、相对熵(KL散度)"></a>5、相对熵(KL散度)</h1><p>最后，我们如何去衡量不同策略之间的差异呢？这就需要用到<strong>相对熵，其用来衡量两个取值为正的函数或概率分布之间的差异</strong>，即：</p>
+<script type="math/tex; mode=display">
+KL(f(x) || g(x)) = \sum_{x \in X} f(x) * log_2 \frac {f(x)} {g(x)}</script><p>现在，假设我们想知道某个策略和最优策略之间的差异，我们就可以用相对熵来衡量这两者之间的差异。即，相对熵 = 某个策略的交叉熵 - 信息熵（根据系统真实分布计算而得的信息熵，为最优策略），公式如下：</p>
+<script type="math/tex; mode=display">
+KL(p || q) = H(p,q)-H(p) = \sum_{k=1}^N p_k log_2 \frac 1 {q_k} - \sum_{k=1}^N p_k log_2 \frac 1 {p_k} = \sum_{k=1}^N p_k log_2 \frac {p_k} {q_k}</script><p><strong>互信息是相对熵的特殊形式</strong>。如果变量不是独立的，可以通过考察联合概率分布和边缘概率分布乘积之间的相对熵，来判断它们是否接近于相对独立。此时，散度表示为</p>
+<p><img src="http://img.blog.csdn.net/20170619101153719?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcGlwaXNvcnJ5/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></p>
+<p>这被称为变量 x 和变量 y 之间的互信息( mutual information )。根据 Kullback-Leibler 散度的性质,我们看到 I[x, y] ≥ 0 ,当且仅当 x 和 y 相互独立时等号成立。经过推导，得互信息公式为</p>
+<p><img src="http://www.2cto.com/uploadfile/Collfiles/20160617/20160617091445667.png" alt=""></p>
+<p>互信息不能归一化，对连续变量计算不方便（连续变量需要先离散化）。最大信息系数首先寻求一种最优离散化方式，然后把互信息取值转换成一种度量方式，取值区间在[0，1]。</p>
+<h1 id="6、总结"><a href="#6、总结" class="headerlink" title="6、总结"></a>6、总结</h1><p>熵：衡量不确定性的度量</p>
+<p>联合熵：X、Y在一起时的不确定性度量</p>
+<p>条件熵：X确定时，Y的不确定性度量。也就是在X发生的前提下，新发生Y带来的熵</p>
+<p>交叉熵：衡量p和q的相似性，越小越相似</p>
+<p>相对熵：p和q的不相似度量。</p>
 
           
         
@@ -846,6 +670,175 @@
 <blockquote>
 <p>鼎盛时期，平均每个cookie有5个url</p>
 </blockquote>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/sklearn的一些总结/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/03/17/机器学习/sklearn的一些总结/" class="post-title-link" itemprop="url">sklearn的一些总结</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-03-17 20:50:31" itemprop="dateCreated datePublished" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
+            </span>
+          
+
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/03/17/机器学习/sklearn的一些总结/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/sklearn的一些总结/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>转自 <a href="http://blog.csdn.net/wang1127248268/article/details/53264041" target="_blank" rel="noopener">sklearn的一些总结</a></p>
 
           
         
@@ -1090,7 +1083,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/SVD/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/BP神经网络/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -1110,7 +1103,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/03/17/机器学习/SVD/" class="post-title-link" itemprop="url">SVD</a>
+                <a href="/2018/03/17/机器学习/BP神经网络/" class="post-title-link" itemprop="url">BP神经网络</a>
               
             
           </h1>
@@ -1168,8 +1161,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/17/机器学习/SVD/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/SVD/" itemprop="commentCount"></span>
+                <a href="/2018/03/17/机器学习/BP神经网络/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/BP神经网络/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1202,38 +1195,9 @@
       
         
           
-            <p>整理自：</p>
-<p><a href="http://www.cnblogs.com/pinard/p/6251584.html" target="_blank" rel="noopener">奇异值分解(SVD)原理与在降维中的应用</a></p>
-<p><a href="http://blog.sciencenet.cn/blog-696950-699380.html" target="_blank" rel="noopener">奇异值分解(SVD) —- 线性变换几何意义</a></p>
-<p><a href="http://www.cnblogs.com/LeftNotEasy/archive/2011/01/19/svd-and-applications.html" target="_blank" rel="noopener">机器学习中的数学(5)-强大的矩阵奇异值分解(SVD)及其应用</a></p>
-<h1 id="特征值和特征分解"><a href="#特征值和特征分解" class="headerlink" title="特征值和特征分解"></a>特征值和特征分解</h1><script type="math/tex; mode=display">
-Ax=\lambda x</script><p>其中A是一个n×n的矩阵，x是一个n维向量，则我们说<strong>λ</strong>是矩阵A的一个<strong>特征值</strong>，而<strong>x</strong>是矩阵A的特征值λ所对应的<strong>特征向量</strong>。</p>
-<p>而从几何上看，A相当于对向量x进行了拉伸，λ是拉伸的尺度。</p>
-<p>前提是A是一个对称矩阵。</p>
-<blockquote>
-<p><strong>对称矩阵</strong></p>
-<p>转置后与原矩阵相等。任意矩阵乘以它的转置也是对称矩阵。</p>
-</blockquote>
-<p>特征分解时，A必须是方阵。</p>
-<p><img src="https://images2015.cnblogs.com/blog/1042406/201701/1042406-20170105115457425-1545975626.png" alt=""></p>
-<p>SVD之后，对于奇异值,它跟我们特征分解中的特征值类似，在奇异值矩阵中也是按照从大到小排列，而且奇异值的减少特别的快，在很多情况下，前10%甚至1%的奇异值的和就占了全部的奇异值之和的99%以上的比例。也就是说，我们也可以用最大的k个的奇异值和对应的左右奇异向量来近似描述矩阵。</p>
-<script type="math/tex; mode=display">
-A_{m \times n} = U_{m \times m}\Sigma_{m \times n} V^T_{n \times n} \approx U_{m \times k}\Sigma_{k \times k} V^T_{k \times n}</script><p>这样，矩阵A就可以近似的表示为</p>
-<p><img src="https://images2015.cnblogs.com/blog/1042406/201701/1042406-20170105140822191-1774139119.png" alt=""></p>
-<blockquote>
-<p>（文本分析中）</p>
-<p>三个矩阵有非常清楚的物理含义：</p>
-<ul>
-<li>第一个矩阵X中的每一行表示意思相关的一类词，其中的每个非零元素表示这类词中每个词的重要性（或者说相关性），数值越大越相关。</li>
-<li>第三个矩阵Y中的每一列表示同一主题一类文章，其中每个元素表示这类文章中每篇文章的相关性。</li>
-<li>第二个矩阵B则表示类词和文章之间的相关性。因此，我们只要对关联矩阵A进行一次奇异值分解，我们就可以同时完成了近义词分类和文章的分类。（同时得到每类文章和每类词的相关性）。</li>
-</ul>
-</blockquote>
-<p>SVD的性质</p>
-<p>降维</p>
-<p>对于奇异值,它跟我们特征分解中的特征值类似，在奇异值矩阵中也是按照从大到小排列，而且奇异值的减少特别的快，在很多情况下，前10%甚至1%的奇异值的和就占了全部的奇异值之和的99%以上的比例。也就是说，我们也可以用最大的k个的奇异值和对应的左右奇异向量来近似描述矩阵。也就是说：</p>
-<script type="math/tex; mode=display">
-A_{m \times n} = U_{m \times m}\Sigma_{m \times n} V^T_{n \times n} \approx U_{m \times k}\Sigma_{k \times k} V^T_{k \times n}</script>
+            <p><a href="https://www.cnblogs.com/wjy-lulu/p/6511616.html" target="_blank" rel="noopener">https://www.cnblogs.com/wjy-lulu/p/6511616.html</a></p>
+<p><a href="https://www.cnblogs.com/biaoyu/archive/2015/06/20/4591304.html" target="_blank" rel="noopener">https://www.cnblogs.com/biaoyu/archive/2015/06/20/4591304.html</a></p>
+
           
         
       
@@ -1466,7 +1430,7 @@ A_{m \times n} = U_{m \times m}\Sigma_{m \times n} V^T_{n \times n} \approx U_{m
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/BP神经网络/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/SVD/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -1486,7 +1450,7 @@ A_{m \times n} = U_{m \times m}\Sigma_{m \times n} V^T_{n \times n} \approx U_{m
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/03/17/机器学习/BP神经网络/" class="post-title-link" itemprop="url">BP神经网络</a>
+                <a href="/2018/03/17/机器学习/SVD/" class="post-title-link" itemprop="url">SVD</a>
               
             
           </h1>
@@ -1544,8 +1508,8 @@ A_{m \times n} = U_{m \times m}\Sigma_{m \times n} V^T_{n \times n} \approx U_{m
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/17/机器学习/BP神经网络/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/BP神经网络/" itemprop="commentCount"></span>
+                <a href="/2018/03/17/机器学习/SVD/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/SVD/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1578,9 +1542,38 @@ A_{m \times n} = U_{m \times m}\Sigma_{m \times n} V^T_{n \times n} \approx U_{m
       
         
           
-            <p><a href="https://www.cnblogs.com/wjy-lulu/p/6511616.html" target="_blank" rel="noopener">https://www.cnblogs.com/wjy-lulu/p/6511616.html</a></p>
-<p><a href="https://www.cnblogs.com/biaoyu/archive/2015/06/20/4591304.html" target="_blank" rel="noopener">https://www.cnblogs.com/biaoyu/archive/2015/06/20/4591304.html</a></p>
-
+            <p>整理自：</p>
+<p><a href="http://www.cnblogs.com/pinard/p/6251584.html" target="_blank" rel="noopener">奇异值分解(SVD)原理与在降维中的应用</a></p>
+<p><a href="http://blog.sciencenet.cn/blog-696950-699380.html" target="_blank" rel="noopener">奇异值分解(SVD) —- 线性变换几何意义</a></p>
+<p><a href="http://www.cnblogs.com/LeftNotEasy/archive/2011/01/19/svd-and-applications.html" target="_blank" rel="noopener">机器学习中的数学(5)-强大的矩阵奇异值分解(SVD)及其应用</a></p>
+<h1 id="特征值和特征分解"><a href="#特征值和特征分解" class="headerlink" title="特征值和特征分解"></a>特征值和特征分解</h1><script type="math/tex; mode=display">
+Ax=\lambda x</script><p>其中A是一个n×n的矩阵，x是一个n维向量，则我们说<strong>λ</strong>是矩阵A的一个<strong>特征值</strong>，而<strong>x</strong>是矩阵A的特征值λ所对应的<strong>特征向量</strong>。</p>
+<p>而从几何上看，A相当于对向量x进行了拉伸，λ是拉伸的尺度。</p>
+<p>前提是A是一个对称矩阵。</p>
+<blockquote>
+<p><strong>对称矩阵</strong></p>
+<p>转置后与原矩阵相等。任意矩阵乘以它的转置也是对称矩阵。</p>
+</blockquote>
+<p>特征分解时，A必须是方阵。</p>
+<p><img src="https://images2015.cnblogs.com/blog/1042406/201701/1042406-20170105115457425-1545975626.png" alt=""></p>
+<p>SVD之后，对于奇异值,它跟我们特征分解中的特征值类似，在奇异值矩阵中也是按照从大到小排列，而且奇异值的减少特别的快，在很多情况下，前10%甚至1%的奇异值的和就占了全部的奇异值之和的99%以上的比例。也就是说，我们也可以用最大的k个的奇异值和对应的左右奇异向量来近似描述矩阵。</p>
+<script type="math/tex; mode=display">
+A_{m \times n} = U_{m \times m}\Sigma_{m \times n} V^T_{n \times n} \approx U_{m \times k}\Sigma_{k \times k} V^T_{k \times n}</script><p>这样，矩阵A就可以近似的表示为</p>
+<p><img src="https://images2015.cnblogs.com/blog/1042406/201701/1042406-20170105140822191-1774139119.png" alt=""></p>
+<blockquote>
+<p>（文本分析中）</p>
+<p>三个矩阵有非常清楚的物理含义：</p>
+<ul>
+<li>第一个矩阵X中的每一行表示意思相关的一类词，其中的每个非零元素表示这类词中每个词的重要性（或者说相关性），数值越大越相关。</li>
+<li>第三个矩阵Y中的每一列表示同一主题一类文章，其中每个元素表示这类文章中每篇文章的相关性。</li>
+<li>第二个矩阵B则表示类词和文章之间的相关性。因此，我们只要对关联矩阵A进行一次奇异值分解，我们就可以同时完成了近义词分类和文章的分类。（同时得到每类文章和每类词的相关性）。</li>
+</ul>
+</blockquote>
+<p>SVD的性质</p>
+<p>降维</p>
+<p>对于奇异值,它跟我们特征分解中的特征值类似，在奇异值矩阵中也是按照从大到小排列，而且奇异值的减少特别的快，在很多情况下，前10%甚至1%的奇异值的和就占了全部的奇异值之和的99%以上的比例。也就是说，我们也可以用最大的k个的奇异值和对应的左右奇异向量来近似描述矩阵。也就是说：</p>
+<script type="math/tex; mode=display">
+A_{m \times n} = U_{m \times m}\Sigma_{m \times n} V^T_{n \times n} \approx U_{m \times k}\Sigma_{k \times k} V^T_{k \times n}</script>
           
         
       
