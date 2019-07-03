@@ -14,7 +14,7 @@
   
 
 
-<html class="theme-next mist use-motion" lang="zh-Hans">
+<html class="theme-next pisces use-motion" lang="zh-Hans">
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -68,7 +68,7 @@
   var NexT = window.NexT || {};
   var CONFIG = {
     root: '/',
-    scheme: 'Mist',
+    scheme: 'Pisces',
     version: '7.2.0',
     sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
     back2top: true,
@@ -275,9 +275,6 @@
   
 
   
-    
-
-  
 
   
 </nav>
@@ -298,9 +295,192 @@
       <div class="main-inner">
         <div class="content-wrap">
           
+            
+
+          
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/31/地理信息挖掘/经纬度判断城市/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/03/31/地理信息挖掘/经纬度判断城市/" class="post-title-link" itemprop="url">经纬度判断城市</a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+
+              
+                
+              
+
+              <time title="Erstellt: 2018-03-31 10:30:28" itemprop="dateCreated datePublished" datetime="2018-03-31T10:30:28+08:00">2018-03-31</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Bearbeitet am</span>
+                
+                <time title="Geändert am: 2018-04-10 18:32:46" itemprop="dateModified" datetime="2018-04-10T18:32:46+08:00">2018-04-10</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">in</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/地理信息挖掘/" itemprop="url" rel="index"><span itemprop="name">地理信息挖掘</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/geo-poi/src/main/java/com/iclick/geo/search/Geolocation.java</div></pre></td></tr></table></figure>
+<p>有数据<code>district_v2.tar.gz</code> 包括每个行政区划的边界经纬度和中心经纬度</p>
+<h2 id="district-v2的结构"><a href="#district-v2的结构" class="headerlink" title="district_v2的结构"></a>district_v2的结构</h2><p>爬去的高德的数据</p>
+<p>每行对应一个城市的区县</p>
+<p>citycode 城市代码</p>
+<p>adcode是全国行政区划代码</p>
+<p>code编码数据来源于国家标准行政区划代码（adcode）映射表《》</p>
+<p>解析数据，将每个district的边界坐标保存到<code>districts</code> 。对于一个经纬度，遍历每个district，判断点是否在多边形内，找到所属行政区划。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**  </span></div><div class="line"> * 判断目标点是否在多边形内(由多个点组成)&lt;br/&gt;  </div><div class="line"> *   </div><div class="line"> * <span class="doctag">@param</span> px 目标点的经度坐标  </div><div class="line"> * <span class="doctag">@param</span> py 目标点的纬度坐标  </div><div class="line"> * <span class="doctag">@param</span> polygonXA 多边形的经度坐标集合  </div><div class="line"> * <span class="doctag">@param</span> polygonYA 多边形的纬度坐标集合  </div><div class="line"> * <span class="doctag">@return</span>  </div><div class="line"> */  </div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isPointInPolygon</span> <span class="params">( <span class="keyword">double</span> px , <span class="keyword">double</span> py , ArrayList&lt;Double&gt; polygonXA , ArrayList&lt;Double&gt; polygonYA )</span>    </span></div><div class="line">&#123;    </div><div class="line">    <span class="keyword">boolean</span> isInside = <span class="keyword">false</span>;    </div><div class="line">    <span class="keyword">double</span> ESP = <span class="number">1e-9</span>;    </div><div class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;    </div><div class="line">    <span class="keyword">double</span> linePoint1x;    </div><div class="line">    <span class="keyword">double</span> linePoint1y;    </div><div class="line">    <span class="keyword">double</span> linePoint2x = <span class="number">180</span>;    </div><div class="line">    <span class="keyword">double</span> linePoint2y;    </div><div class="line">  </div><div class="line">    linePoint1x = px;    </div><div class="line">    linePoint1y = py;    </div><div class="line">    linePoint2y = py;    </div><div class="line">  </div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; polygonXA.size() - <span class="number">1</span>; i++)    </div><div class="line">    &#123;    </div><div class="line">        <span class="keyword">double</span> cx1 = polygonXA.get(i);    </div><div class="line">        <span class="keyword">double</span> cy1 = polygonYA.get(i);    </div><div class="line">        <span class="keyword">double</span> cx2 = polygonXA.get(i + <span class="number">1</span>);    </div><div class="line">        <span class="keyword">double</span> cy2 = polygonYA.get(i + <span class="number">1</span>);   </div><div class="line">        <span class="comment">//如果目标点在任何一条线上  </span></div><div class="line">        <span class="keyword">if</span> ( isPointOnLine(px, py, cx1, cy1, cx2, cy2) )    </div><div class="line">        &#123;    </div><div class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;    </div><div class="line">        &#125;  </div><div class="line">        <span class="comment">//如果线段的长度无限小(趋于零)那么这两点实际是重合的，不足以构成一条线段  </span></div><div class="line">        <span class="keyword">if</span> ( Math.abs(cy2 - cy1) &lt; ESP )    </div><div class="line">        &#123;    </div><div class="line">            <span class="keyword">continue</span>;    </div><div class="line">        &#125;    </div><div class="line">        <span class="comment">//第一个点是否在以目标点为基础衍生的平行纬度线  </span></div><div class="line">        <span class="keyword">if</span> ( isPointOnLine(cx1, cy1, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </div><div class="line">        &#123;    </div><div class="line">            <span class="comment">//第二个点在第一个的下方,靠近赤道纬度为零(最小纬度)  </span></div><div class="line">            <span class="keyword">if</span> ( cy1 &gt; cy2 )    </div><div class="line">                count++;    </div><div class="line">        &#125;  </div><div class="line">        <span class="comment">//第二个点是否在以目标点为基础衍生的平行纬度线  </span></div><div class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ( isPointOnLine(cx2, cy2, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </div><div class="line">        &#123;    </div><div class="line">            <span class="comment">//第二个点在第一个的上方,靠近极点(南极或北极)纬度为90(最大纬度)  </span></div><div class="line">            <span class="keyword">if</span> ( cy2 &gt; cy1 )    </div><div class="line">                count++;    </div><div class="line">        &#125;  </div><div class="line">        <span class="comment">//由两点组成的线段是否和以目标点为基础衍生的平行纬度线相交  </span></div><div class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ( isIntersect(cx1, cy1, cx2, cy2, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </div><div class="line">        &#123;    </div><div class="line">            count++;    </div><div class="line">        &#125;    </div><div class="line">    &#125;    </div><div class="line">    <span class="keyword">if</span> ( count % <span class="number">2</span> == <span class="number">1</span> )    </div><div class="line">    &#123;    </div><div class="line">        isInside = <span class="keyword">true</span>;    </div><div class="line">    &#125;    </div><div class="line">  </div><div class="line">    <span class="keyword">return</span> isInside;    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>也可以用geojson配合qgis的api，geojson文件为<code>BOUNT_poly.geojson</code></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -445,186 +625,6 @@
 <p>1、基于hbase预聚合的。适合<strong>相对固定的业务报表类需求</strong>。需要指定预聚合的指标，在数据接入的时候根据指定的指标进行聚合运算，只需要统计少量维度即可满足业务报表需求。比如Opentsdb,Kylin,Druid等</p>
 <p>2、基于Parquet列式存储的，基本是完全基于内存的并行计算，Parquet系能降低存储空间，提高IO效率，以离线处理为主，<strong>很难提高数据写的实时性，超大表的join支持可能不够好</strong>。spark sql也算类似，但它在内存不足时可以spill disk来支持超大数据查询和join。比如Presto, Drill，Impala等</p>
 <p>3、基于lucene外部索引的，比如ElasticSearch和Solr,能够满足的的查询场景远多于传统的数据库存储，但对于日志、行为类时序数据，所有的搜索请求都也必须搜索所有的分片，另外，对于聚合分析场景的支持也是软肋    </p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/31/地理信息挖掘/经纬度判断城市/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/03/31/地理信息挖掘/经纬度判断城市/" class="post-title-link" itemprop="url">经纬度判断城市</a>
-              
-            
-          </h2>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-
-              
-                
-              
-
-              <time title="Erstellt: 2018-03-31 10:30:28" itemprop="dateCreated datePublished" datetime="2018-03-31T10:30:28+08:00">2018-03-31</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Bearbeitet am</span>
-                
-                <time title="Geändert am: 2018-04-10 18:32:46" itemprop="dateModified" datetime="2018-04-10T18:32:46+08:00">2018-04-10</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">in</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/地理信息挖掘/" itemprop="url" rel="index"><span itemprop="name">地理信息挖掘</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/geo-poi/src/main/java/com/iclick/geo/search/Geolocation.java</div></pre></td></tr></table></figure>
-<p>有数据<code>district_v2.tar.gz</code> 包括每个行政区划的边界经纬度和中心经纬度</p>
-<h2 id="district-v2的结构"><a href="#district-v2的结构" class="headerlink" title="district_v2的结构"></a>district_v2的结构</h2><p>爬去的高德的数据</p>
-<p>每行对应一个城市的区县</p>
-<p>citycode 城市代码</p>
-<p>adcode是全国行政区划代码</p>
-<p>code编码数据来源于国家标准行政区划代码（adcode）映射表《》</p>
-<p>解析数据，将每个district的边界坐标保存到<code>districts</code> 。对于一个经纬度，遍历每个district，判断点是否在多边形内，找到所属行政区划。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**  </span></div><div class="line"> * 判断目标点是否在多边形内(由多个点组成)&lt;br/&gt;  </div><div class="line"> *   </div><div class="line"> * <span class="doctag">@param</span> px 目标点的经度坐标  </div><div class="line"> * <span class="doctag">@param</span> py 目标点的纬度坐标  </div><div class="line"> * <span class="doctag">@param</span> polygonXA 多边形的经度坐标集合  </div><div class="line"> * <span class="doctag">@param</span> polygonYA 多边形的纬度坐标集合  </div><div class="line"> * <span class="doctag">@return</span>  </div><div class="line"> */  </div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isPointInPolygon</span> <span class="params">( <span class="keyword">double</span> px , <span class="keyword">double</span> py , ArrayList&lt;Double&gt; polygonXA , ArrayList&lt;Double&gt; polygonYA )</span>    </span></div><div class="line">&#123;    </div><div class="line">    <span class="keyword">boolean</span> isInside = <span class="keyword">false</span>;    </div><div class="line">    <span class="keyword">double</span> ESP = <span class="number">1e-9</span>;    </div><div class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;    </div><div class="line">    <span class="keyword">double</span> linePoint1x;    </div><div class="line">    <span class="keyword">double</span> linePoint1y;    </div><div class="line">    <span class="keyword">double</span> linePoint2x = <span class="number">180</span>;    </div><div class="line">    <span class="keyword">double</span> linePoint2y;    </div><div class="line">  </div><div class="line">    linePoint1x = px;    </div><div class="line">    linePoint1y = py;    </div><div class="line">    linePoint2y = py;    </div><div class="line">  </div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; polygonXA.size() - <span class="number">1</span>; i++)    </div><div class="line">    &#123;    </div><div class="line">        <span class="keyword">double</span> cx1 = polygonXA.get(i);    </div><div class="line">        <span class="keyword">double</span> cy1 = polygonYA.get(i);    </div><div class="line">        <span class="keyword">double</span> cx2 = polygonXA.get(i + <span class="number">1</span>);    </div><div class="line">        <span class="keyword">double</span> cy2 = polygonYA.get(i + <span class="number">1</span>);   </div><div class="line">        <span class="comment">//如果目标点在任何一条线上  </span></div><div class="line">        <span class="keyword">if</span> ( isPointOnLine(px, py, cx1, cy1, cx2, cy2) )    </div><div class="line">        &#123;    </div><div class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;    </div><div class="line">        &#125;  </div><div class="line">        <span class="comment">//如果线段的长度无限小(趋于零)那么这两点实际是重合的，不足以构成一条线段  </span></div><div class="line">        <span class="keyword">if</span> ( Math.abs(cy2 - cy1) &lt; ESP )    </div><div class="line">        &#123;    </div><div class="line">            <span class="keyword">continue</span>;    </div><div class="line">        &#125;    </div><div class="line">        <span class="comment">//第一个点是否在以目标点为基础衍生的平行纬度线  </span></div><div class="line">        <span class="keyword">if</span> ( isPointOnLine(cx1, cy1, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </div><div class="line">        &#123;    </div><div class="line">            <span class="comment">//第二个点在第一个的下方,靠近赤道纬度为零(最小纬度)  </span></div><div class="line">            <span class="keyword">if</span> ( cy1 &gt; cy2 )    </div><div class="line">                count++;    </div><div class="line">        &#125;  </div><div class="line">        <span class="comment">//第二个点是否在以目标点为基础衍生的平行纬度线  </span></div><div class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ( isPointOnLine(cx2, cy2, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </div><div class="line">        &#123;    </div><div class="line">            <span class="comment">//第二个点在第一个的上方,靠近极点(南极或北极)纬度为90(最大纬度)  </span></div><div class="line">            <span class="keyword">if</span> ( cy2 &gt; cy1 )    </div><div class="line">                count++;    </div><div class="line">        &#125;  </div><div class="line">        <span class="comment">//由两点组成的线段是否和以目标点为基础衍生的平行纬度线相交  </span></div><div class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ( isIntersect(cx1, cy1, cx2, cy2, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </div><div class="line">        &#123;    </div><div class="line">            count++;    </div><div class="line">        &#125;    </div><div class="line">    &#125;    </div><div class="line">    <span class="keyword">if</span> ( count % <span class="number">2</span> == <span class="number">1</span> )    </div><div class="line">    &#123;    </div><div class="line">        isInside = <span class="keyword">true</span>;    </div><div class="line">    &#125;    </div><div class="line">  </div><div class="line">    <span class="keyword">return</span> isInside;    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>也可以用geojson配合qgis的api，geojson文件为<code>BOUNT_poly.geojson</code></p>
 
           
         
@@ -2454,7 +2454,7 @@
 
 
 
-  <div class="theme-info">Design – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.2.0</div>
+  <div class="theme-info">Design – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.2.0</div>
 
 
 
@@ -2542,8 +2542,9 @@
   
 
 
-  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+  <script src="/js/affix.js?v=7.2.0"></script>
 
+  <script src="/js/schemes/pisces.js?v=7.2.0"></script>
 
 
 
