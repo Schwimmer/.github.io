@@ -317,7 +317,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/hive笔记/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/（转）HDFS基本文件常用命令/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -337,7 +337,7 @@
           <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/hadoop-spark/hive笔记/" class="post-title-link" itemprop="url">hive笔记</a>
+                <a href="/2017/07/12/hadoop-spark/（转）HDFS基本文件常用命令/" class="post-title-link" itemprop="url">（转）HDFS基本文件常用命令</a>
               
             
           </h2>
@@ -377,7 +377,7 @@
                 
                   <span class="post-meta-item-text">Bearbeitet am</span>
                 
-                <time title="Geändert am: 2019-06-19 13:06:22" itemprop="dateModified" datetime="2019-06-19T13:06:22+08:00">2019-06-19</time>
+                <time title="Geändert am: 2019-01-18 14:27:01" itemprop="dateModified" datetime="2019-01-18T14:27:01+08:00">2019-01-18</time>
               </span>
             
           
@@ -431,292 +431,196 @@
       
         
           
-            <h1 id="插入hive表控制part文件数量"><a href="#插入hive表控制part文件数量" class="headerlink" title="插入hive表控制part文件数量"></a>插入hive表控制part文件数量</h1><p><a href="http://blog.sina.com.cn/s/blog_604c7cdd0102wbsw.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_604c7cdd0102wbsw.html</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">-- 每个文件上限500M</div><div class="line">set hive.exec.reducers.bytes.per.reducer=512000000;</div><div class="line">insert overwrite table carthage.gps_address_info_weekly_bak PARTITION(DATA_DATE=&apos;2019-01-15&apos;)</div><div class="line">select * from carthage.gps_address_info DISTRIBUTE by RAND();</div><div class="line">-- DISTRIBUTE by RAND()主要靠这个控制reduce的文件数</div></pre></td></tr></table></figure>
-<h1 id="strict模式"><a href="#strict模式" class="headerlink" title="strict模式"></a>strict模式</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">set hive.mapred.mode=strict</div></pre></td></tr></table></figure>
-<p>有助于前置解决一些语法和可能的逻辑错误。</p>
-<h1 id="限制小文件数量"><a href="#限制小文件数量" class="headerlink" title="限制小文件数量"></a>限制小文件数量</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">set mapred.max.split.size=256000000;        -- 决定每个map处理的最大的文件大小，单位为B</div><div class="line">set mapred.min.split.size.per.node=10000000;         -- 节点中可以处理的最小的文件大小</div><div class="line">set mapred.min.split.size.per.rack=10000000;          -- 机架中可以处理的最小的文件大小</div></pre></td></tr></table></figure>
-<h1 id="查询时如何去掉重复数据"><a href="#查询时如何去掉重复数据" class="headerlink" title="查询时如何去掉重复数据"></a>查询时如何去掉重复数据</h1><p>假设数据为</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">name  adx        tran_id                  cost        ts</div><div class="line">ck        5         125.168.10.0           33.00   1407234660</div><div class="line">ck        5         187.18.99.00           33.32   1407234661</div><div class="line">ck        5         125.168.10.0           33.24   1407234661</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">select * from (select *,row_number() over (partition by tran_id order by timestamp asc) num from table) t where t.num=1;</div></pre></td></tr></table></figure>
-<blockquote>
-<p>附上：<br><strong>ROW_NUMBER() OVER函数的基本用法 </strong></p>
-<p>语法：ROW_NUMBER() OVER(PARTITION BY COLUMN ORDER BY COLUMN) </p>
-<p>简单的说row_number()从1开始，为每一条分组记录返回一个数字，这里的ROW_NUMBER() OVER (ORDER BY xlh DESC) 是先把xlh列降序，再为降序以后的没条xlh记录返回一个序号。<br>示例： </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; xlh           row_num </div><div class="line">&gt; 1700              1 </div><div class="line">&gt; 1500              2 </div><div class="line">&gt; 1085              3 </div><div class="line">&gt; 710                4 </div><div class="line">&gt;</div></pre></td></tr></table></figure>
-</blockquote>
-<p>&gt;</p>
-<blockquote>
-<p>row_number() OVER (PARTITION BY COL1 ORDER BY COL2) 表示根据COL1分组，在分组内部根据 COL2排序，而此函数计算的值就表示每组内部排序后的顺序编号（组内连续的唯一的) </p>
-</blockquote>
-<h1 id="split后的数组长度"><a href="#split后的数组长度" class="headerlink" title="split后的数组长度"></a>split后的数组长度</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">size(split(driving_districts,&apos;;&apos;))</div></pre></td></tr></table></figure>
-<h1 id="切换队列"><a href="#切换队列" class="headerlink" title="切换队列"></a>切换队列</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">set mapred.job.queue.name=data;</div></pre></td></tr></table></figure>
-<p>sqoop切换队列是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">-D mapred.job.queue.name=data</div></pre></td></tr></table></figure>
-<h1 id="加载hdfs的udf"><a href="#加载hdfs的udf" class="headerlink" title="加载hdfs的udf"></a>加载hdfs的udf</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ADD JAR hdfs://iclick/zyz/udf/zyz_udf2.jar;</div><div class="line">CREATE TEMPORARY FUNCTION get_region as &apos;org.apache.hadoop.hive.ql.udf.Ip2GeoCodeUDF&apos;;</div></pre></td></tr></table></figure>
-<h1 id="Hive-Trash"><a href="#Hive-Trash" class="headerlink" title="Hive Trash"></a>Hive Trash</h1><p>hive删除表时，会移除表的元数据和数据，而HDFS上的数据，如果配置了Trash，会移到.Trash/Current目录下。删除外部表时，表中的数据不会被删除。</p>
-<h1 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h1><p>用groupby代替distinct，少用orderby</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">同事写了个hive的sql语句，执行效率特别慢，跑了一个多小时程序只是map完了，reduce进行到20%。</div><div class="line">该Hive语句如下：</div><div class="line">select count(distinct ip) </div><div class="line">from (select ip as ip from comprehensive.f_client_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot;  </div><div class="line">union all </div><div class="line">select pub_ip as ip from f_app_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot; </div><div class="line">union all select ip as ip from format_log.format_pv1 where year=&quot;2013&quot; and month=&quot;10&quot; and url_first_id=1 </div><div class="line">) d </div><div class="line"></div><div class="line">       分析：select ip as ip from comprehensive.f_client_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot;这个语句筛选出来的数据约有10亿条，select pub_ip as ip from f_app_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot;约有10亿条条，select ip as ip from format_log.format_pv1 where year=&quot;2013&quot; and month=&quot;10&quot; and url_first_id=1 筛选出来的数据约有10亿条，总的数据量大约30亿条。这么大的数据量，使用disticnt函数，所有的数据只会shuffle到一个reducer上，导致reducer数据倾斜严重。</div><div class="line">       解决办法：</div><div class="line">       首先，通过使用groupby，按照ip进行分组。改写后的sql语句如下：</div><div class="line">select count(*) </div><div class="line">from </div><div class="line">(select ip </div><div class="line">from</div><div class="line">(select ip as ip from comprehensive.f_client_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot; </div><div class="line">union all </div><div class="line">select pub_ip as ip from f_app_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot; </div><div class="line">union all select ip as ip from format_log.format_pv1 where year=&quot;2013&quot; and month=&quot;10&quot; and url_first_id=1</div><div class="line">) d </div><div class="line">group by ip ) b </div><div class="line">       然后，合理的设置reducer数量，将数据分散到多台机器上。set mapred.reduce.tasks=50; </div><div class="line">       经过优化后，速度提高非常明显。整个作业跑完大约只需要20多分钟的时间。</div></pre></td></tr></table></figure>
-<p>提高order by的性能<a href="https://blog.csdn.net/djd1234567/article/details/51917603" target="_blank" rel="noopener">https://blog.csdn.net/djd1234567/article/details/51917603</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">Hive中的order by跟传统的sql语言中的order by作用是一样的，会对查询的结果做一次全局排序，所以说，只有hive的sql中制定了order by所有的数据都会到同一个reducer进行处理（不管有多少map，也不管文件有多少的block只会启动一个reducer）。但是对于大量数据这 将会消耗很长的时间去执行。</div><div class="line"></div><div class="line">    这里跟传统的sql还有一点区别：如果指定了hive.mapred.mode=strict（默认值是nonstrict）,这时就必须指定limit 来限制输出条数，原因是：所有的数据都会在同一个reducer端进行，数据量大的情况下可能不能出结果，那么在这样的严格模式下，必须指定输出的条数。</div><div class="line"></div><div class="line">    所以数据量大的时候能不用order by就不用，可以使用sort by结合distribute by来进行实现。sort by是局部排序，而distribute by是控制map怎么划分reducer。</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    Hive中指定了sort by，那么在每个reducer端都会做排序，也就是说保证了局部有序（每个reducer出来的数据是有序的，但是不能保证所有的数据是有序的，除非只有一个reducer），好处是：执行了局部排序之后可以为接下去的全局排序提高不少的效率（其实就是做一次归并排序就可以做到全局排序了）</div><div class="line"></div><div class="line"></div><div class="line">    ditribute by是控制map的输出在reducer是如何划分的，举个例子，我们有一张表，mid是指这个store所属的商户，money是这个商户的盈利，name是这个store的名字</div><div class="line"></div><div class="line">store:</div><div class="line"></div><div class="line"></div><div class="line">mid	money	name</div><div class="line">AA	15.0	商店1</div><div class="line">AA	20.0	商店2</div><div class="line">BB	22.0	商店3</div><div class="line">CC	44.0	商店4</div><div class="line">    执行hive语句：</div><div class="line"></div><div class="line">[sql] view plain copy</div><div class="line">select mid, money, name from store distribute by mid sort by mid asc, money asc  </div><div class="line">我 们所有的mid相同的数据会被送到同一个reducer去处理，这就是因为指定了distribute by mid，这样的话就可以统计出每个商户中各个商店盈利的排序了（这个肯定是全局有序的，因为相同的商户会放到同一个reducer去处理）。这里需要注意 的是distribute by必须要写在sort by之前。</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">cluster by</div><div class="line">    cluster by的功能就是distribute by和sort by相结合，如下2个语句是等价的：</div><div class="line"></div><div class="line">[sql] view plain copy</div><div class="line">select mid, money, name from store cluster by mid  </div><div class="line">select mid, money, name from store distribute by mid sort by mid  </div><div class="line">    如果需要获得与上面的中语句一样的效果：</div><div class="line"></div><div class="line">[sql] view plain copy</div><div class="line">select mid, money, name from store cluster by mid sort by money  </div><div class="line">    注意被cluster by指定的列只能是降序，不能指定asc和desc。</div></pre></td></tr></table></figure>
-<h1 id="问题集"><a href="#问题集" class="headerlink" title="问题集"></a>问题集</h1><h2 id="查询ES表报错"><a href="#查询ES表报错" class="headerlink" title="查询ES表报错"></a>查询ES表报错</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Failed with exception java.io.IOException:org.elasticsearch.hadoop.rest.EsHadoopInvalidRequest: The number of slices [1126] is too large. It must be less than [1024]. This limit can be set by changing the [index.max_slices_per_scroll] index level settin</div></pre></td></tr></table></figure>
-<p>修改es的设置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">PUT /megacorp/_settings</div><div class="line"></div><div class="line">&#123;</div><div class="line"></div><div class="line">  &quot;index&quot;: &#123;</div><div class="line"></div><div class="line">    &quot;max_slices_per_scroll&quot; : 1126</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="上传hive-UDF包后重启hive-server报错"><a href="#上传hive-UDF包后重启hive-server报错" class="headerlink" title="上传hive UDF包后重启hive server报错"></a>上传hive UDF包后重启hive server报错</h2><h2 id="hive-udf没有权限执行"><a href="#hive-udf没有权限执行" class="headerlink" title="hive udf没有权限执行"></a>hive udf没有权限执行</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Error while compiling statement: FAILED: SemanticException No valid privileges User dmp does not have privileges for CREATEFUNCTION The required privileges: Server=server1-&gt;URI=file:///home/hive/aux_libs/carthage-common-udf-hive-test.jar-&gt;action=*;</div></pre></td></tr></table></figure>
-<h2 id="没有找到jar包的报错"><a href="#没有找到jar包的报错" class="headerlink" title="没有找到jar包的报错"></a>没有找到jar包的报错</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Error while compiling statement: FAILED: SemanticException [Error 10014]: Line 1:7 Wrong arguments &apos;70.0&apos;: org.apache.hadoop.hive.ql.metadata.HiveException: Unable to execute method public java.lang.String com.mljr.carthage.common.geo.udf.hive.UDFGeoLocation.evaluate(java.lang.Double,java.lang.Double) on object com.mljr.carthage.common.geo.udf.hive.UDFGeoLocation@54ee9573 of class com.mljr.carthage.common.geo.udf.hive.UDFGeoLocation with arguments &#123;50.0:java.lang.Double, 70.0:java.lang.Double&#125; of size 2</div></pre></td></tr></table></figure>
-<p>其他都是可以的，就这个udf的第二个参数一直报错。经测试，还是UDF本身的问题，跟参数的设置没有关系。</p>
-<p>最后发现问题是udf的jar包上传后，关联的一些jar包没有打进去，手动加上</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&lt;plugin&gt;</div><div class="line">				&lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;</div><div class="line">				&lt;artifactId&gt;maven-shade-plugin&lt;/artifactId&gt;</div><div class="line">				&lt;version&gt;1.6&lt;/version&gt;</div><div class="line">				&lt;executions&gt;</div><div class="line">					&lt;execution&gt;</div><div class="line">						&lt;phase&gt;package&lt;/phase&gt;</div><div class="line">						&lt;goals&gt;</div><div class="line">							&lt;goal&gt;shade&lt;/goal&gt;</div><div class="line">						&lt;/goals&gt;</div><div class="line">						&lt;configuration&gt;</div><div class="line">							&lt;artifactSet&gt;</div><div class="line">								&lt;includes&gt;</div><div class="line">									&lt;include&gt;com.mljr.carthage:carthage-common-geo&lt;/include&gt;</div><div class="line">									&lt;include&gt;com.alibaba:fastjson&lt;/include&gt;</div><div class="line">									&lt;include&gt;com.github.davidmoten:geo&lt;/include&gt;</div><div class="line">									&lt;include&gt;com.github.davidmoten:grumpy-core&lt;/include&gt;</div><div class="line">								&lt;/includes&gt;</div><div class="line">							&lt;/artifactSet&gt;</div><div class="line">						&lt;/configuration&gt;</div><div class="line">					&lt;/execution&gt;</div><div class="line">				&lt;/executions&gt;</div><div class="line">			&lt;/plugin&gt;</div></pre></td></tr></table></figure>
-<h1 id="hive用高版本的UDF"><a href="#hive用高版本的UDF" class="headerlink" title="hive用高版本的UDF"></a>hive用高版本的UDF</h1><p>在hive2.0中有类似于months_between的函数，可以实现2个时间之间的月份差。但是低版本没有这个函数</p>
-<p>解决：</p>
-<p>下载hive-2.1源码包</p>
-<p><a href="http://mirrors.hust.edu.cn/apache/hive/hive-2.2.0/" target="_blank" rel="noopener">http://mirrors.hust.edu.cn/apache/hive/hive-2.2.0/</a></p>
-<p>导入eclipse，查找months_between</p>
-<p>在org.apache.hadoop.hive.ql.udf.generic包下找到GenericUDFMonthsBetween类，移植即可</p>
-<p>/ql/src/java/org/apache/hadoop/hive/ql/udf/generic/GenericUDFMonthsBetween.java</p>
-<h1 id="String转date"><a href="#String转date" class="headerlink" title="String转date"></a>String转date</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">select cast(to_date(from_unixtime(unix_timestamp(&apos;12-05-2010&apos;, &apos;dd-MM-yyyy&apos;))) as date)</div></pre></td></tr></table></figure>
-<h1 id="MapJoin异常问题处理总结"><a href="#MapJoin异常问题处理总结" class="headerlink" title="MapJoin异常问题处理总结"></a>MapJoin异常问题处理总结</h1><p><a href="https://yq.aliyun.com/articles/64306" target="_blank" rel="noopener">https://yq.aliyun.com/articles/64306</a></p>
-<h1 id="替换hive分隔符"><a href="#替换hive分隔符" class="headerlink" title="替换hive分隔符"></a>替换hive分隔符</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sed -i &apos;.bak&apos; &apos;s/^A/,/g&apos; baseinfo05.csv</div></pre></td></tr></table></figure>
-<p><code>^A</code>要用ctrl+V+A打出来</p>
-<h1 id="LOAD-DATA"><a href="#LOAD-DATA" class="headerlink" title="LOAD DATA"></a>LOAD DATA</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">LOAD DATA [LOCAL] INPATH &apos;filepath&apos; [OVERWRITE] INTO TABLE tablename[PARTITION (partcol1=val1,partcol2=val2,…)]</div></pre></td></tr></table></figure>
-<p>最好不要用LOCAL，要从hadoop加载数据。local读的是hive服务器的本地路径。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"># coding:utf-8</div><div class="line">from pyhive import hive</div><div class="line">from TCLIService.ttypes import TOperationState</div><div class="line"></div><div class="line"># 打开hive连接</div><div class="line">hiveConn = hive.connect(host=&apos;192.168.83.135&apos;,port=11111,username=&apos;hadoop&apos;)</div><div class="line">cursor = hiveConn.cursor()</div><div class="line"></div><div class="line"># 执行sql语句</div><div class="line">sql = &apos;&apos;&apos; LOAD DATA LOCAL INPATH &apos;/home/hadoop/HivePy/employee.txt&apos; OVERWRITE INTO TABLE userdbbypy.employee &apos;&apos;&apos;</div><div class="line">cursor.execute(sql, async=True)</div><div class="line"></div><div class="line"># 得到执行语句的状态</div><div class="line">status = cursor.poll().operationState</div><div class="line">print &quot;status:&quot;,status</div><div class="line"></div><div class="line"># 关闭hive连接</div><div class="line">cursor.close()</div><div class="line">hiveConn.close()</div></pre></td></tr></table></figure>
-<h1 id="return-code-3"><a href="#return-code-3" class="headerlink" title="return code 3"></a>return code 3</h1><p>试试</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">set hive.vectorized.execution.enabled=false;</div></pre></td></tr></table></figure>
-<h1 id="hive锁表"><a href="#hive锁表" class="headerlink" title="hive锁表"></a>hive锁表</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Completed compiling command</div></pre></td></tr></table></figure>
-<p>若卡在上面的语句，说明锁表</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">show locks carthage_dev.baseinfo_personal_info;</div><div class="line">-- 如果是</div><div class="line"></div><div class="line">unlock table dwh_dml_risk_dev.rec_car_operation;</div><div class="line">show locks carthage_dev.baseinfo_personal_info partition(data_date=&apos;20180517&apos;);</div><div class="line">unlock table dwh_dml_risk_dev.rec_car_operation partition(data_date=&apos;2018-09-30&apos;);</div></pre></td></tr></table></figure>
-<p>hive解锁的脚本是<code>all_hive_unlock.sh</code></p>
-<h1 id="hive新增列报错"><a href="#hive新增列报错" class="headerlink" title="hive新增列报错"></a>hive新增列报错</h1><p>在添加字段是可以通过CASCADE关键字来，避免出现这种问题。如alter table table_name add columns(age int) CASCADE</p>
-<p><a href="https://qubole.zendesk.com/hc/en-us/articles/115002396646-Hive-Null-Pointer-Exception-in-select-query-after-modifying-table-definition" target="_blank" rel="noopener">https://qubole.zendesk.com/hc/en-us/articles/115002396646-Hive-Null-Pointer-Exception-in-select-query-after-modifying-table-definition</a></p>
-<blockquote>
-<p>This can happen in the scenario where table definition and specific partition definition is different, and the underlying data matches table definition but not partition definition.</p>
-<p>When a table with partitions is altered to add a column using statement:</p>
-<p><em>ALTER TABLE <tablename> ADD COLUMNS (c1 int);</tablename></em></p>
-<p>The table definition for existing partitions don’t get modified as per the above statement. As a result of this there is a mismatch between partition and table definition. </p>
-<p>This is ok if the partition data matches the definition of partition, but if the data matches definition of table itself, NPE is thrown as there is a mismatch in data vs definition.</p>
-<p>To avoid this issue, this statement should be used in hadoop2</p>
-<p><em>ALTER TABLE <tablename> ADD COLUMNS (c1 int) CASCADE;</tablename></em> </p>
-<p>In case of hadoop1, CASCADE option is not available. Hence, as long as the table is external table, following can be done:</p>
-<ol>
-<li>Drop and recreate partitions for this table</li>
-<li>Alter partition definition for specific partition having issues</li>
+            <ol>
+<li>-ls  path<br>列出path目录下的内容，包括文件名，权限，所有者，大小和修改时间。</li>
+<li>-lsr  path<br>与ls相似，但递归地显示子目录下的内容。</li>
+<li>-du path<br>显示path下所有文件磁盘使用情况下，用字节大小表示，文件名用完整的HDFS协议前缀表示。</li>
+<li>-dus path<br>与-du相似，但它还显示全部文件或目录磁盘使用情况</li>
+<li>-mv src dest<br>在HDFS中，将文件或目录从HDFS的源路径移动到目标路径。</li>
+<li>-cp src dest<br>在HDFS中，将src文件或目录复制到dest。</li>
+<li>–rm path<br>删除一个文件或目录</li>
+<li>–rmr path<br>删除一个文件或递归删除目录<br>注意：这里的mv cp操作的源路径和目的路径都是在HDFS中的路径文件</li>
+<li>–put localSrc dest<br>将本地文件或目录localSrc上传到HDFS中的dest路径。</li>
+<li>–copyFromLocal localSrc dest<br>与-put命令相同</li>
+<li>–moveFromLocal localSrc dest<br>将文件或目录从localSrc上传到HDFS中的dest目录，再删除本地文件或目录localSrc。<br>12 –get [-crc] src localDest<br>将文件或目录从HDFS中的src拷贝到本地文件系统localDest。<br>13 –getmerge src localDest [addnl]<br>将在HDFS中满足路径src的文件合并到本地文件系统的一个文件localDest中。<br>14 –cat filename<br>显示文件内容到标准输出上。</li>
+<li>-copyToLocal [-crc] src localDest<br>与-get命令相同。<br>16 -moveToLocal [-crc] src localDest<br>与-get命令相似，但拷贝结束后，删除HDFS上原文件。<br>17 -mkdir path<br>在HDFS中创建一个名为path的目录，如果它的上级目录不存在，也会被创建，如同linux中的mkidr –p。<br>18 -setrep [-R] [-w] rep path<br>设置目标文件的复制数。<br>19 -touchz path<br>创建一个文件。时间戳为当前时间，如果文件本就存在就失败，除非原文件长充为0。<br>20 -test –[ezd] path<br>如果路径(path)存在，返回1，长度为0(zero)，或是一个目录(directory)。<br>21 –stat [format] path<br>显示文件所占块数(%b)，文件名(%n)，块大小(%n)，复制数(%r)，修改时间(%y%Y)。<br>22 –tail [-f] file<br>显示文件最后的1KB内容到标准输出。<br>23 –chmod [-R] [owner][:[group]] path…<br>递归修改时带上-R参数，mode是一个3位的8进制数，或是[augo]+/-{rwxX}。<br>24 –chgrp [-R] group<br>设置文件或目录的所有组，递归修改目录时用-R参数。<br>25 –help cmd<br>显示cmd命令的使用信息，你需要把命令的“-”去掉<br>复制到本地<br>hadoop fs -copyToLocal /tmp/admaster_xid_15-05-08/part-r-00298 /home/david/<br>查看文件夹大小<br>hadoop fs -du /shortdata/xmo_info | awk ‘{ sum=$1 ;dir2=$3 ; hum[1024<strong>3]=”Gb”;hum[1024</strong>2]=”Mb”;hum[1024]=”Kb”; for (x=1024**3; x&gt;=1024; x/=1024){ if (sum&gt;=x) { printf “%.2f %s \t %s\n”,sum/x,hum[x],dir2;break } }}’</li>
 </ol>
-</blockquote>
-<p>用了cascade 无效。</p>
-<p>找到原因：</p>
-<p>hive表是ORC格式的，因此cascade无效，若改成text格式则成功。</p>
-<p>解决方案：</p>
-<p>若必须是ORC格式，建表是先预留若干字段，后期改名字</p>
-<h1 id="hive分区解锁"><a href="#hive分区解锁" class="headerlink" title="hive分区解锁"></a>hive分区解锁</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">show locks carthage_dev.baseinfo_personal_info;</div><div class="line">unlock table carthage_dev.baseinfo_personal_info;</div><div class="line">show locks carthage_dev.baseinfo_personal_info partition(data_date=&apos;20180517&apos;);</div><div class="line">unlock table carthage_dev.baseinfo_personal_info partition(data_date=&apos;20180517&apos;);</div></pre></td></tr></table></figure>
-<p>解锁的技巧：</p>
-<p>1、定位哪张表锁住，可以分批执行sql，定位关键表</p>
-<p>2、show locks并下载，观察锁表的状态，通过</p>
-<p><code>show locks table extends</code>可以看依赖的表</p>
-<p>3、用脚本all_hive_unlock.sh解锁</p>
-<h2 id="hive-column-rename"><a href="#hive-column-rename" class="headerlink" title="hive column rename"></a>hive column rename</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">alter table carthage_dev.gps_wx_stop_status CHANGE stop_region_center_lon stop_status_center_lon string</div></pre></td></tr></table></figure>
-<h1 id="hive配置"><a href="#hive配置" class="headerlink" title="hive配置"></a>hive配置</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">-- 输出为gzip</div><div class="line">set hive.exec.compress.output=true;    </div><div class="line">set mapred.output.compression.codec=org.apache.hadoop.io.compress.GzipCodec;</div><div class="line">-- 输出为一个文件</div><div class="line">set mapred.reduce.tasks=1;</div></pre></td></tr></table></figure>
-<h1 id="hive-timestamp转时间"><a href="#hive-timestamp转时间" class="headerlink" title="hive timestamp转时间"></a>hive timestamp转时间</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">from_unixtime(unix_timestamp(),‘yyyy/MM/dd HH:mm:ss’);</div><div class="line"></div><div class="line">from_unixtime(cast(cast(time as bigint)/1000 as bigint),&apos;yyyy/MM/dd HH:mm:ss&apos;)</div></pre></td></tr></table></figure>
-<h1 id="常用日期函数"><a href="#常用日期函数" class="headerlink" title="常用日期函数"></a>常用日期函数</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">to_date：日期时间转日期函数    </div><div class="line">	select to_date(&apos;2018-04-02 13:34:12&apos;);   输出：2018-04-02   </div><div class="line">from_unixtime：转化unix时间戳到当前时区的时间格式    </div><div class="line">	select from_unixtime(1524573762,&apos;yyyy-MM-dd HH:mm:ss&apos;);    输出：2018-04-24 20:42:42</div><div class="line">unix_timestamp：获取当前unix时间戳    </div><div class="line">	select unix_timestamp();    输出：1524573762  </div><div class="line">	select unix_timestamp(&apos;2018-04-01 13:01:20&apos;);  输出：1522558880</div><div class="line">datediff：返回开始日期减去结束日期的天数    </div><div class="line">	select datediff(&apos;2018-04-09&apos;,&apos;2018-04-01&apos;);    输出：8    </div><div class="line">date_sub：返回日期前n天的日期    </div><div class="line">	select date_sub(&apos;2018-04-09&apos;,4);    输出：2018-04-05    </div><div class="line">date_add：返回日期后n天的日期    </div><div class="line">	select date_add(&apos;2018-04-09&apos;,4);    输出：2018-04-13  </div><div class="line">add_months：月份增加函数</div><div class="line">	select add_months(&apos;2018-02-10&apos;, 2 );    输出：2018-04-10 </div><div class="line">last_day：返回当月底日期</div><div class="line">	select last_day(&apos;2018-02-21&apos;);    输出：2018-02-28</div></pre></td></tr></table></figure>
-<h1 id="hive-字符串函数"><a href="#hive-字符串函数" class="headerlink" title="hive 字符串函数"></a>hive 字符串函数</h1><p><strong>1. 字符串长度函数：length</strong></p>
-<p>语法: length(string A)</p>
-<p>返回值: int</p>
-<p>说明：返回字符串A的长度</p>
-<p>举例：</p>
-<p>hive&gt; select length(‘abcedfg’) from lxw_dual;</p>
-<p>7</p>
-<p><strong>2. 字符串反转函数：reverse</strong></p>
-<p>语法: reverse(string A)</p>
-<p>返回值: string</p>
-<p>说明：返回字符串A的反转结果</p>
-<p>举例：</p>
-<p>hive&gt; select reverse(abcedfg’) from lxw_dual;</p>
-<p>gfdecba</p>
-<p><strong>3. 字符串连接函数：concat</strong></p>
-<p>语法: concat(string A, string B…)</p>
-<p>返回值: string</p>
-<p>说明：返回输入字符串连接后的结果，支持任意个输入字符串</p>
-<p>举例：</p>
-<p>hive&gt; select concat(‘abc’,’def’,’gh’) from lxw_dual;</p>
-<p>abcdefgh</p>
-<p><strong>4. 带分隔符字符串连接函数：concat_ws</strong></p>
-<p>语法: concat_ws(string SEP, string A, string B…)</p>
-<p>返回值: string</p>
-<p>说明：返回输入字符串连接后的结果，SEP表示各个字符串间的分隔符</p>
-<p>举例：</p>
-<p>hive&gt; select concat_ws(‘,’,’abc’,’def’,’gh’) from lxw_dual;</p>
-<p>abc,def,gh</p>
-<p><strong>5. 字符串截取函数：substr,substring</strong></p>
-<p>语法: substr(string A, int start),substring(string A, int start)</p>
-<p>返回值: string</p>
-<p>说明：返回字符串A从start位置到结尾的字符串</p>
-<p>举例：</p>
-<p>hive&gt; select substr(‘abcde’,3) from lxw_dual;</p>
-<p>cde</p>
-<p>hive&gt; select substring(‘abcde’,3) from lxw_dual;</p>
-<p>cde</p>
-<p>hive&gt;  selectsubstr(‘abcde’,-1) from lxw_dual;  （和ORACLE相同）</p>
-<p>e</p>
-<p><strong>6. 字符串截取函数：substr,substring</strong></p>
-<p>语法: substr(string A, int start, int len),substring(string A, intstart, int len)</p>
-<p>返回值: string</p>
-<p>说明：返回字符串A从start位置开始，长度为len的字符串</p>
-<p>举例：</p>
-<p>hive&gt; select substr(‘abcde’,3,2) from lxw_dual;</p>
-<p>cd</p>
-<p>hive&gt; select substring(‘abcde’,3,2) from lxw_dual;</p>
-<p>cd</p>
-<p>hive&gt;select substring(‘abcde’,-2,2) from lxw_dual;</p>
-<p>de</p>
-<p><strong>7. 字符串转大写函数：upper,ucase</strong></p>
-<p>语法: upper(string A) ucase(string A)</p>
-<p>返回值: string</p>
-<p>说明：返回字符串A的大写格式</p>
-<p>举例：</p>
-<p>hive&gt; select upper(‘abSEd’) from lxw_dual;</p>
-<p>ABSED</p>
-<p>hive&gt; select ucase(‘abSEd’) from lxw_dual;</p>
-<p>ABSED</p>
-<p><strong>8. 字符串转小写函数：lower,lcase</strong></p>
-<p>语法: lower(string A) lcase(string A)</p>
-<p>返回值: string</p>
-<p>说明：返回字符串A的小写格式</p>
-<p>举例：</p>
-<p>hive&gt; select lower(‘abSEd’) from lxw_dual;</p>
-<p>absed</p>
-<p>hive&gt; select lcase(‘abSEd’) from lxw_dual;</p>
-<p>absed</p>
-<p><strong>9. 去空格函数：trim</strong></p>
-<p>语法: trim(string A)</p>
-<p>返回值: string</p>
-<p>说明：去除字符串两边的空格</p>
-<p>举例：</p>
-<p>hive&gt; select trim(‘ abc ‘) from lxw_dual;</p>
-<p>abc</p>
-<p><strong>10. 左边去空格函数：ltrim</strong></p>
-<p>语法: ltrim(string A)</p>
-<p>返回值: string</p>
-<p>说明：去除字符串左边的空格</p>
-<p>举例：</p>
-<p>hive&gt; select ltrim(‘ abc ‘) from lxw_dual;</p>
-<p>abc</p>
-<p><strong>11. 右边去空格函数：rtrim</strong></p>
-<p>语法: rtrim(string A)</p>
-<p>返回值: string</p>
-<p>说明：去除字符串右边的空格</p>
-<p>举例：</p>
-<p>hive&gt; select rtrim(‘ abc ‘) from lxw_dual;</p>
-<p>abc</p>
-<p><strong>12. 正则表达式替换函数：regexp_replace</strong></p>
-<p>语法: regexp_replace(string A, string B, string C)</p>
-<p>返回值: string</p>
-<p>说明：将字符串A中的符合java正则表达式B的部分替换为C。注意，在有些情况下要使用转义字符,类似oracle中的regexp_replace函数。</p>
-<p>举例：</p>
-<p>hive&gt; select regexp_replace(‘foobar’, ‘oo|ar’, ‘’) from lxw_dual;</p>
-<p>fb</p>
-<p><strong>13. 正则表达式解析函数：regexp_extract</strong></p>
-<p>语法: regexp_extract(string subject, string pattern, int index)</p>
-<p>返回值: string</p>
-<p>说明：将字符串subject按照pattern正则表达式的规则拆分，返回index指定的字符。</p>
-<p>举例：</p>
-<p>hive&gt; select regexp_extract(‘foothebar’, ‘foo(.*?)(bar)’, 1) fromlxw_dual;</p>
-<p>the</p>
-<p>hive&gt; select regexp_extract(‘foothebar’, ‘foo(.*?)(bar)’, 2) fromlxw_dual;</p>
-<p>bar</p>
-<p>hive&gt; select regexp_extract(‘foothebar’, ‘foo(.*?)(bar)’, 0) fromlxw_dual;</p>
-<p>foothebar</p>
-<p><strong>注意，在有些情况下要使用转义字符，下面的等号要用双竖线转义，这是java**</strong>正则表达式的规则。**</p>
-<p>select data_field,</p>
-<p>​     regexp_extract(data_field,’.*?bgStart\=(<sup><a href="#fn_&" id="reffn_&">&</a></sup>+)’,1) as aaa,</p>
-<p>​     regexp_extract(data_field,’.*?contentLoaded_headStart\=(<sup><a href="#fn_&" id="reffn_&">&</a></sup>+)’,1) as bbb,</p>
-<p>​     regexp_extract(data_field,’.*?AppLoad2Req\=(<sup><a href="#fn_&" id="reffn_&">&</a></sup>+)’,1) as ccc</p>
-<p>​     from pt_nginx_loginlog_st</p>
-<p>​     where pt = ‘2012-03-26’limit 2;</p>
-<p><strong>14. URL解析函数：parse_url</strong></p>
-<p>语法: parse_url(string urlString, string partToExtract [, stringkeyToExtract])</p>
-<p>返回值: string</p>
-<p>说明：返回URL中指定的部分。partToExtract的有效值为：HOST, PATH, QUERY, REF, PROTOCOL, AUTHORITY, FILE, and USERINFO.</p>
-<p>举例：</p>
-<p>hive&gt; selectparse_url(‘<a href="http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1" target="_blank" rel="noopener">http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1</a>‘, ‘HOST’) fromlxw_dual;</p>
-<p>facebook.com</p>
-<p>hive&gt; selectparse_url(‘<a href="http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1" target="_blank" rel="noopener">http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1</a>‘, ‘QUERY’,’k1’) from lxw_dual;</p>
-<p>v1</p>
-<p><strong>15. json解析函数：get_json_object</strong></p>
-<p>语法: get_json_object(string json_string, string path)</p>
-<p>返回值: string</p>
-<p>说明：解析json的字符串json_string,返回path指定的内容。如果输入的json字符串无效，那么返回NULL。</p>
-<p>举例：</p>
-<p>hive&gt; select get_json_object(‘{“store”:</p>
-<p>>  {“fruit”:[{“weight”:8,”type”:”apple”},{“weight”:9,”type”:”pear”}],</p>
-<p>>   “bicycle”:{“price”:19.95,”color”:”red”}</p>
-<p>>   },</p>
-<p>> “email”:”amy@only_for_json_udf_test.net”,</p>
-<p>>  “owner”:”amy”</p>
-<p>> }</p>
-<p>> ‘,’$.owner’) from lxw_dual;</p>
-<p>amy</p>
-<p><strong>16. 空格字符串函数：space</strong></p>
-<p>语法: space(int n)</p>
-<p>返回值: string</p>
-<p>说明：返回长度为n的字符串</p>
-<p>举例：</p>
-<p>hive&gt; select space(10) from lxw_dual;</p>
-<p>hive&gt; select length(space(10)) from lxw_dual;</p>
-<p>10</p>
-<p><strong>17. 重复字符串函数：repeat</strong></p>
-<p>语法: repeat(string str, int n)</p>
-<p>返回值: string</p>
-<p>说明：返回重复n次后的str字符串</p>
-<p>举例：</p>
-<p>hive&gt; select repeat(‘abc’,5) from lxw_dual;</p>
-<p>abcabcabcabcabc</p>
-<p><strong>18. 首字符ascii函数：ascii</strong></p>
-<p>语法: ascii(string str)</p>
-<p>返回值: int</p>
-<p>说明：返回字符串str第一个字符的ascii码</p>
-<p>举例：</p>
-<p>hive&gt; select ascii(‘abcde’) from lxw_dual;</p>
-<p>97</p>
-<p><strong>19. 左补足函数：lpad</strong></p>
-<p>语法: lpad(string str, int len, string pad)</p>
-<p>返回值: string</p>
-<p>说明：将str进行用pad进行左补足到len位</p>
-<p>举例：</p>
-<p>hive&gt; select lpad(‘abc’,10,’td’) from lxw_dual;</p>
-<p>tdtdtdtabc</p>
-<p><strong>注意：与GP**</strong>，ORACLE<strong>**不同，pad</strong> <strong>不能默认</strong></p>
-<p><strong>20. 右补足函数：rpad</strong></p>
-<p>语法: rpad(string str, int len, string pad)</p>
-<p>返回值: string</p>
-<p>说明：将str进行用pad进行右补足到len位</p>
-<p>举例：</p>
-<p>hive&gt; select rpad(‘abc’,10,’td’) from lxw_dual;</p>
-<p>abctdtdtdt</p>
-<p><strong>21. 分割字符串函数: split</strong></p>
-<p>语法:  split(string str, stringpat)</p>
-<p>返回值:  array</p>
-<p>说明: 按照pat字符串分割str，会返回分割后的字符串数组</p>
-<p>举例：</p>
-<p>hive&gt; select split(‘abtcdtef’,’t’) from lxw_dual;</p>
-<p>[“ab”,”cd”,”ef”]</p>
-<p><strong>22. 集合查找函数:find_in_set</strong></p>
-<p>语法: find_in_set(string str, string strList)</p>
-<p>返回值: int</p>
-<p>说明: 返回str在strlist第一次出现的位置，strlist是用逗号分割的字符串。如果没有找该str字符，则返回0</p>
-<p>举例：</p>
-<p>hive&gt; select find_in_set(‘ab’,’ef,ab,de’) from lxw_dual;</p>
-<p>2</p>
-<p>hive&gt; select find_in_set(‘at’,’ef,ab,de’) from lxw_dual;</p>
-<p>0</p>
-<p>instr</p>
-<h1 id="group后拼接"><a href="#group后拼接" class="headerlink" title="group后拼接"></a>group后拼接</h1><p>group_concat( [distinct] 要连接的字段 [order by 排序字段 asc/desc ] [separator ‘分隔符’] )</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">select userid,bankid,group_concat(cast(creditlimit as string))</div><div class="line">from vdm_fin.cc_user_bill_0724</div><div class="line">group by userid,bankid</div></pre></td></tr></table></figure>
-<p><img src="/2017/07/12/hadoop-spark/hive笔记/pic/70.png" alt="è¿éåå¾çæè¿°"></p>
-<p><strong>hive实现相同的功能：</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">SELECT id,</div><div class="line">concat_ws(&apos;|&apos;, collect_set(str)) </div><div class="line">FROM t  </div><div class="line">GROUP BY id;1234</div></pre></td></tr></table></figure>
-<p>主意:collect_set 只能返回不重复的集合<br>若要返回带重复的要用collect_list</p>
-<p>2、collect_list 展示子表排序后结果，collect_set 不受子表排序影响<br>select phone,collect_list(user_id) ,collect_set(user_id) from<br>(select * from a order by order_time asc)b<br>group by phone<br>结果：123456789    [1,1,3,2,2]    [1,3,2]</p>
-<p>a表数据如下<br>phone    user_id order_time<br>123456789    1    2018/8/23<br>123456789    3    2018/8/24<br>123456789    2    2018/8/25<br>123456789    1    2018/8/22<br>123456789    2    2018/8/26</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/Elastic Search/elastic-search笔记/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/07/12/Elastic Search/elastic-search笔记/" class="post-title-link" itemprop="url">elastic search笔记</a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+
+              
+                
+              
+
+              <time title="Erstellt: 2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Bearbeitet am</span>
+                
+                <time title="Geändert am: 2018-03-17 20:50:31" itemprop="dateModified" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">in</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Elastic-Search/" itemprop="url" rel="index"><span itemprop="name">Elastic Search</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="过滤字段中为空的"><a href="#过滤字段中为空的" class="headerlink" title="过滤字段中为空的"></a>过滤字段中为空的</h1><p>通过filter中的exists，如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">GET iclick_persona/iclick/_search</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;bool&quot;: &#123;</div><div class="line">      &quot;must&quot;: [</div><div class="line">        &#123;&quot;term&quot;: &#123;</div><div class="line">          &quot;province&quot;: &#123;</div><div class="line">            &quot;value&quot;: &quot;CN_IN_SG&quot;</div><div class="line">          &#125;</div><div class="line">        &#125;&#125;</div><div class="line">      ],</div><div class="line">      &quot;filter&quot;: &#123;</div><div class="line">        &quot;exists&quot;: &#123;</div><div class="line">          &quot;field&quot;: &quot;articles.titles&quot;</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="大索引按天拆开"><a href="#大索引按天拆开" class="headerlink" title="大索引按天拆开"></a>大索引按天拆开</h1><p>好像不能直接从A索引中抽取一部分到B索引</p>
+<h1 id="python从文件插入到ES"><a href="#python从文件插入到ES" class="headerlink" title="python从文件插入到ES"></a>python从文件插入到ES</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">def set_pois_data(es, input_file, index_name=&quot;pois&quot;, doc_type_name=&quot;iclick&quot;):</div><div class="line">    #读入数据</div><div class="line">    fp = open(input_file)</div><div class="line"></div><div class="line">    #创建ACTIONS</div><div class="line">    ACTIONS = []</div><div class="line">    for line in fp:</div><div class="line">        fields = line.strip(&apos;\n&apos;).split(&quot;\t&quot;)</div><div class="line">        name = fields[0]</div><div class="line">        location = fields[2] + &quot;,&quot; + fields[3]</div><div class="line"></div><div class="line">        action = &#123;</div><div class="line">            &quot;_index&quot;: index_name,</div><div class="line">            &quot;_type&quot;: doc_type_name,</div><div class="line">            &quot;_source&quot;: &#123;</div><div class="line">                  &quot;name&quot; : name,</div><div class="line">                  &quot;pois&quot; : location,</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        #print action</div><div class="line">        ACTIONS.append(action)</div><div class="line"></div><div class="line">    # 批量处理</div><div class="line">    success, _ = bulk(es, ACTIONS, index=index_name, raise_on_error=True)</div><div class="line">    print(&apos;Performed %d actions&apos; % success)</div></pre></td></tr></table></figure>
+<h1 id="复制index的数据到另一个"><a href="#复制index的数据到另一个" class="headerlink" title="复制index的数据到另一个"></a>复制index的数据到另一个</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">import pyes</div><div class="line">conn = pyes.es.ES(&quot;http://10.xx.xx.xx:8305/&quot;)</div><div class="line">search = pyes.query.MatchAllQuery().search(bulk_read=1000)</div><div class="line">hits = conn.search(search, &apos;store_v1&apos;, &apos;client&apos;, scan=True, scroll=&quot;30m&quot;, model=lambda _,hit: hit)</div><div class="line">for hit in hits:</div><div class="line">     #print hit</div><div class="line">     conn.index(hit[&apos;_source&apos;], &apos;store_v2&apos;, &apos;client&apos;, hit[&apos;_id&apos;], bulk=True)</div><div class="line">conn.flush()</div></pre></td></tr></table></figure>
+<h1 id="统计数组的元素个数的sum、avg"><a href="#统计数组的元素个数的sum、avg" class="headerlink" title="统计数组的元素个数的sum、avg"></a>统计数组的元素个数的sum、avg</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">GET iclick_persona/iclick/_search?size=0</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;bool&quot;: &#123;</div><div class="line">      &quot;must&quot;: [</div><div class="line">        &#123;&quot;term&quot;: &#123;</div><div class="line">          &quot;device&quot;: &#123;</div><div class="line">            &quot;value&quot;: &quot;PC&quot;</div><div class="line">          &#125;</div><div class="line">        &#125;&#125;</div><div class="line">      ],</div><div class="line">      &quot;filter&quot;: [</div><div class="line">        &#123;&quot;script&quot;:&#123;&quot;script&quot;:&quot;doc[&apos;articles.domains&apos;].values.length&gt;1&quot;&#125;&#125;</div><div class="line">      ]</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;NAME&quot;: &#123;</div><div class="line">      &quot;avg&quot;: &#123;</div><div class="line">        &quot;script&quot;: &#123;</div><div class="line">          &quot;inline&quot;: &quot;doc[&apos;articles.domains&apos;].values.length&quot;</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 
           
         
@@ -945,7 +849,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/数学/利率计算/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/pig笔记/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -965,7 +869,7 @@
           <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/数学/利率计算/" class="post-title-link" itemprop="url">利率计算</a>
+                <a href="/2017/07/12/hadoop-spark/pig笔记/" class="post-title-link" itemprop="url">pig笔记</a>
               
             
           </h2>
@@ -1005,7 +909,7 @@
                 
                   <span class="post-meta-item-text">Bearbeitet am</span>
                 
-                <time title="Geändert am: 2018-01-29 21:42:24" itemprop="dateModified" datetime="2018-01-29T21:42:24+08:00">2018-01-29</time>
+                <time title="Geändert am: 2018-03-23 21:02:13" itemprop="dateModified" datetime="2018-03-23T21:02:13+08:00">2018-03-23</time>
               </span>
             
           
@@ -1019,7 +923,7 @@
                 <span class="post-meta-item-text">in</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数学/" itemprop="url" rel="index"><span itemprop="name">数学</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
 
                 
                 
@@ -1059,15 +963,30 @@
       
         
           
-            <p>等额本息</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">每月月供额=〔贷款本金×月利率×(1＋月利率)＾还款月数〕÷〔(1＋月利率)＾还款月数-1〕</div><div class="line">每月应还利息=贷款本金×月利率×〔(1+月利率)^还款月数-(1+月利率)^(还款月序号-1)〕÷〔(1+月利率)^还款月数-1〕</div><div class="line">每月应还本金=贷款本金×月利率×(1+月利率)^(还款月序号-1)÷〔(1+月利率)^还款月数-1〕</div><div class="line">总利息=还款月数×每月月供额-贷款本金</div></pre></td></tr></table></figure>
-<p>等额本金</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">每月月供额=(贷款本金÷还款月数)+(贷款本金-已归还本金累计额)×月利率</div><div class="line">每月应还本金=贷款本金÷还款月数</div><div class="line">每月应还利息=剩余本金×月利率=(贷款本金-已归还本金累计额)×月利率</div><div class="line">每月月供递减额=每月应还本金×月利率=贷款本金÷还款月数×月利率</div><div class="line">总利息=还款月数×(总贷款额×月利率-月利率×(总贷款额÷还款月数)*(还款月数-1)÷2+总贷款额÷还款月数)</div></pre></td></tr></table></figure>
-<p><a href="https://zhuanlan.zhihu.com/p/22920169" target="_blank" rel="noopener">信用卡账单分期真实年化利率</a></p>
-<p><img src="https://pic4.zhimg.com/v2-177bf28088e8ef5462e3b5cc3d1ab2eb_b.png" alt=""></p>
-<h1 id="年利率"><a href="#年利率" class="headerlink" title="年利率"></a>年利率</h1><p>利息率=利息量÷本金÷时间×100%</p>
-<h1 id="IRR"><a href="#IRR" class="headerlink" title="IRR"></a>IRR</h1><p><strong>内部收益率 (IRR) 的定义是：净现值 (NPV) 为零时的折现率。</strong></p>
-<p>综合考虑了每期的流入流出现金的量和时间，加权出来的结果。<br>IRR实质上是一个折现率，用IRR折现时会达到该项目的净现值NPV为0的状态。也可以理解为一个项目的预期收益率。<br>举例来说，如IRR为8%，可以简单解释为以8%的利率借钱投资于此项目，刚好可以不赚不赔。</p>
+            <h1 id="JOIN的优化"><a href="#JOIN的优化" class="headerlink" title="JOIN的优化"></a>JOIN的优化</h1><p>1、Replicated Join </p>
+<p>​      当进行Join的一个表比较大，而其他的表都很小(能够放入内存)时，replicated join会非常高效。 </p>
+<p>​      在Join时使用 Using ‘replicated’语句来触发Replicated Join，大表放置在最左端，其余小表(可以有多个)放置在右端。 </p>
+<p>​      为了防止replicated join应用于大表的连接关系，pig会在这个连接关系复制的字节大小比pig.join.replicated.max.bytes属性的值大会失败 (default = 1GB)。 </p>
+<p>2、Skewed Join </p>
+<p>​      当进行Join的两个表的内连接时，一个表数据记录针对key的分布极其不均衡的时候使用，如果多于两个连接，要自己拆分成多个双表的连接。 </p>
+<p>​       pig.skewedjoin.reduce.memusage属性的值指定了reduce可以占用堆内存的百分数，低的分数可以让pig执行更多的reducer，但是增加了复制的成本。性能好的范围值在0.1到0.4，但是这仅仅是一个范围。这个值取决于这个操作的可用的堆内存和这个输入的行数和倾斜。默认值是0.5。 </p>
+<p>​        Skewed Join并没有专注于解决或者说的平衡这种不均匀的数据分布在reducer，而是确保这个Join连接能够完成而不是失败，但是会慢。他会增加5%的时间用于计算这个连接操作。 </p>
+<p>3、Merge Join </p>
+<p>​      当进行Join的两个表都已经用Join的键进行了排序，可以使用Merge Join。       可以在Join时使用Using ‘merge’语句来触发Merge Join，需要创建索引的表放置在右端。 另外，在进行Join之前，首先过滤掉key为Null的数据记录可以减少Join的数据量。 </p>
+<p>读取HDFS文件</p>
+<p>比如下面加载某个模型到pig</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> Map&lt;String, InfoPredictor&gt; cache = <span class="keyword">new</span> ConcurrentHashMap&lt;String, InfoPredictor&gt;();</div><div class="line">	<span class="keyword">private</span> <span class="keyword">static</span> AtomicBoolean isLoading = <span class="keyword">new</span> AtomicBoolean(<span class="keyword">false</span>);</div><div class="line">	</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> InfoPredictor <span class="title">getInfoPredictor</span><span class="params">(String modelFile)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</div><div class="line">		InfoPredictor model = cache.get(modelFile);</div><div class="line">		<span class="keyword">if</span> (model == <span class="keyword">null</span>) &#123;</div><div class="line">          <span class="comment">// 保证在多线程下只执行一次</span></div><div class="line">			<span class="keyword">if</span>(isLoading.compareAndSet(<span class="keyword">false</span>, <span class="keyword">true</span>)) &#123;</div><div class="line">				model = load(modelFile);<span class="comment">/* InfoPredict.loadDomainModel(modelFile);*/</span></div><div class="line">				cache.put(modelFile, model);</div><div class="line">			&#125; <span class="keyword">else</span> &#123;</div><div class="line">				<span class="keyword">long</span> maxLoadingTimeSecs = <span class="number">120l</span>;</div><div class="line">				<span class="keyword">long</span> loadingTimeSecs = <span class="number">0l</span>;</div><div class="line">				<span class="keyword">while</span>(<span class="keyword">null</span> == cache.get(modelFile)) &#123;</div><div class="line">					Thread.currentThread().sleep(<span class="number">5000l</span>);</div><div class="line">					loadingTimeSecs += <span class="number">5</span>;</div><div class="line">					<span class="keyword">if</span>(loadingTimeSecs &gt; maxLoadingTimeSecs) &#123;</div><div class="line">						<span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"try loading KNNSearcher model out times"</span>);</div><div class="line">					&#125;</div><div class="line">				&#125;</div><div class="line">				model = cache.get(modelFile);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> model;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> InfoPredictor <span class="title">load</span><span class="params">(String modelFile)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">		FSDataInputStream fin = <span class="keyword">null</span>;</div><div class="line">      <span class="comment">// pig下加载hdfs配置</span></div><div class="line">		Configuration conf = UDFContext.getUDFContext().getJobConf();</div><div class="line">		String hdfsPath = conf.get(<span class="string">"fs.defaultFS"</span>) + modelFile;</div><div class="line">		FileSystem fs = FileSystem.get(URI.create(hdfsPath), conf);</div><div class="line">		fin = fs.open(<span class="keyword">new</span> Path(hdfsPath));</div><div class="line">		ScoreIndex sIndex = <span class="keyword">new</span> ScoreIndex();</div><div class="line">		BufferedReader in = <span class="keyword">null</span>;</div><div class="line">		in = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(fin));</div><div class="line">		String line = <span class="string">""</span>;</div><div class="line">		<span class="keyword">while</span>((line = in.readLine()) != <span class="keyword">null</span>)&#123;</div><div class="line">			String[] scoreArr = line.split(<span class="string">","</span>);</div><div class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; scoreArr.length; i++) &#123;</div><div class="line">				sIndex.putScore(i + <span class="number">1</span>, (<span class="keyword">float</span>)(Float.valueOf(scoreArr[i])<span class="comment">/* * CorrectValue[i]*/</span>));</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		sIndex.sortScore();</div><div class="line">		InfoPredict.setsIndex(sIndex);</div><div class="line">		<span class="keyword">return</span> <span class="keyword">new</span> InfoPredictor();</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<h1 id="UDF返回tuple"><a href="#UDF返回tuple" class="headerlink" title="UDF返回tuple"></a>UDF返回tuple</h1><h1 id="UDF返回DataBag"><a href="#UDF返回DataBag" class="headerlink" title="UDF返回DataBag"></a>UDF返回DataBag</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">searchPerKeywords</span> <span class="keyword">extends</span> <span class="title">EvalFunc</span>&lt;<span class="title">DataBag</span>&gt; </span>&#123;</div><div class="line">	</div><div class="line">	<span class="keyword">private</span> <span class="keyword">static</span> TupleFactory mTupleFactory = TupleFactory.getInstance();</div><div class="line">	<span class="keyword">private</span> <span class="keyword">static</span> BagFactory mBagFactory = BagFactory.getInstance();</div><div class="line">	</div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> DataBag <span class="title">exec</span><span class="params">(Tuple input)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line"></div><div class="line">		String keywordsFile = input.get(<span class="number">0</span>).toString();</div><div class="line">		String modelFile = input.get(<span class="number">1</span>).toString();</div><div class="line">		Integer featureLength = Integer.valueOf(input.get(<span class="number">2</span>).toString());</div><div class="line">		Integer filtLevel = Integer.valueOf(input.get(<span class="number">3</span>).toString());</div><div class="line">		String compressedFloatVec = input.get(<span class="number">4</span>).toString();</div><div class="line">		<span class="keyword">if</span>(StringUtils.isEmpty(compressedFloatVec)) &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">		&#125;</div><div class="line">		DataBag bag = mBagFactory.newDefaultBag();</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			<span class="keyword">float</span>[] vecs = WVUtils.String2floatArray(compressedFloatVec);</div><div class="line">			KeyWordSearcher searcher = KeyWordSearcher.getSearcher(keywordsFile, modelFile);</div><div class="line">			<span class="keyword">for</span>(String matchedWord : searcher.MatchedWords(WVUtils.splitFeature(vecs, featureLength), filtLevel)) &#123;</div><div class="line">				bag.add(mTupleFactory.newTuple(matchedWord));</div><div class="line">			&#125;</div><div class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">if</span>(bag.size() == <span class="number">0</span>) &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> bag;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="UDF返回tuple-1"><a href="#UDF返回tuple-1" class="headerlink" title="UDF返回tuple"></a>UDF返回tuple</h1><p>UDF的写法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> Tuple <span class="title">exec</span><span class="params">(Tuple input)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">		<span class="keyword">if</span> (input == <span class="keyword">null</span> || input.size() != <span class="number">1</span>) &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		WebPageInfo nlp = <span class="keyword">null</span>;</div><div class="line">		String nlpPageInfo = (String) input.get(<span class="number">0</span>);</div><div class="line">		Tuple tup = mTupleFactory.newTuple(); 		</div><div class="line">		</div><div class="line">		<span class="keyword">if</span> (StringUtils.isBlank(nlpPageInfo)) &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			nlp = JSON.parseObject(nlpPageInfo, WebPageInfo.class);</div><div class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		tup.append(nlp.content);</div><div class="line">		</div><div class="line">		<span class="keyword">if</span> (filter.isContaintSensitiveWord(nlp.content, <span class="number">2</span>)) &#123;</div><div class="line">			tup.append(<span class="string">"-1"</span>); </div><div class="line">		&#125; <span class="keyword">else</span> &#123;</div><div class="line">			tup.append(<span class="string">"1"</span>);</div><div class="line">		&#125;</div><div class="line">				</div><div class="line">		<span class="keyword">return</span> tup;</div><div class="line">		</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>pig的写法<code>DetectUnsafeUrl.pig</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">url_classify = FOREACH url_page_info GENERATE FLATTEN(DetectUnsafeUrl(info)) as (content, score);</div></pre></td></tr></table></figure>
+<h1 id="pig问题"><a href="#pig问题" class="headerlink" title="pig问题"></a>pig问题</h1><h2 id="filter为null的报错"><a href="#filter为null的报错" class="headerlink" title="filter为null的报错"></a>filter为null的报错</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Exception while executing (Name: url_safety: Filter[bag] - scope-10 Operator Key: scope-10): org.apache.pig.backend.executionengine.ExecException: ERROR 0: Exception while executing [POUserFunc (Name: POUserFunc(com.buzzinate.pig.udf.webdata.DetectUnsafeUrl)[chararray] - scope-7 Operator Key: scope-7) children: null at []]: java.lang.NullPointerException</div></pre></td></tr></table></figure>
+<p>因为在udf中加了一段抛出异常</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">try &#123;</div><div class="line">			nlp = JSON.parseObject(nlpPageInfo, WebPageInfo.class);</div><div class="line">		&#125; catch (Exception e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div></pre></td></tr></table></figure>
+<p>当有返回异常的时候，pig的filter就不能对返回结果做过滤了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">url_safety = FILTER url_classify BY score == &apos;-1&apos;;</div></pre></td></tr></table></figure>
+<p>这里就会报错。把抛出异常改为返回一个空字符串或者null就可以了</p>
 
           
         
@@ -1335,403 +1254,6 @@
 <h1 id="presto-ui实现总数的统计"><a href="#presto-ui实现总数的统计" class="headerlink" title="presto ui实现总数的统计"></a>presto ui实现总数的统计</h1><p>/Users/david/david/git/yanagishima/src/main/java/yanagishima/service/PrestoServiceImpl.java</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processData</span><span class="params">(StatementClient client, String datasource, String queryId, String query, PrestoQueryResult prestoQueryResult, List&lt;String&gt; columns, List&lt;List&lt;String&gt;&gt; rowDataList, <span class="keyword">long</span> start, <span class="keyword">int</span> limit, String userName)</span> </span>&#123;</div><div class="line">        Duration queryMaxRunTime = <span class="keyword">new</span> Duration(<span class="keyword">this</span>.yanagishimaConfig.getQueryMaxRunTimeSeconds(datasource), TimeUnit.SECONDS);</div><div class="line">        Path dst = getResultFilePath(datasource, queryId, <span class="keyword">false</span>);</div><div class="line">        <span class="keyword">int</span> lineNumber = <span class="number">0</span>;</div><div class="line">        <span class="keyword">int</span> maxResultFileByteSize = yanagishimaConfig.getMaxResultFileByteSize();</div><div class="line">        <span class="keyword">int</span> resultBytes = <span class="number">0</span>;</div><div class="line">        <span class="keyword">try</span> (BufferedWriter bw = Files.newBufferedWriter(dst, StandardCharsets.UTF_8);</div><div class="line">             CSVPrinter csvPrinter = <span class="keyword">new</span> CSVPrinter(bw, CSVFormat.EXCEL.withDelimiter(<span class="string">'\t'</span>).withNullString(<span class="string">"\\N"</span>).withRecordSeparator(System.getProperty(<span class="string">"line.separator"</span>)));) &#123;</div><div class="line">            csvPrinter.printRecord(columns);</div><div class="line">            lineNumber++;</div><div class="line">            <span class="keyword">while</span> (client.isRunning()) &#123;</div><div class="line">                Iterable&lt;List&lt;Object&gt;&gt; data = client.currentData().getData();</div><div class="line">                <span class="keyword">if</span> (data != <span class="keyword">null</span>) &#123;</div><div class="line">                    <span class="keyword">for</span>(List&lt;Object&gt; row : data) &#123;</div><div class="line">                        List&lt;String&gt; columnDataList = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line">                        List&lt;Object&gt; tmpColumnDataList = row.stream().collect(Collectors.toList());</div><div class="line">                        <span class="keyword">for</span> (Object tmpColumnData : tmpColumnDataList) &#123;</div><div class="line">                            <span class="keyword">if</span> (tmpColumnData <span class="keyword">instanceof</span> Long) &#123;</div><div class="line">                                columnDataList.add(((Long) tmpColumnData).toString());</div><div class="line">                            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tmpColumnData <span class="keyword">instanceof</span> Double) &#123;</div><div class="line">                                <span class="keyword">if</span>(Double.isNaN((Double)tmpColumnData) || Double.isInfinite((Double) tmpColumnData)) &#123;</div><div class="line">                                    columnDataList.add(tmpColumnData.toString());</div><div class="line">                                &#125; <span class="keyword">else</span> &#123;</div><div class="line">                                    columnDataList.add(BigDecimal.valueOf((Double) tmpColumnData).toPlainString());</div><div class="line">                                &#125;</div><div class="line">                            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                                <span class="keyword">if</span> (tmpColumnData == <span class="keyword">null</span>) &#123;</div><div class="line">                                    columnDataList.add(<span class="keyword">null</span>);</div><div class="line">                                &#125; <span class="keyword">else</span> &#123;</div><div class="line">                                    columnDataList.add(tmpColumnData.toString());</div><div class="line">                                &#125;</div><div class="line">                            &#125;</div><div class="line">                        &#125;</div><div class="line">                        <span class="keyword">try</span> &#123;</div><div class="line">                            csvPrinter.printRecord(columnDataList);</div><div class="line">                            lineNumber++;</div><div class="line">                            resultBytes += columnDataList.toString().getBytes(StandardCharsets.UTF_8).length;</div><div class="line">                            <span class="keyword">if</span>(resultBytes &gt; maxResultFileByteSize) &#123;</div><div class="line">                                String message = String.format(<span class="string">"Result file size exceeded %s bytes. queryId=%s, datasource=%s"</span>, maxResultFileByteSize, queryId, datasource);</div><div class="line">                                storeError(db, datasource, <span class="string">"presto"</span>, client.currentStatusInfo().getId(), query, userName, message);</div><div class="line">                                <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(message);</div><div class="line">                            &#125;</div><div class="line">                        &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">                            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</div><div class="line">                        &#125;</div><div class="line">                        <span class="keyword">if</span> (client.getQuery().toLowerCase().startsWith(<span class="string">"show"</span>) || rowDataList.size() &lt; limit) &#123;</div><div class="line">                            rowDataList.add(columnDataList);</div><div class="line">                        &#125; <span class="keyword">else</span> &#123;</div><div class="line">                            prestoQueryResult.setWarningMessage(String.format(<span class="string">"now fetch size is %d. This is more than %d. So, fetch operation stopped."</span>, rowDataList.size(), limit));</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">                client.advance();</div><div class="line">                checkTimeout(db, queryMaxRunTime, start, datasource, <span class="string">"presto"</span>, queryId, query, userName);</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        prestoQueryResult.setLineNumber(lineNumber);</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            <span class="keyword">long</span> size = Files.size(dst);</div><div class="line">            DataSize rawDataSize = <span class="keyword">new</span> DataSize(size, DataSize.Unit.BYTE);</div><div class="line">            prestoQueryResult.setRawDataSize(rawDataSize.convertToMostSuccinctDataSize());</div><div class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
 <h1 id="空值替换"><a href="#空值替换" class="headerlink" title="空值替换"></a>空值替换</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">coalesce</div></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/pig笔记/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/12/hadoop-spark/pig笔记/" class="post-title-link" itemprop="url">pig笔记</a>
-              
-            
-          </h2>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-
-              
-                
-              
-
-              <time title="Erstellt: 2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Bearbeitet am</span>
-                
-                <time title="Geändert am: 2018-03-23 21:02:13" itemprop="dateModified" datetime="2018-03-23T21:02:13+08:00">2018-03-23</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">in</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="JOIN的优化"><a href="#JOIN的优化" class="headerlink" title="JOIN的优化"></a>JOIN的优化</h1><p>1、Replicated Join </p>
-<p>​      当进行Join的一个表比较大，而其他的表都很小(能够放入内存)时，replicated join会非常高效。 </p>
-<p>​      在Join时使用 Using ‘replicated’语句来触发Replicated Join，大表放置在最左端，其余小表(可以有多个)放置在右端。 </p>
-<p>​      为了防止replicated join应用于大表的连接关系，pig会在这个连接关系复制的字节大小比pig.join.replicated.max.bytes属性的值大会失败 (default = 1GB)。 </p>
-<p>2、Skewed Join </p>
-<p>​      当进行Join的两个表的内连接时，一个表数据记录针对key的分布极其不均衡的时候使用，如果多于两个连接，要自己拆分成多个双表的连接。 </p>
-<p>​       pig.skewedjoin.reduce.memusage属性的值指定了reduce可以占用堆内存的百分数，低的分数可以让pig执行更多的reducer，但是增加了复制的成本。性能好的范围值在0.1到0.4，但是这仅仅是一个范围。这个值取决于这个操作的可用的堆内存和这个输入的行数和倾斜。默认值是0.5。 </p>
-<p>​        Skewed Join并没有专注于解决或者说的平衡这种不均匀的数据分布在reducer，而是确保这个Join连接能够完成而不是失败，但是会慢。他会增加5%的时间用于计算这个连接操作。 </p>
-<p>3、Merge Join </p>
-<p>​      当进行Join的两个表都已经用Join的键进行了排序，可以使用Merge Join。       可以在Join时使用Using ‘merge’语句来触发Merge Join，需要创建索引的表放置在右端。 另外，在进行Join之前，首先过滤掉key为Null的数据记录可以减少Join的数据量。 </p>
-<p>读取HDFS文件</p>
-<p>比如下面加载某个模型到pig</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> Map&lt;String, InfoPredictor&gt; cache = <span class="keyword">new</span> ConcurrentHashMap&lt;String, InfoPredictor&gt;();</div><div class="line">	<span class="keyword">private</span> <span class="keyword">static</span> AtomicBoolean isLoading = <span class="keyword">new</span> AtomicBoolean(<span class="keyword">false</span>);</div><div class="line">	</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> InfoPredictor <span class="title">getInfoPredictor</span><span class="params">(String modelFile)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</div><div class="line">		InfoPredictor model = cache.get(modelFile);</div><div class="line">		<span class="keyword">if</span> (model == <span class="keyword">null</span>) &#123;</div><div class="line">          <span class="comment">// 保证在多线程下只执行一次</span></div><div class="line">			<span class="keyword">if</span>(isLoading.compareAndSet(<span class="keyword">false</span>, <span class="keyword">true</span>)) &#123;</div><div class="line">				model = load(modelFile);<span class="comment">/* InfoPredict.loadDomainModel(modelFile);*/</span></div><div class="line">				cache.put(modelFile, model);</div><div class="line">			&#125; <span class="keyword">else</span> &#123;</div><div class="line">				<span class="keyword">long</span> maxLoadingTimeSecs = <span class="number">120l</span>;</div><div class="line">				<span class="keyword">long</span> loadingTimeSecs = <span class="number">0l</span>;</div><div class="line">				<span class="keyword">while</span>(<span class="keyword">null</span> == cache.get(modelFile)) &#123;</div><div class="line">					Thread.currentThread().sleep(<span class="number">5000l</span>);</div><div class="line">					loadingTimeSecs += <span class="number">5</span>;</div><div class="line">					<span class="keyword">if</span>(loadingTimeSecs &gt; maxLoadingTimeSecs) &#123;</div><div class="line">						<span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"try loading KNNSearcher model out times"</span>);</div><div class="line">					&#125;</div><div class="line">				&#125;</div><div class="line">				model = cache.get(modelFile);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> model;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> InfoPredictor <span class="title">load</span><span class="params">(String modelFile)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">		FSDataInputStream fin = <span class="keyword">null</span>;</div><div class="line">      <span class="comment">// pig下加载hdfs配置</span></div><div class="line">		Configuration conf = UDFContext.getUDFContext().getJobConf();</div><div class="line">		String hdfsPath = conf.get(<span class="string">"fs.defaultFS"</span>) + modelFile;</div><div class="line">		FileSystem fs = FileSystem.get(URI.create(hdfsPath), conf);</div><div class="line">		fin = fs.open(<span class="keyword">new</span> Path(hdfsPath));</div><div class="line">		ScoreIndex sIndex = <span class="keyword">new</span> ScoreIndex();</div><div class="line">		BufferedReader in = <span class="keyword">null</span>;</div><div class="line">		in = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(fin));</div><div class="line">		String line = <span class="string">""</span>;</div><div class="line">		<span class="keyword">while</span>((line = in.readLine()) != <span class="keyword">null</span>)&#123;</div><div class="line">			String[] scoreArr = line.split(<span class="string">","</span>);</div><div class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; scoreArr.length; i++) &#123;</div><div class="line">				sIndex.putScore(i + <span class="number">1</span>, (<span class="keyword">float</span>)(Float.valueOf(scoreArr[i])<span class="comment">/* * CorrectValue[i]*/</span>));</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		sIndex.sortScore();</div><div class="line">		InfoPredict.setsIndex(sIndex);</div><div class="line">		<span class="keyword">return</span> <span class="keyword">new</span> InfoPredictor();</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
-<h1 id="UDF返回tuple"><a href="#UDF返回tuple" class="headerlink" title="UDF返回tuple"></a>UDF返回tuple</h1><h1 id="UDF返回DataBag"><a href="#UDF返回DataBag" class="headerlink" title="UDF返回DataBag"></a>UDF返回DataBag</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">searchPerKeywords</span> <span class="keyword">extends</span> <span class="title">EvalFunc</span>&lt;<span class="title">DataBag</span>&gt; </span>&#123;</div><div class="line">	</div><div class="line">	<span class="keyword">private</span> <span class="keyword">static</span> TupleFactory mTupleFactory = TupleFactory.getInstance();</div><div class="line">	<span class="keyword">private</span> <span class="keyword">static</span> BagFactory mBagFactory = BagFactory.getInstance();</div><div class="line">	</div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> DataBag <span class="title">exec</span><span class="params">(Tuple input)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line"></div><div class="line">		String keywordsFile = input.get(<span class="number">0</span>).toString();</div><div class="line">		String modelFile = input.get(<span class="number">1</span>).toString();</div><div class="line">		Integer featureLength = Integer.valueOf(input.get(<span class="number">2</span>).toString());</div><div class="line">		Integer filtLevel = Integer.valueOf(input.get(<span class="number">3</span>).toString());</div><div class="line">		String compressedFloatVec = input.get(<span class="number">4</span>).toString();</div><div class="line">		<span class="keyword">if</span>(StringUtils.isEmpty(compressedFloatVec)) &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">		&#125;</div><div class="line">		DataBag bag = mBagFactory.newDefaultBag();</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			<span class="keyword">float</span>[] vecs = WVUtils.String2floatArray(compressedFloatVec);</div><div class="line">			KeyWordSearcher searcher = KeyWordSearcher.getSearcher(keywordsFile, modelFile);</div><div class="line">			<span class="keyword">for</span>(String matchedWord : searcher.MatchedWords(WVUtils.splitFeature(vecs, featureLength), filtLevel)) &#123;</div><div class="line">				bag.add(mTupleFactory.newTuple(matchedWord));</div><div class="line">			&#125;</div><div class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">if</span>(bag.size() == <span class="number">0</span>) &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> bag;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h1 id="UDF返回tuple-1"><a href="#UDF返回tuple-1" class="headerlink" title="UDF返回tuple"></a>UDF返回tuple</h1><p>UDF的写法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> Tuple <span class="title">exec</span><span class="params">(Tuple input)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">		<span class="keyword">if</span> (input == <span class="keyword">null</span> || input.size() != <span class="number">1</span>) &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		WebPageInfo nlp = <span class="keyword">null</span>;</div><div class="line">		String nlpPageInfo = (String) input.get(<span class="number">0</span>);</div><div class="line">		Tuple tup = mTupleFactory.newTuple(); 		</div><div class="line">		</div><div class="line">		<span class="keyword">if</span> (StringUtils.isBlank(nlpPageInfo)) &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			nlp = JSON.parseObject(nlpPageInfo, WebPageInfo.class);</div><div class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		tup.append(nlp.content);</div><div class="line">		</div><div class="line">		<span class="keyword">if</span> (filter.isContaintSensitiveWord(nlp.content, <span class="number">2</span>)) &#123;</div><div class="line">			tup.append(<span class="string">"-1"</span>); </div><div class="line">		&#125; <span class="keyword">else</span> &#123;</div><div class="line">			tup.append(<span class="string">"1"</span>);</div><div class="line">		&#125;</div><div class="line">				</div><div class="line">		<span class="keyword">return</span> tup;</div><div class="line">		</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
-<p>pig的写法<code>DetectUnsafeUrl.pig</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">url_classify = FOREACH url_page_info GENERATE FLATTEN(DetectUnsafeUrl(info)) as (content, score);</div></pre></td></tr></table></figure>
-<h1 id="pig问题"><a href="#pig问题" class="headerlink" title="pig问题"></a>pig问题</h1><h2 id="filter为null的报错"><a href="#filter为null的报错" class="headerlink" title="filter为null的报错"></a>filter为null的报错</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Exception while executing (Name: url_safety: Filter[bag] - scope-10 Operator Key: scope-10): org.apache.pig.backend.executionengine.ExecException: ERROR 0: Exception while executing [POUserFunc (Name: POUserFunc(com.buzzinate.pig.udf.webdata.DetectUnsafeUrl)[chararray] - scope-7 Operator Key: scope-7) children: null at []]: java.lang.NullPointerException</div></pre></td></tr></table></figure>
-<p>因为在udf中加了一段抛出异常</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">try &#123;</div><div class="line">			nlp = JSON.parseObject(nlpPageInfo, WebPageInfo.class);</div><div class="line">		&#125; catch (Exception e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div></pre></td></tr></table></figure>
-<p>当有返回异常的时候，pig的filter就不能对返回结果做过滤了</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">url_safety = FILTER url_classify BY score == &apos;-1&apos;;</div></pre></td></tr></table></figure>
-<p>这里就会报错。把抛出异常改为返回一个空字符串或者null就可以了</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/" class="post-title-link" itemprop="url">4-1 TensorBoard网络结构</a>
-              
-            
-          </h2>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-
-              
-                
-              
-
-              <time title="Erstellt: 2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Bearbeitet am</span>
-                
-                <time title="Geändert am: 2019-06-03 09:31:14" itemprop="dateModified" datetime="2019-06-03T09:31:14+08:00">2019-06-03</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">in</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/深度学习/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-1-tensorboard1/" target="_blank" rel="noopener">https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-1-tensorboard1/</a></p>
-<h2 id="各种不同的优化器"><a href="#各种不同的优化器" class="headerlink" title="各种不同的优化器"></a>各种不同的优化器</h2><p>本次课程，我们会讲到<code>Tensorflow</code>里面的优化器。</p>
-<p>Tensorflow 中的优化器会有很多不同的种类。最基本, 也是最常用的一种就是<code>GradientDescentOptimizer</code>。</p>
-<p><code>Tensorflow</code>提供了7种优化器：</p>
-<h2 id="搭建图纸"><a href="#搭建图纸" class="headerlink" title="搭建图纸"></a>搭建图纸</h2><p>首先从 <code>Input</code> 开始：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># define placeholder for inputs to network</span></div><div class="line">xs = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>])</div><div class="line">ys = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>])</div></pre></td></tr></table></figure>
-<p>对于input我们进行如下修改： 首先，可以为<code>xs</code>指定名称为<code>x_in</code>:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">xs= tf.placeholder(tf.float32, [None, 1],name=&apos;x_in&apos;)</div></pre></td></tr></table></figure>
-<p>然后再次对<code>ys</code>指定名称<code>y_in</code>:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ys= tf.placeholder(tf.loat32, [None, 1],name=&apos;y_in&apos;)</div></pre></td></tr></table></figure>
-<p>使用<code>with tf.name_scope(&#39;inputs&#39;)</code>可以将<code>xs</code>和<code>ys</code>包含进来，形成一个大的图层，图层的名字就是<code>with tf.name_scope()</code>方法里的参数。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">with tf.name_scope(&apos;inputs&apos;):</div><div class="line">    # define placeholder for inputs to network</div><div class="line">    xs = tf.placeholder(tf.float32, [None, 1])</div><div class="line">    ys = tf.placeholder(tf.float32, [None, 1])</div></pre></td></tr></table></figure>
-<p>接下来开始编辑<code>layer</code> ， 请看编辑前的程序片段 ：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></div><div class="line">    <span class="comment"># add one more layer and return the output of this layer</span></div><div class="line">    Weights = tf.Variable(tf.random_normal([in_size, out_size]))</div><div class="line">    biases = tf.Variable(tf.zeros([<span class="number">1</span>, out_size]) + <span class="number">0.1</span>)</div><div class="line">    Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</div><div class="line">    <span class="keyword">if</span> activation_function <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">        outputs = Wx_plus_b</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        outputs = activation_function(Wx_plus_b, )</div><div class="line">    <span class="keyword">return</span> outputs</div></pre></td></tr></table></figure>
-<p>这里的名字应该叫layer, 下面是编辑后的:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</div><div class="line">    # add one more layer and return the output of this layer</div><div class="line">    with tf.name_scope(&apos;layer&apos;):</div><div class="line">        Weights= tf.Variable(tf.random_normal([in_size, out_size]))</div><div class="line">        # and so on...</div></pre></td></tr></table></figure>
-<hr>
-<p>在定义完大的框架<code>layer</code>之后，同时也需要定义每一个’框架‘里面的小部件：(Weights biases 和 activation function): 现在现对 <code>Weights</code> 定义： 定义的方法同上，可以使用<code>tf.name.scope()</code>方法，同时也可以在<code>Weights</code>中指定名称<code>W</code>。 即为：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></div><div class="line">	<span class="comment">#define layer name</span></div><div class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'layer'</span>):</div><div class="line">        <span class="comment">#define weights name </span></div><div class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'weights'</span>):</div><div class="line">            Weights= tf.Variable(tf.random_normal([in_size, out_size]),name=<span class="string">'W'</span>)</div><div class="line">        <span class="comment">#and so on......</span></div></pre></td></tr></table></figure>
-<p>接着继续定义<code>biases</code> ， 定义方式同上。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</div><div class="line">    #define layer name</div><div class="line">    with tf.name_scope(&apos;layer&apos;):</div><div class="line">        #define weights name </div><div class="line">        with tf.name_scope(&apos;weights&apos;)</div><div class="line">            Weights= tf.Variable(tf.random_normal([in_size, out_size]),name=&apos;W&apos;)</div><div class="line">        # define biase</div><div class="line">        with tf.name_scope(&apos;Wx_plus_b&apos;):</div><div class="line">            Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</div><div class="line">        # and so on....</div></pre></td></tr></table></figure>
-<p><code>activation_function</code> 的话，可以暂时忽略。因为当你自己选择用 tensorflow 中的激励函数（activation function）的时候，tensorflow会默认添加名称。 最终，layer形式如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</div><div class="line">    # add one more layer and return the output of this layer</div><div class="line">    with tf.name_scope(&apos;layer&apos;):</div><div class="line">        with tf.name_scope(&apos;weights&apos;):</div><div class="line">            Weights = tf.Variable(</div><div class="line">            tf.random_normal([in_size, out_size]), </div><div class="line">            name=&apos;W&apos;)</div><div class="line">        with tf.name_scope(&apos;biases&apos;):</div><div class="line">            biases = tf.Variable(</div><div class="line">            tf.zeros([1, out_size]) + 0.1, </div><div class="line">            name=&apos;b&apos;)</div><div class="line">        with tf.name_scope(&apos;Wx_plus_b&apos;):</div><div class="line">            Wx_plus_b = tf.add(</div><div class="line">            tf.matmul(inputs, Weights), </div><div class="line">            biases)</div><div class="line">        if activation_function is None:</div><div class="line">            outputs = Wx_plus_b</div><div class="line">        else:</div><div class="line">            outputs = activation_function(Wx_plus_b, )</div><div class="line">        return outputs</div></pre></td></tr></table></figure>
-<p>最后编辑<code>loss</code>部分：将<code>with tf.name_scope()</code>添加在<code>loss</code>上方，并为它起名为<code>loss</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"># the error between prediciton and real data</div><div class="line">with tf.name_scope(&apos;loss&apos;):</div><div class="line">    loss = tf.reduce_mean(</div><div class="line">    tf.reduce_sum(</div><div class="line">    tf.square(ys - prediction),</div><div class="line">    eduction_indices=[1]</div><div class="line">    ))</div></pre></td></tr></table></figure>
-<p>使用<code>with tf.name_scope()</code>再次对<code>train_step</code>部分进行编辑,如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">with tf.name_scope(&apos;train&apos;):</div><div class="line">    train_step = tf.train.GradientDescentOptimizer(0.1).minimize(loss)</div></pre></td></tr></table></figure>
-<p>我们需要使用 <code>tf.summary.FileWriter()</code> (<code>tf.train.SummaryWriter()</code> 这种方式已经在 tf &gt;= 0.12 版本中摒弃) 将上面‘绘画’出的图保存到一个目录中，以方便后期在浏览器中可以浏览。 这个方法中的第二个参数需要使用<code>sess.graph</code> ， 因此我们需要把这句话放在获取<code>session</code>的后面。 这里的<code>graph</code>是将前面定义的框架信息收集起来，然后放在<code>logs/</code>目录下面。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sess = tf.Session() # get session</div><div class="line"># tf.train.SummaryWriter soon be deprecated, use following</div><div class="line">writer = tf.summary.FileWriter(&quot;logs/&quot;, sess.graph)</div></pre></td></tr></table></figure>
-<p>请确保你的 tensorboard 指令是在你的 logs 文件根目录执行的. 如果在其他目录下, 比如 <code>Desktop</code> 等, 可能不会成功看到图. 比如在下面这个目录, 你要 cd 到 <code>project</code> 这个地方执行 <code>/project &gt; tensorboard --logdir logs</code></p>
-<p>完整代码在</p>
-<p><a href="https://github.com/MorvanZhou/tutorials/blob/master/tensorflowTUT/tf14_tensorboard/full_code.py" target="_blank" rel="noopener">https://github.com/MorvanZhou/tutorials/blob/master/tensorflowTUT/tf14_tensorboard/full_code.py</a></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># View more python learning tutorial on my Youtube and Youku channel!!!</span></div><div class="line"></div><div class="line"><span class="comment"># Youtube video tutorial: https://www.youtube.com/channel/UCdyjiB5H8Pu7aDTNVXTTpcg</span></div><div class="line"><span class="comment"># Youku video tutorial: http://i.youku.com/pythontutorial</span></div><div class="line"></div><div class="line"><span class="string">"""</span></div><div class="line">Please note, this code is only for python 3+. If you are using python 2+, please modify the code accordingly.</div><div class="line">"""</div><div class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span> print_function</div><div class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></div><div class="line">    <span class="comment"># add one more layer and return the output of this layer</span></div><div class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'layer'</span>):</div><div class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'weights'</span>):</div><div class="line">            Weights = tf.Variable(tf.random_normal([in_size, out_size]), name=<span class="string">'W'</span>)</div><div class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'biases'</span>):</div><div class="line">            biases = tf.Variable(tf.zeros([<span class="number">1</span>, out_size]) + <span class="number">0.1</span>, name=<span class="string">'b'</span>)</div><div class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'Wx_plus_b'</span>):</div><div class="line">            Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</div><div class="line">        <span class="keyword">if</span> activation_function <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">            outputs = Wx_plus_b</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            outputs = activation_function(Wx_plus_b, )</div><div class="line">        <span class="keyword">return</span> outputs</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment"># define placeholder for inputs to network</span></div><div class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'inputs'</span>):</div><div class="line">    xs = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>], name=<span class="string">'x_input'</span>)</div><div class="line">    ys = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>], name=<span class="string">'y_input'</span>)</div><div class="line"></div><div class="line"><span class="comment"># add hidden layer</span></div><div class="line">l1 = add_layer(xs, <span class="number">1</span>, <span class="number">10</span>, activation_function=tf.nn.relu)</div><div class="line"><span class="comment"># add output layer</span></div><div class="line">prediction = add_layer(l1, <span class="number">10</span>, <span class="number">1</span>, activation_function=<span class="keyword">None</span>)</div><div class="line"></div><div class="line"><span class="comment"># the error between prediciton and real data</span></div><div class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'loss'</span>):</div><div class="line">    loss = tf.reduce_mean(tf.reduce_sum(tf.square(ys - prediction),</div><div class="line">                                        reduction_indices=[<span class="number">1</span>]))</div><div class="line"></div><div class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'train'</span>):</div><div class="line">    train_step = tf.train.GradientDescentOptimizer(<span class="number">0.1</span>).minimize(loss)</div><div class="line"></div><div class="line">sess = tf.Session()</div><div class="line"></div><div class="line"><span class="comment"># tf.train.SummaryWriter soon be deprecated, use following</span></div><div class="line"><span class="keyword">if</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">1</span>]) &lt; <span class="number">12</span> <span class="keyword">and</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">0</span>]) &lt; <span class="number">1</span>:  <span class="comment"># tensorflow version &lt; 0.12</span></div><div class="line">    writer = tf.train.SummaryWriter(<span class="string">'logs/'</span>, sess.graph)</div><div class="line"><span class="keyword">else</span>: <span class="comment"># tensorflow version &gt;= 0.12</span></div><div class="line">    writer = tf.summary.FileWriter(<span class="string">"logs/"</span>, sess.graph)</div><div class="line"></div><div class="line"><span class="comment"># tf.initialize_all_variables() no long valid from</span></div><div class="line"><span class="comment"># 2017-03-02 if using tensorflow &gt;= 0.12</span></div><div class="line"><span class="keyword">if</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">1</span>]) &lt; <span class="number">12</span> <span class="keyword">and</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">0</span>]) &lt; <span class="number">1</span>:</div><div class="line">    init = tf.initialize_all_variables()</div><div class="line"><span class="keyword">else</span>:</div><div class="line">    init = tf.global_variables_initializer()</div><div class="line">sess.run(init)</div><div class="line"></div><div class="line"><span class="comment"># direct to the local dir and run this in terminal:</span></div><div class="line"><span class="comment"># $ tensorboard --logdir=logs</span></div></pre></td></tr></table></figure>
 
           
         
@@ -2442,6 +1964,202 @@
 <p>vim /etc/hadoop/conf/hdfs-site.xml</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&lt;property&gt;</div><div class="line"></div><div class="line">    &lt;name&gt;dfs.ha.namenodes.iclick&lt;/name&gt;</div><div class="line"></div><div class="line">    &lt;value&gt;srv-buzz-cloudpmnn1.buzz.com,srv-buzz-cloudpmnn2.buzz.com&lt;/value&gt;</div><div class="line"></div><div class="line">&lt;/property&gt;</div></pre></td></tr></table></figure>
 <h1 id="常用IO操作"><a href="#常用IO操作" class="headerlink" title="常用IO操作"></a>常用IO操作</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">public static void testIOUtils() throws IOException &#123;</div><div class="line">Configuration conf = new Configuration();</div><div class="line">FileSystem fs = FileSystem.get(conf);</div><div class="line">Path p = new Path(&quot;/test/in/point&quot;);</div><div class="line">FSDataInputStream fdis = fs.open(p);</div><div class="line">IOUtils.copyBytes(fdis, System.out, conf,false);</div><div class="line">IOUtils.closeStream(fdis);</div><div class="line">fs.close();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习和深度学习算法理论/CNN/CNN/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/07/12/机器学习和深度学习算法理论/CNN/CNN/" class="post-title-link" itemprop="url">CNN</a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+
+              
+                
+              
+
+              <time title="Erstellt: 2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Bearbeitet am</span>
+                
+                <time title="Geändert am: 2019-06-16 09:28:37" itemprop="dateModified" datetime="2019-06-16T09:28:37+08:00">2019-06-16</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">in</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/深度学习/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="卷积核"><a href="#卷积核" class="headerlink" title="卷积核"></a>卷积核</h1><p>也称为滤波器。</p>
+<p>权重共享：卷积核的权重（矩阵的值）对于不同位置的所有输入都是相同的。</p>
+<h2 id="卷积操作的意义"><a href="#卷积操作的意义" class="headerlink" title="卷积操作的意义"></a>卷积操作的意义</h2><p>例如，有整体边缘滤波器Ke，横向边缘滤波器Kh，纵向边缘滤波器Kv。</p>
+<script type="math/tex; mode=display">
+K_e=\begin{bmatrix}
+0 & -4 & 0\\ 
+-4 & 16 & -4\\ 
+0 & -4 & 0
+\end{bmatrix}\ \ K_h=\begin{bmatrix}
+1 & 2 & 1\\ 
+0 & 0 & 0\\ 
+-1 & -2 & -1
+\end{bmatrix}\ \ K_v=\begin{bmatrix}
+1 & 0 & -1\\ 
+2 & 0 & -2\\ 
+1 & 0 & -1
+\end{bmatrix}</script><p>若某像素位于物体边缘，则周边像素与该像素会有明显差异，用Ke可以放大边缘和周边的差异，起到边缘检测的作用。同理，Kh、Kv可以保留横向、纵向的边缘信息。</p>
+<h1 id="池化层"><a href="#池化层" class="headerlink" title="池化层"></a>池化层</h1><p>也叫汇合层。通常操作有平均值池化（average-pooling）和最大值汇合（max-pooling）。与卷积核操作不同，池化层不包含需要学习的参数。仅指定汇合类型，核大小（kernel size）和步长（stride）。</p>
+<p>汇合的结果相对输入降小了，是一种降采样（down-sampling）操作。也可以看成是一个用p范数（p-norm）作为非线性映射的卷积操作。当p趋于正无穷时就是最大值汇合。</p>
+<p>汇合层的引入是仿照人的视觉系统对视觉输入对象进行降维和抽象。作用有：</p>
+<p>1）特征不变性（feature invariant）。使模型更关注是否存在某些特征而不是特征具体的位置。</p>
+<p>2）特征降维。</p>
+<p>3）一定程度上防止过拟合。</p>
+<h1 id="全连接层"><a href="#全连接层" class="headerlink" title="全连接层"></a>全连接层</h1><p>fully connected layers</p>
+<p>参考：</p>
+<p>【1】解析卷积神经网络.pdf</p>
 
           
         
