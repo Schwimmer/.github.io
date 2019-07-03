@@ -14,7 +14,7 @@
   
 
 
-<html class="theme-next pisces use-motion" lang="zh-Hans">
+<html class="theme-next muse use-motion" lang="zh-Hans">
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -68,7 +68,7 @@
   var NexT = window.NexT || {};
   var CONFIG = {
     root: '/',
-    scheme: 'Pisces',
+    scheme: 'Muse',
     version: '7.2.0',
     sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
     back2top: true,
@@ -275,6 +275,9 @@
   
 
   
+    
+
+  
 
   
 </nav>
@@ -295,9 +298,6 @@
       <div class="main-inner">
         <div class="content-wrap">
           
-            
-
-          
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
@@ -317,7 +317,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/Elastic Search/elastic-search笔记/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/计算广告/广告反作弊/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -334,13 +334,13 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">
+          <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/Elastic Search/elastic-search笔记/" class="post-title-link" itemprop="url">elastic search笔记</a>
+                <a href="/2017/07/12/机器学习/计算广告/广告反作弊/" class="post-title-link" itemprop="url">广告反作弊</a>
               
             
-          </h2>
+          </h1>
         
 
         <div class="post-meta">
@@ -391,7 +391,7 @@
                 <span class="post-meta-item-text">in</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Elastic-Search/" itemprop="url" rel="index"><span itemprop="name">Elastic Search</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/计算广告/" itemprop="url" rel="index"><span itemprop="name">计算广告</span></a></span>
 
                 
                 
@@ -431,395 +431,1115 @@
       
         
           
-            <h1 id="过滤字段中为空的"><a href="#过滤字段中为空的" class="headerlink" title="过滤字段中为空的"></a>过滤字段中为空的</h1><p>通过filter中的exists，如</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">GET iclick_persona/iclick/_search</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;bool&quot;: &#123;</div><div class="line">      &quot;must&quot;: [</div><div class="line">        &#123;&quot;term&quot;: &#123;</div><div class="line">          &quot;province&quot;: &#123;</div><div class="line">            &quot;value&quot;: &quot;CN_IN_SG&quot;</div><div class="line">          &#125;</div><div class="line">        &#125;&#125;</div><div class="line">      ],</div><div class="line">      &quot;filter&quot;: &#123;</div><div class="line">        &quot;exists&quot;: &#123;</div><div class="line">          &quot;field&quot;: &quot;articles.titles&quot;</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h1 id="大索引按天拆开"><a href="#大索引按天拆开" class="headerlink" title="大索引按天拆开"></a>大索引按天拆开</h1><p>好像不能直接从A索引中抽取一部分到B索引</p>
-<h1 id="python从文件插入到ES"><a href="#python从文件插入到ES" class="headerlink" title="python从文件插入到ES"></a>python从文件插入到ES</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">def set_pois_data(es, input_file, index_name=&quot;pois&quot;, doc_type_name=&quot;iclick&quot;):</div><div class="line">    #读入数据</div><div class="line">    fp = open(input_file)</div><div class="line"></div><div class="line">    #创建ACTIONS</div><div class="line">    ACTIONS = []</div><div class="line">    for line in fp:</div><div class="line">        fields = line.strip(&apos;\n&apos;).split(&quot;\t&quot;)</div><div class="line">        name = fields[0]</div><div class="line">        location = fields[2] + &quot;,&quot; + fields[3]</div><div class="line"></div><div class="line">        action = &#123;</div><div class="line">            &quot;_index&quot;: index_name,</div><div class="line">            &quot;_type&quot;: doc_type_name,</div><div class="line">            &quot;_source&quot;: &#123;</div><div class="line">                  &quot;name&quot; : name,</div><div class="line">                  &quot;pois&quot; : location,</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        #print action</div><div class="line">        ACTIONS.append(action)</div><div class="line"></div><div class="line">    # 批量处理</div><div class="line">    success, _ = bulk(es, ACTIONS, index=index_name, raise_on_error=True)</div><div class="line">    print(&apos;Performed %d actions&apos; % success)</div></pre></td></tr></table></figure>
-<h1 id="复制index的数据到另一个"><a href="#复制index的数据到另一个" class="headerlink" title="复制index的数据到另一个"></a>复制index的数据到另一个</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">import pyes</div><div class="line">conn = pyes.es.ES(&quot;http://10.xx.xx.xx:8305/&quot;)</div><div class="line">search = pyes.query.MatchAllQuery().search(bulk_read=1000)</div><div class="line">hits = conn.search(search, &apos;store_v1&apos;, &apos;client&apos;, scan=True, scroll=&quot;30m&quot;, model=lambda _,hit: hit)</div><div class="line">for hit in hits:</div><div class="line">     #print hit</div><div class="line">     conn.index(hit[&apos;_source&apos;], &apos;store_v2&apos;, &apos;client&apos;, hit[&apos;_id&apos;], bulk=True)</div><div class="line">conn.flush()</div></pre></td></tr></table></figure>
-<h1 id="统计数组的元素个数的sum、avg"><a href="#统计数组的元素个数的sum、avg" class="headerlink" title="统计数组的元素个数的sum、avg"></a>统计数组的元素个数的sum、avg</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">GET iclick_persona/iclick/_search?size=0</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;bool&quot;: &#123;</div><div class="line">      &quot;must&quot;: [</div><div class="line">        &#123;&quot;term&quot;: &#123;</div><div class="line">          &quot;device&quot;: &#123;</div><div class="line">            &quot;value&quot;: &quot;PC&quot;</div><div class="line">          &#125;</div><div class="line">        &#125;&#125;</div><div class="line">      ],</div><div class="line">      &quot;filter&quot;: [</div><div class="line">        &#123;&quot;script&quot;:&#123;&quot;script&quot;:&quot;doc[&apos;articles.domains&apos;].values.length&gt;1&quot;&#125;&#125;</div><div class="line">      ]</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;NAME&quot;: &#123;</div><div class="line">      &quot;avg&quot;: &#123;</div><div class="line">        &quot;script&quot;: &#123;</div><div class="line">          &quot;inline&quot;: &quot;doc[&apos;articles.domains&apos;].values.length&quot;</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/工具和环境/vim命令/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/12/工具和环境/vim命令/" class="post-title-link" itemprop="url">vim命令</a>
-              
-            
-          </h2>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-
-              
-                
-              
-
-              <time title="Erstellt: 2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Bearbeitet am</span>
-                
-                <time title="Geändert am: 2018-01-30 16:39:52" itemprop="dateModified" datetime="2018-01-30T16:39:52+08:00">2018-01-30</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">in</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/工具和环境/" itemprop="url" rel="index"><span itemprop="name">工具和环境</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="查找并删除"><a href="#查找并删除" class="headerlink" title="查找并删除"></a>查找并删除</h1><p>:g/要删除的内容/d</p>
-<p>查找</p>
-<p>/要查找的</p>
-<p>按n就是下一个</p>
-<p>删除一行</p>
-<p>dd</p>
-<p>查找匹配的个数</p>
-<p>:%s/refering_site/&amp;/gn</p>
-<p>或</p>
-<p>:%s/17779//gn</p>
-<p>:%s/“opxcreativeid”:16650//gn</p>
-<h1 id="查找并替换"><a href="#查找并替换" class="headerlink" title="查找并替换"></a>查找并替换</h1><p>%s/源字符串/目的字符串/g</p>
-<p>如</p>
-<p>:%s/\/home\/weinan/\/opt\/pig_home\/bshare_etl/g</p>
-<p>:%s/gpadmin/gpxmo/g</p>
-<p>:%s/\t-1/\t1/g</p>
-<p>:%s/“//g</p>
-<p>:%s/16-06-28/16-06-29/g</p>
-<h1 id="多行变1行"><a href="#多行变1行" class="headerlink" title="多行变1行"></a>多行变1行</h1><p>大写V选中行+shift J</p>
-<h1 id="替换每行的行首、行尾"><a href="#替换每行的行首、行尾" class="headerlink" title="替换每行的行首、行尾"></a>替换每行的行首、行尾</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">:1,$ s/^/HELLO/g</div><div class="line">:1,$ s/$/WORLD/g</div></pre></td></tr></table></figure>
-<h1 id="sh文件的编码转成unix"><a href="#sh文件的编码转成unix" class="headerlink" title="sh文件的编码转成unix"></a>sh文件的编码转成unix</h1><p>查看用<code>:set fileformat</code></p>
-<p>修改用<code>:set fileformat=unix</code></p>
-<h1 id="编码从latin1转成utf8"><a href="#编码从latin1转成utf8" class="headerlink" title="编码从latin1转成utf8"></a>编码从latin1转成utf8</h1><p>:e ++enc=cp936<br>:set fileencoding=utf-8</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/算法与数据结构/路径规划算法/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/12/算法与数据结构/路径规划算法/" class="post-title-link" itemprop="url">路径规划算法</a>
-              
-            
-          </h2>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-
-              
-                
-              
-
-              <time title="Erstellt: 2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Bearbeitet am</span>
-                
-                <time title="Geändert am: 2019-06-03 09:22:59" itemprop="dateModified" datetime="2019-06-03T09:22:59+08:00">2019-06-03</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">in</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法与数据结构/" itemprop="url" rel="index"><span itemprop="name">算法与数据结构</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>TSP、VRP</p>
-<h2 id="VRP"><a href="#VRP" class="headerlink" title="VRP"></a>VRP</h2><p>Vehicle Routing Problem</p>
-<p>假设在一个供求关系系统中，车辆从货源取货，配送到对应的若干配送点。车辆存在最大载货量，且配送可能有时间限制。需要合理安排取货时间，组织适当的行车路线，使用户需求得到满足，同时使某个代价函数最小，比如总工作时间最少、路径最短等。</p>
-<p>可以看出TSP问题是VRP问题的一种简单特殊形式。因此，VRP也是一种NP hard 问题。</p>
-<p>目前解决此种问题的办法有多种，主要以启发式算法为主。包括退火算法、遗传算法、蚁群算法、禁忌算法等。</p>
-<p><a href="https://blog.csdn.net/ldotn/article/details/53366882" target="_blank" rel="noopener">https://blog.csdn.net/ldotn/article/details/53366882</a></p>
-<p>C-W节约算法和遗传算法</p>
-<p>C-W节约算法：<br>基本思想是把各点单独与货源相连，构成若干条仅含一个配送点的线路，总费用为两倍从原点到各点的距离费用；然后计算将点 i 和点 j 连接在一条线路上费用节约值： </p>
-<script type="math/tex; mode=display">
-S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_{ij}</script><p>具体步骤：<br>（1）计算节约值S(i,j)，按从大到小排序<br>（2）考虑表格中最大元素Smax（i,j）Smax（i,j），对应点i和j，按条件进行操作： </p>
+            <p>秒针发布过《互联网广告反作弊技术白皮书》</p>
+<p>腾讯灯塔联手秒针、AdMaster发布</p>
+<h1 id="腾讯《2017广告反欺诈白皮书》"><a href="#腾讯《2017广告反欺诈白皮书》" class="headerlink" title="腾讯《2017广告反欺诈白皮书》"></a>腾讯《2017广告反欺诈白皮书》</h1><p>日均校验40亿广告请求，识别的作弊比率在15%左右。部分行业和campaign中，作弊率有60%。</p>
+<h2 id="欺诈手段"><a href="#欺诈手段" class="headerlink" title="欺诈手段"></a>欺诈手段</h2><ul>
+<li>虚假流量。</li>
+</ul>
+<p>某APP在地推时，新增用户暴涨。95%的新增用户的共同特征：</p>
+<p><strong>ROM编译机名称一致；指令逃逸差异数与正常用户不一致；CPU结构为X86，为PC机模拟器；文件系统类型的差异度与正常用户不一致</strong>。</p>
+<p>某APP的新增用户中，工作室批量刷量的特征有：</p>
+<p><strong>安装时间具有明显的规律；手机APP安装数量一致；明显的地域集中性</strong>。</p>
+<p>2.2 黑产技术</p>
+<p>1、广告作弊类型分类</p>
+<p>1）模拟器刷量：电脑模拟器刷量、手机软件模拟刷量、脚本刷量（录制行为跑循环任务）。</p>
+<p>2）真假机用户：储备大量手机或者sim卡，利用数据线push命令到手机，手机执行命令。</p>
+<p>3）静默安装（真机真用户假行为）。人工方式或网络传播方式将木马/具有再分发能力的应用植入到用户手机，形成僵尸网络，在用户无感知的情况下，完成App的下载、激活和删除等一系列操作。</p>
+<p>4）羊毛党（真机真用户真行为假动机）：登录一次就删除应用、使用时长极短、留存率极低。在大部份的情况下，这种用户对业务的健康发展并无太大价值。</p>
+<p>5）广告素材、篇幅偷换（不可见）。“1 像素广告”指在用户的手机屏幕上只展示1个像素大小的广告。这种广告，用户看不见，但统计工具可以统计到，仍然会作为曝光广告与广告主结算，给广告主带来经济损失。</p>
+<p>6）以次充好（不匹配）。部分媒体会将广告主原本定向的一线城市用户偷偷换成二三线城市用户，达到以次充好的目的。</p>
+<h2 id="应对方法"><a href="#应对方法" class="headerlink" title="应对方法"></a>应对方法</h2><p>2.3 反作弊技术</p>
+<p>1）用户群体数据检测。低阶技术，常见方式有：</p>
+<p><strong>a.看留存率</strong>。真实的用户的留存曲线是一条平滑的指数衰减曲线，如果发现留存曲线存在陡升陡降的异常波动，则判断刷量者干预了数据。</p>
+<p><strong>b.看用户终端、网络信息</strong>。如根据经验分析渠道新增用户或者启动用户的设备排名;2G、3G、4G的使用比例分布是否正常等。</p>
+<p><strong>c.看用户注册信息</strong>。比如说注册昵称的分布和规律等。</p>
+<p>以上操作均效率低下。</p>
+<p>2）用户行为特征分析</p>
+<p><strong>a.单个指标</strong>。与黑IP库进行比对，是否为黑名单IP、是否为代理IP;与IMEI库进行对比，是否为为黑IMEI;</p>
+<p><strong>b.群体指标</strong>。用户的IP、IMEI、机型、OS、位置信息、运营商、接入方式的<strong>分布</strong>是否符合先验数据的分布</p>
+<p><strong>c.设备一致性验证</strong>。CPU、制造商、MAC地址、IMEI、机型、操作系统的一致性验证。</p>
+<p>简单粗暴，没有黑白转换机制，误判率高。</p>
+<p><strong>这些方法容易被刷量者利用</strong>。在某电商专业Android app游戏激活、注册、留存、付费、应用市场好评平台上，买主只需要很小的代价，即可刷出完全符合正常用户规律的留存率、IP分布机型分布使用时长等。</p>
+<p>3）终端特征分析+云端交叉验证</p>
+<p>“查”模型负责找寻黑产界的新型作弊方式，提升整体模型的覆盖率</p>
+<p>“杀”模型负责准确识别恶意份子</p>
+<p>“验”模型通过多业务交叉验证，负责保证“查”、“杀”模型的准确率</p>
+<p><strong>终端识别模块</strong>（灯塔SDK稽核模块）:该模块主要是采用机器学习算法选取系统中所有可用的信息作为特征，然后对这些特征进行运算得到该<strong>设备的指纹，</strong>可以有效识别手机模拟器、修改系统参数等行为。</p>
+<p><strong>基于规则的识别模块</strong>（业务自有模块）:该模块一般是通过业务经验及对历史可疑渠道的总结形成的<strong>反作弊规则</strong>，可以理解为多维组合规则，一般需根据业务成本、对渠道的容忍度<strong>设置关键变量的阈值</strong>。</p>
+<p><strong>基于数据挖掘的识别模块</strong>（灯塔云端模块）:该模块主要从硬件信息、用户活跃、用户行为进行多维度、多业务交叉验证，分别计算每个维度下面的不同特征值，结合决策树、LR、贝叶斯网络等多种算法进行精准的定位。<strong>分类</strong></p>
+<p>为了增强识别的准确性和稳定性，模块之间、模块内部均采用集成学习方法的思想，其核心思想是在模块内对同一个训练集训练不同的分类器，然后把这些分类器结合起来构成一个最终的分类器，而每一个模块可以针对不同的作弊手段进行识别，再把模块与模块结合，才能识别所有的作弊手段。    </p>
+<h1 id="admaster《广告反欺诈研究报告》2016"><a href="#admaster《广告反欺诈研究报告》2016" class="headerlink" title="admaster《广告反欺诈研究报告》2016"></a>admaster《广告反欺诈研究报告》2016</h1><p>今年 1 月 29 日和 3 月 2 日,宝洁公司首席品牌官 Marc Pritchard 分别在美国互动广告局(Interactive<br>Advertising Bureau, IAB)和美国广告主协会(Association of National Advertisers, ANA)两个年度<br>重要峰会上进行主题发言,针对数字广告透明度和可见性标准的言论引发了全球营销圈和数字行业的热议。<br>宝洁呼吁业界在四个方面采取行动:</p>
 <ol>
-<li>若i和j均不在构成线路上，则得到线路 o -&gt; i -&gt;j -&gt;o，转到（3） </li>
-<li>若i或j在已构成线路上，但不是内点 0 -&gt; i -&gt;o，则可连接，转到（3） </li>
-<li>若i和j位于已构成不同线路上，且均不是内点，则连接得到线路，转到（3） </li>
-<li>若i和j位于已构成的同一线路，则不连接，转到（3）<br>（3）划去第i行和第j列，即i点不能再到其他点，j点也不能由其他店到达<br>（4）若所有元素均被划去，则得到完整线路，算法终止；否则，在没有划去的元素中选最大元素，转至（2）。</li>
+<li>数字广告采纳一套统一的可见性测量标准;</li>
+<li>贯彻第三方测评机构</li>
 </ol>
+<p>的验证审核;</p>
+<ol>
+<li>提倡全面透明的代理公司合同机制;</li>
+<li>预防广告欺诈。</li>
+</ol>
+<p>AdMaster先后推出了 BlueAir、定投识别 (VOA)、监播实录 (SNAP) 等技术产品,逐步建立了“全方位、深层次、多角度”的广告反欺诈解决方案。尤其在程序化购买中,AdMaster 在投放前预判 (Pre-bid),即事前广告反欺诈技术。</p>
+<p><strong>BlueAir</strong>可以对智能电视IP、地域、频次以及User Agent等维度的异常流量进行甄别，将行为逻辑上不正常的设备加入黑名单，从而保障广告投放的安全。同时，与海信、康佳、创维、欢网等硬件厂家共同建立智能电视设备白名单，以便从设备维度进一步甄别流量真实性。</p>
+<p><strong>定投识别</strong></p>
+<p><strong>监播实录</strong></p>
+<p><strong>投放前预判</strong>。在流量请求、广告未展现时,根据历史流量质量进行排查,从而提前避免广告在无效流量上的投放。</p>
+<h2 id="无效流量类型"><a href="#无效流量类型" class="headerlink" title="无效流量类型"></a>无效流量类型</h2><p>1、广告可见性问题引发的低质量流量</p>
+<p>目前媒体的环境导致广告不易可见。AdMaster 在 AdServing 广告投放管理技术上能够实现广告可见性的预估判断。在多种广告形式的后测方面,通过独创的模型评估广告可见性表现。</p>
+<p>2、机器人无效流量（Non-Human Traffic）</p>
+<p>从最初的 cookie 和 IP不变的前提下,反复刷新页面和点击广告,造成广告曝光和点击的增加,到通过木马或者恶意程序控制海量人肉刷机、伪造大量 IP 与设备信息进行模拟访问、或将 IP 和 cookie、User Agent 一起进行轮替的流量造假方式,都属于机器人无效流量。</p>
+<p><strong>BlueAir</strong> 广告反欺诈技术能够结合历史异常数据,能够在流量请求、广告未展现时,即根据历史流量质量判断此流量的质量,在投放前通过 <strong>Pre-bid</strong> 判断出流量的异常,杜绝流量造假现象发生。</p>
+<p>3、视频类无效流量</p>
+<p>(1)针对剧目投偏现象,AdMaster <strong>定投识别</strong> (VOA) 功能通过 Referrer/ 剧目 ID 等方式解析 广告曝光时所<br><strong>播放剧目名称</strong>,并与广告主定投的剧目内容进行匹配。在移动端定投评估中,高诚信度的视频媒体也提供高度<br>配合。剧目投偏比例,一目了然。</p>
+<p>(2)针对时有发生的曝光代码调用,但是素材未正确展示的广告欺诈现象,AdMaster 利用<strong>监播实录</strong> (SNAP)<br>功能,采用类似于“神秘访客”概念的方法从海量抽样监测,将视频内容播放前的所有贴片内容录制下来,并<br>通过图像识别与适当的素材进行对比,判断素材是否被正确展示,以及是否按照要求展示。</p>
+<p>4、智能电视无效流量</p>
+<p>支持智能电视广告的监测模式一般有 3 种 : 分别是第三方 SDK 监测、C2S 和 S2S 两种 API。前两种相比 S2S 更为安全,也更容易监测流量异常情况,可以说 C2S API 是智能电视广告监测安全的起点和基础(S2S API 传输方式目前很难识别无效流量)。</p>
+<h1 id="inmobi《移动广告反作弊白皮书》"><a href="#inmobi《移动广告反作弊白皮书》" class="headerlink" title="inmobi《移动广告反作弊白皮书》"></a>inmobi《移动广告反作弊白皮书》</h1><p>没技术</p>
+<p>反作弊措施</p>
+<p>1）剔除自动流量。</p>
+<p>识别机器人脚本，分析展示和点击的质量。</p>
+<p>2）数据信号双重检测。</p>
+<p>将媒体共享的人群信息和从SDK收集的信息比对，对所有无效信息定位和删除。</p>
+<p>[部分有关 广告联盟作弊 与反作弊资料收集]（<a href="http://cwiki.apachecn.org/pages/viewpage.action?pageId=4882639）" target="_blank" rel="noopener">http://cwiki.apachecn.org/pages/viewpage.action?pageId=4882639）</a></p>
+<p>roadmap中，AD fraud的业界措施</p>
+<p>监控广告投放的效果；</p>
+<p>保存曝光设备的ip</p>
+<p>记录用户在landing页的行为</p>
+<p>网页分析</p>
+<p><strong>基于数据挖掘的识别模块</strong>（灯塔云端模块）:该模块主要从硬件信息、用户活跃、用户行为进行多维度、多业务交叉验证，分别计算每个维度下面的不同特征值，结合决策树、LR、贝叶斯网络等多种算法进行精准的定位。为了增强识别的准确性和稳定性，模块之间、模块内部均采用集成学习方法的思想，其核心思想是在模块内对同一个训练集训练不同的分类器，然后把这些分类器结合起来构成一个最终的分类器，而每一个模块可以针对不同的作弊手段进行识别，再把模块与模块结合，才能识别所有的作弊手段。</p>
+<p>这个方法未来肯定要实现的，大致是通过集成学习的方式，综合硬件信息，网页特征，用户行为</p>
+<p>最初我们只有url信息，提取url的特征判断投放的网页是否安全；</p>
+<p>后面对每条</p>
+<p>前期，通过分析url内容，判断网页是否安全，是否为虚假网页，网页内容与广告品牌是否有冲突。</p>
+<p>后面，分析曝光的详细信息，包括设备信息，用户特征，判断是否为作弊流量；分析网页元素和广告位置，判断广告可见性。</p>
+<p>再后面，在对url和黑名单有一定积累的基础上，在投放或竞价前检测投放环境，主动识别和屏蔽非安全流量</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/集成学习/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/07/12/机器学习/集成学习/" class="post-title-link" itemprop="url">集成学习</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+
+              
+                
+              
+
+              <time title="Erstellt: 2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Bearbeitet am</span>
+                
+                <time title="Geändert am: 2018-08-16 16:41:49" itemprop="dateModified" datetime="2018-08-16T16:41:49+08:00">2018-08-16</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">in</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>个体学习器一般是弱学习器。</p>
+<blockquote>
+<p> 弱学习器是指泛华性能略优于随机猜测的学习器，例如二分上略高于50%的学习器。</p>
+</blockquote>
+<p>要获得好的集成，个体学习器应“好而不同”，即个体学习器要有一定的<strong>准确性和多样性</strong>（学习器之间有差异）。</p>
+<p>理论上，假设个体学习器的误差是相互独立，那么随着学习器数量增大，集成的错误率将指数下降，最终趋向于零。</p>
+<p>但实际上不可能相互独立。且<strong>准确性和多样性本身就是矛盾的</strong>，追求准确性就要牺牲多样性。所以<strong>如何产生并结合“好而不同”的学习器，是集成学习研究的核心</strong>。</p>
+<p>根据集成的方式不同，</p>
+<p>1）个体学习器存在强依赖性，必须串行生成，如Boosting；</p>
+<p>2）个体学习器间不存在强依赖关系，可同时并行生成，如Bagging和随机森林。</p>
+<h1 id="mic或stacking方法"><a href="#mic或stacking方法" class="headerlink" title="mic或stacking方法"></a>mic或stacking方法</h1><p><a href="https://blog.csdn.net/sb19931201/article/details/56315689?locationNum=1&amp;fps=1" target="_blank" rel="noopener">https://blog.csdn.net/sb19931201/article/details/56315689?locationNum=1&amp;fps=1</a> 从这篇帖子来</p>
+<p><a href="https://blog.csdn.net/a358463121/article/details/53054686#t18" target="_blank" rel="noopener">https://blog.csdn.net/a358463121/article/details/53054686#t18</a></p>
+<p><a href="https://zhuanlan.zhihu.com/jlbookworm" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/jlbookworm</a></p>
+<p><a href="https://blog.csdn.net/wstcjf/article/details/77989963" target="_blank" rel="noopener">https://blog.csdn.net/wstcjf/article/details/77989963</a> 文章的思路有点问题？</p>
+<p><a href="https://blog.csdn.net/xiaoliuzz/article/details/79298841" target="_blank" rel="noopener">https://blog.csdn.net/xiaoliuzz/article/details/79298841</a></p>
+<p><a href="https://blog.csdn.net/yc1203968305/article/details/73526615" target="_blank" rel="noopener">https://blog.csdn.net/yc1203968305/article/details/73526615</a></p>
+<p><a href="https://www.cnblogs.com/zhizhan/p/5051881.html" target="_blank" rel="noopener">https://www.cnblogs.com/zhizhan/p/5051881.html</a></p>
+<p><a href="https://mlwave.com/kaggle-ensembling-guide/" target="_blank" rel="noopener">https://mlwave.com/kaggle-ensembling-guide/</a></p>
+<h1 id="Stacking"><a href="#Stacking" class="headerlink" title="Stacking"></a>Stacking</h1><p><a href="http://tech.ifeng.com/a/20170929/44704115_0.shtml" target="_blank" rel="noopener">Kaggle机器学习之模型融合（stacking）心得</a></p>
+<p><a href="https://www.kaggle.com/arthurtok/introduction-to-ensembling-stacking-in-python" target="_blank" rel="noopener">Introduction to Ensembling/Stacking in Python</a> </p>
+<p><a href="https://www.kdnuggets.com/2017/02/stacking-models-imropved-predictions.html" target="_blank" rel="noopener">Stacking Models for Improved Predictions</a></p>
+<h2 id="使用sklearn进行集成学习——理论"><a href="#使用sklearn进行集成学习——理论" class="headerlink" title="使用sklearn进行集成学习——理论"></a><a href="https://www.cnblogs.com/jasonfreak/p/5657196.html" target="_blank" rel="noopener">使用sklearn进行集成学习——理论</a></h2><p>1 前言<br>2 集成学习是什么？<br>3 偏差和方差<br>　　3.1 模型的偏差和方差是什么？<br>　　3.2 bagging的偏差和方差<br>　　3.3 boosting的偏差和方差<br>　　3.4 模型的独立性<br>　　3.5 小结<br>4 Gradient Boosting<br>　　4.1 拟合残差<br>　　4.2 拟合反向梯度<br>　　　　4.2.1 契机：引入损失函数<br>　　　　4.2.2 难题一：任意损失函数的最优化<br>　　　　4.2.3 难题二：无法对测试样本计算反向梯度<br>　　4.3 常见的损失函数<br>　　4.4 步子太大容易扯着蛋：缩减<br>　　4.5 初始模型<br>　　4.5 Gradient Tree Boosting<br>　　4.6 小结<br>5 总结<br>6 参考资料</p>
 <hr>
-<p>作者：LDOTN<br>来源：CSDN<br>原文：<a href="https://blog.csdn.net/ldotn/article/details/53366882?utm_source=copy" target="_blank" rel="noopener">https://blog.csdn.net/ldotn/article/details/53366882?utm_source=copy</a><br>版权声明：本文为博主原创文章，转载请附上博文链接！</p>
-<h2 id="专栏-从架构到算法，详解美团外卖订单分配内部机制"><a href="#专栏-从架构到算法，详解美团外卖订单分配内部机制" class="headerlink" title="专栏 | 从架构到算法，详解美团外卖订单分配内部机制"></a>专栏 | 从架构到算法，详解美团外卖订单分配内部机制</h2><p><a href="https://mp.weixin.qq.com/s?src=11&amp;timestamp=1539566532&amp;ver=1183&amp;signature=9jq4HLmibsnw8OrowBhYA9CXJN79KssHyV0G4Kra2LrXD95V-RHwziumoBV1pwJEsK-4kEiHILRjucx7fM4kyp*s61FEF3tEYd40N3CFBEvakfY1Kj0-pWEjqIYTm4G-&amp;new=1" target="_blank" rel="noopener">https://mp.weixin.qq.com/s?src=11&amp;timestamp=1539566532&amp;ver=1183&amp;signature=9jq4HLmibsnw8OrowBhYA9CXJN79KssHyV0G4Kra2LrXD95V-RHwziumoBV1pwJEsK-4kEiHILRjucx7fM4kyp*s61FEF3tEYd40N3CFBEvakfY1Kj0-pWEjqIYTm4G-&amp;new=1</a></p>
-<p>外卖订单的分配问题一般可建模为带有若干复杂约束的 DVRP（Dynamic Vehicle Routing Problem）问题。这类问题一般可表述为：有一定数量的骑手，每名骑手身上有若干订单正在配送过程中，在过去一段时间（如 1 分钟）内产生了一批新订单，已知骑手的行驶速度、任意两点间的行驶距离、每个订单的出餐时间和交付时间（骑手到达用户所在地之后将订单交付至用户所需的时间），那么如何将这批新订单在正确的时间分配至正确的骑手，使得用户体验得到保证的同时，骑手的配送效率最高。</p>
+<h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1 前言"></a>1 前言</h1><p>　　很多人在竞赛（Kaggle，天池等）或工程实践中使用了集成学习（例如，RF、GTB等），确实也取得了不错的效果，在保证准确度的同时也提升了模型防止过拟合的能力。但是，我们真的用对了集成学习吗？</p>
+<p>　　sklearn提供了sklearn.ensemble库，支持众多集成学习算法和模型。恐怕大多数人使用这些工具时，要么使用默认参数，要么根据模型在测试集上的性能试探性地进行调参（当然，完全不懂的参数还是不动算了），要么将调参的工作丢给调参算法（网格搜索等）。这样并不能真正地称为“会”用sklearn进行集成学习。</p>
+<p>　　我认为，学会调参是进行集成学习工作的前提。然而，第一次遇到这些算法和模型时，肯定会被其丰富的参数所吓到，要知道，教材上教的伪代码可没这么多参数啊！！！没关系，暂时，我们只要记住一句话：参数可分为两种，一种是影响模型在训练集上的准确度或影响防止过拟合能力的参数；另一种不影响这两者的其他参数。模型在样本总体上的准确度（后简称准确度）由其在训练集上的准确度及其防止过拟合的能力所共同决定，所以在调参时，我们主要对第一种参数进行调整，最终达到的效果是：模型在训练集上的准确度和防止过拟合能力的大和谐！</p>
+<p>　　本篇博文将详细阐述模型参数背后的理论知识，在下篇博文中，我们将对最热门的两个模型Random Forrest和Gradient Tree Boosting（含分类和回归，所以共4个模型）进行具体的参数讲解。如果你实在无法静下心来学习理论，你也可以在下篇博文中找到最直接的调参指导，虽然我不赞同这么做。</p>
+<hr>
+<h1 id="2-集成学习是什么？"><a href="#2-集成学习是什么？" class="headerlink" title="2 集成学习是什么？"></a>2 集成学习是什么？</h1><p>　　我们还是花一点时间来说明一下集成学习是什么，如果对此有一定基础的同学可以跳过本节。简单来说，集成学习是一种技术框架，其按照不同的思路来组合基础模型，从而达到其利断金的目的。</p>
+<p>　　目前，有三种常见的集成学习框架：bagging，boosting和stacking。国内，南京大学的周志华教授对集成学习有很深入的研究，其在09年发表的一篇概述性论文<a href="http://cs.nju.edu.cn/zhouzh/zhouzh.files/publication/springerEBR09.pdf" target="_blank" rel="noopener">《</a><a href="http://cs.nju.edu.cn/zhouzh/zhouzh.files/publication/springerEBR09.pdf" target="_blank" rel="noopener">Ensemble Learning》</a>对这三种集成学习框架有了明确的定义，概括如下：</p>
+<p> 　　bagging：从训练集从进行子抽样组成每个基模型所需要的子训练集，对所有基模型预测的结果进行综合产生最终的预测结果：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717135005498-1140287801.jpg" alt="img"></p>
+<p>　　boosting：训练过程为阶梯状，基模型按次序一一进行训练（实现上可以做到并行），基模型的训练集按照某种策略每次都进行一定的转化。对所有基模型预测的结果进行线性综合产生最终的预测结果：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717135023373-1810846145.jpg" alt="img"></p>
+<p>　　stacking：将训练好的所有基模型对训练基进行预测，第j个基模型对第i个训练样本的预测值将作为新的训练集中第i个样本的第j个特征值，最后基于新的训练集进行训练。同理，预测的过程也要先经过所有基模型的预测形成新的测试集，最后再对测试集进行预测：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160716073722420-208134951.jpg" alt="img"></p>
+<p>　　有了这些基本概念之后，直觉将告诉我们，由于不再是单一的模型进行预测，所以模型有了“集思广益”的能力，也就不容易产生过拟合现象。但是，直觉是不可靠的，接下来我们将从模型的偏差和方差入手，彻底搞清楚这一问题。</p>
+<hr>
+<h1 id="3-偏差和方差"><a href="#3-偏差和方差" class="headerlink" title="3 偏差和方差"></a>3 偏差和方差</h1><p>　　广义的偏差（bias）描述的是预测值和真实值之间的差异，方差（variance）描述距的是预测值作为随机变量的离散程度。<a href="http://scott.fortmann-roe.com/docs/BiasVariance.html" target="_blank" rel="noopener">《Understanding the Bias-Variance Tradeoff》</a>当中有一副图形象地向我们展示了偏差和方差的关系：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160716124330623-527064401.jpg" alt="img"></p>
+<h2 id="3-1-模型的偏差和方差是什么？"><a href="#3-1-模型的偏差和方差是什么？" class="headerlink" title="3.1 模型的偏差和方差是什么？"></a>3.1 模型的偏差和方差是什么？</h2><p>　　模型的偏差是一个相对来说简单的概念：训练出来的模型在训练集上的准确度。</p>
+<p>　　要解释模型的方差，首先需要重新审视模型：模型是随机变量。设样本容量为n的训练集为随机变量的集合(X1, X2, …, Xn)，那么模型是以这些随机变量为输入的随机变量函数（其本身仍然是随机变量）：F(X1, X2, …, Xn)。抽样的随机性带来了模型的随机性。</p>
+<p>　　定义随机变量的值的差异是计算方差的前提条件，通常来说，我们遇到的都是数值型的随机变量，数值之间的差异再明显不过（减法运算）。但是，模型的差异性呢？我们可以理解模型的差异性为模型的结构差异，例如：线性模型中权值向量的差异，树模型中树的结构差异等。在研究模型方差的问题上，我们并不需要对方差进行定量计算，只需要知道其概念即可。</p>
+<p>　　研究模型的方差有什么现实的意义呢？我们认为方差越大的模型越容易过拟合：假设有两个训练集A和B，经过A训练的模型Fa与经过B训练的模型Fb差异很大，这意味着Fa在类A的样本集合上有更好的性能，而Fb反之，这便是我们所说的过拟合现象。</p>
+<p>　　我们常说集成学习框架中的基模型是弱模型，通常来说弱模型是偏差高（在训练集上准确度低）方差小（防止过拟合能力强）的模型。但是，并不是所有集成学习框架中的基模型都是弱模型。bagging和stacking中的基模型为强模型（偏差低方差高），boosting中的基模型为弱模型。</p>
+<p>　　在bagging和boosting框架中，通过计算基模型的期望和方差，我们可以得到模型整体的期望和方差。为了简化模型，我们假设基模型的权重、方差及两两间的相关系数相等。由于bagging和boosting的基模型都是线性组成的，那么有：</p>
+<p> <img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160716145131217-650617034.png" alt="img"></p>
+<h2 id="3-2-bagging的偏差和方差"><a href="#3-2-bagging的偏差和方差" class="headerlink" title="3.2 bagging的偏差和方差"></a>3.2 bagging的偏差和方差</h2><p>　　对于bagging来说，每个基模型的权重等于1/m且期望近似相等（子训练集都是从原训练集中进行子抽样），故我们可以进一步化简得到：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160716145206701-383430284.png" alt="img"></p>
+<p>　　根据上式我们可以看到，整体模型的期望近似于基模型的期望，这也就意味着整体模型的偏差和基模型的偏差近似。同时，整体模型的方差小于等于基模型的方差（当相关性为1时取等号），随着基模型数（m）的增多，整体模型的方差减少，从而防止过拟合的能力增强，模型的准确度得到提高。但是，模型的准确度一定会无限逼近于1吗？并不一定，当基模型数增加到一定程度时，方差公式第二项的改变对整体方差的作用很小，防止过拟合的能力达到极限，这便是准确度的极限了。另外，在此我们还知道了为什么bagging中的基模型一定要为强模型，否则就会导致整体模型的偏差度低，即准确度低。</p>
+<p>　　Random Forest是典型的基于bagging框架的模型，其在bagging的基础上，进一步降低了模型的方差。Random Fores中基模型是树模型，在树的内部节点分裂过程中，不再是将所有特征，而是随机抽样一部分特征纳入分裂的候选项。这样一来，基模型之间的相关性降低，从而在方差公式中，第一项显著减少，第二项稍微增加，整体方差仍是减少。</p>
+<h2 id="3-3-boosting的偏差和方差"><a href="#3-3-boosting的偏差和方差" class="headerlink" title="3.3 boosting的偏差和方差"></a>3.3 boosting的偏差和方差</h2><p>　　对于boosting来说，基模型的训练集抽样是强相关的，那么模型的相关系数近似等于1，故我们也可以针对boosting化简公式为：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717142500264-1717908455.png" alt="img"></p>
+<p>　　通过观察整体方差的表达式，我们容易发现，若基模型不是弱模型，其方差相对较大，这将导致整体模型的方差很大，即无法达到防止过拟合的效果。因此，boosting框架中的基模型必须为弱模型。</p>
+<p>　　因为基模型为弱模型，导致了每个基模型的准确度都不是很高（因为其在训练集上的准确度不高）。随着基模型数的增多，整体模型的期望值增加，更接近真实值，因此，整体模型的准确度提高。但是准确度一定会无限逼近于1吗？仍然并不一定，因为训练过程中准确度的提高的主要功臣是整体模型在训练集上的准确度提高，而随着训练的进行，整体模型的方差变大，导致防止过拟合的能力变弱，最终导致了准确度反而有所下降。</p>
+<p>　　基于boosting框架的Gradient Tree Boosting模型中基模型也为树模型，同Random Forrest，我们也可以对特征进行随机抽样来使基模型间的相关性降低，从而达到减少方差的效果。</p>
+<h2 id="3-4-模型的独立性"><a href="#3-4-模型的独立性" class="headerlink" title="3.4 模型的独立性"></a>3.4 模型的独立性</h2><p>　　聪明的读者这时肯定要问了，如何衡量基模型的独立性？我们说过，抽样的随机性决定了模型的随机性，如果两个模型的训练集抽样过程不独立，则两个模型则不独立。这时便有一个天大的陷阱在等着我们：bagging中基模型的训练样本都是独立的随机抽样，但是基模型却不独立呢？</p>
+<p>　　我们讨论模型的随机性时，抽样是针对于样本的整体。而bagging中的抽样是针对于训练集（整体的子集），所以并不能称其为对整体的独立随机抽样。那么到底bagging中基模型的相关性体现在哪呢？在知乎问答<a href="https://www.zhihu.com/question/26760839" target="_blank" rel="noopener">《为什么说bagging是减少variance，而boosting是减少bias?》</a>中请教用户<a href="https://www.zhihu.com/people/guo-ni-he" target="_blank" rel="noopener">“过拟合”</a>后，我总结bagging的抽样为两个过程：</p>
+<ol>
+<li>样本抽样：整体模型F(X1, X2, …, Xn)中各输入随机变量（X1, X2, …, Xn）对样本的抽样</li>
+<li>子抽样：从整体模型F(X1, X2, …, Xn)中随机抽取若干输入随机变量成为基模型的输入随机变量</li>
+</ol>
+<p>　　假若在子抽样的过程中，两个基模型抽取的输入随机变量有一定的重合，那么这两个基模型对整体样本的抽样将不再独立，这时基模型之间便具有了相关性。</p>
+<h2 id="3-5-小结"><a href="#3-5-小结" class="headerlink" title="3.5 小结"></a>3.5 小结</h2><p>　　还记得调参的目标吗：模型在训练集上的准确度和防止过拟合能力的大和谐！为此，我们目前做了一些什么工作呢？</p>
+<ol>
+<li>使用模型的偏差和方差来描述其在训练集上的准确度和防止过拟合的能力</li>
+<li>对于bagging来说，整体模型的偏差和基模型近似，随着训练的进行，整体模型的方差降低</li>
+<li>对于boosting来说，整体模型的初始偏差较高，方差较低，随着训练的进行，整体模型的偏差降低（虽然也不幸地伴随着方差增高），当训练过度时，因方差增高，整体模型的准确度反而降低</li>
+<li>整体模型的偏差和方差与基模型的偏差和方差息息相关</li>
+</ol>
+<p>　　这下总算有点开朗了，那些让我们抓狂的参数，现在可以粗略地分为两类了：控制整体训练过程的参数和基模型的参数，这两类参数都在影响着模型在训练集上的准确度以及防止过拟合的能力。</p>
+<hr>
+<h1 id="4-Gradient-Boosting"><a href="#4-Gradient-Boosting" class="headerlink" title="4 Gradient Boosting"></a>4 Gradient Boosting</h1><p>　　对基于Gradient Boosting框架的模型的进行调试时，我们会遇到一个重要的概念：损失函数。在本节中，我们将把损失函数的“今生来世”讲个清楚！</p>
+<p>　　基于boosting框架的整体模型可以用线性组成式来描述，其中h<a href="x">i</a>为基模型与其权值的乘积：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717144731264-398372888.png" alt="img"></p>
+<p>　　根据上式，整体模型的训练目标是使预测值F(x)逼近真实值y，也就是说要让每一个基模型的预测值逼近各自要预测的部分真实值。由于要同时考虑所有基模型，导致了整体模型的训练变成了一个非常复杂的问题。所以，研究者们想到了一个贪心的解决手段：每次只训练一个基模型。那么，现在改写整体模型为迭代式：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717144844795-1514741556.png" alt="img"></p>
+<p>　　这样一来，每一轮迭代中，只要集中解决一个基模型的训练问题：使F<a href="x">i</a>逼近真实值y。</p>
+<h2 id="4-1-拟合残差"><a href="#4-1-拟合残差" class="headerlink" title="4.1 拟合残差"></a>4.1 拟合残差</h2><p>　　使F<a href="x">i</a>逼近真实值，其实就是使h<a href="x">i</a>逼近真实值和上一轮迭代的预测值F<a href="x">i-1</a>之差，即残差（y-F<a href="x">i-1</a>）。最直接的做法是构建基模型来拟合残差，在博文<a href="http://blog.csdn.net/w28971023/article/details/8240756" target="_blank" rel="noopener">《GBDT（MART） 迭代决策树入门教程 | 简介》</a>中，作者举了一个生动的例子来说明通过基模型拟合残差，最终达到整体模型F(x)逼近真实值。</p>
+<p>　　研究者发现，残差其实是最小均方损失函数的关于预测值的反向梯度：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717152356576-837065946.png" alt="img"></p>
+<p>　　也就是说，若F<a href="x">i-1</a>加上拟合了反向梯度的h<a href="x">i</a>得到F<a href="x">i</a>，该值可能将导致平方差损失函数降低，预测的准确度提高！这显然不是巧合，但是研究者们野心更大，希望能够创造出一种对任意损失函数都可行的训练方法，那么仅仅拟合残差是不恰当的了。</p>
+<h2 id="4-2-拟合反向梯度"><a href="#4-2-拟合反向梯度" class="headerlink" title="4.2 拟合反向梯度"></a>4.2 拟合反向梯度</h2><h3 id="4-2-1-契机：引入任意损失函数"><a href="#4-2-1-契机：引入任意损失函数" class="headerlink" title="4.2.1 契机：引入任意损失函数"></a>4.2.1 契机：引入任意损失函数</h3><p>　　引入任意损失函数后，我们可以定义整体模型的迭代式如下：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717155418592-692164582.png" alt="img"></p>
+<p>　　在这里，损失函数被定义为<a href="https://zh.wikipedia.org/wiki/%E6%B3%9B%E5%87%BD" target="_blank" rel="noopener">泛函</a>。</p>
+<h3 id="4-2-2-难题一：任意损失函数的最优化"><a href="#4-2-2-难题一：任意损失函数的最优化" class="headerlink" title="4.2.2 难题一：任意损失函数的最优化"></a>4.2.2 难题一：任意损失函数的最优化</h3><p>　　对任意损失函数（且是泛函）的最优化是困难的。我们需要打破思维的枷锁，将整体损失函数L’定义为n元普通函数（n为样本容量），损失函数L定义为2元普通函数（记住！！！这里的损失函数不再是泛函！！！）：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717161734873-1080465986.png" alt="img"></p>
+<p>　　我们不妨使用<a href="https://en.wikipedia.org/wiki/Method_of_steepest_descent" target="_blank" rel="noopener">梯度最速下降法</a>来解决整体损失函数L’最小化的问题，先求整体损失函数的反向梯度：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717161743857-1762234391.png" alt="img"></p>
+<p>　　假设已知样本x的当前预测值为F<a href="x">i-1</a>，下一步将预测值按照反向梯度，依照步长为r[i]，进行更新：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717162353389-352979333.png" alt="img"></p>
+<p>　　步长r[i]不是固定值，而是设计为：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717162221748-1981866230.png" alt="img"></p>
+<h3 id="4-2-3-难题二：无法对测试样本计算反向梯度"><a href="#4-2-3-难题二：无法对测试样本计算反向梯度" class="headerlink" title="4.2.3 难题二：无法对测试样本计算反向梯度"></a>4.2.3 难题二：无法对测试样本计算反向梯度</h3><p>　　问题又来了，由于测试样本中y是未知的，所以无法求反向梯度。这正是Gradient Boosting框架中的基模型闪亮登场的时刻！在第i轮迭代中，我们创建训练集如下：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717162908686-1639692645.png" alt="img"></p>
+<p>　　也就是说，让基模型拟合反向梯度函数，这样我们就可以做到只输入x这一个参数，就可求出其对应的反向梯度了（当然，通过基模型预测出来的反向梯度并不是准确的，这也提供了泛化整体模型的机会）。</p>
+<p>　　综上，假设第i轮迭代中，根据新训练集训练出来的基模型为f<a href="x">i</a>，那么最终的迭代公式为：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717171931342-64219972.png" alt="img"></p>
+<h2 id="4-3-常见的损失函数"><a href="#4-3-常见的损失函数" class="headerlink" title="4.3 常见的损失函数"></a>4.3 常见的损失函数</h2><p>　　ls：最小均方回归中用到的损失函数。在之前我们已经谈到，从拟合残差的角度来说，残差即是该损失函数的反向梯度值（所以又称反向梯度为伪残差）。不同的是，从拟合残差的角度来说，步长是无意义的。该损失函数是sklearn中Gradient Tree Boosting回归模型默认的损失函数。</p>
+<p>　　deviance：<a href="http://www.duzelong.com/wordpress/201507/archives1326/" target="_blank" rel="noopener">逻辑回归</a>中用到的损失函数。熟悉逻辑回归的读者肯定还记得，逻辑回归本质是求极大似然解，其认为样本服从几何分布，样本属于某类别的概率可以logistic函数表达。所以，如果该损失函数可用在多类别的分类问题上，故其是sklearn中Gradient Tree Boosting分类模型默认的损失函数。</p>
+<p>　　exponential：指数损失函数，表达式为：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717164817170-1319916901.png" alt="img"></p>
+<p>　　对该损失函数求反向梯度得：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717165216123-16910201.png" alt="img"></p>
+<p>　　这时，在第i轮迭代中，新训练集如下：</p>
+<p> <img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717165246186-1781792701.png" alt="img"></p>
+<p>　　脑袋里有什么东西浮出水面了吧？让我们看看<a href="http://breezedeus.github.io/2015/07/12/breezedeus-adaboost-exponential-loss.html" target="_blank" rel="noopener">Adaboost算法</a>中，第i轮迭代中第j个样本权值的更新公式：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717170109811-1251363012.png" alt="img"></p>
+<p>　　样本的权值什么时候会用到呢？计算第i轮损失函数的时候会用到：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717170902529-315971230.png" alt="img"></p>
+<p>　　让我们再回过头来，看看使用指数损失函数的Gradient Boosting计算第i轮损失函数：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717171050389-2042221750.png" alt="img"></p>
+<p>　　天呐，两个公式就差了一个对权值的归一项。这并不是巧合，当损失函数是指数损失时，Gradient Boosting相当于二分类的Adaboost算法。是的，指数损失仅能用于二分类的情况。</p>
+<h2 id="4-4-步子太大容易扯着蛋：缩减"><a href="#4-4-步子太大容易扯着蛋：缩减" class="headerlink" title="4.4 步子太大容易扯着蛋：缩减"></a>4.4 步子太大容易扯着蛋：缩减</h2><p>　　缩减也是一个相对显见的概念，也就是说使用Gradient Boosting时，每次学习的步长缩减一点。这有什么好处呢？缩减思想认为每次走一小步，多走几次，更容易逼近真实值。如果步子迈大了，使用最速下降法时，容易迈过最优点。将缩减代入迭代公式：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717172203889-897514111.png" alt="img"></p>
+<p> 　　缩减需要配合基模型数一起使用，当缩减率v降低时，基模型数要配合增大，这样才能提高模型的准确度。</p>
+<h2 id="4-5-初始模型"><a href="#4-5-初始模型" class="headerlink" title="4.5 初始模型"></a>4.5 初始模型</h2><p>　　还有一个不那么起眼的问题，初始模型F<a href="x">0</a>是什么呢？如果没有定义初始模型，整体模型的迭代式一刻都无法进行！所以，我们定义初始模型为：</p>
+<p><img src="https://images2015.cnblogs.com/blog/927391/201607/927391-20160717172644920-1113326686.png" alt="img"></p>
+<p>　　根据上式可知，对于不同的损失函数来说，初始模型也是不一样的。对所有的样本来说，根据初始模型预测出来的值都一样。</p>
+<h2 id="4-5-Gradient-Tree-Boosting"><a href="#4-5-Gradient-Tree-Boosting" class="headerlink" title="4.5 Gradient Tree Boosting"></a>4.5 Gradient Tree Boosting</h2><p>　　终于到了备受欢迎的Gradient Tree Boosting模型了！但是，可讲的却已经不多了。我们已经知道了该模型的基模型是树模型，并且可以通过对特征的随机抽样进一步减少整体模型的方差。我们可以在维基百科的<a href="https://en.wikipedia.org/wiki/Gradient_boosting" target="_blank" rel="noopener">Gradient Boosting</a>词条中找到其伪代码实现。</p>
+<h2 id="4-6-小结"><a href="#4-6-小结" class="headerlink" title="4.6 小结"></a>4.6 小结</h2><p>　　到此，读者应当很清楚Gradient Boosting中的损失函数有什么意义了。要说偏差描述了模型在训练集准确度，则损失函数则是描述该准确度的间接量纲。也就是说，模型采用不同的损失函数，其训练过程会朝着不同的方向进行！</p>
+<hr>
+<h1 id="5-总结"><a href="#5-总结" class="headerlink" title="5 总结"></a>5 总结</h1><p>　　磨刀不误砍柴功，我们花了这么多时间来学习必要的理论，我强调一次：必要的理论！集成学习模型的调参工作的核心就是找到合适的参数，能够使整体模型在训练集上的准确度和防止过拟合的能力达到协调，从而达到在样本总体上的最佳准确度。有了本文的理论知识铺垫，在下篇中，我们将对Random Forest和Gradient Tree Boosting中的每个参数进行详细阐述，同时也有一些小试验证明我们的结论。</p>
+<hr>
+<h1 id="6-参考资料"><a href="#6-参考资料" class="headerlink" title="6 参考资料"></a>6 参考资料</h1><ol>
+<li><a href="http://cs.nju.edu.cn/zhouzh/zhouzh.files/publication/springerEBR09.pdf" target="_blank" rel="noopener">《</a><a href="http://cs.nju.edu.cn/zhouzh/zhouzh.files/publication/springerEBR09.pdf" target="_blank" rel="noopener">Ensemble Learning》</a></li>
+<li><a href="http://scott.fortmann-roe.com/docs/BiasVariance.html" target="_blank" rel="noopener">《Understanding the Bias-Variance Tradeoff》</a></li>
+<li><a href="https://www.zhihu.com/question/26760839" target="_blank" rel="noopener">《为什么说bagging是减少variance，而boosting是减少bias?》</a></li>
+<li><a href="http://blog.csdn.net/w28971023/article/details/8240756" target="_blank" rel="noopener">《GBDT（MART） 迭代决策树入门教程 | 简介》</a></li>
+<li><a href="https://zh.wikipedia.org/wiki/%E6%B3%9B%E5%87%BD" target="_blank" rel="noopener">泛函</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Method_of_steepest_descent" target="_blank" rel="noopener">梯度最速下降法</a></li>
+<li><a href="http://www.duzelong.com/wordpress/201507/archives1326/" target="_blank" rel="noopener">《logistic regression(二分类、多分类)》</a></li>
+<li><a href="http://breezedeus.github.io/2015/07/12/breezedeus-adaboost-exponential-loss.html" target="_blank" rel="noopener">《Adaboost与指数损失》</a></li>
+</ol>
+<h2 id="使用sklearn进行集成学习——实践"><a href="#使用sklearn进行集成学习——实践" class="headerlink" title="使用sklearn进行集成学习——实践"></a><a href="https://www.cnblogs.com/jasonfreak/p/5720137.html" target="_blank" rel="noopener">使用sklearn进行集成学习——实践</a></h2><h1 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h1><p>1 Random Forest和Gradient Tree Boosting参数详解<br>2 如何调参？<br>　　2.1 调参的目标：偏差和方差的协调<br>　　2.2 参数对整体模型性能的影响<br>　　2.3 一个朴实的方案：贪心的坐标下降法<br>　　　　2.3.1 Random Forest调参案例：Digit Recognizer<br>　　　　　　2.3.1.1 调整过程影响类参数<br>　　　　　　2.3.1.2 调整子模型影响类参数<br>　　　　2.3.2 Gradient Tree Boosting调参案例：Hackathon3.x<br>　　　　　　2.3.2.1 调整过程影响类参数<br>　　　　　　2.3.2.2 调整子模型影响类参数<br>　　　　　　2.3.2.3 杀一记回马枪<br>　　2.4 “局部最优解”（温馨提示：看到这里有彩蛋！）<br>　　2.5 类别不均衡的陷阱<br>3 总结<br>4 参考资料</p>
+<hr>
+<h1 id="1-Random-Forest和Gradient-Tree-Boosting参数详解"><a href="#1-Random-Forest和Gradient-Tree-Boosting参数详解" class="headerlink" title="1 Random Forest和Gradient Tree Boosting参数详解"></a>1 Random Forest和Gradient Tree Boosting参数详解</h1><p>　　在sklearn.ensemble库中，我们可以找到Random Forest分类和回归的实现：RandomForestClassifier和RandomForestRegression，Gradient Tree Boosting分类和回归的实现：GradientBoostingClassifier和GradientBoostingRegression。有了这些模型后，立马上手操练起来？少侠请留步！且听我说一说，使用这些模型时常遇到的问题：</p>
+<ul>
+<li>明明模型调教得很好了，可是效果离我的想象总有些偏差？——模型训练的第一步就是要定好目标，往错误的方向走太多也是后退。</li>
+<li>凭直觉调了某个参数，可是居然没有任何作用，有时甚至起到反作用？——定好目标后，接下来就是要确定哪些参数是影响目标的，其对目标是正影响还是负影响，影响的大小。</li>
+<li>感觉训练结束遥遥无期，sklearn只是个在小数据上的玩具？——虽然sklearn并不是基于分布式计算环境而设计的，但我们还是可以通过某些策略提高训练的效率。</li>
+<li>模型开始训练了，但是训练到哪一步了呢？——饱暖思淫欲啊，目标，性能和效率都得了满足后，我们有时还需要有别的追求，例如训练过程的输出，袋外得分计算等等。</li>
+</ul>
+<p>　　通过总结这些常见的问题，我们可以把模型的参数分为4类：目标类、性能类、效率类和附加类。下表详细地展示了4个模型参数的意义：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th><strong>参数</strong></th>
+<th><strong>类型</strong></th>
+<th><strong>RandomForestClassifier</strong></th>
+<th><strong>RandomForestRegressor</strong></th>
+<th><strong>GradientBoostingClassifier</strong></th>
+<th><strong>GradientBoostingRegressor</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>loss</td>
+<td>目标</td>
+<td></td>
+<td></td>
+<td>损失函数● exponential：模型等同AdaBoost★ deviance：和Logistic Regression的损失函数一致</td>
+<td>损失函数● exponential：模型等同AdaBoost★ deviance：和Logistic Regression的损失函数一致</td>
+</tr>
+<tr>
+<td>alpha</td>
+<td>目标</td>
+<td></td>
+<td></td>
+<td>损失函数为huber或quantile的时，alpha为损失函数中的参数</td>
+<td>损失函数为huber或quantile的时，alpha为损失函数中的参数</td>
+</tr>
+<tr>
+<td>class_weight</td>
+<td>目标</td>
+<td>类别的权值</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>n_estimators</td>
+<td>性能</td>
+<td>子模型的数量● int：个数★ 10：默认值</td>
+<td>子模型的数量● int：个数★ 10：默认值</td>
+<td>子模型的数量● int：个数★ 100：默认值</td>
+<td>子模型的数量● int：个数★ 100：默认值</td>
+</tr>
+<tr>
+<td>learning_rate</td>
+<td>性能</td>
+<td></td>
+<td></td>
+<td>学习率（缩减）</td>
+<td>学习率（缩减）</td>
+</tr>
+<tr>
+<td>criterion</td>
+<td>性能</td>
+<td>判断节点是否继续分裂采用的计算方法● entropy★ gini</td>
+<td>判断节点是否继续分裂采用的计算方法★ mse</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>max_features</td>
+<td>性能</td>
+<td>节点分裂时参与判断的最大特征数● int：个数● float：占所有特征的百分比★ auto：所有特征数的开方● sqrt：所有特征数的开方● log2：所有特征数的log2值● None：等于所有特征数</td>
+<td>节点分裂时参与判断的最大特征数● int：个数● float：占所有特征的百分比★ auto：所有特征数的开方● sqrt：所有特征数的开方● log2：所有特征数的log2值● None：等于所有特征数</td>
+<td>节点分裂时参与判断的最大特征数● int：个数● float：占所有特征的百分比● auto：所有特征数的开方● sqrt：所有特征数的开方● log2：所有特征数的log2值★ None：等于所有特征数</td>
+<td>节点分裂时参与判断的最大特征数● int：个数● float：占所有特征的百分比● auto：所有特征数的开方● sqrt：所有特征数的开方● log2：所有特征数的log2值★ None：等于所有特征数</td>
+</tr>
+<tr>
+<td>max_depth</td>
+<td>性能</td>
+<td>最大深度，如果max_leaf_nodes参数指定，则忽略● int：深度★ None：树会生长到所有叶子都分到一个类，或者某节点所代表的样本数已小于min_samples_split</td>
+<td>最大深度，如果max_leaf_nodes参数指定，则忽略● int：深度★ None：树会生长到所有叶子都分到一个类，或者某节点所代表的样本数已小于min_samples_split</td>
+<td>最大深度，如果max_leaf_nodes参数指定，则忽略● int：深度★ 3：默认值</td>
+<td>最大深度，如果max_leaf_nodes参数指定，则忽略● int：深度★ 3：默认值</td>
+</tr>
+<tr>
+<td>min_samples_split</td>
+<td>性能</td>
+<td>分裂所需的最小样本数● int：样本数★ 2：默认值</td>
+<td>分裂所需的最小样本数● int：样本数★ 2：默认值</td>
+<td>分裂所需的最小样本数● int：样本数★ 2：默认值</td>
+<td>分裂所需的最小样本数● int：样本数★ 2：默认值</td>
+</tr>
+<tr>
+<td>min_samples_leaf</td>
+<td>性能</td>
+<td>叶节点最小样本数● int：样本数★ 1：默认值</td>
+<td>叶节点最小样本数● int：样本数★ 1：默认值</td>
+<td>叶节点最小样本数● int：样本数★ 1：默认值</td>
+<td>叶节点最小样本数● int：样本数★ 1：默认值</td>
+</tr>
+<tr>
+<td>min_weight_fraction_leaf</td>
+<td>性能</td>
+<td>叶节点最小样本权重总值● float：权重总值★ 0：默认值</td>
+<td>叶节点最小样本权重总值● float：权重总值★ 0：默认值</td>
+<td>叶节点最小样本权重总值● float：权重总值★ 0：默认值</td>
+<td>叶节点最小样本权重总值● float：权重总值★ 0：默认值</td>
+</tr>
+<tr>
+<td>max_leaf_nodes</td>
+<td>性能</td>
+<td>最大叶节点数● int：个数★ None：不限制叶节点数</td>
+<td>最大叶节点数● int：个数★ None：不限制叶节点数</td>
+<td>最大叶节点数● int：个数★ None：不限制叶节点数</td>
+<td>最大叶节点数● int：个数★ None：不限制叶节点数</td>
+</tr>
+<tr>
+<td>bootstrap</td>
+<td>性能</td>
+<td>是否bootstrap对样本抽样● False：子模型的样本一致，子模型间强相关★ True：默认值</td>
+<td>是否bootstrap对样本抽样● False：子模型的样本一致，子模型间强相关★ True：默认值</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>subsample</td>
+<td>性能</td>
+<td></td>
+<td></td>
+<td>子采样率● float：采样率★ 1.0：默认值</td>
+<td>子采样率● float：采样率★ 1.0：默认值</td>
+</tr>
+<tr>
+<td>init</td>
+<td>性能</td>
+<td></td>
+<td></td>
+<td>初始子模型</td>
+<td>初始子模型</td>
+</tr>
+<tr>
+<td>n_jobs</td>
+<td>效率</td>
+<td>并行数● int：个数● -1：跟CPU核数一致★ 1:默认值</td>
+<td>并行数● int：个数● -1：跟CPU核数一致★ 1:默认值</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>warm_start</td>
+<td>效率</td>
+<td>是否热启动，如果是，则下一次训练是以追加树的形式进行● bool：热启动★ False：默认值</td>
+<td>是否热启动，如果是，则下一次训练是以追加树的形式进行● bool：热启动★ False：默认值</td>
+<td>是否热启动，如果是，则下一次训练是以追加树的形式进行● bool：热启动★ False：默认值</td>
+<td>是否热启动，如果是，则下一次训练是以追加树的形式进行● bool：热启动★ False：默认值</td>
+</tr>
+<tr>
+<td>presort</td>
+<td>效率</td>
+<td></td>
+<td></td>
+<td>是否预排序,预排序可以加速查找最佳分裂点，对于稀疏数据不管用● Bool★ auto：非稀疏数据则预排序，若稀疏数据则不预排序</td>
+<td>是否预排序,预排序可以加速查找最佳分裂点，对于稀疏数据不管用● Bool★ auto：非稀疏数据则预排序，若稀疏数据则不预排序</td>
+</tr>
+<tr>
+<td>oob_score</td>
+<td>附加</td>
+<td>是否计算<a href="http://scikit-learn.org/stable/auto_examples/ensemble/plot_ensemble_oob.html" target="_blank" rel="noopener">袋外得分</a>★ False：默认值</td>
+<td>是否计算<a href="http://scikit-learn.org/stable/auto_examples/ensemble/plot_ensemble_oob.html" target="_blank" rel="noopener">袋外得分</a>★ False：默认值</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>random_state</td>
+<td>附加</td>
+<td>随机器对象</td>
+<td>随机器对象</td>
+<td>随机器对象</td>
+<td>随机器对象</td>
+</tr>
+<tr>
+<td>verbose</td>
+<td>附加</td>
+<td>日志冗长度● int：冗长度★ 0：不输出训练过程● 1：偶尔输出● &gt;1：对每个子模型都输出</td>
+<td>日志冗长度● int：冗长度★ 0：不输出训练过程● 1：偶尔输出● &gt;1：对每个子模型都输出</td>
+<td>日志冗长度● int：冗长度★ 0：不输出训练过程● 1：偶尔输出● &gt;1：对每个子模型都输出</td>
+<td>日志冗长度● int：冗长度★ 0：不输出训练过程● 1：偶尔输出● &gt;1：对每个子模型都输出</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><em># ★：默认值</em></p>
+<p>　　不难发现，基于bagging的Random Forest模型和基于boosting的Gradient Tree Boosting模型有不少共同的参数，然而某些参数的默认值又相差甚远。在<a href="http://www.cnblogs.com/jasonfreak/p/5657196.html" target="_blank" rel="noopener">《使用sklearn进行集成学习——理论》</a>一文中，我们对bagging和boosting两种集成学习技术有了初步的了解。Random Forest的子模型都拥有较低的偏差，整体模型的训练过程旨在降低方差，故其需要较少的子模型（n_estimators默认值为10）且子模型不为弱模型（max_depth的默认值为None），同时，降低子模型间的相关度可以起到减少整体模型的方差的效果（max_features的默认值为auto）。另一方面，Gradient Tree Boosting的子模型都拥有较低的方差，整体模型的训练过程旨在降低偏差，故其需要较多的子模型（n_estimators默认值为100）且子模型为弱模型（max_depth的默认值为3），但是降低子模型间的相关度不能显著减少整体模型的方差（max_features的默认值为None）。</p>
+<hr>
+<h1 id="2-如何调参？"><a href="#2-如何调参？" class="headerlink" title="2 如何调参？"></a>2 如何调参？</h1><p>　　聪明的读者应当要发问了：”博主，就算你列出来每个参数的意义，然并卵啊！我还是不知道无从下手啊！”</p>
+<p>　　参数分类的目的在于缩小调参的范围，首先我们要明确训练的目标，把目标类的参数定下来。接下来，我们需要根据数据集的大小，考虑是否采用一些提高训练效率的策略，否则一次训练就三天三夜，法国人孩子都生出来了。然后，我们终于进入到了重中之重的环节：调整那些影响整体模型性能的参数。</p>
+<h2 id="2-1-调参的目标：偏差和方差的协调"><a href="#2-1-调参的目标：偏差和方差的协调" class="headerlink" title="2.1 调参的目标：偏差和方差的协调"></a>2.1 调参的目标：偏差和方差的协调</h2><p>　　同样在<a href="http://www.cnblogs.com/jasonfreak/p/5657196.html" target="_blank" rel="noopener">《使用sklearn进行集成学习——理论》</a>中，我们已讨论过偏差和方差是怎样影响着模型的性能——准确度。调参的目标就是为了达到整体模型的偏差和方差的大和谐！进一步，这些参数又可分为两类：过程影响类及子模型影响类。在子模型不变的前提下，某些参数可以通过改变训练的过程，从而影响模型的性能，诸如：“子模型数”（n_estimators）、“学习率”（learning_rate）等。另外，我们还可以通过改变子模型性能来影响整体模型的性能，诸如：“最大树深度”（max_depth）、“分裂条件”（criterion）等。正由于bagging的训练过程旨在降低方差，而boosting的训练过程旨在降低偏差，过程影响类的参数能够引起整体模型性能的大幅度变化。一般来说，在此前提下，我们继续微调子模型影响类的参数，从而进一步提高模型的性能。</p>
+<h2 id="2-2-参数对整体模型性能的影响"><a href="#2-2-参数对整体模型性能的影响" class="headerlink" title="2.2 参数对整体模型性能的影响"></a>2.2 参数对整体模型性能的影响</h2><p>　　假设模型是一个多元函数F，其输出值为模型的准确度。我们可以固定其他参数，从而对某个参数对整体模型性能的影响进行分析：是正影响还是负影响，影响的单调性？</p>
+<p>　　对Random Forest来说，增加“子模型数”（n_estimators）可以明显降低整体模型的方差，且不会对子模型的偏差和方差有任何影响。模型的准确度会随着“子模型数”的增加而提高。由于减少的是整体模型方差公式的第二项，故准确度的提高有一个上限。在不同的场景下，“分裂条件”（criterion）对模型的准确度的影响也不一样，该参数需要在实际运用时灵活调整。调整“最大叶节点数”（max_leaf_nodes）以及“最大树深度”（max_depth）之一，可以粗粒度地调整树的结构：叶节点越多或者树越深，意味着子模型的偏差越低，方差越高；同时，调整“分裂所需最小样本数”（min_samples_split）、“叶节点最小样本数”（min_samples_leaf）及“叶节点最小权重总值”（min_weight_fraction_leaf），可以更细粒度地调整树的结构：分裂所需样本数越少或者叶节点所需样本越少，也意味着子模型越复杂。一般来说，我们总采用bootstrap对样本进行子采样来降低子模型之间的关联度，从而降低整体模型的方差。适当地减少“分裂时考虑的最大特征数”（max_features），给子模型注入了另外的随机性，同样也达到了降低子模型之间关联度的效果。但是一味地降低该参数也是不行的，因为分裂时可选特征变少，模型的偏差会越来越大。在下图中，我们可以看到这些参数对Random Forest整体模型性能的影响：</p>
+<p><img src="http://images2015.cnblogs.com/blog/927391/201607/927391-20160731184710919-487730249.jpg" alt="img"></p>
+<p>　　对Gradient Tree Boosting来说，“子模型数”（n_estimators）和“学习率”（learning_rate）需要联合调整才能尽可能地提高模型的准确度：想象一下，A方案是走4步，每步走3米，B方案是走5步，每步走2米，哪个方案可以更接近10米远的终点？同理，子模型越复杂，对应整体模型偏差低，方差高，故“最大叶节点数”（max_leaf_nodes）、“最大树深度”（max_depth）等控制子模型结构的参数是与Random Forest一致的。类似“分裂时考虑的最大特征数”（max_features），降低“子采样率”（subsample），也会造成子模型间的关联度降低，整体模型的方差减小，但是当子采样率低到一定程度时，子模型的偏差增大，将引起整体模型的准确度降低。还记得“初始模型”（init）是什么吗？不同的损失函数有不一样的初始模型定义，通常，初始模型是一个更加弱的模型（以“平均”情况来预测），虽说支持自定义，大多数情况下保持默认即可。在下图中，我们可以看到这些参数对Gradient Tree Boosting整体模型性能的影响：</p>
+<p><img src="http://images2015.cnblogs.com/blog/927391/201607/927391-20160731184748841-69767136.jpg" alt="img"></p>
+<h2 id="2-3-一个朴实的方案：贪心的坐标下降法"><a href="#2-3-一个朴实的方案：贪心的坐标下降法" class="headerlink" title="2.3 一个朴实的方案：贪心的坐标下降法"></a>2.3 一个朴实的方案：贪心的坐标下降法</h2><p>　　到此为止，我们终于知道需要调整哪些参数，对于单个参数，我们也知道怎么调整才能提升性能。然而，表示模型的函数F并不是一元函数，这些参数需要共同调整才能得到全局最优解。也就是说，把这些参数丢给调参算法（诸如Grid Search）咯？对于小数据集，我们还能这么任性，但是参数组合爆炸，在大数据集上，或许我的子子孙孙能够看到训练结果吧。实际上网格搜索也不一定能得到全局最优解，而另一些研究者从解优化问题的角度尝试解决调参问题。</p>
+<p>　　<a href="https://zh.wikipedia.org/wiki/%E5%9D%90%E6%A0%87%E4%B8%8B%E9%99%8D%E6%B3%95" target="_blank" rel="noopener">坐标下降法</a>是一类优化算法，其最大的优势在于不用计算待优化的目标函数的梯度。我们最容易想到一种特别朴实的类似于坐标下降法的方法，与坐标下降法不同的是，其不是循环使用各个参数进行调整，而是贪心地选取了对整体模型性能影响最大的参数。参数对整体模型性能的影响力是动态变化的，故每一轮坐标选取的过程中，这种方法在对每个坐标的下降方向进行一次直线搜索（line search）。首先，找到那些能够提升整体模型性能的参数，其次确保提升是单调或近似单调的。这意味着，我们筛选出来的参数是对整体模型性能有正影响的，且这种影响不是偶然性的，要知道，训练过程的随机性也会导致整体模型性能的细微区别，而这种区别是不具有单调性的。最后，在这些筛选出来的参数中，选取影响最大的参数进行调整即可。</p>
+<p>　　无法对整体模型性能进行量化，也就谈不上去比较参数影响整体模型性能的程度。是的，我们还没有一个准确的方法来量化整体模型性能，只能通过交叉验证来近似计算整体模型性能。然而交叉验证也存在随机性，假设我们以验证集上的平均准确度作为整体模型的准确度，我们还得关心在各个验证集上准确度的变异系数，如果变异系数过大，则平均值作为整体模型的准确度也是不合适的。在接下来的案例分析中，我们所谈及的整体模型性能均是指平均准确度，请各位留心。</p>
+<h3 id="2-3-1-Random-Forest调参案例：Digit-Recognizer"><a href="#2-3-1-Random-Forest调参案例：Digit-Recognizer" class="headerlink" title="2.3.1 Random Forest调参案例：Digit Recognizer"></a>2.3.1 Random Forest调参案例：Digit Recognizer</h3><p>　　在这里，我们选取Kaggle上101教学赛中的<a href="https://www.kaggle.com/c/digit-recognizer" target="_blank" rel="noopener">Digit Recognizer</a>作为案例来演示对RandomForestClassifier调参的过程。当然，我们也不要傻乎乎地手工去设定不同的参数，然后训练模型。借助sklearn.grid_search库中的GridSearchCV类，不仅可以自动化调参，同时还可以对每一种参数组合进行交叉验证计算平均准确度。</p>
+<h4 id="2-3-1-1-调整过程影响类参数"><a href="#2-3-1-1-调整过程影响类参数" class="headerlink" title="2.3.1.1 调整过程影响类参数"></a>2.3.1.1 调整过程影响类参数</h4><p>　　首先，我们需要对过程影响类参数进行调整，而Random Forest的过程影响类参数只有“子模型数”（n_estimators）。“子模型数”的默认值为10，在此基础上，我们以10为单位，考察取值范围在1至201的调参情况：</p>
+<p><img src="http://images2015.cnblogs.com/blog/927391/201607/927391-20160730162932106-838038825.png" alt="img"></p>
+<p><em># 左图为模型在验证集上的平均准确度，右图为准确度的变异系数。横轴为参数的取值。</em></p>
+<p>　　通过上图我们可以看到，随着“子模型数”的增加，整体模型的方差减少，其防止过拟合的能力增强，故整体模型的准确度提高。当“子模型数”增加到40以上时，准确度的提升逐渐不明显。考虑到训练的效率，最终我们选择“子模型数”为200。此时，在Kaggle上提交结果，得分为：0.96500，很凑合。</p>
+<h4 id="2-3-1-2-调整子模型影响类参数"><a href="#2-3-1-2-调整子模型影响类参数" class="headerlink" title="2.3.1.2 调整子模型影响类参数"></a>2.3.1.2 调整子模型影响类参数</h4><p>　　在设定“子模型数”（n_estimators）为200的前提下，我们依次对子模型影响类的参数对整体模型性能的影响力进行分析。</p>
+<p>　　对“分裂条件”（criterion）分别取值gini和entropy，得到调参结果如下：</p>
+<p><img src="http://images2015.cnblogs.com/blog/927391/201607/927391-20160730165700763-1666232416.png" alt="img"></p>
+<p>　　显见，在此问题中，“分裂条件”保持默认值gini更加合适。</p>
+<p>　　对“分裂时参与判断的最大特征数”（max_feature）以1为单位，设定取值范围为28至47，得到调参结果如下：</p>
+<p><img src="http://images2015.cnblogs.com/blog/927391/201607/927391-20160730170223903-942174073.png" alt="img"></p>
+<p>　　</p>
+<p>　　“分裂时参与判断的最大特征数”的默认值auto，即总特征数（sqrt(784)=28）的开方。通过提升该参数，整体模型的准确度得到了提升。可见，该参数的默认值过小，导致了子模型的偏差过大，从而整体模型的偏差过大。同时，我们还注意到，该参数对整体模型性能的影响是近似单调的：从28到38，模型的准确度逐步抖动提升。所以，我们可考虑将该参数纳入下一步的调参工作。</p>
+<p>　　对“最大深度”（max_depth）以10为单位，设定取值范围为10到100，得到调参结果如下：</p>
+<p><img src="http://images2015.cnblogs.com/blog/927391/201607/927391-20160730171248153-89195782.png" alt="img"></p>
+<p>　　随着树的深度加深，子模型的偏差减少，整体模型的准确度得到提升。从理论上来说，子模型训练的后期，随着方差增大，子模型的准确度稍微降低，从而影响整体模型的准确度降低。看图中，似乎取值范围从40到60的情况可以印证这一观点。不妨以1为单位，设定取值范围为40到59，更加细致地分析：</p>
+<p><img src="http://images2015.cnblogs.com/blog/927391/201607/927391-20160730171849434-652571651.png" alt="img"></p>
+<p>　　有点傻眼了，怎么跟预想的不太一样？为什么模型准确度的变化在40到59之间没有鲜明的“规律”了？要分析这个问题，我们得先思考一下，少一层子节点对子模型意味着什么？若少的那一层给原子模型带来的是方差增大，则新子模型会准确度提高；若少的那一层给原子模型带来的是偏差减小，则新子模型会准确度降低。所以，细粒度的层次变化既可能使整体模型的准确度提升，也可能使整体模型的准确度降低。从而也说明了，该参数更适合进行粗粒度的调整。在训练的现阶段，“抖动”现象的发生说明，此时对该参数的调整已不太合适了。</p>
+<p>　　对“分裂所需的最小样本数”（min_samples_split）以1为单位，设定取值范围为2到11，得到调参的结果：</p>
+<p><img src="http://images2015.cnblogs.com/blog/927391/201607/927391-20160730173505919-181940029.png" alt="img"></p>
+<p>　　我们看到，随着分裂所需的最小样本数的增加，子模型的结构变得越来越简单，理论上来说，首先应当因方差减小导致整体模型的准确度提升。但是，在训练的现阶段，子模型的偏差增大的幅度比方差减小的幅度更大，所以整体模型的准确度持续下降。该参数的默认值为2，调参后，最优解保持2不变。</p>
+<p>　　对“叶节点最小样本数”（min_samples_leaf）以1为单位，设定取值范围为1到10，得到调参结果如下：</p>
+<p><img src="http://images2015.cnblogs.com/blog/927391/201607/927391-20160730174140309-373143237.png" alt="img"></p>
+<p>　　同“分裂所需的最小样本数”，该参数也在调参后，保持最优解1不变。</p>
+<p>　　对“最大叶节点数”（max_leaf_nodes）以100为单位，设定取值范围为2500到3400，得到调参结果如下：</p>
+<p><img src="http://images2015.cnblogs.com/blog/927391/201607/927391-20160730174432372-770058569.png" alt="img"></p>
+<p>　　类似于“最大深度”，该参数的增大会带来模型准确的提升，可是由于后期“不规律”的抖动，我们暂时不进行处理。</p>
+<p>　　通过对以上参数的调参情况，我们可以总结如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值准确度</th>
+<th>调整后最佳准确度</th>
+<th>提升幅度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>分裂条件（criterion）</td>
+<td>0.964023809524</td>
+<td>0.964023809524</td>
+<td>0</td>
+</tr>
+<tr>
+<td>分裂时参与判断的最大特征数（max_feature）</td>
+<td>0.963380952381</td>
+<td>0.964428571429</td>
+<td>0.00104762</td>
+</tr>
+<tr>
+<td>最大深度（max_depth）</td>
+<td></td>
+<td></td>
+<td>抖动</td>
+</tr>
+<tr>
+<td>分裂所需的最小样本数（min_samples_split）</td>
+<td>0.963976190476</td>
+<td>0.963976190476</td>
+<td>0</td>
+</tr>
+<tr>
+<td>叶节点最小样本数（min_samples_leaf）</td>
+<td>0.963595238095</td>
+<td>0.963595238095</td>
+<td>0</td>
+</tr>
+<tr>
+<td>最大叶节点数（max_leaf_nodes）</td>
+<td></td>
+<td></td>
+<td>抖动</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>　　接下来，我们固定分裂时参与判断的最大特征（max_features）为38，在Kaggle上提交一次结果：0.96671，比上一次调参好了0.00171，基本与我们预期的提升效果一致。</p>
+<p>　　还需要继续下一轮坐标下降式调参吗？一般来说没有太大的必要，在本轮中出现了两个发生抖动现象的参数，而其他参数的调整均没有提升整体模型的性能。还是得老调重弹：数据和特征决定了机器学习的上限，而模型和算法只是逼近这个上限而已。在DR竞赛中，与其期待通过对RandomForestClassifier调参来进一步提升整体模型的性能，不如挖掘出更有价值的特征，或者使用自带特征挖掘技能的模型（正如此题，图分类的问题更适合用神经网络来学习）。但是，在这里，我们还是可以自信地说，通过贪心的坐标下降法，比那些用网格搜索法穷举所有参数组合，自以为得到最优解的朋友们更进了一步。</p>
+<h3 id="2-3-2-Gradient-Tree-Boosting调参案例：Hackathon3-x"><a href="#2-3-2-Gradient-Tree-Boosting调参案例：Hackathon3-x" class="headerlink" title="2.3.2 Gradient Tree Boosting调参案例：Hackathon3.x"></a>2.3.2 Gradient Tree Boosting调参案例：Hackathon3.x</h3><p>　　在这里，我们选取Analytics Vidhya上的<a href="https://datahack.analyticsvidhya.com/contest/data-hackathon-3x/" target="_blank" rel="noopener">Hackathon3.x</a>作为案例来演示对GradientBoostingClassifier调参的过程。</p>
+<h4 id="2-3-2-1-调整过程影响类参数"><a href="#2-3-2-1-调整过程影响类参数" class="headerlink" title="2.3.2.1 调整过程影响类参数"></a>2.3.2.1 调整过程影响类参数</h4><p>　　GradientBoostingClassifier的过程影响类参数有“子模型数”（n_estimators）和“学习率”（learning_rate），我们可以使用GridSearchCV找到关于这两个参数的最优解。慢着！这里留了一个很大的陷阱：“子模型数”和“学习率”带来的性能提升是不均衡的，在前期会比较高，在后期会比较低，如果一开始我们将这两个参数调成最优，这样很容易陷入一个“局部最优解”。在目标函数都不确定的情况下（如是否凸？），谈局部最优解就是耍流氓，本文中“局部最优解”指的是调整各参数都无明显性能提升的一种状态，所以打了引号。下图中展示了这个两个参数的调参结果：</p>
+<p><img src="http://images2015.cnblogs.com/blog/927391/201607/927391-20160731161516950-670327363.png" alt="img"></p>
+<p><em># 图中颜色越深表示整体模型的性能越高</em></p>
+<p>　　在此，我们先直觉地选择“子模型数”为60，“学习率”为0.1，此时的整体模型性能（平均准确度为0.8253）不是最好，但是也不差，良好水准。</p>
+<h4 id="2-3-2-2-调整子模型影响类参数"><a href="#2-3-2-2-调整子模型影响类参数" class="headerlink" title="2.3.2.2 调整子模型影响类参数"></a>2.3.2.2 调整子模型影响类参数</h4><p>　　对子模型影响类参数的调整与Random Forest类似。最终我们对参数的调整如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>子模型数n_estimators</th>
+<th>学习率learning_rate</th>
+<th>叶节点最小样本数min_samples_leaf</th>
+<th>最大深度max_depth</th>
+<th>子采样率subsample</th>
+<th>分裂时参与判断的最大特征数max_feature</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>60</td>
+<td>0.1</td>
+<td>12</td>
+<td>4</td>
+<td>0.77</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>　　到此，整体模型性能为0.8313，与workbench（0.8253）相比，提升了约0.006。</p>
+<h4 id="2-3-2-3-杀一记回马枪"><a href="#2-3-2-3-杀一记回马枪" class="headerlink" title="2.3.2.3 杀一记回马枪"></a>2.3.2.3 杀一记回马枪</h4><p>　　还记得一开始我们对“子模型数”（n_estimators）和“学习率”（learning_rate）手下留情了吗？现在我们可以回过头来，调整这两个参数，调整的方法为成倍地放大“子模型数”，对应成倍地缩小“学习率”（learning_rate）。通过该方法，本例中整体模型性能又提升了约0.002。</p>
+<h2 id="2-4-“局部最优解”"><a href="#2-4-“局部最优解”" class="headerlink" title="2.4 “局部最优解”"></a>2.4 “局部最优解”</h2><p>　　目前来说，在调参工作中，广泛使用的仍是一些经验法则。<a href="https://www.analyticsvidhya.com/blog/author/aarshay/" target="_blank" rel="noopener">Aarshay Jain</a>对Gradient Tree Boosting总结了一套<a href="https://www.analyticsvidhya.com/blog/2016/02/complete-guide-parameter-tuning-gradient-boosting-gbm-python/" target="_blank" rel="noopener">调参方法</a>，其核心思想在于：对过程影响类参数进行调整，毕竟它们对整体模型性能的影响最大，然后依据经验，在其他参数中选择对整体模型性能影响最大的参数，进行下一步调参。这种方法的关键是依照对整体模型性能的影响力给参数排序，然后按照该顺序对的参数进行调整。如何衡量参数对整体模型性能的影响力呢？基于经验，Aarshay提出他的见解：“最大叶节点数”（max_leaf_nodes）和“最大树深度”（max_depth）对整体模型性能的影响大于“分裂所需最小样本数”（min_samples_split）、“叶节点最小样本数”（min_samples_leaf）及“叶节点最小权重总值”（min_weight_fraction_leaf），而“分裂时考虑的最大特征数”（max_features）的影响力最小。</p>
+<p>　　Aarshay提出的方法和贪心的坐标下降法最大的区别在于前者在调参之前就依照对整体模型性能的影响力给参数排序，而后者是一种“很自然”的贪心过程。还记得2.3.2.1小节中我们讨论过“子模型数”（n_estimators）和“学习率”（learning_rate）的调参问题吗？同理，贪心的坐标下降法容易陷入“局部最优解”。对Random Forest调参时会稍微好一点，因为当“子模型数”调到最佳状态时，有时就只剩下诸如““分裂时参与判断的最大特征数”等Aarshay认为影响力最小的参数可调了。但是，对Gradient Tree Boosting调参时，遇到“局部最优解”的可能性就大得多。</p>
+<p>　　Aarshay同样对Hackathon3.x进行了调参试验，由于特征提取方式的差异，参数赋值相同的情况下，本文的整体模型性能仍与其相差0.007左右（唉，不得不再说一次，特征工程真的很重要）。首先，在过程影响类参数的选择上，Aarshay的方法与贪心的坐标下降法均选择了“子模型数”为60，“学习率”为0.1。接下来，Aarshay按照其定义的参数对整体模型性能的影响力，按序依次对参数进行调整。当子模型影响类参数确定完成后，Aarshay的方法提升了约0.008的整体模型性能，略胜于贪心的坐标下降法的0.006。但是，回过头来继续调试“子模型数”和“学习率”之后，Aarshay的方法又提升了约0.01的整体模型性能，远胜于贪心的坐标下降法的0.002。</p>
+<p>　　诶！诶！诶！少侠请住手！你说我为什么要在这篇博文中介绍这种“无用”的贪心的坐标下降法？首先，这种方法很容易凭直觉就想到。人们往往花了很多的时间去搞懂模型的参数是什么含义，对整体模型性能有什么影响，搞懂这些已经不易了，所以接下来很多人选择了最直观的贪心的坐标下降法。通过一个实例，我们更容易记住这种方法的局限性。除了作为反面教材，贪心的坐标下降法就没有意义了吗？不难看到，Aarshay的方法仍有改进的地方，在依次对参数进行调整时，还是需要像贪心的坐标下降法中一样对参数的“动态”影响力进行分析一下，如果这种影响力是“抖动”的，可有可无的，那么我们就不需要对该参数进行调整。</p>
+<h2 id="2-5-类别不均衡的陷阱"><a href="#2-5-类别不均衡的陷阱" class="headerlink" title="2.5 类别不均衡的陷阱"></a>2.5 类别不均衡的陷阱</h2><p>　　哈哈哈，这篇博文再次留了个陷阱，此段文字并不是跟全文一起发布！有人要说了，按照我的描述，Aarshay的调参试验不可再现啊！其实，我故意没说Aarshay的另一个关键处理：调参前的参数初始值。因为Hackathon3.x是一个类别不均衡的问题，所以如果直接先调试“最大深度”（max_depth），会发现其会保持默认值3作为最优解，而后面的调参中，“分裂所需最小样本数”（min_samples_split）、“叶节点最小样本数”（min_samples_leaf）再怎么调都没有很大作用。这是因为，正例样本远远小于反例，所以在低深度时，子模型就可能已经对正例过拟合了。所以，在类别不均衡时，只有先确定“叶节点最小样本数”（min_samples_leaf），再确定“分裂所需最小样本数”（min_samples_split），才能确定“最大深度”。而Aarshay设定的初始值，则以经验和直觉避开了这个险恶的陷阱。</p>
+<p>　　如果实在觉得经验和直觉不靠谱，我还尝试了一种策略：首先，我们需要初步地调一次“子采样率”（subsample）和“分裂时考虑的最大特征数”（max_features），在此基础上依次调好“叶节点最小样本数”（min_samples_leaf）、“分裂所需最小样本数”（min_samples_split）以及“最大深度”（max_depth）。然后，按照Aarshay的方法，按影响力从大到小再调一次。通过这种方法，整体模型性能在未等比缩放过程影响类参数前，已达到约0.8352左右，比workbench相比，提升了约0.1，与Aarshay的调参试验差不多，甚至更好一点点。</p>
+<p>　　回过头来，我们再次看看贪心的坐标下降法是怎么掉入这个陷阱的。在确定过程影响类参数后，贪心的坐标下降法按照“动态”的对整体模型性能的影响力大小，选择了“叶节点最小样本数”进行调参。这一步看似和上一段的描述是一致的，但是，一般来说，含随机性（“子采样率”和“分裂时考虑的最大特征数”先初步调过）的“叶节点最小样本数”要大于无随机性。举个例来说，因为增加了随机性，导致了子采样后，某子样本中只有一个正例，且其可以通过唯一的特征将其分类，但是这个特征并不是所有正例的共性，所以此时就要求“叶节点最小样本数”需要比无随机性时大。对贪心的坐标下降来说，“子采样率”和“分裂时考虑的最大特征数”在当下，对整体模型性能的影响比不上“叶节点最小样本数”，所以栽了个大跟头。</p>
+<hr>
+<h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3 总结"></a>3 总结</h2><p>　　在这篇博文中，我一反常态，花了大部分时间去试验和说明一个有瑕疵的方案。数据挖掘的工作中的方法和技巧，有很大一部分暂时还未被严谨地证明，所以有很大部分人，特别是刚入门的小青年们（也包括曾经的我），误以为其是一门玄学。实际上，尽管没有被严谨地证明，我们还是可以通过试验、分析，特别是与现有方法进行对比，得到一个近似的合理性论证。</p>
+<p>　　另外，小伙伴们你们有什么独到的调参方法吗？请不要有丝毫吝啬，狠狠地将你们的独门绝技全释放在我身上吧，请大胆留言，残酷批评！</p>
+<hr>
+<h2 id="4-参考资料"><a href="#4-参考资料" class="headerlink" title="4 参考资料"></a>4 参考资料</h2><ol>
+<li><a href="http://www.cnblogs.com/jasonfreak/p/5657196.html" target="_blank" rel="noopener">《使用sklearn进行集成学习——理论》</a></li>
+<li><a href="https://www.analyticsvidhya.com/blog/2016/02/complete-guide-parameter-tuning-gradient-boosting-gbm-python/" target="_blank" rel="noopener">Complete Guide to Parameter Tuning in Gradient Boosting (GBM) in Python</a></li>
+<li><a href="https://zh.wikipedia.org/wiki/%E5%9D%90%E6%A0%87%E4%B8%8B%E9%99%8D%E6%B3%95" target="_blank" rel="noopener">坐标下降法</a></li>
+<li><a href="https://www.kaggle.com/c/digit-recognizer" target="_blank" rel="noopener">Digit Recognizer</a></li>
+<li><a href="https://datahack.analyticsvidhya.com/contest/data-hackathon-3x/" target="_blank" rel="noopener">Hackathon3.x</a></li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习和深度学习算法理论/CNN/CNN/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/07/12/机器学习和深度学习算法理论/CNN/CNN/" class="post-title-link" itemprop="url">CNN</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+
+              
+                
+              
+
+              <time title="Erstellt: 2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Bearbeitet am</span>
+                
+                <time title="Geändert am: 2019-06-16 09:28:37" itemprop="dateModified" datetime="2019-06-16T09:28:37+08:00">2019-06-16</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">in</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/深度学习/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="卷积核"><a href="#卷积核" class="headerlink" title="卷积核"></a>卷积核</h1><p>也称为滤波器。</p>
+<p>权重共享：卷积核的权重（矩阵的值）对于不同位置的所有输入都是相同的。</p>
+<h2 id="卷积操作的意义"><a href="#卷积操作的意义" class="headerlink" title="卷积操作的意义"></a>卷积操作的意义</h2><p>例如，有整体边缘滤波器Ke，横向边缘滤波器Kh，纵向边缘滤波器Kv。</p>
+<script type="math/tex; mode=display">
+K_e=\begin{bmatrix}
+0 & -4 & 0\\ 
+-4 & 16 & -4\\ 
+0 & -4 & 0
+\end{bmatrix}\ \ K_h=\begin{bmatrix}
+1 & 2 & 1\\ 
+0 & 0 & 0\\ 
+-1 & -2 & -1
+\end{bmatrix}\ \ K_v=\begin{bmatrix}
+1 & 0 & -1\\ 
+2 & 0 & -2\\ 
+1 & 0 & -1
+\end{bmatrix}</script><p>若某像素位于物体边缘，则周边像素与该像素会有明显差异，用Ke可以放大边缘和周边的差异，起到边缘检测的作用。同理，Kh、Kv可以保留横向、纵向的边缘信息。</p>
+<h1 id="池化层"><a href="#池化层" class="headerlink" title="池化层"></a>池化层</h1><p>也叫汇合层。通常操作有平均值池化（average-pooling）和最大值汇合（max-pooling）。与卷积核操作不同，池化层不包含需要学习的参数。仅指定汇合类型，核大小（kernel size）和步长（stride）。</p>
+<p>汇合的结果相对输入降小了，是一种降采样（down-sampling）操作。也可以看成是一个用p范数（p-norm）作为非线性映射的卷积操作。当p趋于正无穷时就是最大值汇合。</p>
+<p>汇合层的引入是仿照人的视觉系统对视觉输入对象进行降维和抽象。作用有：</p>
+<p>1）特征不变性（feature invariant）。使模型更关注是否存在某些特征而不是特征具体的位置。</p>
+<p>2）特征降维。</p>
+<p>3）一定程度上防止过拟合。</p>
+<h1 id="全连接层"><a href="#全连接层" class="headerlink" title="全连接层"></a>全连接层</h1><p>fully connected layers</p>
+<p>参考：</p>
+<p>【1】解析卷积神经网络.pdf</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/用scikit-learn生成测试数据集/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/07/12/机器学习/用scikit-learn生成测试数据集/" class="post-title-link" itemprop="url">用scikit-learn生成测试数据集</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+
+              
+                
+              
+
+              <time title="Erstellt: 2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Bearbeitet am</span>
+                
+                <time title="Geändert am: 2018-07-04 23:22:59" itemprop="dateModified" datetime="2018-07-04T23:22:59+08:00">2018-07-04</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">in</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>转自<a href="https://www.jiqizhixin.com/articles/2018-02-05-2" target="_blank" rel="noopener">https://www.jiqizhixin.com/articles/2018-02-05-2</a></p>
+<h1 id="分类测试问题"><a href="#分类测试问题" class="headerlink" title="分类测试问题"></a>分类测试问题</h1><p>将看三个分类问题：blobs、moons 和 circles。</p>
+<h2 id="线性分类"><a href="#线性分类" class="headerlink" title="线性分类"></a>线性分类</h2><p> make_blobs() 函数可被用于生成具有高斯分布的 blobs 点。你可以控制生成 blobs 的数量，生成样本的数量以及一系列其他属性。考虑到 blobs 的线性可分性质，该问题也适用于线性分类问题。</p>
+<p>下面的例子是一个多类分类预测问题，它生成了一个具有三个 blobs 的 2D 样本数据集。每个数据有两个输入和 0、1 或 2 个类的值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> sklearn.datasets.samples_generator <span class="keyword">import</span> make_blobs</div><div class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</div><div class="line"><span class="keyword">from</span> pandas <span class="keyword">import</span> DataFrame</div><div class="line"><span class="comment"># generate 2d classification dataset</span></div><div class="line">X, y = make_blobs(n_samples=<span class="number">100</span>, centers=<span class="number">3</span>, n_features=<span class="number">2</span>)</div><div class="line"><span class="comment"># dict中定义三个key，分别是坐标和label，再通过dict创建DataFrame</span></div><div class="line">df = DataFrame(dict(x=X[:,<span class="number">0</span>], y=X[:,<span class="number">1</span>], label=y))</div><div class="line">colors = &#123;<span class="number">0</span>:<span class="string">'red'</span>, <span class="number">1</span>:<span class="string">'blue'</span>, <span class="number">2</span>:<span class="string">'green'</span>&#125;</div><div class="line">fig, ax = pyplot.subplots()</div><div class="line"><span class="comment">#groupby可以通过传入需要分组的参数实现对数据的分组</span></div><div class="line">grouped = df.groupby(<span class="string">'label'</span>)</div><div class="line"><span class="keyword">for</span> key, group <span class="keyword">in</span> grouped:</div><div class="line">   group.plot(ax=ax, kind=<span class="string">'scatter'</span>, x=<span class="string">'x'</span>, y=<span class="string">'y'</span>, label=key, color=colors[key])</div><div class="line">pyplot.show()</div></pre></td></tr></table></figure>
+<h2 id="非线性分类"><a href="#非线性分类" class="headerlink" title="非线性分类"></a>非线性分类</h2><p>make_moons() 函数用于二进制分类并且将生成一个漩涡模式，或者两个 moons。你可以控制 moon 形状中的噪声量，以及要生产的样本数量。</p>
+<p>这个测试问题适用于能够学习非线性类边界的算法。下面的例子生成了一个中等噪音的 moon 数据集。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> make_moons</div><div class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</div><div class="line"><span class="keyword">from</span> pandas <span class="keyword">import</span> DataFrame</div><div class="line"><span class="comment"># generate 2d classification dataset</span></div><div class="line">X, y = make_moons(n_samples=<span class="number">100</span>, noise=<span class="number">0.1</span>)</div><div class="line"><span class="comment"># scatter plot, dots colored by class value</span></div><div class="line">df = DataFrame(dict(x=X[:,<span class="number">0</span>], y=X[:,<span class="number">1</span>], label=y))</div><div class="line">colors = &#123;<span class="number">0</span>:<span class="string">'red'</span>, <span class="number">1</span>:<span class="string">'blue'</span>&#125;</div><div class="line">fig, ax = pyplot.subplots()</div><div class="line">grouped = df.groupby(<span class="string">'label'</span>)</div><div class="line"><span class="keyword">for</span> key, group <span class="keyword">in</span> grouped:</div><div class="line">   group.plot(ax=ax, kind=<span class="string">'scatter'</span>, x=<span class="string">'x'</span>, y=<span class="string">'y'</span>, label=key, color=colors[key])</div><div class="line">pyplot.show()</div></pre></td></tr></table></figure>
+<p>make_circles() 函数生成一个数据集落入同心圆的二进制分类问题。再一次地，与 moons 测试问题一样，你可以控制形状中的噪声量。该测试问题适用于可以学习复杂的非线性流行的算法。下面的例子中生成了一个具有一定噪音的 circles 数据集。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> make_circles</div><div class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</div><div class="line"><span class="keyword">from</span> pandas <span class="keyword">import</span> DataFrame</div><div class="line"><span class="comment"># generate 2d classification dataset</span></div><div class="line">X, y = make_circles(n_samples=<span class="number">100</span>, noise=<span class="number">0.05</span>)</div><div class="line"><span class="comment"># scatter plot, dots colored by class value</span></div><div class="line">df = DataFrame(dict(x=X[:,<span class="number">0</span>], y=X[:,<span class="number">1</span>], label=y))</div><div class="line">colors = &#123;<span class="number">0</span>:<span class="string">'red'</span>, <span class="number">1</span>:<span class="string">'blue'</span>&#125;</div><div class="line">fig, ax = pyplot.subplots()</div><div class="line">grouped = df.groupby(<span class="string">'label'</span>)</div><div class="line"><span class="keyword">for</span> key, group <span class="keyword">in</span> grouped:</div><div class="line">   group.plot(ax=ax, kind=<span class="string">'scatter'</span>, x=<span class="string">'x'</span>, y=<span class="string">'y'</span>, label=key, color=colors[key])</div><div class="line">pyplot.show()</div></pre></td></tr></table></figure>
+<h1 id="回归测试问题"><a href="#回归测试问题" class="headerlink" title="回归测试问题"></a>回归测试问题</h1><h2 id="线性回归"><a href="#线性回归" class="headerlink" title="线性回归"></a>线性回归</h2><p>make_regression() 函数将创建一个输入和输出具有线性关系的数据集。你可以配置样本数量，输入特征数量，噪声级别等等。该数据集适用于可以学习线性回归函数的算法。</p>
+<p>下面的例子将生成 100 个示例，他们具有适度的噪声，都有一个输入特征和一个输出特征。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> make_regression</div><div class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</div><div class="line"><span class="comment"># generate regression dataset</span></div><div class="line">X, y = make_regression(n_samples=<span class="number">100</span>, n_features=<span class="number">1</span>, noise=<span class="number">0.1</span>)</div><div class="line"><span class="comment"># plot regression dataset</span></div><div class="line">pyplot.scatter(X,y)</div><div class="line">pyplot.show()</div></pre></td></tr></table></figure>
+<p>通过这些测试集可以：</p>
+<ul>
+<li><strong>比较算法</strong>。选择一个测试问题，并比较该问题的一系列算法并汇报性能。</li>
+<li><strong>放大问题</strong>。选择一个测试问题并探索将其放大，用级数法来可视化结果，也可以探索一个特定算法模型技能和问题规模。</li>
+</ul>
+<p>代码见<code>blogcodes\sclearn_testDataset.py</code></p>
 
           
         
@@ -893,13 +1613,13 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
 
         
         
-          <h2 class="post-title" itemprop="name headline">
+          <h1 class="post-title" itemprop="name headline">
                 
                 
                 <a href="/2017/07/12/编程语言学习/PYTHON/pandas/" class="post-title-link" itemprop="url">Pandas笔记</a>
               
             
-          </h2>
+          </h1>
         
 
         <div class="post-meta">
@@ -1134,188 +1854,6 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/工具和环境/scp免密码登录/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/12/工具和环境/scp免密码登录/" class="post-title-link" itemprop="url">scp免密码登录</a>
-              
-            
-          </h2>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-
-              
-                
-              
-
-              <time title="Erstellt: 2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Bearbeitet am</span>
-                
-                <time title="Geändert am: 2018-01-30 16:38:16" itemprop="dateModified" datetime="2018-01-30T16:38:16+08:00">2018-01-30</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">in</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/工具和环境/" itemprop="url" rel="index"><span itemprop="name">工具和环境</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>假设A要免密码传输文件到B</p>
-<p>在A上创建秘钥</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ssh-keygen -t rsa</div></pre></td></tr></table></figure>
-<p>拷贝id_rsa.pub到B的.ssh，并改名为authorized_keys</p>
-<p>注意要修改权限</p>
-<p>A机器</p>
-<p>.ssh目录，以及/home/当前用户 需要700权限，参考以下操作调整</p>
-<p>sudo chmod 700 ~/.ssh</p>
-<p>sudo chmod 700 /home/当前用户</p>
-<p>B机器</p>
-<p>.ssh目录下的authorized_keys文件需要600或644权限，参考以下操作调整</p>
-<p>sudo chmod 600 ~/.ssh/authorized_keys</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/Elastic Search/Elastic Search配置和使用/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1333,13 +1871,13 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
 
         
         
-          <h2 class="post-title" itemprop="name headline">
+          <h1 class="post-title" itemprop="name headline">
                 
                 
                 <a href="/2017/07/12/Elastic Search/Elastic Search配置和使用/" class="post-title-link" itemprop="url">Elastic Search 配置和使用</a>
               
             
-          </h2>
+          </h1>
         
 
         <div class="post-meta">
@@ -1759,7 +2297,7 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/面试刷题/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/工具和环境/Hexo + Github 搭建博客入门/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -1776,13 +2314,13 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
 
         
         
-          <h2 class="post-title" itemprop="name headline">
+          <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/机器学习/面试刷题/" class="post-title-link" itemprop="url">面试刷题</a>
+                <a href="/2017/07/12/工具和环境/Hexo + Github 搭建博客入门/" class="post-title-link" itemprop="url">Hexo + Github 搭建博客入门</a>
               
             
-          </h2>
+          </h1>
         
 
         <div class="post-meta">
@@ -1819,7 +2357,7 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
                 
                   <span class="post-meta-item-text">Bearbeitet am</span>
                 
-                <time title="Geändert am: 2018-03-17 20:50:31" itemprop="dateModified" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
+                <time title="Geändert am: 2019-06-03 09:49:30" itemprop="dateModified" datetime="2019-06-03T09:49:30+08:00">2019-06-03</time>
               </span>
             
           
@@ -1833,7 +2371,7 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
                 <span class="post-meta-item-text">in</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/工具和环境/" itemprop="url" rel="index"><span itemprop="name">工具和环境</span></a></span>
 
                 
                 
@@ -1873,22 +2411,108 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
       
         
           
-            <ol>
-<li><a href="https://zhuanlan.zhihu.com/p/29965072" target="_blank" rel="noopener">那些深度学习《面试》你可能需要知道的</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/29969587" target="_blank" rel="noopener">如何准备机器学习工程师的面试 ？</a></li>
-<li><a href="https://link.zhihu.com/?target=https%3A//mp.weixin.qq.com/mp/homepage%3F__biz%3DMzI4MTQ2NjU5NA%3D%3D%26hid%3D1%26sn%3D93c4875b14fa5ad6f174829b2b8b4463%26scene%3D18%26devicetype%3DiPhone%2BOS9.3.5%26version%3D16051327%26lang%3Dzh_CN%26nettype%3D3G%2B%26ascene%3D7%26session_us%3Dgh_58f9504ddd59%26fontScale%3D100%26pass_ticket%3Dg8f%252FuIJqlsyfsGEdnZPm0SWWYRiZWOQHMp6bSSJ39kpkzb%252BgyByne%252BKNjMf%252Fo4pp%26wx_header%3D1%26scene%3D1" target="_blank" rel="noopener">七月在线实验室—-BAT机器学习面试题</a></li>
-<li><a href="https://www.zhihu.com/question/23259302" target="_blank" rel="noopener">如何准备机器学习工程师的面试 ？</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/27238249" target="_blank" rel="noopener">读完这21个机器学习面试问题和答案，入职率提升99%</a></li>
-<li><a href="https://www.zhihu.com/question/25565713#answer-8243688" target="_blank" rel="noopener">国内互联网公司机器学习数据挖掘类的职位面试主要考察什么方面的东西？</a></li>
-<li>….等等</li>
-</ol>
-<p>如何判断一个而链表中是否有环？<br>给定一棵二叉查找树中的两个元素，求它们的最近公共祖先。<br>给一个栈排序<br>基于比较的排序算法的时间复杂度是什么？证明？<br>如何求一个带权图中两个结点直接按的最短路径？如果有些权值是负的怎么办？<br>求一个字符串中所有的回文子串。<br>对这些问题你都要能够推导你的解法的时间和空间复杂度（大 O 表示法），并且尽量用最低的复杂度解决。<br><strong>只有通过大量的练习才能将这些不同类型的问题烂熟于胸，从而在面试中迅速地给出一个高效的解法。常用的算法面试准备平台有 InterviewBit、LeetCode、Interview Cake、Pramp、<a href="http://interviewing.io/" target="_blank" rel="noopener">http://interviewing.io</a> 等。</strong></p>
-<p>概率论和统计典型问题</p>
-<p>给出一个群体中男性和女性各自的平均身高，求整个群体的平均身高。<br>一次调查表明意大利三分之一的汽车都是法拉利，并且在那之中一半的车都是红色的。如果你在意大利的街头看到一辆红色的汽车驶来，请问它是法拉利的可能性有多大？<br>你试图找出在自己的网站上放置版头的最佳方案。变量包括版头的尺寸（大、中、小）以及放置的位置（顶部、中间、底部）。假定需要 95% 的置信水平，请问你至少需要多少次访问和点击来确定某个方案比其他的组合都要好？<br><strong>很多机器学习算法都以概率论和统计作为理论基础。对于这些基础知识有清晰的概念是极为重要的。当然同时你也要能够将这些抽象的概念与现实联系起来。</strong><br>数据建模和评估典型问题</p>
-<p>一位农民想搞明白是什么因素影响了他的牛奶产量。他记录了每天的气温（30 - 40 度）、湿度（60 - 90%）、饲料消耗（2000 - 2500 千克）以及牛奶产量（500 - 1000 升）。<br>假设问题是要预测每天的牛奶产量，你会如何处理数据并建立模型？<br>这是一个什么类型的机器学习问题？<br>你的公司在开发一个面部表情识别系统。这个系统接受 1920 x 1080 的图片作为输入，并告诉用户图片中的人脸处于以下哪种情绪状态：平常、高兴、悲伤、愤怒和恐惧。当图片中没有人脸时系统要能够分辨这种情况。<br>这是一个什么类型的机器学习问题？<br>如果每个像素点由 3 个值来表示（RGB），那么输入数据的原始维度有多大？有办法降维吗？<br>如何对系统的输出进行编码？为什么？<br>过去几个世纪的气象数据展现出一种循环的气温模式：一会升高一会下降。对于这样的数据（一个年平均气温的序列），你会如何建模并预测未来 5 年的平均气温？<br>你在一家在线新闻网站工作，需要从各处收集文本，并将不同来源的内容聚集成一篇报道。你会如何设计这样一个系统？会用到哪些机器学习技术？<br><strong>应用机器学习算法和库</strong></p>
-<p>你用一个给定的数据集训练一个单隐层的神经网络，发现网络的权值在训练中强烈地震荡（有时在负值和正值之间变化）。为了解决这个问题你需要调整哪个参数？<br>支持向量机的训练在本质上是在最优化哪个值？<br>LASSO 回归用 L1-norm 作为惩罚项，而岭回归（Ridge Regression）则使用 L2-norm 作为惩罚项。这两者哪个更有可能得到一个稀疏（某些项的系数为 0）的模型？<br>在用反向传播法训练一个 10 层的神经网络时，你发现前 3 层的权值完全没有变化，而 4 ~ 6 层的权值则变化得非常慢。这是为什么？如何解决？<br>你手上有一个关于小麦产出的数据集，包括年降雨量 R、平均海拔 A 以及小麦产量 O。你经过初步分析认为产量跟年降雨量的平方以及平均海报的对数之间存在关系，即：O = β_0 + β_1 x R^2 + β_2 x log(A)。能用线性回归求出系数 β 吗？<br>你可以通过像 Kaggle 比赛那样的数据科学和机器学习挑战来了解各种各样的问题和它们之间的细微差别。多多参加这些比赛，并尝试应用不同的机器学习模型。<br>软件工程和系统设计典型问题</p>
-<p>你有一个电商网站，当用户点击一个商品打开详情页面时，你想基于商品特征和用户的购买历史为用户推荐 5 个其他的商品显示在页面的底部。你需要哪些服务和数据表来实现这个功能？请写一个查询语句或一段过程式代码来返回所要推荐的 5 个商品。<br>对于 YouTube 那样的在线视频网站，你会收集哪些数据来衡量用户的参与度和视频的人气度？<br>一个简单的垃圾邮件检测系统是这样的：它每次处理一封邮件，统计不同单词的出现频率（Term frequency），并将这些频率与之前已经被标注为垃圾 / 正常邮件的那些频率进行比较。现在需要对这系统进行拓展来处理海量的邮件流量，请设计一个 Map-Reduce 方案在一个集群上部署这个系统。<br>你要生成一个实时的热力图，来展示用户正在浏览和点击一个网页的哪些部分。在客户端和服务端分别需要哪些组件 / 服务 / API 来实现这个功能？</p>
-<p><a href="http://blog.csdn.net/u010496169/article/details/73743973" target="_blank" rel="noopener">机器学习岗位面试问题汇总 之 集成学习</a></p>
+            <h1 id="1、安装node-js"><a href="#1、安装node-js" class="headerlink" title="1、安装node.js"></a>1、安装node.js</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo add-apt-repository ppa:chris-lea/node.js</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></div><div class="line"><span class="meta">#</span><span class="bash">原方法没有这一步，但是后面的操作会提示npm <span class="built_in">command</span> not found</span></div><div class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install npm</span></div></pre></td></tr></table></figure>
+<h1 id="2、安装hexo"><a href="#2、安装hexo" class="headerlink" title="2、安装hexo"></a>2、安装hexo</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo npm install hexo -g</span></div></pre></td></tr></table></figure>
+<p>如果是mac，要用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo npm install hexo --no-optional</div></pre></td></tr></table></figure>
+<p>不然会报错<strong>Error: Cannot find module ‘./build/Release/DTraceProviderBindings’] code: ‘MODULE_NOT_FOUND’</strong>这个错误。</p>
+<p>如果报权限错误，需要用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo npm install --unsafe-perm --verbose -g hexo</div></pre></td></tr></table></figure>
+<h1 id="3、初始博客的根目录"><a href="#3、初始博客的根目录" class="headerlink" title="3、初始博客的根目录"></a>3、初始博客的根目录</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> ~/myblog</span></div><div class="line"><span class="meta">$</span><span class="bash"> hexo init</span></div></pre></td></tr></table></figure>
+<p>mac的根目录在</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/Users/david/david/myblog</div></pre></td></tr></table></figure>
+<h1 id="4、在github上新建仓库"><a href="#4、在github上新建仓库" class="headerlink" title="4、在github上新建仓库"></a>4、在github上新建仓库</h1><p>名称必须是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gitusername.github.io</div></pre></td></tr></table></figure>
+<p>我的就是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Schwimmer.github.io</div></pre></td></tr></table></figure>
+<p>并将本地的SSH KEY添加到git上（略）</p>
+<h1 id="5、让博客可以发布到git"><a href="#5、让博客可以发布到git" class="headerlink" title="5、让博客可以发布到git"></a>5、让博客可以发布到git</h1><p>1）安装hexo-deployer-Git（不然会出现ERROR Deployer not found: git）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-deployer-git --save</div></pre></td></tr></table></figure>
+<p>2） 配置你hexo博客根目录下的_config.yml文件(应该是最下面一行，修改成你的github)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: git@github.com:Schwimmer/Schwimmer.github.io.git</div><div class="line">  branch: master</div></pre></td></tr></table></figure>
+<blockquote>
+<p> tips</p>
+<p> 冒号后面一定要跟空格</p>
+</blockquote>
+<h1 id="6、hexo常用命令"><a href="#6、hexo常用命令" class="headerlink" title="6、hexo常用命令"></a>6、hexo常用命令</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">hexo clean #清除缓存</div><div class="line">hexo new &quot;title&quot; #新建文章</div><div class="line">hexo g #生成html，或hexo generate</div><div class="line">hexo s #在本地启动服务，启动后访问localhost:4000就可以打开，或hexo server</div><div class="line">hexo d #发布到git，发布后访问https://schwimmer.github.io/就可以打开，或hexo deploy</div></pre></td></tr></table></figure>
+<blockquote>
+<p> tips</p>
+<p> 我目前用的新建文章的方法，就是直接在source/_posts/下面新建md文件</p>
+<p> 可以偷懒写成</p>
+<p> cd ~/myblog</p>
+<p> hexo clean;hexo g;hexo s</p>
+<p> 或</p>
+<p> hexo clean;hexo g;hexo d</p>
+</blockquote>
+<h1 id="7、支持数学公式"><a href="#7、支持数学公式" class="headerlink" title="7、支持数学公式"></a>7、支持数学公式</h1><p>更新：</p>
+<p>现在用</p>
+<p><a href="http://blog.csdn.net/u014630987/article/details/78670258" target="_blank" rel="noopener">如何在 hexo 中支持 Mathjax？</a></p>
+<p><a href="http://blog.csdn.net/emptyset110/article/details/50123231" target="_blank" rel="noopener">搭建一个支持LaTEX的hexo博客</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-math --save</div></pre></td></tr></table></figure>
+<p>这时如果你会发现出了一些问题，原因是hexo先用marked.<a href="http://lib.csdn.net/base/javascript" target="_blank" rel="noopener">js</a>渲染，然后再交给MathJax渲染。在marked.js渲染的时候下划线<code>_</code>是被escape掉并且换成了<code>&lt;em&gt;</code>标签，即斜体字，另外LaTeX中的<code>\\</code>也会被转义成一个<code>\</code>，这样会导致MathJax渲染时不认为它是一个换行符了。</p>
+<p>为了使Marked.js与MathJax共存，打开node_modules/marked/lib/marked.js并做如下改动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Step 1:</div><div class="line">  escape: /^\\([\\`*&#123;&#125;\[\]()# +\-.!_&gt;])/,11替换成</div><div class="line">  escape: /^\\([`*\[\]()# +\-.!_&gt;])/,11这一步是在原基础上取消了对\\,\&#123;,\&#125;的转义(escape)</div><div class="line">Step 2:</div><div class="line">  em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,11替换成</div><div class="line">  em:/^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML&quot;&gt;&lt;/script&gt;</div></pre></td></tr></table></figure>
+<h1 id="8、安装主题"><a href="#8、安装主题" class="headerlink" title="8、安装主题"></a>8、安装主题</h1><p>转自：<a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="noopener">NexT主题安装教程</a></p>
+<h1 id="9、文章阅读计数"><a href="#9、文章阅读计数" class="headerlink" title="9、文章阅读计数"></a>9、文章阅读计数</h1><p>转自：<a href="http://www.jianshu.com/p/702a7aec4d00" target="_blank" rel="noopener">Hexo添加不蒜子和LeanCloud统计无标题文章</a></p>
+<p>找到站点的<code>themes/next/layout/_partials</code>目录下的<code>footer.swig</code>文件。插入代码如下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&#123;% if theme.copyright %&#125;</div><div class="line">&lt;div class=&quot;powered-by&quot;&gt;</div><div class="line">  &#123;&#123; __(&apos;footer.powered&apos;, &apos;&lt;a class=&quot;theme-link&quot; href=&quot;https://hexo.io&quot;&gt;Hexo&lt;/a&gt;&apos;) &#125;&#125;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">&lt;div class=&quot;theme-info&quot;&gt;</div><div class="line">  &#123;&#123; __(&apos;footer.theme&apos;) &#125;&#125; -</div><div class="line">  &lt;a class=&quot;theme-link&quot; href=&quot;https://github.com/iissnan/hexo-theme-next&quot;&gt;</div><div class="line">    NexT.&#123;&#123; theme.scheme &#125;&#125;</div><div class="line">  &lt;/a&gt;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line"># 此位置插入以下代码</div><div class="line">&lt;div&gt;</div><div class="line">&lt;script async src=&quot;https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js&quot;&gt;&lt;/script&gt;</div><div class="line"></div><div class="line">本站总访问量 &lt;span id=&quot;busuanzi_value_site_pv&quot;&gt;&lt;/span&gt; 次&amp;nbsp&amp;nbsp&amp;nbsp</div><div class="line">本站访客数&lt;span id=&quot;busuanzi_value_site_uv&quot;&gt;&lt;/span&gt;人次</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">&#123;% endif %&#125;</div></pre></td></tr></table></figure>
+<h1 id="10、增加图片"><a href="#10、增加图片" class="headerlink" title="10、增加图片"></a>10、增加图片</h1><p>1 把主页配置文件<code>_config.yml</code> 里的<code>post_asset_folder:</code>这个选项设置为<code>true</code></p>
+<p>2 在你的hexo目录下执行这样一句话<code>npm install hexo-asset-image --save</code>，这是下载安装一个可以上传本地图片的插件，来自dalao：<a href="https://github.com/CodeFalling/hexo-asset-image" target="_blank" rel="noopener">dalao的git</a></p>
+<p>3 等待一小段时间后，再运行<code>hexo n &quot;xxxx&quot;</code>来生成md博文时，<code>/source/_posts</code>文件夹内除了<code>xxxx.md</code>文件还有一个<strong>同名的文件夹</strong></p>
+<p>4 最后在<code>xxxx.md</code>中想引入图片时，先把图片复制到xxxx这个文件夹中，然后只需要在xxxx.md中按照markdown的格式引入图片：</p>
+<p><code>![你想输入的替代文字](xxxx/图片名.jpg)</code></p>
+<p><strong>注意：</strong>xxxx是这个md文件的名字，也是同名文件夹的名字，你想引入的图片就只需要放入xxxx这个文件夹内就好了，很像引用相对路径。</p>
+<p>5 最后检查一下，<code>hexo g</code>生成页面后，进入<code>public\2017\02\26\index.html</code>文件中查看相关字段，可以发现，html标签内的语句是<code>&lt;img src=&quot;2017/02/26/xxxx/图片名.jpg&quot;&gt;</code>，而不是<code>&lt;img src=&quot;xxxx/图片名.jpg&gt;</code>。这很重要，关乎你的网页是否可以真正加载你想插入的图片。</p>
+<h1 id="11、sitemap-插件"><a href="#11、sitemap-插件" class="headerlink" title="11、sitemap 插件"></a>11、sitemap 插件</h1><p><a href="https://www.jianshu.com/p/86557c34b671" target="_blank" rel="noopener">Hexo Seo优化让你的博客在google搜索排名第一</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;meta name=&quot;google-site-verification&quot; content=&quot;Mx7Ikp0IpBtTbSpHDTBV0_CMJA-E8CLn8NRIrwyq5m4&quot; /&gt;</div><div class="line">&lt;meta name=&quot;baidu-site-verification&quot; content=&quot;ZBTsWx4NdC&quot; /&gt;</div></pre></td></tr></table></figure>
+<h1 id="12、首页显示文章摘要"><a href="#12、首页显示文章摘要" class="headerlink" title="12、首页显示文章摘要"></a>12、首页显示文章摘要</h1><ul>
+<li>进入hexo博客项目的themes/next目录</li>
+<li>用文本编辑器打开_config.yml文件</li>
+<li>搜索”auto_excerpt”,找到如下部分：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># Automatically Excerpt. Not recommand.</div><div class="line"># Please use &lt;!-- more --&gt; in the post to control excerpt accurately.</div><div class="line">auto_excerpt:</div><div class="line">  enable: false</div><div class="line">  length: 150</div></pre></td></tr></table></figure>
+<ul>
+<li>把enable改为对应的false改为true，然后<code>hexo d -g</code>，再进主页，问题就解决了！</li>
+</ul>
+<h1 id="13、启用分类和标签"><a href="#13、启用分类和标签" class="headerlink" title="13、启用分类和标签"></a>13、启用分类和标签</h1><p>1、在博客的开头要加上</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">title: Hexo + Github 搭建博客入门</div><div class="line">date: 2017-07-12 11:49:53</div><div class="line">categories: &quot;工具和环境&quot;</div><div class="line">tags: </div><div class="line"> - hexo</div><div class="line">description:</div></pre></td></tr></table></figure>
+<p>2、修改主题配置文档</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">menu:</div><div class="line">  home: /</div><div class="line">  categories: /categories</div><div class="line">  #about: /about</div><div class="line">  archives: /archives</div><div class="line">  tags: /tags</div></pre></td></tr></table></figure>
+<p>3、hexo加上page</p>
+<p>如分类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo new page categories</div></pre></td></tr></table></figure>
+<p>然后打开<code>source/categories/index.md</code>，增加一行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">type: &quot;categories&quot;</div></pre></td></tr></table></figure>
+<p>增加标签也是一样</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo new page tags</div></pre></td></tr></table></figure>
+<p>然后打开<code>source/tags/index.md</code>，增加一行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">type: &quot;tags&quot;</div></pre></td></tr></table></figure>
+<p>谷歌与百度的站点地图，前者适用于其他搜索引擎，用来手动提交以增加收录</p>
+<p>安装：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">npm install hexo-generator-sitemap@1 --save</div><div class="line">npm install hexo-generator-baidu-sitemap@0.1.1 --save</div></pre></td></tr></table></figure>
+<p><code>_config.yml</code>添加代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">baidusitemap:</div><div class="line">  path: baidusitemap.xml</div></pre></td></tr></table></figure>
+<p>谷歌的<code>sitemap.xml</code>不需要写到配置文件中，自动生效。</p>
+<p>在主页后面加<code>/baidusitemap.xml</code>可以看到baidusitemap（谷歌同理），将该网址它提交给百度搜索：<a href="http://zhanzhang.baidu.com/?castk=LTE%3D" target="_blank" rel="noopener">百度站长平台</a>，贴吧账号无法在这里使用。</p>
+<p>不过由于Github禁止了百度爬虫，百度无法抓取其中的URL：</p>
+<h1 id="绑定代码到Coding"><a href="#绑定代码到Coding" class="headerlink" title="绑定代码到Coding"></a>绑定代码到Coding</h1><p>创建coding仓库</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4093388-383ab28e2c2b2e84.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt=""></p>
+<p>上传公钥</p>
+<p><a href="https://coding.net/user/account/setting/keys" target="_blank" rel="noopener">https://coding.net/user/account/setting/keys</a></p>
+<p>测试SSH Key 是否配置成功</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ssh -T git@git.coding.net</div></pre></td></tr></table></figure>
+<p>用来部署Hexo博客的Coding项目地址为：<code>git@git.coding.net:ddxy1986/DavidXu-Blog</code></p>
+<p>deploy的配置改为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: </div><div class="line">    github: git@github.com:Schwimmer/Schwimmer.github.io.git</div><div class="line">    coding: git@git.coding.net:ddxy1986/DavidXu-Blog</div><div class="line">  branch: master</div></pre></td></tr></table></figure>
+<h2 id="配置Coding项目的Pages服务"><a href="#配置Coding项目的Pages服务" class="headerlink" title="配置Coding项目的Pages服务"></a>配置Coding项目的Pages服务</h2><h3 id="开启Coding项目的Pages服务"><a href="#开启Coding项目的Pages服务" class="headerlink" title="开启Coding项目的Pages服务"></a>开启Coding项目的Pages服务</h3><p><img src="https://upload-images.jianshu.io/upload_images/4093388-1ab23c0ef7e753ea.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt=""></p>
+<h1 id="踩过的坑"><a href="#踩过的坑" class="headerlink" title="踩过的坑"></a>踩过的坑</h1><p>1）若启动时报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> Error: Warning: Permanently added &apos;github.com,192.30.253.112&apos; (RSA) to the list of known hosts.</div><div class="line">sign_and_send_pubkey: signing failed: agent refused operation</div><div class="line">Permission denied (publickey).</div><div class="line">fatal: Could not read from remote repository.</div></pre></td></tr></table></figure>
+<p>处理是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ eval &quot;$(ssh-agent -s)&quot;</div><div class="line">$ ssh-add</div></pre></td></tr></table></figure>
+<p>2）生成html时报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">end of the stream or a document separator is expected</div></pre></td></tr></table></figure>
+<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><p><a href="http://blog.csdn.net/kesarchen/article/details/50579550" target="_blank" rel="noopener">ubuntu下使用hexo搭建博客</a> </p>
 
           
         
@@ -1962,13 +2586,13 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
 
         
         
-          <h2 class="post-title" itemprop="name headline">
+          <h1 class="post-title" itemprop="name headline">
                 
                 
                 <a href="/2017/07/12/hadoop-spark/spark/spark笔记/" class="post-title-link" itemprop="url">spark笔记</a>
               
             
-          </h2>
+          </h1>
         
 
         <div class="post-meta">
@@ -2240,7 +2864,7 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark笔记-local开发/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/工具和环境/vim命令/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -2257,13 +2881,13 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
 
         
         
-          <h2 class="post-title" itemprop="name headline">
+          <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/hadoop-spark/spark/spark笔记-local开发/" class="post-title-link" itemprop="url">spark笔记-local开发</a>
+                <a href="/2017/07/12/工具和环境/vim命令/" class="post-title-link" itemprop="url">vim命令</a>
               
             
-          </h2>
+          </h1>
         
 
         <div class="post-meta">
@@ -2300,7 +2924,7 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
                 
                   <span class="post-meta-item-text">Bearbeitet am</span>
                 
-                <time title="Geändert am: 2018-11-13 10:00:42" itemprop="dateModified" datetime="2018-11-13T10:00:42+08:00">2018-11-13</time>
+                <time title="Geändert am: 2018-01-30 16:39:52" itemprop="dateModified" datetime="2018-01-30T16:39:52+08:00">2018-01-30</time>
               </span>
             
           
@@ -2314,7 +2938,7 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
                 <span class="post-meta-item-text">in</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/工具和环境/" itemprop="url" rel="index"><span itemprop="name">工具和环境</span></a></span>
 
                 
                 
@@ -2354,47 +2978,30 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
       
         
           
-            <h1 id="mac安装spark环境"><a href="#mac安装spark环境" class="headerlink" title="mac安装spark环境"></a>mac安装spark环境</h1><p><a href="https://blog.csdn.net/python_tty/article/details/72820469" target="_blank" rel="noopener">https://blog.csdn.net/python_tty/article/details/72820469</a></p>
-<h2 id="安装scala"><a href="#安装scala" class="headerlink" title="安装scala"></a>安装scala</h2><p><a href="https://downloads.lightbend.com/scala/2.10.7/scala-2.10.7.tgz" target="_blank" rel="noopener">2.10.7</a></p>
-<p>下载后放到<code>david/david/opt/scala</code></p>
-<p>修改<code>.bash_profile</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export SCALA_HOME=&quot;/Users/david/david/opt/scala-2.10.7&quot;</div><div class="line">export PATH=&quot;$SCALA_HOME/bin:$PATH&quot;</div></pre></td></tr></table></figure>
-<h2 id="下载spark"><a href="#下载spark" class="headerlink" title="下载spark"></a>下载spark</h2><p><a href="http://spark.apache.org/downloads.html" target="_blank" rel="noopener">http://spark.apache.org/downloads.html</a></p>
-<p>下载的是1.6.3的版本</p>
-<p>加到环境变量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export SPARK_HOME=&quot;/Users/david/david/opt/spark-1.6.3-bin-hadoop2.6&quot;</div><div class="line">export PATH=&quot;$SPARK_HOME/bin:$PATH&quot;</div></pre></td></tr></table></figure>
-<h2 id="允许ssh"><a href="#允许ssh" class="headerlink" title="允许ssh"></a>允许ssh</h2><h2 id="启动spark-shell"><a href="#启动spark-shell" class="headerlink" title="启动spark-shell"></a>启动spark-shell</h2><p>进入到spark安装目录的sbin/目录下，执行 ./start-all 启动spark </p>
-<p>进入到spark安装目录的bin/目录下，执行 ./spark-shell，看spark 是否安装成功</p>
-<h1 id="spark开发环境"><a href="#spark开发环境" class="headerlink" title="spark开发环境"></a>spark开发环境</h1><p>一、环境</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">			&lt;groupId&gt;org.apache.spark&lt;/groupId&gt;</div><div class="line">			&lt;artifactId&gt;spark-core_2.10&lt;/artifactId&gt;</div><div class="line">			&lt;version&gt;1.6.1&lt;/version&gt;</div><div class="line">		&lt;/dependency&gt;</div></pre></td></tr></table></figure>
-<p>二、编写local的spark程序<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">import org.apache.log4j.&#123; Level, Logger &#125;</div><div class="line">import org.apache.spark.&#123; SparkConf, SparkContext &#125;</div><div class="line"></div><div class="line">def main(args: Array[String]): Unit = &#123;</div><div class="line">    //关闭一些不必要的日志</div><div class="line">    Logger.getLogger(&quot;org.apache.spark&quot;).setLevel(Level.WARN)</div><div class="line">    Logger.getLogger(&quot;org.eclipse.jetty.server&quot;).setLevel(Level.OFF)</div><div class="line">    </div><div class="line">    val conf = new SparkConf().setAppName(&quot;wordSegname&quot;).setMaster(&quot;local[4]&quot;).</div><div class="line">    set(&quot;spark.sql.shuffle.partitions&quot;,&quot;10&quot;).set(&quot;spark.network.timeout&quot;,&quot;30s&quot;)</div><div class="line">    .set(&quot;spark.shuffle.compress&quot;,&quot;true&quot;).set(&quot;spark.shuffle.spill.compress&quot;,&quot;true&quot;)</div><div class="line">    .set(&quot;spark.shuffle.manager&quot;,&quot;sort&quot;)</div><div class="line">    val sc = new SparkContext(conf)</div><div class="line">  &#125;</div></pre></td></tr></table></figure></p>
-<p>程序示例<code>[WordTest.scala](../../../../code/spark/spark-buzzads/src/main/scala/com/iclick/word_segmentation/WordTest.scala)</code></p>
-<h1 id="spark数据操作"><a href="#spark数据操作" class="headerlink" title="spark数据操作"></a>spark数据操作</h1><h2 id="sparkRDD"><a href="#sparkRDD" class="headerlink" title="sparkRDD"></a>sparkRDD</h2><h3 id="创建RDD"><a href="#创建RDD" class="headerlink" title="创建RDD"></a>创建RDD</h3><p>1、数据集合</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">    var data = Array(1,2,3,4,5,6,7,8,9)</div><div class="line">    var disData = sc.parallelize(data,3)</div></pre></td></tr></table></figure>
-<p>创建一个RDD，包括1-9，分在3个分区</p>
-<p>2、外部数据源</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">textFile(path:String, minPartitions:Int) //第一个指定路径，第二个指定分区</div></pre></td></tr></table></figure>
-<h3 id="RDD转换"><a href="#RDD转换" class="headerlink" title="RDD转换"></a>RDD转换</h3><p>1、map，对每个元素执行一个指定函数产生新的RDD<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">val rdd1 = sc.parallelize(1 to 9, 3)</div><div class="line">val rdd2 = rdd1.map(x =&gt; x*2)</div></pre></td></tr></table></figure></p>
-<h1 id="spark-hive-local"><a href="#spark-hive-local" class="headerlink" title="spark hive local"></a>spark hive local</h1><p>local的spark连接测试服务器的hive</p>
-<p>1、复制hive环境上的<code>hdfs-site.xml</code>和<code>hive-site.xml</code>到项目的resource，如果有不识别的hostname则修改</p>
-<p>2、写法类似于</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.mljr.spark.gps.sample</div><div class="line"></div><div class="line"><span class="keyword">import</span> org.apache.spark.&#123;<span class="type">SparkConf</span>, <span class="type">SparkContext</span>&#125;</div><div class="line"><span class="keyword">import</span> org.apache.spark.sql.hive.<span class="type">HiveContext</span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">HiveTest</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</div><div class="line">    <span class="keyword">val</span> conf = <span class="keyword">new</span> <span class="type">SparkConf</span>().setAppName(<span class="string">"test"</span>).setMaster(<span class="string">"local[2]"</span>)</div><div class="line">    <span class="keyword">val</span> sc = <span class="keyword">new</span> <span class="type">SparkContext</span>(conf)</div><div class="line">    <span class="keyword">val</span> sqlContext = <span class="keyword">new</span> <span class="type">HiveContext</span>(sc)</div><div class="line">    sqlContext.sql(<span class="string">"SELECT * FROM bdwh_tbl.tbl_s057_car_gps_position limit 1"</span>).collect.foreach(println)</div><div class="line">	sc.stop()</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">java.lang.RuntimeException: Unable to instantiate org.apache.hadoop.hive.ql.metadata.Session</div></pre></td></tr></table></figure>
-<p>这是因为在创建<code>SQLContext</code>实例的时候，要求spark编译的Hive版本和HiveMetaStore里面记录的Hive版本一致，我们可以通过配置<code>hive.metastore.schema.verification</code>参数来取消这种验证，这个参数的默认值是true，我们可以取消验证，配置如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;property&gt;  </div><div class="line">   &lt;name&gt;hive.metastore.schema.verification&lt;/name&gt;  </div><div class="line">   &lt;value&gt;false&lt;/value&gt;  </div><div class="line">    &lt;description&gt;  </div><div class="line">    Enforce metastore schema version consistency.  </div><div class="line">    True: Verify that version information stored in metastore matches with one from Hive jars.  Also disable automatic  </div><div class="line">          schema migration attempt. Users are required to manully migrate schema after Hive upgrade which ensures  </div><div class="line">          proper metastore schema migration. (Default)  </div><div class="line">    False: Warn if the version information stored in metastore doesn&apos;t match with one from in Hive jars.  </div><div class="line">    &lt;/description&gt;  </div><div class="line"> &lt;/property&gt;</div></pre></td></tr></table></figure>
-<p>再报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Could not connect to meta store using any of the URIs provided. Most recent failure: org.apache.thrift.transport.TTransportException: java.net.UnknownHostException: slave1</div></pre></td></tr></table></figure>
-<h1 id="控制日志输出级别"><a href="#控制日志输出级别" class="headerlink" title="控制日志输出级别"></a>控制日志输出级别</h1><p>修改log4j.properties</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">log4j.rootCategory=WARN, console</div></pre></td></tr></table></figure>
-<p>默认是<code>INFO, console</code>，</p>
-<p>更丰富的可以是<code>STDOUT, DEBUG, INFO, console</code></p>
-<p>精简的是<code>WARN, console</code></p>
-<h1 id="no-snappyjava-in-java-library-path"><a href="#no-snappyjava-in-java-library-path" class="headerlink" title="no snappyjava in java.library.path"></a>no snappyjava in java.library.path</h1><p><a href="https://stackoverflow.com/questions/30039976/unsatisfiedlinkerror-no-snappyjava-in-java-library-path-when-running-spark-mlli" target="_blank" rel="noopener">https://stackoverflow.com/questions/30039976/unsatisfiedlinkerror-no-snappyjava-in-java-library-path-when-running-spark-mlli</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;org.apache.spark&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;spark-core_2.10&lt;/artifactId&gt;</div><div class="line">    &lt;version&gt;$&#123;spark.version&#125;&lt;/version&gt;</div><div class="line">    &lt;exclusions&gt;</div><div class="line">        &lt;exclusion&gt;</div><div class="line">           &lt;groupId&gt;org.xerial.snappy&lt;/groupId&gt;</div><div class="line">           &lt;artifactId&gt;snappy-java&lt;/artifactId&gt;</div><div class="line">        &lt;/exclusion&gt;</div><div class="line">    &lt;/exclusions&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
-<p>and then adding</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;org.xerial.snappy&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;snappy-java&lt;/artifactId&gt;</div><div class="line">    &lt;version&gt;1.0.5&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
-<h2 id=""><a href="#" class="headerlink" title=" "></a> </h2>
+            <h1 id="查找并删除"><a href="#查找并删除" class="headerlink" title="查找并删除"></a>查找并删除</h1><p>:g/要删除的内容/d</p>
+<p>查找</p>
+<p>/要查找的</p>
+<p>按n就是下一个</p>
+<p>删除一行</p>
+<p>dd</p>
+<p>查找匹配的个数</p>
+<p>:%s/refering_site/&amp;/gn</p>
+<p>或</p>
+<p>:%s/17779//gn</p>
+<p>:%s/“opxcreativeid”:16650//gn</p>
+<h1 id="查找并替换"><a href="#查找并替换" class="headerlink" title="查找并替换"></a>查找并替换</h1><p>%s/源字符串/目的字符串/g</p>
+<p>如</p>
+<p>:%s/\/home\/weinan/\/opt\/pig_home\/bshare_etl/g</p>
+<p>:%s/gpadmin/gpxmo/g</p>
+<p>:%s/\t-1/\t1/g</p>
+<p>:%s/“//g</p>
+<p>:%s/16-06-28/16-06-29/g</p>
+<h1 id="多行变1行"><a href="#多行变1行" class="headerlink" title="多行变1行"></a>多行变1行</h1><p>大写V选中行+shift J</p>
+<h1 id="替换每行的行首、行尾"><a href="#替换每行的行首、行尾" class="headerlink" title="替换每行的行首、行尾"></a>替换每行的行首、行尾</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">:1,$ s/^/HELLO/g</div><div class="line">:1,$ s/$/WORLD/g</div></pre></td></tr></table></figure>
+<h1 id="sh文件的编码转成unix"><a href="#sh文件的编码转成unix" class="headerlink" title="sh文件的编码转成unix"></a>sh文件的编码转成unix</h1><p>查看用<code>:set fileformat</code></p>
+<p>修改用<code>:set fileformat=unix</code></p>
+<h1 id="编码从latin1转成utf8"><a href="#编码从latin1转成utf8" class="headerlink" title="编码从latin1转成utf8"></a>编码从latin1转成utf8</h1><p>:e ++enc=cp936<br>:set fileencoding=utf-8</p>
+
           
         
       
@@ -2450,7 +3057,7 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/NLP/新词发现spark/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/机器学习笔记-最大熵/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -2467,13 +3074,13 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
 
         
         
-          <h2 class="post-title" itemprop="name headline">
+          <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/机器学习/NLP/新词发现spark/" class="post-title-link" itemprop="url">spark笔记-新词发现</a>
+                <a href="/2017/07/12/机器学习/机器学习笔记-最大熵/" class="post-title-link" itemprop="url">机器学习笔记-最大熵</a>
               
             
-          </h2>
+          </h1>
         
 
         <div class="post-meta">
@@ -2510,7 +3117,7 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
                 
                   <span class="post-meta-item-text">Bearbeitet am</span>
                 
-                <time title="Geändert am: 2018-03-31 10:30:28" itemprop="dateModified" datetime="2018-03-31T10:30:28+08:00">2018-03-31</time>
+                <time title="Geändert am: 2018-03-17 20:50:31" itemprop="dateModified" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
               </span>
             
           
@@ -2524,7 +3131,7 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
                 <span class="post-meta-item-text">in</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
 
                 
                 
@@ -2564,44 +3171,123 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
       
         
           
-            <figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> conf = <span class="keyword">new</span> <span class="type">SparkConf</span>().setAppName(<span class="string">"wordSegname"</span>).setMaster(<span class="string">"local[4]"</span>).</div><div class="line">set(<span class="string">"spark.sql.shuffle.partitions"</span>,<span class="string">"10"</span>).set(<span class="string">"spark.network.timeout"</span>,<span class="string">"30s"</span>)</div></pre></td></tr></table></figure>
-<p>local[4]是指在本地运行，用4核CPU。</p>
-<p>spark.sql.shuffle.partitions是指partition的数量。SparkSQL在运行时，将一个查询任务分解成多个task，一个task就是一个partition。默认是200个partition，而如果实际集群只能并行3个task，则跑完200个partition要200/3=67次。</p>
-<p>spark.network.timeout是指所有网络通信的超时时间，默认是120s</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> word1=sc.textFile(path).map&#123;x=&gt; </div><div class="line"></div><div class="line">      <span class="keyword">val</span> x_filter=x.replaceAll(<span class="string">"\p&#123;Punct&#125;"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"\pP"</span>, <span class="string">" "</span>)</div><div class="line"></div><div class="line">                .replaceAll(<span class="string">"　"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"["</span> + <span class="type">AtomsUitl</span>.stopwords + <span class="string">"]"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"\p&#123;Blank&#125;"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"\p&#123;Space&#125;"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"\p&#123;Cntrl&#125;"</span>, <span class="string">" "</span>)</div><div class="line"></div><div class="line">                        x_filter</div><div class="line"></div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>replaceAll中是正则表达式。上文中，是将所有的特殊字符都用空格代替</p>
-<p>AtomsUitl.stopwords停用词是”的很了么呢是嘛个都也比还这于不与才上用就好在和对挺去后没说”</p>
-<p>sc.textFile读取文件后，生成一个RDD，以行为单位，所以后面的map是对每行的操作</p>
-<p>打印出所有的元素，用</p>
-<p><code>word1.foreach { x =&gt; println(x) }</code></p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> word_document = word1.zipWithIndex.filter &#123; x =&gt; !<span class="type">StringUtils</span>.isBlank(x._1) &#125;.flatMap &#123; x =&gt;</div><div class="line">      <span class="keyword">val</span> arr = <span class="type">ArrayBuffer</span>(<span class="type">String</span>, <span class="type">Int</span>)</div><div class="line">      <span class="keyword">val</span> line = x._1.split(<span class="string">" "</span>)    <span class="comment">//对于每一行，都用空格分割</span></div><div class="line">      <span class="keyword">for</span> (i &lt;- line) &#123;    </div><div class="line">        arr += ((i, x._2.toInt))    <span class="comment">//分割后，每一个tuple加到数组中</span></div><div class="line">      &#125;</div><div class="line">      arr</div><div class="line">    &#125;.map &#123; x =&gt; (x<span class="number">.1</span>.trim, x<span class="number">.2</span>) &#125;.filter(x =&gt; !<span class="type">StringUtils</span>.isBlank(x._1))</div></pre></td></tr></table></figure>
-<p>zipWithIndex用带有index的来压缩RDD，索引从0开始</p>
-<p>word1.zipWithIndex.foreach { x =&gt; println(x) }</p>
-<p>(ab ef,0)</p>
-<p>(cd,1)</p>
-<p>上述代码得到的结果是</p>
-<p>(ab,0)</p>
-<p>(ef,0)</p>
-<p>(cd,1)</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> wordleft = word.map(x =&gt; <span class="type">AtomsUitl</span>.reverse(x)).map &#123; x =&gt; <span class="string">""</span> + x + <span class="string">""</span> &#125;.flatMap &#123;</div><div class="line">  x =&gt;</div><div class="line">    <span class="keyword">var</span> arr = <span class="type">ArrayBufferString</span></div><div class="line">    <span class="keyword">for</span> (y &lt;- <span class="number">1</span> to <span class="type">AtomsUitl</span>.len(x) - <span class="number">2</span>) &#123;</div><div class="line">      arr += <span class="type">AtomsUitl</span>.substring(x, y, <span class="type">Math</span>.min(maxLen + y, <span class="type">AtomsUitl</span>.len(x)))</div><div class="line">    &#125;</div><div class="line">    arr</div><div class="line">&#125;.sortBy(x =&gt; x)</div></pre></td></tr></table></figure>
-<p>将每个句子倒序排列，提取每个子集</p>
-<p>今$</p>
-<p>四期星天今</p>
-<p>处言语然自</p>
-<p>天今$</p>
-<p>星天今$</p>
-<p>期星天今$</p>
-<p>然自$</p>
-<p>理处言语然</p>
-<p>自$</p>
-<p>言语然自</p>
-<p>语然自$</p>
-<p>$</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> wordleft_caculate = wordleft.map &#123;</div><div class="line">      s =&gt;</div><div class="line">        <span class="keyword">val</span> first = <span class="type">AtomsUitl</span>.substring(s, <span class="number">0</span>, <span class="number">1</span>).toString</div><div class="line">        (first, s)</div><div class="line">    &#125;.groupBy(f =&gt; f._1).map &#123;</div><div class="line">      x =&gt; x._2</div><div class="line">    &#125;</div><div class="line">wordleft_caculate.foreach&#123;x=&gt; println(x.iterator.next())&#125;</div></pre></td></tr></table></figure>
-<p>groupBy之后得到</p>
-<p>(期, CompactBuffer((期,期星天今$))等</p>
-<p>这个是Iterable，可迭代的。可以转换为一个迭代器x.iterator.next()。迭代出来就是</p>
-<p>(期,期星天今$) 等</p>
+            <h1 id="1、最大熵原理"><a href="#1、最大熵原理" class="headerlink" title="1、最大熵原理"></a>1、最大熵原理</h1><p>日常生活中，很多事情的发生表现出一定的随机性，试验的结果往往是不确定的，也不知道这个随机现象所服从的概率分布。<strong>最大熵的实质</strong>就是，在已知部分知识的前提下，关于未知分布最合理的推断就是符合已知知识最不确定或者最随机的推断。任何其他的选择都意味着我们增加了其他的约束和假设。</p>
+<p>将最大熵应用到分类，就是最大熵模型。给定一个训练集：</p>
+<script type="math/tex; mode=display">
+T = \{  (x_1,y_1),  (x_2,y_2),..., (x_N,y_N)\}</script><p>其中$x_i \in X$是输入，$y_i \in Y$是输出，X和Y表示输入和输出空间。N为样本数。<strong>目标是</strong>，利用最大熵原理选出一个最好的分类模型，即对于任意给定的输入$x \in X$，可以以概率$p(y|x)$输出$y \in Y$ 。</p>
+<p>按照最大熵原理，应该<strong>优先保证模型满足已知的所有约束</strong>。思路是，从训练数据T中抽取若干有用的特征，要求这些特征在T上关于经验分布$\tilde{p}(x,y)$的数学期望与它们在模型中关于$p(x,y)$的数学期望相等。这样，一个特征就是一个约束了。</p>
+<p>这里就涉及到，<strong>特征如何刻画？经验分布如何表示？</strong></p>
+<h1 id="2、特征函数"><a href="#2、特征函数" class="headerlink" title="2、特征函数"></a>2、特征函数</h1><p>假设通过特征选择，抽取若干特征。特征通常由特征函数来表示。例如</p>
+<script type="math/tex; mode=display">
+f(x,y) =\left\{\begin{matrix}
+\begin{aligned}
+& 1，若x,y满足某个事实 \\ 
+& 0，否则
+\end{aligned}
+\end{matrix}\right.</script><p>这里的特征不是指输入的某个特征，而是指输入和输出共同的特征。</p>
+<blockquote>
+<p>例如，假设我们需要判断“打”是动词还是量词，已知的训练数据有</p>
+<p>(x1,y1)=(一打火柴，量词);</p>
+<p>(x2,y2)=(三打啤酒，量词);</p>
+<p>(x3,y3)=(打电话，动词);</p>
+<p>(x4,y4)=(打篮球，动词);</p>
+<p>通过观察，发现“打”前面是数字时，是量词，“打”后面是名词时，是动词。这就是从训练数据中提取的两个特征，可分别用特征函数表示为</p>
+</blockquote>
+<h1 id="3、经验分布"><a href="#3、经验分布" class="headerlink" title="3、经验分布"></a>3、经验分布</h1><p>经验（概率）分布就是通过对训练集T进行统计得到的分布，用$\tilde p$表示。这里列举两个经验分布</p>
+<script type="math/tex; mode=display">
+\tilde p(x,y) = \frac {count(x,y)} {N} , \tilde p(x)=\frac {count(x)} {N}</script><p>其中，count表示出现的次数。</p>
+<h1 id="4、约束条件"><a href="#4、约束条件" class="headerlink" title="4、约束条件"></a>4、约束条件</h1><p>对于任意一个特征函数f，$E<em>{\tilde p}f$ 表示f在训练数据T上关于$\tilde p(x,y)$的数学期望， $E</em>{p}f$ 表示f在训练数据T上关于$p(x,y)$的数学期望。按照期望的定义，我们有</p>
+<script type="math/tex; mode=display">
+E_{\tilde p}f=\sum_{x,y}\tilde p(x,y)f(x,y)</script><script type="math/tex; mode=display">
+E_{ p}f=\sum_{x,y} p(x,y)f(x,y)</script><p>其中，p(x,y)是未知的，而建模的目标是生成$p(y|x)$，因此，根据Bayes定理，$p(x,y)=p(x)p(y|x)$。在样本数量足够的条件下，$p(x)$可以用$\tilde p(x)$近似表示。这样</p>
+<script type="math/tex; mode=display">
+E_{ p}f=\sum_{x,y} \tilde p(x)p(y|x)f(x,y)</script><p>对于概率分布$p(y|x)$，我们希望特征f的期望值应该和从训练集中得到的特征期望值是一致的，因此，<strong>增加约束</strong></p>
+<script type="math/tex; mode=display">
+E_{ p}f=E_{\tilde p}f</script><p>假设我们从训练集中抽取了n个特征，相应的，便有n个特征函数$f_i(i=1,2,…,n)$以及n个约束条件</p>
+<script type="math/tex; mode=display">
+C_i:E_{ p}(f_i)=E_{\tilde p}(f_i) \tag {3-1}</script><blockquote>
+<p>关于约束条件的几何解释</p>
+<p><img src="/2017/07/12/机器学习/机器学习笔记-最大熵/最大熵1.png" alt="最大熵1"></p>
+<p>（a）：P是所有可能的概率空间，此时没有约束条件，所有的概率模型$p(y|x)$都是允许的；</p>
+<p>（b）：增加了一个线性约束条件$C_1$，此时，目标分布$p(y|x)$只能落在由$C_1$定义的线段上；</p>
+<p>（c）：在（b）的基础上增加了另一个约束条件$C_2$ ，且$C_1 \cap C_2  \neq \varnothing$。此时，目标分布只能落在交点上，即被唯一确定；</p>
+<p>（d）：在（b）基础上增加了另一个约束$C_3$，且$C_1 \cap C_2  = \varnothing$，此时不存在能够同时满足$C_1$和$C_3$的$p(y|x)$。</p>
+</blockquote>
+<p>利用（3-1）定义的约束条件，我们定义P的一个子空间</p>
+<script type="math/tex; mode=display">
+C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><h1 id="5、最大熵模型"><a href="#5、最大熵模型" class="headerlink" title="5、最大熵模型"></a>5、最大熵模型</h1><p>由于我们的目标是获得一个条件分布，因此这里也采用相应的条件熵</p>
+<script type="math/tex; mode=display">
+H(p(y|x))=-\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)</script><p>可以看出这里也是用$\tilde p(x)$来近似$p(x)$。以下将$H(p(y|x))$简记为$H(p)$。至此，可以给出最大熵模型的完整描述。</p>
+<p>对于给定的训练集T，特征函数$f_i(x,y), i=1,2,…n$，最大熵模型就是求解</p>
+<script type="math/tex; mode=display">
+\underset {p \in C} {max} \ \  H(p) = \begin{pmatrix}
+-\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)
+\end{pmatrix}, \\
+s.t. \sum_y p(y|x)=1 \tag {5-1} \\
+s.t. \ C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><p>其中的s.t.是为了保证$p(y|x)$是一个（合法的）条件概率分布。</p>
+<p>等价于一个求极小值问题</p>
+<script type="math/tex; mode=display">
+\underset {p \in C} {min} \ \  -H(p) = \begin{pmatrix}
+\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)
+\end{pmatrix}, \\
+s.t. \sum_y p(y|x)=1 \tag {5-2} \\
+s.t. \ C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><h1 id="6、模型求解"><a href="#6、模型求解" class="headerlink" title="6、模型求解"></a>6、模型求解</h1><p>对于5-1的求解，主要思路和步骤如下：</p>
+<ol>
+<li>利用Lagrange乘子将最大熵模型由一个带约束的最优化问题转为无约束的最优化问题，这是一个<strong>极小极大问题（min max）</strong>。</li>
+<li>利用对偶问题等价性，转化为求解上一步得到的极大/极小问题的对偶问题，也是一个极大极小问题。</li>
+</ol>
+<h2 id="6-1-原始问题和对偶问题"><a href="#6-1-原始问题和对偶问题" class="headerlink" title="6.1 原始问题和对偶问题"></a>6.1 原始问题和对偶问题</h2><p>根据（5-2），引入拉格朗日乘子$\lambda=(\lambda_0,\lambda_1,…,\lambda_n)^T$，定义拉格朗日函数</p>
+<script type="math/tex; mode=display">
+L(p,\lambda) = -H(p) + \lambda_0(1-\sum_y p(y|x))+\sum_{i=1}^n\lambda_i(\tau_i-E_p(f_i))  \tag{6-1}</script><p>利用对偶性，求解（6-1）的<strong>原始问题</strong>表示为：</p>
+<script type="math/tex; mode=display">
+\underset {p \in C} {min}\  \underset {\lambda} {max}\ L(p,\lambda) \tag{6-2}</script><p><strong>对偶问题</strong>为：</p>
+<script type="math/tex; mode=display">
+\underset {\lambda} {max}\ \underset {p \in C} {min}\  L(p,\lambda) \tag{6-3}</script><p>由于$H(p)$是关于p的凸函数，因此要求解最大熵模型，只需求解对偶问题（6-3）即可。</p>
+<h3 id="6-1-1-指数形式的解"><a href="#6-1-1-指数形式的解" class="headerlink" title="6.1.1 指数形式的解"></a>6.1.1 指数形式的解</h3><p>首先求解内部的极小问题。由于$\underset {p \in C} {min}\  L(p,\lambda)$是关于$\lambda$的函数，将其记做：</p>
+<script type="math/tex; mode=display">
+\Psi (\lambda) =\underset {p \in C} {min}\  L(p,\lambda) = L(p_{\lambda}, \lambda) \tag {6-4}</script><p>其中</p>
+<script type="math/tex; mode=display">
+p_{\lambda}=\underset {p \in C} {argmin}\ L(p,\lambda)=p_{\lambda}(y|x) \tag {6-5}</script><p>根据拉格朗日乘子法，求$L(p,\lambda)$对$p(y|x)$的偏导，得（求解过程略）：</p>
+<script type="math/tex; mode=display">
+p_{\lambda}=\frac {1} {Z_{\lambda}(x)} \ \exp(\sum_{i=1}^n \lambda_i f_i(x,y)) \tag{6-6}</script><p>其中，</p>
+<script type="math/tex; mode=display">
+Z_{\lambda}(x)=\sum_y \exp(\sum_{i=1}^n \lambda_i f_i(x,y)) \tag{6-7}</script><p>称为<strong>规范化因子</strong>（normalizing factor）。注意，此时已经没有$\lambda_0$了。</p>
+<p>由（6-6）定义的$p_{\lambda}$就是最大熵模型的解，它具有<strong>指数形式</strong>。其中，$\lambda_i$就是特征$f_i$的权重，越大表示特征越重要。</p>
+<h3 id="6-1-2-最大似然估计"><a href="#6-1-2-最大似然估计" class="headerlink" title="6.1.2 最大似然估计"></a>6.1.2 最大似然估计</h3><p>得到对偶问题的内层极小值问题的解之后，接着求解外层的极大值问题$\underset {\lambda} {max} \ \Psi(\lambda)$。</p>
+<p>设其解为</p>
+<script type="math/tex; mode=display">
+\lambda^* = \underset {\lambda} {argmax} \ \Psi(\lambda) \tag{6-8}</script><p>则最大熵模型的解为</p>
+<script type="math/tex; mode=display">
+p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$与最大似然估计是等价的！</p>
+<h1 id="7、最优化方法"><a href="#7、最优化方法" class="headerlink" title="7、最优化方法"></a>7、最优化方法</h1><p>通用的方法有梯度下降，拟牛顿法等，最大熵模型有两个量身定做的方法：通用迭代尺度法（Generalized Iterative Scaling，GIS）和改进的迭代尺度法（Impoved Iterative Scaling，IIS）。</p>
+<h2 id="7-1-GIS算法"><a href="#7-1-GIS算法" class="headerlink" title="7.1 GIS算法"></a>7.1 GIS算法</h2><blockquote>
+<p>算法1：</p>
+<p>S1：初始化参数，令$\lambda=0$</p>
+<p>S2：计算$E_{\tilde p}(f_i),\ i=1,2,…,n$</p>
+<p>S3：执行一次迭代，对参数做一次刷新。</p>
+<p>​    计算$E<em>{p</em>{\lambda}}(f_i)$</p>
+<p>​    FOR i=1,2,…,n DO {</p>
+<p>​        $\lambda<em>i\  += \ \eta \log\frac {E</em>{\tilde p}(f<em>i)} {E</em>{p_{\lambda}}(f_i)}$</p>
+<p>​    }</p>
+<p>S4：检查是否收敛，若未收敛则继续S3</p>
+</blockquote>
+<p>其中，$\eta$是学习率，在实际中取$\frac {1} {C}$，$$，表示训练数据中包含特征最多的那个样本所包含的特征个数。</p>
+<script type="math/tex; mode=display">
+\Delta\lambda_i=\eta \log\frac {E_{\tilde p}(f_i)} {E_{p_{\lambda}}(f_i)}</script><p>是校正量。</p>
+<p>每次迭代，先用当前的权重估算每个特征$f<em>i$在训练数据中的概率分布的期望，然后逐个与相应的经验分布的期望比较，其偏差程度通过$\log\frac {E</em>{\tilde p}(f<em>i)} {E</em>{p_{\lambda}}(f_i)}$来进行刻画。</p>
+<p>收敛条件就是当两次迭代的$\lambda$在一个较小的范围。</p>
+<p>GIS每次迭代时间很长，不太稳定，容易溢出，一般不会使用。</p>
+<h2 id="7-2-IIS算法"><a href="#7-2-IIS算法" class="headerlink" title="7.2 IIS算法"></a>7.2 IIS算法</h2><p>与GIS的不同主要在$\Delta\lambda_i$的计算上。IIS通过求解方程</p>
+<script type="math/tex; mode=display">
+\sum_{x,y} \tilde p(x)p(y|x)f_i(x,y)\exp(\Delta\lambda_i\sum_{i=1}^nf_i(x,y))=\tilde p(f_i)</script><p>1）若$\sum<em>{i=1}^nf_i(x,y)$为常数，即对任意样本(x,y)，都有$\sum</em>{i=1}^nf_i(x,y)=C$，则</p>
+<script type="math/tex; mode=display">
+\Delta\lambda_i=\frac {1} {C} \log\frac {E_{\tilde p}(f_i)} {E_{p_{\lambda}}(f_i)}</script><p>此时，IIS可以看做是GIS的一种推广。</p>
+<p>2）若$\sum_{i=1}^nf_i(x,y)$不是常数，则需要通过数值方式来求解$\Delta\lambda_i$，如牛顿法。</p>
+<h1 id="8、优缺点"><a href="#8、优缺点" class="headerlink" title="8、优缺点"></a>8、优缺点</h1><p>优点是：在建模时，只需要集中精力选取特征，不需要花费精力考虑如何使用这些特征，可以灵活使用不同类型的特征。</p>
+<p>缺点是计算量大。</p>
+<p>参考</p>
+<p>【1】 <a href="http://blog.csdn.net/itplus/article/details/26550273" target="_blank" rel="noopener">最大熵学习笔记</a></p>
+<p>【2】统计学习方法</p>
 
           
         
@@ -2929,7 +3615,7 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
 
 
 
-  <div class="theme-info">Design – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.2.0</div>
+  <div class="theme-info">Design – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.2.0</div>
 
 
 
@@ -3017,9 +3703,7 @@ S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_
   
 
 
-  <script src="/js/affix.js?v=7.2.0"></script>
-
-  <script src="/js/schemes/pisces.js?v=7.2.0"></script>
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
 
 
 
