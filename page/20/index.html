@@ -565,7 +565,7 @@
 <p> 解决</p>
 </blockquote>
 <p>不一定是插入表的问题，要细到stage中看，比如在这里看到</p>
-<p><img src="/2018/04/07/hadoop-spark/spark/spark问题集/pic/image-20190703112452654.png" alt="image-20190703112452654"></p>
+<p><img src="/.io//pic/image-20190703112452654.png" alt="image-20190703112452654"></p>
 <p>实际上是之前逻辑的问题</p>
 
           
@@ -1366,11 +1366,11 @@
 <p>2）预测轨迹，并上报偏离预测的点。为了预测，需要关注速度、朝向等。</p>
 <p>压缩的时候计算误差</p>
 <p>1）perpendicular Euclidean distance</p>
-<p><img src="/2018/04/03/地理信息挖掘/computing with spatial trajectories/Users/david/Library/Application Support/typora-user-images/image-20181005095933362.png" alt="image-20181005095933362"></p>
+<p><img src="/Users/david/Library/Application Support/typora-user-images/image-20181005095933362.png" alt="image-20181005095933362"></p>
 <p>2）synchronized Euclidean distance</p>
 <p>安装时间计算投影的误差</p>
-<p><img src="/2018/04/03/地理信息挖掘/computing with spatial trajectories/Users/david/Library/Application Support/typora-user-images/image-20181005110407128.png" alt="image-20181005110407128"></p>
-<p><img src="/2018/04/03/地理信息挖掘/computing with spatial trajectories/Users/david/Library/Application Support/typora-user-images/image-20181005110439685.png" alt="image-20181005110439685"></p>
+<p><img src="/Users/david/Library/Application Support/typora-user-images/image-20181005110407128.png" alt="image-20181005110407128"></p>
+<p><img src="/Users/david/Library/Application Support/typora-user-images/image-20181005110439685.png" alt="image-20181005110439685"></p>
 <h1 id="去噪音"><a href="#去噪音" class="headerlink" title="去噪音"></a>去噪音</h1><p>P46</p>
 <p>Kalman Filter</p>
 <p>Particle Filter</p>
@@ -1587,10 +1587,10 @@
 <p>使用mapPartitions</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">val a = sc.parallelize(1 to 9, 3)</span><br><span class="line">  def doubleFunc(iter: Iterator[Int]) : Iterator[(Int,Int)] = &#123;</span><br><span class="line">    var res = List[(Int,Int)]()</span><br><span class="line">    while (iter.hasNext)</span><br><span class="line">    &#123;</span><br><span class="line">      val cur = iter.next;</span><br><span class="line">      res .::= (cur,cur*2)</span><br><span class="line">    &#125;</span><br><span class="line">    res.iterator</span><br><span class="line">  &#125;</span><br><span class="line">val result = a.mapPartitions(doubleFunc)</span><br><span class="line">println(result.collect().mkString)</span><br></pre></td></tr></table></figure>
 <h3 id="glom"><a href="#glom" class="headerlink" title="glom"></a>glom</h3><p>将每个RDD分区形成一个数组。</p>
-<p><img src="/2018/04/03/hadoop-spark/spark/spark算子分类及功能/glom.png" alt=""></p>
+<p><img src="/.io//glom.png" alt=""></p>
 <h2 id="多对一型"><a href="#多对一型" class="headerlink" title="多对一型"></a>多对一型</h2><h3 id="union"><a href="#union" class="headerlink" title="union"></a>union</h3><p>++符号相当于union</p>
 <h2 id="cartesian"><a href="#cartesian" class="headerlink" title="cartesian"></a>cartesian</h2><p>对两个RDD中所有元素进行笛卡尔积操作。</p>
-<p><img src="/2018/04/03/hadoop-spark/spark/spark算子分类及功能/cartesian.png" alt=""></p>
+<p><img src="/.io//cartesian.png" alt=""></p>
 <h2 id="多对多型"><a href="#多对多型" class="headerlink" title="多对多型"></a>多对多型</h2><h3 id="groupBy"><a href="#groupBy" class="headerlink" title="groupBy"></a>groupBy</h3><p>例如</p>
 <p>1）将用户数据预处理</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val cleanF = sc.clean(f)</span><br></pre></td></tr></table></figure>
@@ -1600,11 +1600,11 @@
 <h2 id="子集型"><a href="#子集型" class="headerlink" title="子集型"></a>子集型</h2><h3 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h3><h3 id="distinct"><a href="#distinct" class="headerlink" title="distinct"></a>distinct</h3><h3 id="substract"><a href="#substract" class="headerlink" title="substract"></a>substract</h3><p>集合的差操作。RDD1去除RDD2交集中的所有元素。</p>
 <h3 id="sample"><a href="#sample" class="headerlink" title="sample"></a>sample</h3><p>采样。可以设定有放回的采样、百分比、随机种子。</p>
 <h3 id="takeSample"><a href="#takeSample" class="headerlink" title="takeSample"></a>takeSample</h3><p>不使用相对比例采样，而是按设定的采样个数进行采样。同时返回结果也不是RDD，而是相当于对采样后的数据进行Collect()，返回单机的数组。</p>
-<p><img src="/2018/04/03/hadoop-spark/spark/spark算子分类及功能/takeSample.png" alt=""></p>
+<p><img src="/.io//takeSample.png" alt=""></p>
 <h2 id="Cache型"><a href="#Cache型" class="headerlink" title="Cache型"></a>Cache型</h2><h3 id="cache"><a href="#cache" class="headerlink" title="cache"></a>cache</h3><p>将RDD从磁盘缓存到内存，相当于<code>persist(MEMORY_ONLY)</code> 的功能。</p>
-<p><img src="/2018/04/03/hadoop-spark/spark/spark算子分类及功能/cache.png" alt=""></p>
+<p><img src="/.io//cache.png" alt=""></p>
 <h2 id="persist"><a href="#persist" class="headerlink" title="persist"></a>persist</h2><p>缓存到哪里，由StorageLevel枚举类型决定。有以下几种类型的组合：DISK磁盘，MEMORY内存，SER数据是否序列化存储。可以缓存的模式有</p>
-<p><img src="/2018/04/03/hadoop-spark/spark/spark算子分类及功能/persist缓存模式.png" alt=""></p>
+<p><img src="/.io//persist缓存模式.png" alt=""></p>
 <h1 id="Key-Value型Transformation算子"><a href="#Key-Value型Transformation算子" class="headerlink" title="Key-Value型Transformation算子"></a>Key-Value型Transformation算子</h1><h2 id="输入和输出分区一对一"><a href="#输入和输出分区一对一" class="headerlink" title="输入和输出分区一对一"></a>输入和输出分区一对一</h2><h3 id="mapValues"><a href="#mapValues" class="headerlink" title="mapValues"></a>mapValues</h3><p>针对(Key, Value)型数据中的Value进行Map操作，而不对key进行处理。</p>
 <p>比如<code>a=&gt;a+2</code>只对value进行+2操作</p>
 <h2 id="对单个或两个RDD聚集"><a href="#对单个或两个RDD聚集" class="headerlink" title="对单个或两个RDD聚集"></a>对单个或两个RDD聚集</h2><p>单个RDD聚集</p>
@@ -1617,10 +1617,10 @@
 <p><code>mapSideCombine</code> 为了减小传输量,很多combine可以在map端先做。例如,叠加可以先在一个partition中把所有相同的Key的Value叠加，再shuffle。</p>
 <p><code>serializer</code> 传输序列化</p>
 <p>整个过程相当于将元素为<code>(int,int)</code>的转变为了<code>(int, Seq[Int])</code>的RDD。</p>
-<p><img src="/2018/04/03/hadoop-spark/spark/spark算子分类及功能/combineByKey.png" alt=""></p>
+<p><img src="/.io//combineByKey.png" alt=""></p>
 <h3 id="reduceByKey"><a href="#reduceByKey" class="headerlink" title="reduceByKey"></a>reduceByKey</h3><p>是combineByKey的一种简单情况。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">def reduceByKey(partitioner: Partitioner, func: (V, V) =&gt; V): RDD[(K, V)] = &#123;</span><br><span class="line">	combineByKey[V]((v: V) =&gt; v, func, func, partitioner)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><img src="/2018/04/03/hadoop-spark/spark/spark算子分类及功能/reduceByKey.png" alt=""></p>
+<p><img src="/.io//reduceByKey.png" alt=""></p>
 <h3 id="combineByKey和reduceByKey区别"><a href="#combineByKey和reduceByKey区别" class="headerlink" title="combineByKey和reduceByKey区别"></a>combineByKey和reduceByKey区别</h3><p>转自<a href="https://www.zhihu.com/question/45420080/answer/99044117" target="_blank" rel="noopener">请教Spark 中 combinebyKey 和 reduceByKey的传入函数参数的区别？</a>例如：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> testData = sc.parallelize(<span class="type">Seq</span>((<span class="string">"t1"</span>, <span class="number">1</span>), (<span class="string">"t1"</span>, <span class="number">2</span>), (<span class="string">"t1"</span>, <span class="number">3</span>), (<span class="string">"t2"</span>, <span class="number">2</span>), (<span class="string">"t2"</span>, <span class="number">5</span>)))</span><br><span class="line"><span class="keyword">val</span> testDataCombine = testData.combineByKey(x=&gt;x,(x:<span class="type">Int</span>,y:<span class="type">Int</span>)=&gt;x+y,(x:<span class="type">Int</span>,y:<span class="type">Int</span>)=&gt;x+y)</span><br><span class="line"><span class="keyword">val</span> testDataReduce = testData.reduceByKey((x,y)=&gt;x+y)</span><br></pre></td></tr></table></figure>
 <p>combineByKey要指定x和y的Int类型，不然会报错无法识别”+”这个方法符，而reduceByKey不用指派类型。</p>
@@ -1666,7 +1666,7 @@
 <p>先对每个分区的集合进行reduceLeft，结果形成一个元素，再对这个结果做reduceLeft。</p>
 <p>例如，用户自定义函数为</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">f:(A,B)=&gt;(A._1+&quot;@&quot;+B._1,A._2+B._2)</span><br></pre></td></tr></table></figure>
-<p><img src="/2018/04/03/hadoop-spark/spark/spark算子分类及功能/reduce.png" alt=""></p>
+<p><img src="/.io//reduce.png" alt=""></p>
 <h3 id="fold"><a href="#fold" class="headerlink" title="fold"></a>fold</h3><p>和reduce原理相同，接收与reduce接收的函数签名相同的函数，不同点是，另外再加上一个初始值作为第一次调用的结果。</p>
 <h3 id="aggregate"><a href="#aggregate" class="headerlink" title="aggregate"></a>aggregate</h3><p>可以对两个不同类型的元素进行聚合，即支持异构。它先聚合每一个分区里的元素，然后将所有结果返回回来，再用一个给定的conbine方法以及给定的初始值zero value进行聚合。</p>
 <blockquote>
@@ -1866,7 +1866,7 @@
 <p>4、每个Stage中产生相应的Task集合；</p>
 <p>5、TaskScheduler将Task分发到Executor执行。</p>
 <p>6、每个Task对应一个数据块，使用用户定义的函数处理数据块。</p>
-<p><img src="/2018/04/03/hadoop-spark/spark/spark工作机制/spark应用转换流程.png" alt=""></p>
+<p><img src="/.io//spark应用转换流程.png" alt=""></p>
 <h2 id="Spark执行的底层实现原理"><a href="#Spark执行的底层实现原理" class="headerlink" title="Spark执行的底层实现原理"></a>Spark执行的底层实现原理</h2><p>对RDD的块管理通过BlockManager完成。BlockManager将数据抽象为数据块，在内存或磁盘存储。</p>
 <p>在Executor中会创建线程池，tasks通过线程池并发执行。</p>
 <h2 id="Spark应用的概念"><a href="#Spark应用的概念" class="headerlink" title="Spark应用的概念"></a>Spark应用的概念</h2><p>执行模式有Local，Standalone，YARN，Mesos。</p>
@@ -2119,9 +2119,9 @@
 <p>4、最重要的性质：很多不同输入值得到的返回值会均匀分布在S上。</p>
 <p>第4点是评价一个哈希函数优劣的关键，这种均匀分布与输入值出现的规律无关。比如MD5和SHA1算法。</p>
 <h1 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h1><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>假设有一个长度为m的bit类型的数组，即数组中每个位置只占一个bit，每个bit只有0和1两种状态</p>
-<p><img src="/2018/04/01/算法与数据结构/布隆过滤器/bit array.png" alt=""></p>
+<p><img src="/.io//bit array.png" alt=""></p>
 <p>再假设一共有k个哈希函数，这些函数的输出域S都大于或等于m，且这些哈希函数彼此独立。那么对同一个输入对象，经过k个哈希函数算出来的结果也是独立的。对算出来的每个结果都对m取余，然后再bit array上把相应位置设置1。</p>
-<p><img src="/2018/04/01/算法与数据结构/布隆过滤器/bit array mod.png" alt=""></p>
+<p><img src="/.io//bit array mod.png" alt=""></p>
 <p>把bit类型的数组记为bitMap。处理完所有输入对象后，可能bitMap中已经有很多位置被涂黑。至此，一个布隆过滤器生成完毕，这个代表之前所有输入对象组成的集合。</p>
 <p>在检查阶段，如何检查某一个对象是否是之前的某一个输入对象？</p>
 <blockquote>

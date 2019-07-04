@@ -101,19 +101,19 @@
 <meta property="og:site_name" content="Schwimmer&#39;s Blog">
 <meta property="og:description" content="大致分为3类： 1、Value数据类型的Transformation算子。不触发提交作业，针对处理的数据项是Value型的数据。 2、Key-Value型的Transformation算子。针对Key-Value数据对。 3、Action算子。触发SparkContext提交Job。 Value型Transformation算子可以根据RDD变换算子的输入分区与输出分区关系分为以下几个类型：  输">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://schwimmer.github.io/2018/04/03/hadoop-spark/spark/spark算子分类及功能/glom.png">
-<meta property="og:image" content="https://schwimmer.github.io/2018/04/03/hadoop-spark/spark/spark算子分类及功能/cartesian.png">
-<meta property="og:image" content="https://schwimmer.github.io/2018/04/03/hadoop-spark/spark/spark算子分类及功能/takeSample.png">
-<meta property="og:image" content="https://schwimmer.github.io/2018/04/03/hadoop-spark/spark/spark算子分类及功能/cache.png">
-<meta property="og:image" content="https://schwimmer.github.io/2018/04/03/hadoop-spark/spark/spark算子分类及功能/persist缓存模式.png">
-<meta property="og:image" content="https://schwimmer.github.io/2018/04/03/hadoop-spark/spark/spark算子分类及功能/combineByKey.png">
-<meta property="og:image" content="https://schwimmer.github.io/2018/04/03/hadoop-spark/spark/spark算子分类及功能/reduceByKey.png">
-<meta property="og:image" content="https://schwimmer.github.io/2018/04/03/hadoop-spark/spark/spark算子分类及功能/reduce.png">
+<meta property="og:image" content="https://schwimmer.github.io/.io//glom.png">
+<meta property="og:image" content="https://schwimmer.github.io/.io//cartesian.png">
+<meta property="og:image" content="https://schwimmer.github.io/.io//takeSample.png">
+<meta property="og:image" content="https://schwimmer.github.io/.io//cache.png">
+<meta property="og:image" content="https://schwimmer.github.io/.io//persist缓存模式.png">
+<meta property="og:image" content="https://schwimmer.github.io/.io//combineByKey.png">
+<meta property="og:image" content="https://schwimmer.github.io/.io//reduceByKey.png">
+<meta property="og:image" content="https://schwimmer.github.io/.io//reduce.png">
 <meta property="og:updated_time" content="2018-06-22T07:12:16.222Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="spark算子分类及功能">
 <meta name="twitter:description" content="大致分为3类： 1、Value数据类型的Transformation算子。不触发提交作业，针对处理的数据项是Value型的数据。 2、Key-Value型的Transformation算子。针对Key-Value数据对。 3、Action算子。触发SparkContext提交Job。 Value型Transformation算子可以根据RDD变换算子的输入分区与输出分区关系分为以下几个类型：  输">
-<meta name="twitter:image" content="https://schwimmer.github.io/2018/04/03/hadoop-spark/spark/spark算子分类及功能/glom.png">
+<meta name="twitter:image" content="https://schwimmer.github.io/.io//glom.png">
 
 
 
@@ -517,10 +517,10 @@
 <p>使用mapPartitions</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">val a = sc.parallelize(1 to 9, 3)</span><br><span class="line">  def doubleFunc(iter: Iterator[Int]) : Iterator[(Int,Int)] = &#123;</span><br><span class="line">    var res = List[(Int,Int)]()</span><br><span class="line">    while (iter.hasNext)</span><br><span class="line">    &#123;</span><br><span class="line">      val cur = iter.next;</span><br><span class="line">      res .::= (cur,cur*2)</span><br><span class="line">    &#125;</span><br><span class="line">    res.iterator</span><br><span class="line">  &#125;</span><br><span class="line">val result = a.mapPartitions(doubleFunc)</span><br><span class="line">println(result.collect().mkString)</span><br></pre></td></tr></table></figure>
 <h3 id="glom"><a href="#glom" class="headerlink" title="glom"></a>glom</h3><p>将每个RDD分区形成一个数组。</p>
-<p><img src="/2018/04/03/hadoop-spark/spark/spark算子分类及功能/glom.png" alt=""></p>
+<p><img src="/.io//glom.png" alt=""></p>
 <h2 id="多对一型"><a href="#多对一型" class="headerlink" title="多对一型"></a>多对一型</h2><h3 id="union"><a href="#union" class="headerlink" title="union"></a>union</h3><p>++符号相当于union</p>
 <h2 id="cartesian"><a href="#cartesian" class="headerlink" title="cartesian"></a>cartesian</h2><p>对两个RDD中所有元素进行笛卡尔积操作。</p>
-<p><img src="/2018/04/03/hadoop-spark/spark/spark算子分类及功能/cartesian.png" alt=""></p>
+<p><img src="/.io//cartesian.png" alt=""></p>
 <h2 id="多对多型"><a href="#多对多型" class="headerlink" title="多对多型"></a>多对多型</h2><h3 id="groupBy"><a href="#groupBy" class="headerlink" title="groupBy"></a>groupBy</h3><p>例如</p>
 <p>1）将用户数据预处理</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val cleanF = sc.clean(f)</span><br></pre></td></tr></table></figure>
@@ -530,11 +530,11 @@
 <h2 id="子集型"><a href="#子集型" class="headerlink" title="子集型"></a>子集型</h2><h3 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h3><h3 id="distinct"><a href="#distinct" class="headerlink" title="distinct"></a>distinct</h3><h3 id="substract"><a href="#substract" class="headerlink" title="substract"></a>substract</h3><p>集合的差操作。RDD1去除RDD2交集中的所有元素。</p>
 <h3 id="sample"><a href="#sample" class="headerlink" title="sample"></a>sample</h3><p>采样。可以设定有放回的采样、百分比、随机种子。</p>
 <h3 id="takeSample"><a href="#takeSample" class="headerlink" title="takeSample"></a>takeSample</h3><p>不使用相对比例采样，而是按设定的采样个数进行采样。同时返回结果也不是RDD，而是相当于对采样后的数据进行Collect()，返回单机的数组。</p>
-<p><img src="/2018/04/03/hadoop-spark/spark/spark算子分类及功能/takeSample.png" alt=""></p>
+<p><img src="/.io//takeSample.png" alt=""></p>
 <h2 id="Cache型"><a href="#Cache型" class="headerlink" title="Cache型"></a>Cache型</h2><h3 id="cache"><a href="#cache" class="headerlink" title="cache"></a>cache</h3><p>将RDD从磁盘缓存到内存，相当于<code>persist(MEMORY_ONLY)</code> 的功能。</p>
-<p><img src="/2018/04/03/hadoop-spark/spark/spark算子分类及功能/cache.png" alt=""></p>
+<p><img src="/.io//cache.png" alt=""></p>
 <h2 id="persist"><a href="#persist" class="headerlink" title="persist"></a>persist</h2><p>缓存到哪里，由StorageLevel枚举类型决定。有以下几种类型的组合：DISK磁盘，MEMORY内存，SER数据是否序列化存储。可以缓存的模式有</p>
-<p><img src="/2018/04/03/hadoop-spark/spark/spark算子分类及功能/persist缓存模式.png" alt=""></p>
+<p><img src="/.io//persist缓存模式.png" alt=""></p>
 <h1 id="Key-Value型Transformation算子"><a href="#Key-Value型Transformation算子" class="headerlink" title="Key-Value型Transformation算子"></a>Key-Value型Transformation算子</h1><h2 id="输入和输出分区一对一"><a href="#输入和输出分区一对一" class="headerlink" title="输入和输出分区一对一"></a>输入和输出分区一对一</h2><h3 id="mapValues"><a href="#mapValues" class="headerlink" title="mapValues"></a>mapValues</h3><p>针对(Key, Value)型数据中的Value进行Map操作，而不对key进行处理。</p>
 <p>比如<code>a=&gt;a+2</code>只对value进行+2操作</p>
 <h2 id="对单个或两个RDD聚集"><a href="#对单个或两个RDD聚集" class="headerlink" title="对单个或两个RDD聚集"></a>对单个或两个RDD聚集</h2><p>单个RDD聚集</p>
@@ -547,10 +547,10 @@
 <p><code>mapSideCombine</code> 为了减小传输量,很多combine可以在map端先做。例如,叠加可以先在一个partition中把所有相同的Key的Value叠加，再shuffle。</p>
 <p><code>serializer</code> 传输序列化</p>
 <p>整个过程相当于将元素为<code>(int,int)</code>的转变为了<code>(int, Seq[Int])</code>的RDD。</p>
-<p><img src="/2018/04/03/hadoop-spark/spark/spark算子分类及功能/combineByKey.png" alt=""></p>
+<p><img src="/.io//combineByKey.png" alt=""></p>
 <h3 id="reduceByKey"><a href="#reduceByKey" class="headerlink" title="reduceByKey"></a>reduceByKey</h3><p>是combineByKey的一种简单情况。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">def reduceByKey(partitioner: Partitioner, func: (V, V) =&gt; V): RDD[(K, V)] = &#123;</span><br><span class="line">	combineByKey[V]((v: V) =&gt; v, func, func, partitioner)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><img src="/2018/04/03/hadoop-spark/spark/spark算子分类及功能/reduceByKey.png" alt=""></p>
+<p><img src="/.io//reduceByKey.png" alt=""></p>
 <h3 id="combineByKey和reduceByKey区别"><a href="#combineByKey和reduceByKey区别" class="headerlink" title="combineByKey和reduceByKey区别"></a>combineByKey和reduceByKey区别</h3><p>转自<a href="https://www.zhihu.com/question/45420080/answer/99044117" target="_blank" rel="noopener">请教Spark 中 combinebyKey 和 reduceByKey的传入函数参数的区别？</a>例如：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> testData = sc.parallelize(<span class="type">Seq</span>((<span class="string">"t1"</span>, <span class="number">1</span>), (<span class="string">"t1"</span>, <span class="number">2</span>), (<span class="string">"t1"</span>, <span class="number">3</span>), (<span class="string">"t2"</span>, <span class="number">2</span>), (<span class="string">"t2"</span>, <span class="number">5</span>)))</span><br><span class="line"><span class="keyword">val</span> testDataCombine = testData.combineByKey(x=&gt;x,(x:<span class="type">Int</span>,y:<span class="type">Int</span>)=&gt;x+y,(x:<span class="type">Int</span>,y:<span class="type">Int</span>)=&gt;x+y)</span><br><span class="line"><span class="keyword">val</span> testDataReduce = testData.reduceByKey((x,y)=&gt;x+y)</span><br></pre></td></tr></table></figure>
 <p>combineByKey要指定x和y的Int类型，不然会报错无法识别”+”这个方法符，而reduceByKey不用指派类型。</p>
@@ -596,7 +596,7 @@
 <p>先对每个分区的集合进行reduceLeft，结果形成一个元素，再对这个结果做reduceLeft。</p>
 <p>例如，用户自定义函数为</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">f:(A,B)=&gt;(A._1+&quot;@&quot;+B._1,A._2+B._2)</span><br></pre></td></tr></table></figure>
-<p><img src="/2018/04/03/hadoop-spark/spark/spark算子分类及功能/reduce.png" alt=""></p>
+<p><img src="/.io//reduce.png" alt=""></p>
 <h3 id="fold"><a href="#fold" class="headerlink" title="fold"></a>fold</h3><p>和reduce原理相同，接收与reduce接收的函数签名相同的函数，不同点是，另外再加上一个初始值作为第一次调用的结果。</p>
 <h3 id="aggregate"><a href="#aggregate" class="headerlink" title="aggregate"></a>aggregate</h3><p>可以对两个不同类型的元素进行聚合，即支持异构。它先聚合每一个分区里的元素，然后将所有结果返回回来，再用一个给定的conbine方法以及给定的初始值zero value进行聚合。</p>
 <blockquote>
