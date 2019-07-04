@@ -359,7 +359,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark-sql笔记/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/算法与数据结构/最长公共子串/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -379,7 +379,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/hadoop-spark/spark/spark-sql笔记/" class="post-title-link" itemprop="url">spark-sql笔记</a>
+                <a href="/2017/07/12/算法与数据结构/最长公共子串/" class="post-title-link" itemprop="url">最长公共子串</a>
               
             
           </h1>
@@ -419,7 +419,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-01-30 15:49:02" itemprop="dateModified" datetime="2018-01-30T15:49:02+08:00">2018-01-30</time>
+                <time title="修改时间：2018-03-17 20:50:31" itemprop="dateModified" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
               </span>
             
           
@@ -433,7 +433,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法与数据结构/" itemprop="url" rel="index"><span itemprop="name">算法与数据结构</span></a></span>
 
                 
                 
@@ -451,8 +451,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/hadoop-spark/spark/spark-sql笔记/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/spark/spark-sql笔记/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/算法与数据结构/最长公共子串/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/算法与数据结构/最长公共子串/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -485,22 +485,12 @@
       
         
           
-            <p>spark sql可以用基本的SQL语法，或者hiveQL。Spark SQL也能从hive中读数据。</p>
-<p>Data Frame的来源可以是：结构化数据、hive表、外部数据库或者RDD</p>
-<h2 id="Starting-Point-SQLContext"><a href="#Starting-Point-SQLContext" class="headerlink" title="Starting Point: SQLContext"></a>Starting Point: SQLContext</h2><p>The entry point into all functionality in Spark SQL is the <a href="http://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.sql.SQLContext" target="_blank" rel="noopener"><code>SQLContext</code></a> class, or one of its descendants. To create a basic <code>SQLContext</code>, all you need is a SparkContext.</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> sc: <span class="type">SparkContext</span> <span class="comment">// An existing SparkContext.</span></div><div class="line"><span class="keyword">val</span> sqlContext = <span class="keyword">new</span> org.apache.spark.sql.<span class="type">SQLContext</span>(sc)</div><div class="line"></div><div class="line"><span class="comment">// this is used to implicitly convert an RDD to a DataFrame.</span></div><div class="line"><span class="keyword">import</span> sqlContext.implicits._</div></pre></td></tr></table></figure>
-<p>在SQLContext的基础上，也要创建一个HiveContext，可以用Hive的udf，也能读hive表。<br>HiveContext是一个独立的包，不需要安装hive</p>
-<h2 id="Creating-DataFrames"><a href="#Creating-DataFrames" class="headerlink" title="Creating DataFrames"></a>Creating DataFrames</h2><p>With a <code>SQLContext</code>, applications can create <code>DataFrame</code>s from an <a href="http://spark.apache.org/docs/latest/sql-programming-guide.html#interoperating-with-rdds" target="_blank" rel="noopener">existing <code>RDD</code></a>, from a Hive table, or from <a href="http://spark.apache.org/docs/latest/sql-programming-guide.html#data-sources" target="_blank" rel="noopener">data sources</a>.</p>
-<p>As an example, the following creates a <code>DataFrame</code> based on the content of a JSON file:</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> sc: <span class="type">SparkContext</span> <span class="comment">// An existing SparkContext.</span></div><div class="line"><span class="keyword">val</span> sqlContext = <span class="keyword">new</span> org.apache.spark.sql.<span class="type">SQLContext</span>(sc)</div><div class="line"></div><div class="line"><span class="keyword">val</span> df = sqlContext.read.json(<span class="string">"examples/src/main/resources/people.json"</span>)</div><div class="line"></div><div class="line"><span class="comment">// Displays the content of the DataFrame to stdout</span></div><div class="line">df.show()</div></pre></td></tr></table></figure>
-<h2 id="Creating-Datasets"><a href="#Creating-Datasets" class="headerlink" title="Creating Datasets"></a>Creating Datasets</h2><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> org.apache.spark.sql.<span class="type">SQLContext</span></div><div class="line">...</div><div class="line">...</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">// Encoders for most common types are automatically provided by importing sqlContext.implicits._</span></div><div class="line"><span class="keyword">val</span> sqlContext = <span class="type">SQLContext</span>.getOrCreate(sc)</div><div class="line"><span class="keyword">import</span> sqlContext.implicits._</div><div class="line"><span class="keyword">val</span> ds = <span class="type">Seq</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>).toDS()</div><div class="line">ds.map(_ + <span class="number">1</span>).collect() <span class="comment">// Returns: Array(2, 3, 4)</span></div><div class="line"></div><div class="line"><span class="comment">// Encoders are also created for case classes.</span></div><div class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span>(<span class="params">name: <span class="type">String</span>, age: <span class="type">Long</span></span>)</span></div><div class="line"><span class="keyword">val</span> ds = <span class="type">Seq</span>(<span class="type">Person</span>(<span class="string">"Andy"</span>, <span class="number">32</span>)).toDS()</div><div class="line"></div><div class="line"><span class="comment">// DataFrames can be converted to a Dataset by providing a class. Mapping will be done by name.</span></div><div class="line"><span class="keyword">val</span> path = <span class="string">"examples/src/main/resources/people.json"</span></div><div class="line"><span class="keyword">val</span> people = sqlContext.read.json(path).as[<span class="type">Person</span>]</div></pre></td></tr></table></figure>
-<h2 id="在DataFrame中创建表并查询"><a href="#在DataFrame中创建表并查询" class="headerlink" title="在DataFrame中创建表并查询"></a>在DataFrame中创建表并查询</h2><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> sqlContext = <span class="type">SQLContext</span>.getOrCreate(sc)</div><div class="line"><span class="keyword">import</span> sqlContext.implicits._</div><div class="line"></div><div class="line"><span class="comment">//把andy和32匹配到name和age列。</span></div><div class="line"><span class="comment">//先创建一个DataFrame，再注册为table</span></div><div class="line"><span class="keyword">val</span> ds = sc.parallelize(<span class="type">Seq</span>((<span class="string">"Andy"</span>, <span class="number">32</span>))).toDF(<span class="string">"name"</span>,<span class="string">"age"</span>)    </div><div class="line">ds.registerTempTable(<span class="string">"ds1"</span>)</div><div class="line">sqlContext.sql(<span class="string">"select * from ds1"</span>)</div></pre></td></tr></table></figure>
-<h2 id="sparkSQL链接GP"><a href="#sparkSQL链接GP" class="headerlink" title="sparkSQL链接GP"></a>sparkSQL链接GP</h2><p>1、maven中增加包<br>一开始试过8.2的包就不行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;postgresql&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;postgresql&lt;/artifactId&gt;</div><div class="line">    &lt;version&gt;8.3-606.jdbc3&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure></p>
-<p>2、连接jdbc<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> jdbcDF = sqlContext.read.format(<span class="string">"jdbc"</span>).options(</div><div class="line">      <span class="type">Map</span>(<span class="string">"url"</span> -&gt; <span class="string">"jdbc:postgresql://10.1.1.230:5432/xmo_dw"</span>,</div><div class="line">          <span class="string">"user"</span>-&gt;<span class="string">"david_xu"</span>,  </div><div class="line">          <span class="string">"password"</span>-&gt;<span class="string">"w7dtfxHD"</span>,</div><div class="line">        <span class="string">"dbtable"</span> -&gt; <span class="string">"(select * from xmo_dw.bshare_blacklist_tagid) as aa"</span>)).load().show()</div></pre></td></tr></table></figure></p>
-<h2 id="在spark-sql命令行中测试连接"><a href="#在spark-sql命令行中测试连接" class="headerlink" title="在spark sql命令行中测试连接"></a>在spark sql命令行中测试连接</h2><p>/usr/lib/spark/bin/spark-sql —jars /home/david/jars/postgresql-8.3-606.jdbc4.jar</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="type">CREATE</span> <span class="type">TEMPORARY</span> <span class="type">TABLE</span> temp_imageviews</div><div class="line"><span class="type">USING</span> org.apache.spark.sql.jdbc</div><div class="line"><span class="type">OPTIONS</span> (</div><div class="line">  driver <span class="string">"org.postgresql.Driver"</span>,</div><div class="line">  url <span class="string">"jdbc:postgresql://10.1.1.230:5432/xmo_dw"</span>,</div><div class="line">  user <span class="string">"david_xu"</span>,</div><div class="line">  password <span class="string">"w7dtfxHD"</span>,</div><div class="line">  dbtable <span class="string">"(select date_i,opxpid::text from xmo_dw.imageviews where date_i=20160512 limit 20000000) as aa"</span>,</div><div class="line">  numPartitions <span class="string">"6"</span></div><div class="line">);</div></pre></td></tr></table></figure>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">cd /usr/lib/spark/bin/</div><div class="line">/usr/lib/spark/bin/spark-sql <span class="comment">--executor-memory 100g</span></div><div class="line"></div><div class="line">add jar /home/wilson/sparksql/postgresql-8.3-606.jdbc3.jar;</div><div class="line"><span class="keyword">set</span>  spark.sql.shuffle.partitions=<span class="number">20</span>;</div><div class="line"> <span class="keyword">CREATE</span> <span class="keyword">TEMPORARY</span> <span class="keyword">TABLE</span> temp_imageviews</div><div class="line"><span class="keyword">USING</span> org.apache.spark.sql.jdbc</div><div class="line">OPTIONS (</div><div class="line">  driver <span class="string">"org.postgresql.Driver"</span>,</div><div class="line">  <span class="keyword">url</span> <span class="string">"jdbc:postgresql://10.1.1.230:5432/xmo_dw"</span>,</div><div class="line">  <span class="keyword">user</span> <span class="string">"david_xu"</span>,</div><div class="line">  <span class="keyword">password</span> <span class="string">"w7dtfxHD"</span>,</div><div class="line">  dbtable <span class="string">"(select  timeslot,record_server,referring_site ,opxsid  from  xmo_dw.imageviews   where  date_i=20160515 limit  5000000) as aa"</span>,</div><div class="line">  numPartitions <span class="string">"6"</span>);</div></pre></td></tr></table></figure>
-<h3 id="spark-sql读取HDFS建表"><a href="#spark-sql读取HDFS建表" class="headerlink" title="spark sql读取HDFS建表"></a>spark sql读取HDFS建表</h3><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">/usr/lib/spark/bin/spark-sql -e "CREATE TEMPORARY TABLE rtbreq_hour</div><div class="line">USING org.apache.spark.sql.bytes</div><div class="line">OPTIONS (</div><div class="line">  paths '$&#123;rtbreq_path&#125;'</div><div class="line">);</div><div class="line">create TEMPORARY TABLE rtbreq_tanx_hour</div><div class="line">USING org.apache.spark.sql.bytes</div><div class="line">OPTIONS(</div><div class="line"> paths '$&#123;rtbreq_tanx_path&#125;'</div><div class="line">);</div><div class="line">select ip,count(1) cnt from (select ip from rtbreq_hour union all select ip from rtbreq_tanx_hour) a group by ip having cnt &gt; 30 order by cnt desc;</div><div class="line">select bxid,count(1) cnt from (select bxid from rtbreq_hour union all select bxid from rtbreq_tanx_hour) a group by bxid having cnt &gt; 1000 order by cnt desc;</div><div class="line">" &gt; rtbreq/$day/$hour.txt</div></pre></td></tr></table></figure>
+            <p>找出最长子串，需要知道子串的<strong>起始位置</strong>和子串的<strong>长度</strong>。</p>
+<p>因此，维护一个二维数组，存放两个字符串的字符关系，再创建两个变量存放index和maxLen。</p>
+<p><img src="https://segmentfault.com/img/remote/1460000007963599?w=684&amp;h=644" alt=""></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">findLcsNew</span><span class="params">(String str1, String str2)</span> </span>&#123;</div><div class="line">		<span class="keyword">int</span> len1, len2;</div><div class="line">		len1 = str1.length();</div><div class="line">		len2 = str2.length();</div><div class="line">		</div><div class="line">		<span class="keyword">int</span> maxLen = <span class="number">0</span>, index = <span class="number">0</span>;</div><div class="line">		<span class="keyword">int</span>[][] arr = <span class="keyword">new</span> <span class="keyword">int</span>[len1 + <span class="number">1</span>][len2 + <span class="number">1</span>];</div><div class="line">		</div><div class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len1; i++) &#123;</div><div class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; len2; j++) &#123;</div><div class="line">				<span class="keyword">if</span> ( i == <span class="number">0</span> || j == <span class="number">0</span> ) &#123;</div><div class="line">                  <span class="comment">// 第一行和第一列都是0</span></div><div class="line">					arr[i][j] = <span class="number">0</span>;</div><div class="line">				&#125; <span class="keyword">else</span> &#123;</div><div class="line">                  <span class="comment">// 该字符和上一个字符均相等时</span></div><div class="line">					<span class="keyword">if</span> (str1.charAt(i) == str2.charAt(j) &amp;&amp; str1.charAt(i-<span class="number">1</span>) == str2.charAt(j-<span class="number">1</span>)) &#123;</div><div class="line">						arr[i][j] = arr[i-<span class="number">1</span>][j-<span class="number">1</span>] + <span class="number">1</span>;</div><div class="line">					&#125; <span class="keyword">else</span> &#123;</div><div class="line">						arr[i][j] = <span class="number">0</span>;</div><div class="line">					&#125;</div><div class="line">				&#125;</div><div class="line">				</div><div class="line">				<span class="keyword">if</span> (arr[i][j] &gt; maxLen) &#123;</div><div class="line">					maxLen = arr[i][j];</div><div class="line">					index = i;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		String newStr = str1.substring(index - maxLen, index + <span class="number">1</span>);</div><div class="line">		</div><div class="line">		<span class="keyword">return</span> newStr;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>也可以用一维数组实现，同时可以记录多个相同长度的最长子串</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">findLcs</span><span class="params">(String str1, String str2)</span> </span>&#123;</div><div class="line">	StringBuffer buff = <span class="keyword">new</span> StringBuffer();</div><div class="line">	<span class="keyword">int</span> i, j;</div><div class="line">	<span class="keyword">int</span> len1, len2;</div><div class="line">	len1 = str1.length();</div><div class="line">	len2 = str2.length();</div><div class="line">	<span class="keyword">int</span> maxLen = len1 &gt; len2 ? len1 : len2;</div><div class="line">	<span class="keyword">int</span>[] max = <span class="keyword">new</span> <span class="keyword">int</span>[maxLen];</div><div class="line">	<span class="keyword">int</span>[] maxIndex = <span class="keyword">new</span> <span class="keyword">int</span>[maxLen];</div><div class="line">	<span class="keyword">int</span>[] c = <span class="keyword">new</span> <span class="keyword">int</span>[maxLen];</div><div class="line"></div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; len2; i++) &#123;</div><div class="line">		<span class="keyword">for</span> (j = len1 - <span class="number">1</span>; j &gt;= <span class="number">0</span>; j--) &#123;</div><div class="line">			<span class="keyword">if</span> (str2.charAt(i) == str1.charAt(j)) &#123;</div><div class="line">				<span class="keyword">if</span> ((i == <span class="number">0</span>) || (j == <span class="number">0</span>))</div><div class="line">					c[j] = <span class="number">1</span>;</div><div class="line">				<span class="keyword">else</span></div><div class="line">					c[j] = c[j - <span class="number">1</span>] + <span class="number">1</span>;</div><div class="line">			&#125; <span class="keyword">else</span> &#123;</div><div class="line">				c[j] = <span class="number">0</span>;</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			<span class="keyword">if</span> (c[j] &gt; max[<span class="number">0</span>]) &#123; <span class="comment">// 如果是大于那暂时只有一个是最长的,而且要把后面的清0;</span></div><div class="line">				max[<span class="number">0</span>] = c[j];</div><div class="line">				maxIndex[<span class="number">0</span>] = j;</div><div class="line"></div><div class="line">				<span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">1</span>; k &lt; maxLen; k++) &#123;</div><div class="line">					max[k] = <span class="number">0</span>;</div><div class="line">					maxIndex[k] = <span class="number">0</span>;</div><div class="line">				&#125;</div><div class="line">			&#125; <span class="keyword">else</span> <span class="keyword">if</span> (c[j] == max[<span class="number">0</span>]) &#123; <span class="comment">// 有多个是相同长度的子串</span></div><div class="line">				<span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">1</span>; k &lt; maxLen; k++) &#123;</div><div class="line">					<span class="keyword">if</span> (max[k] == <span class="number">0</span>) &#123;</div><div class="line">						max[k] = c[j];</div><div class="line">						maxIndex[k] = j;</div><div class="line">						<span class="keyword">break</span>; <span class="comment">// 在后面加一个就要退出循环了</span></div><div class="line">					&#125;</div><div class="line"></div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; maxLen; j++) &#123;</div><div class="line">		<span class="keyword">if</span> (max[j] &gt; <span class="number">0</span>) &#123;</div><div class="line">			<span class="keyword">for</span> (i = maxIndex[j] - max[j] + <span class="number">1</span>; i &lt;= maxIndex[j]; i++)</div><div class="line">				buff.append(str1.charAt(i));			</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> buff.toString();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 
           
         
@@ -836,6 +826,221 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/" class="post-title-link" itemprop="url">4-1 TensorBoard网络结构</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-03 09:31:14" itemprop="dateModified" datetime="2019-06-03T09:31:14+08:00">2019-06-03</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/深度学习/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-1-tensorboard1/" target="_blank" rel="noopener">https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-1-tensorboard1/</a></p>
+<h2 id="各种不同的优化器"><a href="#各种不同的优化器" class="headerlink" title="各种不同的优化器"></a>各种不同的优化器</h2><p>本次课程，我们会讲到<code>Tensorflow</code>里面的优化器。</p>
+<p>Tensorflow 中的优化器会有很多不同的种类。最基本, 也是最常用的一种就是<code>GradientDescentOptimizer</code>。</p>
+<p><code>Tensorflow</code>提供了7种优化器：</p>
+<h2 id="搭建图纸"><a href="#搭建图纸" class="headerlink" title="搭建图纸"></a>搭建图纸</h2><p>首先从 <code>Input</code> 开始：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># define placeholder for inputs to network</span></div><div class="line">xs = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>])</div><div class="line">ys = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>])</div></pre></td></tr></table></figure>
+<p>对于input我们进行如下修改： 首先，可以为<code>xs</code>指定名称为<code>x_in</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">xs= tf.placeholder(tf.float32, [None, 1],name=&apos;x_in&apos;)</div></pre></td></tr></table></figure>
+<p>然后再次对<code>ys</code>指定名称<code>y_in</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ys= tf.placeholder(tf.loat32, [None, 1],name=&apos;y_in&apos;)</div></pre></td></tr></table></figure>
+<p>使用<code>with tf.name_scope(&#39;inputs&#39;)</code>可以将<code>xs</code>和<code>ys</code>包含进来，形成一个大的图层，图层的名字就是<code>with tf.name_scope()</code>方法里的参数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">with tf.name_scope(&apos;inputs&apos;):</div><div class="line">    # define placeholder for inputs to network</div><div class="line">    xs = tf.placeholder(tf.float32, [None, 1])</div><div class="line">    ys = tf.placeholder(tf.float32, [None, 1])</div></pre></td></tr></table></figure>
+<p>接下来开始编辑<code>layer</code> ， 请看编辑前的程序片段 ：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></div><div class="line">    <span class="comment"># add one more layer and return the output of this layer</span></div><div class="line">    Weights = tf.Variable(tf.random_normal([in_size, out_size]))</div><div class="line">    biases = tf.Variable(tf.zeros([<span class="number">1</span>, out_size]) + <span class="number">0.1</span>)</div><div class="line">    Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</div><div class="line">    <span class="keyword">if</span> activation_function <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">        outputs = Wx_plus_b</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        outputs = activation_function(Wx_plus_b, )</div><div class="line">    <span class="keyword">return</span> outputs</div></pre></td></tr></table></figure>
+<p>这里的名字应该叫layer, 下面是编辑后的:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</div><div class="line">    # add one more layer and return the output of this layer</div><div class="line">    with tf.name_scope(&apos;layer&apos;):</div><div class="line">        Weights= tf.Variable(tf.random_normal([in_size, out_size]))</div><div class="line">        # and so on...</div></pre></td></tr></table></figure>
+<hr>
+<p>在定义完大的框架<code>layer</code>之后，同时也需要定义每一个’框架‘里面的小部件：(Weights biases 和 activation function): 现在现对 <code>Weights</code> 定义： 定义的方法同上，可以使用<code>tf.name.scope()</code>方法，同时也可以在<code>Weights</code>中指定名称<code>W</code>。 即为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></div><div class="line">	<span class="comment">#define layer name</span></div><div class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'layer'</span>):</div><div class="line">        <span class="comment">#define weights name </span></div><div class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'weights'</span>):</div><div class="line">            Weights= tf.Variable(tf.random_normal([in_size, out_size]),name=<span class="string">'W'</span>)</div><div class="line">        <span class="comment">#and so on......</span></div></pre></td></tr></table></figure>
+<p>接着继续定义<code>biases</code> ， 定义方式同上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</div><div class="line">    #define layer name</div><div class="line">    with tf.name_scope(&apos;layer&apos;):</div><div class="line">        #define weights name </div><div class="line">        with tf.name_scope(&apos;weights&apos;)</div><div class="line">            Weights= tf.Variable(tf.random_normal([in_size, out_size]),name=&apos;W&apos;)</div><div class="line">        # define biase</div><div class="line">        with tf.name_scope(&apos;Wx_plus_b&apos;):</div><div class="line">            Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</div><div class="line">        # and so on....</div></pre></td></tr></table></figure>
+<p><code>activation_function</code> 的话，可以暂时忽略。因为当你自己选择用 tensorflow 中的激励函数（activation function）的时候，tensorflow会默认添加名称。 最终，layer形式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</div><div class="line">    # add one more layer and return the output of this layer</div><div class="line">    with tf.name_scope(&apos;layer&apos;):</div><div class="line">        with tf.name_scope(&apos;weights&apos;):</div><div class="line">            Weights = tf.Variable(</div><div class="line">            tf.random_normal([in_size, out_size]), </div><div class="line">            name=&apos;W&apos;)</div><div class="line">        with tf.name_scope(&apos;biases&apos;):</div><div class="line">            biases = tf.Variable(</div><div class="line">            tf.zeros([1, out_size]) + 0.1, </div><div class="line">            name=&apos;b&apos;)</div><div class="line">        with tf.name_scope(&apos;Wx_plus_b&apos;):</div><div class="line">            Wx_plus_b = tf.add(</div><div class="line">            tf.matmul(inputs, Weights), </div><div class="line">            biases)</div><div class="line">        if activation_function is None:</div><div class="line">            outputs = Wx_plus_b</div><div class="line">        else:</div><div class="line">            outputs = activation_function(Wx_plus_b, )</div><div class="line">        return outputs</div></pre></td></tr></table></figure>
+<p>最后编辑<code>loss</code>部分：将<code>with tf.name_scope()</code>添加在<code>loss</code>上方，并为它起名为<code>loss</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"># the error between prediciton and real data</div><div class="line">with tf.name_scope(&apos;loss&apos;):</div><div class="line">    loss = tf.reduce_mean(</div><div class="line">    tf.reduce_sum(</div><div class="line">    tf.square(ys - prediction),</div><div class="line">    eduction_indices=[1]</div><div class="line">    ))</div></pre></td></tr></table></figure>
+<p>使用<code>with tf.name_scope()</code>再次对<code>train_step</code>部分进行编辑,如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">with tf.name_scope(&apos;train&apos;):</div><div class="line">    train_step = tf.train.GradientDescentOptimizer(0.1).minimize(loss)</div></pre></td></tr></table></figure>
+<p>我们需要使用 <code>tf.summary.FileWriter()</code> (<code>tf.train.SummaryWriter()</code> 这种方式已经在 tf &gt;= 0.12 版本中摒弃) 将上面‘绘画’出的图保存到一个目录中，以方便后期在浏览器中可以浏览。 这个方法中的第二个参数需要使用<code>sess.graph</code> ， 因此我们需要把这句话放在获取<code>session</code>的后面。 这里的<code>graph</code>是将前面定义的框架信息收集起来，然后放在<code>logs/</code>目录下面。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sess = tf.Session() # get session</div><div class="line"># tf.train.SummaryWriter soon be deprecated, use following</div><div class="line">writer = tf.summary.FileWriter(&quot;logs/&quot;, sess.graph)</div></pre></td></tr></table></figure>
+<p>请确保你的 tensorboard 指令是在你的 logs 文件根目录执行的. 如果在其他目录下, 比如 <code>Desktop</code> 等, 可能不会成功看到图. 比如在下面这个目录, 你要 cd 到 <code>project</code> 这个地方执行 <code>/project &gt; tensorboard --logdir logs</code></p>
+<p>完整代码在</p>
+<p><a href="https://github.com/MorvanZhou/tutorials/blob/master/tensorflowTUT/tf14_tensorboard/full_code.py" target="_blank" rel="noopener">https://github.com/MorvanZhou/tutorials/blob/master/tensorflowTUT/tf14_tensorboard/full_code.py</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># View more python learning tutorial on my Youtube and Youku channel!!!</span></div><div class="line"></div><div class="line"><span class="comment"># Youtube video tutorial: https://www.youtube.com/channel/UCdyjiB5H8Pu7aDTNVXTTpcg</span></div><div class="line"><span class="comment"># Youku video tutorial: http://i.youku.com/pythontutorial</span></div><div class="line"></div><div class="line"><span class="string">"""</span></div><div class="line">Please note, this code is only for python 3+. If you are using python 2+, please modify the code accordingly.</div><div class="line">"""</div><div class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span> print_function</div><div class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></div><div class="line">    <span class="comment"># add one more layer and return the output of this layer</span></div><div class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'layer'</span>):</div><div class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'weights'</span>):</div><div class="line">            Weights = tf.Variable(tf.random_normal([in_size, out_size]), name=<span class="string">'W'</span>)</div><div class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'biases'</span>):</div><div class="line">            biases = tf.Variable(tf.zeros([<span class="number">1</span>, out_size]) + <span class="number">0.1</span>, name=<span class="string">'b'</span>)</div><div class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'Wx_plus_b'</span>):</div><div class="line">            Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</div><div class="line">        <span class="keyword">if</span> activation_function <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">            outputs = Wx_plus_b</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            outputs = activation_function(Wx_plus_b, )</div><div class="line">        <span class="keyword">return</span> outputs</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment"># define placeholder for inputs to network</span></div><div class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'inputs'</span>):</div><div class="line">    xs = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>], name=<span class="string">'x_input'</span>)</div><div class="line">    ys = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>], name=<span class="string">'y_input'</span>)</div><div class="line"></div><div class="line"><span class="comment"># add hidden layer</span></div><div class="line">l1 = add_layer(xs, <span class="number">1</span>, <span class="number">10</span>, activation_function=tf.nn.relu)</div><div class="line"><span class="comment"># add output layer</span></div><div class="line">prediction = add_layer(l1, <span class="number">10</span>, <span class="number">1</span>, activation_function=<span class="keyword">None</span>)</div><div class="line"></div><div class="line"><span class="comment"># the error between prediciton and real data</span></div><div class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'loss'</span>):</div><div class="line">    loss = tf.reduce_mean(tf.reduce_sum(tf.square(ys - prediction),</div><div class="line">                                        reduction_indices=[<span class="number">1</span>]))</div><div class="line"></div><div class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'train'</span>):</div><div class="line">    train_step = tf.train.GradientDescentOptimizer(<span class="number">0.1</span>).minimize(loss)</div><div class="line"></div><div class="line">sess = tf.Session()</div><div class="line"></div><div class="line"><span class="comment"># tf.train.SummaryWriter soon be deprecated, use following</span></div><div class="line"><span class="keyword">if</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">1</span>]) &lt; <span class="number">12</span> <span class="keyword">and</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">0</span>]) &lt; <span class="number">1</span>:  <span class="comment"># tensorflow version &lt; 0.12</span></div><div class="line">    writer = tf.train.SummaryWriter(<span class="string">'logs/'</span>, sess.graph)</div><div class="line"><span class="keyword">else</span>: <span class="comment"># tensorflow version &gt;= 0.12</span></div><div class="line">    writer = tf.summary.FileWriter(<span class="string">"logs/"</span>, sess.graph)</div><div class="line"></div><div class="line"><span class="comment"># tf.initialize_all_variables() no long valid from</span></div><div class="line"><span class="comment"># 2017-03-02 if using tensorflow &gt;= 0.12</span></div><div class="line"><span class="keyword">if</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">1</span>]) &lt; <span class="number">12</span> <span class="keyword">and</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">0</span>]) &lt; <span class="number">1</span>:</div><div class="line">    init = tf.initialize_all_variables()</div><div class="line"><span class="keyword">else</span>:</div><div class="line">    init = tf.global_variables_initializer()</div><div class="line">sess.run(init)</div><div class="line"></div><div class="line"><span class="comment"># direct to the local dir and run this in terminal:</span></div><div class="line"><span class="comment"># $ tensorboard --logdir=logs</span></div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/pig笔记/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1042,7 +1247,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/算法与数据结构/查找树/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark-streaming笔记/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -1062,7 +1267,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/算法与数据结构/查找树/" class="post-title-link" itemprop="url">查找树</a>
+                <a href="/2017/07/12/hadoop-spark/spark/spark-streaming笔记/" class="post-title-link" itemprop="url">spark-streaming笔记</a>
               
             
           </h1>
@@ -1102,7 +1307,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2017-07-16 12:44:24" itemprop="dateModified" datetime="2017-07-16T12:44:24+08:00">2017-07-16</time>
+                <time title="修改时间：2018-01-30 15:47:26" itemprop="dateModified" datetime="2018-01-30T15:47:26+08:00">2018-01-30</time>
               </span>
             
           
@@ -1116,7 +1321,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法与数据结构/" itemprop="url" rel="index"><span itemprop="name">算法与数据结构</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
 
                 
                 
@@ -1134,8 +1339,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/算法与数据结构/查找树/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/算法与数据结构/查找树/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/hadoop-spark/spark/spark-streaming笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/spark/spark-streaming笔记/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1168,47 +1373,18 @@
       
         
           
-            <p><strong>动态查找树主要有：二叉查找树（Binary Search Tree），平衡二叉查找树（Balanced Binary Search Tree），红黑树 (Red-Black Tree )，B-tree/B+-tree/ B*-tree (B~Tree)。前三者是典型的二叉查找树结构，其查找的时间复杂度*</strong>O<em>(log2</em>N<em>)<em>*与树的深度相关，那么降低树的深度自然对查找效率是有所提高的；还有一个实际问题：就是大规模数据存储中，实现索引查询这样一个实际背景下，树节点存储的元素数量是有限的（如果元素数量非常多的话，查找就退化成节点内部的线性查找了），这样导致二叉查找树结构由于树的深度过大而造成磁盘I/O读写过于频繁，进而导致查询效率低下（为什么会出现这种情况，待会在外部存储器-磁盘中有所解释），那么如何减少树的深度（当然是不能减少查询的数据量），一个基本的想法就是：采用多叉树结构（由于树节点元素数量是有限的，自然该节点的子树数量也就是有限的）。</em></em></p>
-<p><strong>这样我们就提出了一个新的查找树结构——多路查找树。根据平衡二叉树的启发，自然就想到平衡多路查找树结构，也就是B树</strong></p>
-<h1 id="1、B树"><a href="#1、B树" class="headerlink" title="1、B树"></a>1、B树</h1><h2 id="1-1-原理"><a href="#1-1-原理" class="headerlink" title="1.1 原理"></a>1.1 原理</h2><p>二叉搜索树：</p>
-<ol>
-<li>所有非叶子结点至多拥有两个儿子（ Left 和 Right ）；</li>
-<li>所有结点存储一个关键字；</li>
-<li>非叶子结点的左指针指向小于其关键字的子树，右指针指向大于其关键字的子树；</li>
-</ol>
-<p><img src="http://static.oschina.net/uploads/img/201301/06112317_yHxY.jpg" alt=""></p>
-<h2 id="1-2-搜索方法"><a href="#1-2-搜索方法" class="headerlink" title="1.2 搜索方法"></a>1.2 搜索方法</h2><p> B 树的搜索，从根结点开始，如果查询的关键字与结点的关键字相等，那么就命中；否则，如果查询关键字比 结点关键字小，就进入左儿子；如果比结点关键字大，就进入右儿子；如果左儿子或右儿子的指针为空，则报告找不到相应的关键字；</p>
-<p> 如果 B 树的所有非叶子结点的左右子树的 结点数目均保持差不多（平衡），那么 B 树的搜索性能逼近二分查找；但它比连续内存空间的二分查找的优点是，改变 B 树结构（插入与删除结点）不需要移动大段的内存数据，甚至通常是常数开销；如</p>
-<p><img src="http://static.oschina.net/uploads/img/201301/06112317_ssDu.jpg" alt=""></p>
-<p>但 B 树在经过多次插入与删除后，有可能导致不同的结构：</p>
-<p><img src="http://static.oschina.net/uploads/img/201301/06112317_NTuh.jpg" alt=""></p>
-<p>右边也是一个 B 树，但 它的搜索性能已经是线性的了；同样的关键字集合有可能导致不同的树结构索引；所以，使用 B 树还 要考虑尽可能让 B 树保持左图的结构，和避免右图的结构，也就是所谓的“平衡”问题；       </p>
-<p>实际使用的 B 树都是在原 B 树的基 础上加上平衡算法，即“平衡二叉树”；如何保持 B 树结点分布均匀的平衡算法是平衡二叉树的 关键；<strong>平衡算法</strong>是一种在 B 树中插入和删除结点的策略；</p>
-<h1 id="2、B-树"><a href="#2、B-树" class="headerlink" title="2、B-树"></a>2、B-树</h1><h2 id="1-1-原理-1"><a href="#1-1-原理-1" class="headerlink" title="1.1 原理"></a>1.1 原理</h2><p>是一种多路搜索树（并不是二叉的）：</p>
-<p>​       1. 定义任意非叶子结点最多只有 M 个儿 子；且 M&gt;2 ；</p>
-<p>​       2. 根结点的儿子数为 [2, M] ；</p>
-<p>​       3. 除根结点以外的非叶子结点的儿子数为 [M/2, M] ；</p>
-<p>​       4. 每个结点存放至少 M/2-1 （取 上整）和至多 M-1 个关键字；（至少 2 个关键 字）</p>
-<p>​       5. 非叶子结点的关键字个数 = 指向儿 子的指针个数 -1 ；</p>
-<p>​       6. 非叶子结点的关键字： K[1], K[2], …, K[M-1] ；且 K[i] &lt; K[i+1] ；</p>
-<p>​       7. 非叶子结点的指针： P[1], P[2], …, P[M] ；其中 P[1] 指向关键字小于 K[1] 的子树， P[M] 指向关键字大于K[M-1] 的子树，其它 P[i] 指 向关键字属于 (K[i-1], K[i]) 的子树；</p>
-<p>​       8. 所有叶子结点位于同一层；</p>
-<p>如：（ M=3 ）</p>
-<p><img src="http://static.oschina.net/uploads/img/201301/06112317_djvw.jpg" alt=""></p>
-<p>B- 树的特性：</p>
-<p>​       1. 关键字集合分布在整颗树中；</p>
-<p>​       2. 任何一个关键字出现且只出现在一个结点中；</p>
-<p>​       3. 搜索有可能在非叶子结点结束；</p>
-<p>​       4. 其搜索性能等价于在关键字全集内做一次二分查找；</p>
-<p>​       5. 自动层次控制；</p>
-<p>​       由于限制了除根结点以外的非叶子结点，至少含有 M/2 个儿子，确保了结点的至少利用率，其最底搜索性能为：</p>
-<p><img src="http://static.oschina.net/uploads/img/201301/06112318_AOeO.jpg" alt=""></p>
-<p> 其中， M 为设定的非叶子结点最多子树个 数， N 为关键字总数；</p>
-<p>​       所以 B- 树的性能<strong>总是等价于二分查找 （与 M 值无关）</strong>，也就没有 B 树平衡 的问题；</p>
-<p>​       由于 M/2 的限制，在插入结点时，如果 结点已满，需要将结点分裂为两个各占 M/2 的结点；删除结点时，需将两个不足 M/2 的 兄弟结点合并；</p>
-<h2 id="1-2-方法"><a href="#1-2-方法" class="headerlink" title="1.2 方法"></a>1.2 方法</h2><p>参考</p>
-<p><a href="http://www.oschina.net/question/565065_86338" target="_blank" rel="noopener">BTree,B-Tree,B+Tree,B*Tree都是什么</a></p>
-<p><a href="http://blog.csdn.net/hbhhww/article/details/8206846" target="_blank" rel="noopener">B-tree/B+tree/B*tree</a></p>
+            <h1 id="spark-streaming的示例"><a href="#spark-streaming的示例" class="headerlink" title="spark streaming的示例"></a>spark streaming的示例</h1><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span>   <span class="title">main</span> </span>( args : <span class="type">Array</span>[ <span class="type">String</span> ]): <span class="type">Unit</span> = &#123;</div><div class="line">         <span class="comment">//关闭一些不必要的日志</span></div><div class="line">        <span class="type">Logger</span>. getLogger ( <span class="string">"org.apache.spark"</span> ). setLevel (<span class="type">Level</span>. <span class="type">WARN</span> )</div><div class="line">        <span class="type">Logger</span>. getLogger ( <span class="string">"org.eclipse.jetty.server"</span> ). setLevel (<span class="type">Level</span>. <span class="type">OFF</span> )</div><div class="line">      </div><div class="line">         <span class="keyword">val</span>   conf  =  <span class="keyword">new</span>  <span class="type">SparkConf</span>(). setAppName ( <span class="string">"wordStreaming"</span> ). setMaster ( <span class="string">"local[2]"</span> ).</div><div class="line">         set ( <span class="string">"spark.sql.shuffle.partitions"</span> , <span class="string">"10"</span> ). set ( <span class="string">"spark.network.timeout"</span> , <span class="string">"30s"</span> )</div><div class="line">        . set ( <span class="string">"spark.shuffle.compress"</span> , <span class="string">"true"</span> ). set ( <span class="string">"spark.shuffle.spill.compress"</span> , <span class="string">"true"</span> )</div><div class="line">        . set ( <span class="string">"spark.shuffle.manager"</span> , <span class="string">"sort"</span> )</div><div class="line">         <span class="keyword">val</span>   sc  =  <span class="keyword">new</span>  <span class="type">SparkContext</span>( conf )</div><div class="line">        </div><div class="line">         <span class="comment">// 创建 StreamingContext，1 秒一个批次。这里要用 sc ，而不是 conf ，因为 sc 已经创建了</span></div><div class="line">         <span class="keyword">val</span>   ssc  =  <span class="keyword">new</span>  <span class="type">StreamingContext</span>( sc ,  <span class="type">Seconds</span> ( <span class="number">1</span> ))</div><div class="line">         <span class="comment">// 获得一个 DStream 负责连接 监听端口:地址</span></div><div class="line">         <span class="keyword">val</span>   lines  =  ssc . socketTextStream ( <span class="string">"192.168.37.129"</span> ,  <span class="number">9999</span> )</div><div class="line">         <span class="comment">// 对每一行数据执行 Split 操作</span></div><div class="line">         <span class="keyword">val</span>   words  =  lines . flatMap ( _. split ( <span class="string">" "</span> ) )</div><div class="line">         <span class="comment">// 统计 word 的数量</span></div><div class="line">         <span class="keyword">val</span>   pairs  =  words . map ( word  =&gt; ( word ,  <span class="number">1</span> ))</div><div class="line">         <span class="keyword">val</span>   wordCounts  =  pairs . reduceByKey (_  +  _)</div><div class="line">         <span class="comment">// 输出结果</span></div><div class="line">         wordCounts . print ()</div><div class="line">        </div><div class="line">         ssc . start ()</div><div class="line">         ssc . awaitTermination () &#125;</div></pre></td></tr></table></figure>
+<p>一开始会报错：<br>Exception in thread “main”  org.apache.spark.SparkException : Only one SparkContext may be running in this JVM (see SPARK-2243). To ignore this error, set spark.driver.allowMultipleContexts = true. The currently running SparkContext was created at: org.apache.spark.SparkContext.<init>( SparkContext.scala:82 )</init></p>
+<p>错误是在<br>val   ssc  =  new  StreamingContext( conf ,  Seconds ( 1 ))   </p>
+<p>因为之前sc已经创建了，所以这里的conf要改成sc</p>
+<p>之后，在 192.168.37.129上启动netcat<br>nc -lk 9999<br>输入hello world</p>
+<p>再启动spark的程序，可以看出会输出<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Time: 1462790166000 ms</div><div class="line"></div><div class="line">(hello,1)</div><div class="line">(world,1)</div></pre></td></tr></table></figure></p>
+<h1 id="streaming读取本地文件"><a href="#streaming读取本地文件" class="headerlink" title="streaming读取本地文件"></a>streaming读取本地文件</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">val lines = ssc.textFileStream(&quot;E:\\spark&quot;)</div></pre></td></tr></table></figure>
+<p>每当该文件夹内有新文件生成，就会自动读取</p>
+<blockquote>
+<p>Spark Streaming将会监控dataDirectory目录，并且处理目录下生成的任何文件（嵌套目录不被支持）。需要注意一下三点：<br>1 所有文件必须具有相同的数据格式<br>2 所有文件必须在<code>dataDirectory</code>目录下创建，文件是自动的移动和重命名到数据目录下<br>3 一旦移动，文件必须被修改。所以如果文件被持续的附加数据，新的数据不会被读取。<br>对于简单的文本文件，有一个更简单的方法streamingContext.textFileStream(dataDirectory)可以被调用。文件流不需要运行一个receiver，所以不需要分配核。</p>
+</blockquote>
+<h1 id="spark-streaming连接kafka"><a href="#spark-streaming连接kafka" class="headerlink" title="spark streaming连接kafka"></a>spark streaming连接kafka</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">val topics = Set(&quot;test1&quot;)</div><div class="line">val kafkaParm = Map(&quot;metadata.broker.list&quot; -&gt; &quot;192.168.255.128:9092&quot;)</div></pre></td></tr></table></figure>
 
           
         
@@ -1265,7 +1441,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/"/>
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/hive笔记-orc格式读写/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer"/>
@@ -1285,7 +1461,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/" class="post-title-link" itemprop="url">4-1 TensorBoard网络结构</a>
+                <a href="/2017/07/12/hadoop-spark/hive笔记-orc格式读写/" class="post-title-link" itemprop="url">hive笔记-orc格式读写</a>
               
             
           </h1>
@@ -1325,7 +1501,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-06-03 09:31:14" itemprop="dateModified" datetime="2019-06-03T09:31:14+08:00">2019-06-03</time>
+                <time title="修改时间：2018-01-30 15:52:38" itemprop="dateModified" datetime="2018-01-30T15:52:38+08:00">2018-01-30</time>
               </span>
             
           
@@ -1339,7 +1515,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/深度学习/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
 
                 
                 
@@ -1357,8 +1533,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/hadoop-spark/hive笔记-orc格式读写/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/hive笔记-orc格式读写/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1391,39 +1567,9 @@
       
         
           
-            <p><a href="https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-1-tensorboard1/" target="_blank" rel="noopener">https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-1-tensorboard1/</a></p>
-<h2 id="各种不同的优化器"><a href="#各种不同的优化器" class="headerlink" title="各种不同的优化器"></a>各种不同的优化器</h2><p>本次课程，我们会讲到<code>Tensorflow</code>里面的优化器。</p>
-<p>Tensorflow 中的优化器会有很多不同的种类。最基本, 也是最常用的一种就是<code>GradientDescentOptimizer</code>。</p>
-<p><code>Tensorflow</code>提供了7种优化器：</p>
-<h2 id="搭建图纸"><a href="#搭建图纸" class="headerlink" title="搭建图纸"></a>搭建图纸</h2><p>首先从 <code>Input</code> 开始：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># define placeholder for inputs to network</span></div><div class="line">xs = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>])</div><div class="line">ys = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>])</div></pre></td></tr></table></figure>
-<p>对于input我们进行如下修改： 首先，可以为<code>xs</code>指定名称为<code>x_in</code>:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">xs= tf.placeholder(tf.float32, [None, 1],name=&apos;x_in&apos;)</div></pre></td></tr></table></figure>
-<p>然后再次对<code>ys</code>指定名称<code>y_in</code>:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ys= tf.placeholder(tf.loat32, [None, 1],name=&apos;y_in&apos;)</div></pre></td></tr></table></figure>
-<p>使用<code>with tf.name_scope(&#39;inputs&#39;)</code>可以将<code>xs</code>和<code>ys</code>包含进来，形成一个大的图层，图层的名字就是<code>with tf.name_scope()</code>方法里的参数。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">with tf.name_scope(&apos;inputs&apos;):</div><div class="line">    # define placeholder for inputs to network</div><div class="line">    xs = tf.placeholder(tf.float32, [None, 1])</div><div class="line">    ys = tf.placeholder(tf.float32, [None, 1])</div></pre></td></tr></table></figure>
-<p>接下来开始编辑<code>layer</code> ， 请看编辑前的程序片段 ：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></div><div class="line">    <span class="comment"># add one more layer and return the output of this layer</span></div><div class="line">    Weights = tf.Variable(tf.random_normal([in_size, out_size]))</div><div class="line">    biases = tf.Variable(tf.zeros([<span class="number">1</span>, out_size]) + <span class="number">0.1</span>)</div><div class="line">    Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</div><div class="line">    <span class="keyword">if</span> activation_function <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">        outputs = Wx_plus_b</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        outputs = activation_function(Wx_plus_b, )</div><div class="line">    <span class="keyword">return</span> outputs</div></pre></td></tr></table></figure>
-<p>这里的名字应该叫layer, 下面是编辑后的:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</div><div class="line">    # add one more layer and return the output of this layer</div><div class="line">    with tf.name_scope(&apos;layer&apos;):</div><div class="line">        Weights= tf.Variable(tf.random_normal([in_size, out_size]))</div><div class="line">        # and so on...</div></pre></td></tr></table></figure>
-<hr>
-<p>在定义完大的框架<code>layer</code>之后，同时也需要定义每一个’框架‘里面的小部件：(Weights biases 和 activation function): 现在现对 <code>Weights</code> 定义： 定义的方法同上，可以使用<code>tf.name.scope()</code>方法，同时也可以在<code>Weights</code>中指定名称<code>W</code>。 即为：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></div><div class="line">	<span class="comment">#define layer name</span></div><div class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'layer'</span>):</div><div class="line">        <span class="comment">#define weights name </span></div><div class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'weights'</span>):</div><div class="line">            Weights= tf.Variable(tf.random_normal([in_size, out_size]),name=<span class="string">'W'</span>)</div><div class="line">        <span class="comment">#and so on......</span></div></pre></td></tr></table></figure>
-<p>接着继续定义<code>biases</code> ， 定义方式同上。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</div><div class="line">    #define layer name</div><div class="line">    with tf.name_scope(&apos;layer&apos;):</div><div class="line">        #define weights name </div><div class="line">        with tf.name_scope(&apos;weights&apos;)</div><div class="line">            Weights= tf.Variable(tf.random_normal([in_size, out_size]),name=&apos;W&apos;)</div><div class="line">        # define biase</div><div class="line">        with tf.name_scope(&apos;Wx_plus_b&apos;):</div><div class="line">            Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</div><div class="line">        # and so on....</div></pre></td></tr></table></figure>
-<p><code>activation_function</code> 的话，可以暂时忽略。因为当你自己选择用 tensorflow 中的激励函数（activation function）的时候，tensorflow会默认添加名称。 最终，layer形式如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</div><div class="line">    # add one more layer and return the output of this layer</div><div class="line">    with tf.name_scope(&apos;layer&apos;):</div><div class="line">        with tf.name_scope(&apos;weights&apos;):</div><div class="line">            Weights = tf.Variable(</div><div class="line">            tf.random_normal([in_size, out_size]), </div><div class="line">            name=&apos;W&apos;)</div><div class="line">        with tf.name_scope(&apos;biases&apos;):</div><div class="line">            biases = tf.Variable(</div><div class="line">            tf.zeros([1, out_size]) + 0.1, </div><div class="line">            name=&apos;b&apos;)</div><div class="line">        with tf.name_scope(&apos;Wx_plus_b&apos;):</div><div class="line">            Wx_plus_b = tf.add(</div><div class="line">            tf.matmul(inputs, Weights), </div><div class="line">            biases)</div><div class="line">        if activation_function is None:</div><div class="line">            outputs = Wx_plus_b</div><div class="line">        else:</div><div class="line">            outputs = activation_function(Wx_plus_b, )</div><div class="line">        return outputs</div></pre></td></tr></table></figure>
-<p>最后编辑<code>loss</code>部分：将<code>with tf.name_scope()</code>添加在<code>loss</code>上方，并为它起名为<code>loss</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"># the error between prediciton and real data</div><div class="line">with tf.name_scope(&apos;loss&apos;):</div><div class="line">    loss = tf.reduce_mean(</div><div class="line">    tf.reduce_sum(</div><div class="line">    tf.square(ys - prediction),</div><div class="line">    eduction_indices=[1]</div><div class="line">    ))</div></pre></td></tr></table></figure>
-<p>使用<code>with tf.name_scope()</code>再次对<code>train_step</code>部分进行编辑,如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">with tf.name_scope(&apos;train&apos;):</div><div class="line">    train_step = tf.train.GradientDescentOptimizer(0.1).minimize(loss)</div></pre></td></tr></table></figure>
-<p>我们需要使用 <code>tf.summary.FileWriter()</code> (<code>tf.train.SummaryWriter()</code> 这种方式已经在 tf &gt;= 0.12 版本中摒弃) 将上面‘绘画’出的图保存到一个目录中，以方便后期在浏览器中可以浏览。 这个方法中的第二个参数需要使用<code>sess.graph</code> ， 因此我们需要把这句话放在获取<code>session</code>的后面。 这里的<code>graph</code>是将前面定义的框架信息收集起来，然后放在<code>logs/</code>目录下面。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sess = tf.Session() # get session</div><div class="line"># tf.train.SummaryWriter soon be deprecated, use following</div><div class="line">writer = tf.summary.FileWriter(&quot;logs/&quot;, sess.graph)</div></pre></td></tr></table></figure>
-<p>请确保你的 tensorboard 指令是在你的 logs 文件根目录执行的. 如果在其他目录下, 比如 <code>Desktop</code> 等, 可能不会成功看到图. 比如在下面这个目录, 你要 cd 到 <code>project</code> 这个地方执行 <code>/project &gt; tensorboard --logdir logs</code></p>
-<p>完整代码在</p>
-<p><a href="https://github.com/MorvanZhou/tutorials/blob/master/tensorflowTUT/tf14_tensorboard/full_code.py" target="_blank" rel="noopener">https://github.com/MorvanZhou/tutorials/blob/master/tensorflowTUT/tf14_tensorboard/full_code.py</a></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># View more python learning tutorial on my Youtube and Youku channel!!!</span></div><div class="line"></div><div class="line"><span class="comment"># Youtube video tutorial: https://www.youtube.com/channel/UCdyjiB5H8Pu7aDTNVXTTpcg</span></div><div class="line"><span class="comment"># Youku video tutorial: http://i.youku.com/pythontutorial</span></div><div class="line"></div><div class="line"><span class="string">"""</span></div><div class="line">Please note, this code is only for python 3+. If you are using python 2+, please modify the code accordingly.</div><div class="line">"""</div><div class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span> print_function</div><div class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></div><div class="line">    <span class="comment"># add one more layer and return the output of this layer</span></div><div class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'layer'</span>):</div><div class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'weights'</span>):</div><div class="line">            Weights = tf.Variable(tf.random_normal([in_size, out_size]), name=<span class="string">'W'</span>)</div><div class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'biases'</span>):</div><div class="line">            biases = tf.Variable(tf.zeros([<span class="number">1</span>, out_size]) + <span class="number">0.1</span>, name=<span class="string">'b'</span>)</div><div class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'Wx_plus_b'</span>):</div><div class="line">            Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</div><div class="line">        <span class="keyword">if</span> activation_function <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">            outputs = Wx_plus_b</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            outputs = activation_function(Wx_plus_b, )</div><div class="line">        <span class="keyword">return</span> outputs</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment"># define placeholder for inputs to network</span></div><div class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'inputs'</span>):</div><div class="line">    xs = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>], name=<span class="string">'x_input'</span>)</div><div class="line">    ys = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>], name=<span class="string">'y_input'</span>)</div><div class="line"></div><div class="line"><span class="comment"># add hidden layer</span></div><div class="line">l1 = add_layer(xs, <span class="number">1</span>, <span class="number">10</span>, activation_function=tf.nn.relu)</div><div class="line"><span class="comment"># add output layer</span></div><div class="line">prediction = add_layer(l1, <span class="number">10</span>, <span class="number">1</span>, activation_function=<span class="keyword">None</span>)</div><div class="line"></div><div class="line"><span class="comment"># the error between prediciton and real data</span></div><div class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'loss'</span>):</div><div class="line">    loss = tf.reduce_mean(tf.reduce_sum(tf.square(ys - prediction),</div><div class="line">                                        reduction_indices=[<span class="number">1</span>]))</div><div class="line"></div><div class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'train'</span>):</div><div class="line">    train_step = tf.train.GradientDescentOptimizer(<span class="number">0.1</span>).minimize(loss)</div><div class="line"></div><div class="line">sess = tf.Session()</div><div class="line"></div><div class="line"><span class="comment"># tf.train.SummaryWriter soon be deprecated, use following</span></div><div class="line"><span class="keyword">if</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">1</span>]) &lt; <span class="number">12</span> <span class="keyword">and</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">0</span>]) &lt; <span class="number">1</span>:  <span class="comment"># tensorflow version &lt; 0.12</span></div><div class="line">    writer = tf.train.SummaryWriter(<span class="string">'logs/'</span>, sess.graph)</div><div class="line"><span class="keyword">else</span>: <span class="comment"># tensorflow version &gt;= 0.12</span></div><div class="line">    writer = tf.summary.FileWriter(<span class="string">"logs/"</span>, sess.graph)</div><div class="line"></div><div class="line"><span class="comment"># tf.initialize_all_variables() no long valid from</span></div><div class="line"><span class="comment"># 2017-03-02 if using tensorflow &gt;= 0.12</span></div><div class="line"><span class="keyword">if</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">1</span>]) &lt; <span class="number">12</span> <span class="keyword">and</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">0</span>]) &lt; <span class="number">1</span>:</div><div class="line">    init = tf.initialize_all_variables()</div><div class="line"><span class="keyword">else</span>:</div><div class="line">    init = tf.global_variables_initializer()</div><div class="line">sess.run(init)</div><div class="line"></div><div class="line"><span class="comment"># direct to the local dir and run this in terminal:</span></div><div class="line"><span class="comment"># $ tensorboard --logdir=logs</span></div></pre></td></tr></table></figure>
+            <p>需要引入的包：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">                        &lt;groupId&gt;org.apache.hadoop&lt;/groupId&gt;</div><div class="line">                        &lt;artifactId&gt;hadoop-core&lt;/artifactId&gt;</div><div class="line">                        &lt;version&gt;2.6.0-mr1-cdh5.9.1&lt;/version&gt;</div><div class="line">                &lt;/dependency&gt;</div><div class="line">&lt;dependency&gt;</div><div class="line">                        &lt;groupId&gt;org.apache.hive&lt;/groupId&gt;</div><div class="line">                        &lt;artifactId&gt;hive-common&lt;/artifactId&gt;</div><div class="line">                        &lt;version&gt;1.1.0-cdh5.9.1&lt;/version&gt;</div><div class="line">                &lt;/dependency&gt;</div><div class="line">                &lt;dependency&gt;</div><div class="line">                        &lt;groupId&gt;org.apache.hive&lt;/groupId&gt;</div><div class="line">                        &lt;artifactId&gt;hive-exec&lt;/artifactId&gt;</div><div class="line">                        &lt;version&gt;1.1.0-cdh5.9.1&lt;/version&gt;</div><div class="line">                &lt;/dependency&gt;</div></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> fs = <span class="type">FileSystem</span>.get(conf);</div><div class="line"><span class="keyword">val</span> prop = <span class="type">Config</span>.getConfig(<span class="string">"config.properties"</span>)</div><div class="line">println(sdf.format(<span class="keyword">new</span> <span class="type">Date</span>))</div><div class="line"><span class="keyword">val</span> readerOpts = <span class="type">OrcFile</span>.readerOptions(conf)</div><div class="line"><span class="keyword">val</span> reader = <span class="type">OrcFile</span>.createReader(<span class="keyword">new</span> <span class="type">Path</span>(iaxReqPath+<span class="string">"/ds=17-08-21/20170821000000antispam_2529853576425433.orc"</span>), readerOpts)</div><div class="line"><span class="keyword">val</span> inspector = reader.getObjectInspector().asInstanceOf[<span class="type">StructObjectInspector</span>]</div><div class="line"></div><div class="line"><span class="keyword">val</span> count = reader.getNumberOfRows</div><div class="line">info(<span class="string">"the count is: "</span> + count.toString())</div><div class="line"></div><div class="line"><span class="keyword">val</span> fields = inspector.getAllStructFieldRefs()</div><div class="line"></div><div class="line">fields.foreach &#123; x =&gt; </div><div class="line">  println(x.getFieldObjectInspector.getCategory)  </div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">val</span> records = reader.rows()</div><div class="line"><span class="keyword">var</span> n=<span class="number">0</span></div><div class="line"><span class="keyword">val</span> loop = <span class="keyword">new</span> <span class="type">Breaks</span></div><div class="line">loop.breakable(&#123;</div><div class="line">  <span class="keyword">while</span>(records.hasNext)&#123;</div><div class="line">    <span class="keyword">if</span> (n&gt;<span class="number">5</span>) loop.<span class="keyword">break</span></div><div class="line">    <span class="keyword">val</span> row = records.next(<span class="literal">null</span>)</div><div class="line">    <span class="keyword">val</span> valueList = inspector.getStructFieldsDataAsList(row)</div><div class="line">    info(valueList.get(<span class="number">10</span>).toString)</div><div class="line">    info(row.toString())</div><div class="line">    n = n+<span class="number">1</span></div><div class="line">  &#125;</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
 
           
         
@@ -1666,191 +1812,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/hive笔记-orc格式读写/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/12/hadoop-spark/hive笔记-orc格式读写/" class="post-title-link" itemprop="url">hive笔记-orc格式读写</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-01-30 15:52:38" itemprop="dateModified" datetime="2018-01-30T15:52:38+08:00">2018-01-30</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/hadoop-spark/hive笔记-orc格式读写/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/hive笔记-orc格式读写/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>需要引入的包：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">                        &lt;groupId&gt;org.apache.hadoop&lt;/groupId&gt;</div><div class="line">                        &lt;artifactId&gt;hadoop-core&lt;/artifactId&gt;</div><div class="line">                        &lt;version&gt;2.6.0-mr1-cdh5.9.1&lt;/version&gt;</div><div class="line">                &lt;/dependency&gt;</div><div class="line">&lt;dependency&gt;</div><div class="line">                        &lt;groupId&gt;org.apache.hive&lt;/groupId&gt;</div><div class="line">                        &lt;artifactId&gt;hive-common&lt;/artifactId&gt;</div><div class="line">                        &lt;version&gt;1.1.0-cdh5.9.1&lt;/version&gt;</div><div class="line">                &lt;/dependency&gt;</div><div class="line">                &lt;dependency&gt;</div><div class="line">                        &lt;groupId&gt;org.apache.hive&lt;/groupId&gt;</div><div class="line">                        &lt;artifactId&gt;hive-exec&lt;/artifactId&gt;</div><div class="line">                        &lt;version&gt;1.1.0-cdh5.9.1&lt;/version&gt;</div><div class="line">                &lt;/dependency&gt;</div></pre></td></tr></table></figure>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> fs = <span class="type">FileSystem</span>.get(conf);</div><div class="line"><span class="keyword">val</span> prop = <span class="type">Config</span>.getConfig(<span class="string">"config.properties"</span>)</div><div class="line">println(sdf.format(<span class="keyword">new</span> <span class="type">Date</span>))</div><div class="line"><span class="keyword">val</span> readerOpts = <span class="type">OrcFile</span>.readerOptions(conf)</div><div class="line"><span class="keyword">val</span> reader = <span class="type">OrcFile</span>.createReader(<span class="keyword">new</span> <span class="type">Path</span>(iaxReqPath+<span class="string">"/ds=17-08-21/20170821000000antispam_2529853576425433.orc"</span>), readerOpts)</div><div class="line"><span class="keyword">val</span> inspector = reader.getObjectInspector().asInstanceOf[<span class="type">StructObjectInspector</span>]</div><div class="line"></div><div class="line"><span class="keyword">val</span> count = reader.getNumberOfRows</div><div class="line">info(<span class="string">"the count is: "</span> + count.toString())</div><div class="line"></div><div class="line"><span class="keyword">val</span> fields = inspector.getAllStructFieldRefs()</div><div class="line"></div><div class="line">fields.foreach &#123; x =&gt; </div><div class="line">  println(x.getFieldObjectInspector.getCategory)  </div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">val</span> records = reader.rows()</div><div class="line"><span class="keyword">var</span> n=<span class="number">0</span></div><div class="line"><span class="keyword">val</span> loop = <span class="keyword">new</span> <span class="type">Breaks</span></div><div class="line">loop.breakable(&#123;</div><div class="line">  <span class="keyword">while</span>(records.hasNext)&#123;</div><div class="line">    <span class="keyword">if</span> (n&gt;<span class="number">5</span>) loop.<span class="keyword">break</span></div><div class="line">    <span class="keyword">val</span> row = records.next(<span class="literal">null</span>)</div><div class="line">    <span class="keyword">val</span> valueList = inspector.getStructFieldsDataAsList(row)</div><div class="line">    info(valueList.get(<span class="number">10</span>).toString)</div><div class="line">    info(row.toString())</div><div class="line">    n = n+<span class="number">1</span></div><div class="line">  &#125;</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/hadoop笔记/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1981,207 +1942,6 @@
 <p>vim /etc/hadoop/conf/hdfs-site.xml</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&lt;property&gt;</div><div class="line"></div><div class="line">    &lt;name&gt;dfs.ha.namenodes.iclick&lt;/name&gt;</div><div class="line"></div><div class="line">    &lt;value&gt;srv-buzz-cloudpmnn1.buzz.com,srv-buzz-cloudpmnn2.buzz.com&lt;/value&gt;</div><div class="line"></div><div class="line">&lt;/property&gt;</div></pre></td></tr></table></figure>
 <h1 id="常用IO操作"><a href="#常用IO操作" class="headerlink" title="常用IO操作"></a>常用IO操作</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">public static void testIOUtils() throws IOException &#123;</div><div class="line">Configuration conf = new Configuration();</div><div class="line">FileSystem fs = FileSystem.get(conf);</div><div class="line">Path p = new Path(&quot;/test/in/point&quot;);</div><div class="line">FSDataInputStream fdis = fs.open(p);</div><div class="line">IOUtils.copyBytes(fdis, System.out, conf,false);</div><div class="line">IOUtils.closeStream(fdis);</div><div class="line">fs.close();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/用scikit-learn生成测试数据集/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer"/>
-      <meta itemprop="description" content="Record and Think!"/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/12/机器学习/用scikit-learn生成测试数据集/" class="post-title-link" itemprop="url">用scikit-learn生成测试数据集</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-07-04 23:22:59" itemprop="dateModified" datetime="2018-07-04T23:22:59+08:00">2018-07-04</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/机器学习/用scikit-learn生成测试数据集/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/用scikit-learn生成测试数据集/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>转自<a href="https://www.jiqizhixin.com/articles/2018-02-05-2" target="_blank" rel="noopener">https://www.jiqizhixin.com/articles/2018-02-05-2</a></p>
-<h1 id="分类测试问题"><a href="#分类测试问题" class="headerlink" title="分类测试问题"></a>分类测试问题</h1><p>将看三个分类问题：blobs、moons 和 circles。</p>
-<h2 id="线性分类"><a href="#线性分类" class="headerlink" title="线性分类"></a>线性分类</h2><p> make_blobs() 函数可被用于生成具有高斯分布的 blobs 点。你可以控制生成 blobs 的数量，生成样本的数量以及一系列其他属性。考虑到 blobs 的线性可分性质，该问题也适用于线性分类问题。</p>
-<p>下面的例子是一个多类分类预测问题，它生成了一个具有三个 blobs 的 2D 样本数据集。每个数据有两个输入和 0、1 或 2 个类的值。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> sklearn.datasets.samples_generator <span class="keyword">import</span> make_blobs</div><div class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</div><div class="line"><span class="keyword">from</span> pandas <span class="keyword">import</span> DataFrame</div><div class="line"><span class="comment"># generate 2d classification dataset</span></div><div class="line">X, y = make_blobs(n_samples=<span class="number">100</span>, centers=<span class="number">3</span>, n_features=<span class="number">2</span>)</div><div class="line"><span class="comment"># dict中定义三个key，分别是坐标和label，再通过dict创建DataFrame</span></div><div class="line">df = DataFrame(dict(x=X[:,<span class="number">0</span>], y=X[:,<span class="number">1</span>], label=y))</div><div class="line">colors = &#123;<span class="number">0</span>:<span class="string">'red'</span>, <span class="number">1</span>:<span class="string">'blue'</span>, <span class="number">2</span>:<span class="string">'green'</span>&#125;</div><div class="line">fig, ax = pyplot.subplots()</div><div class="line"><span class="comment">#groupby可以通过传入需要分组的参数实现对数据的分组</span></div><div class="line">grouped = df.groupby(<span class="string">'label'</span>)</div><div class="line"><span class="keyword">for</span> key, group <span class="keyword">in</span> grouped:</div><div class="line">   group.plot(ax=ax, kind=<span class="string">'scatter'</span>, x=<span class="string">'x'</span>, y=<span class="string">'y'</span>, label=key, color=colors[key])</div><div class="line">pyplot.show()</div></pre></td></tr></table></figure>
-<h2 id="非线性分类"><a href="#非线性分类" class="headerlink" title="非线性分类"></a>非线性分类</h2><p>make_moons() 函数用于二进制分类并且将生成一个漩涡模式，或者两个 moons。你可以控制 moon 形状中的噪声量，以及要生产的样本数量。</p>
-<p>这个测试问题适用于能够学习非线性类边界的算法。下面的例子生成了一个中等噪音的 moon 数据集。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> make_moons</div><div class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</div><div class="line"><span class="keyword">from</span> pandas <span class="keyword">import</span> DataFrame</div><div class="line"><span class="comment"># generate 2d classification dataset</span></div><div class="line">X, y = make_moons(n_samples=<span class="number">100</span>, noise=<span class="number">0.1</span>)</div><div class="line"><span class="comment"># scatter plot, dots colored by class value</span></div><div class="line">df = DataFrame(dict(x=X[:,<span class="number">0</span>], y=X[:,<span class="number">1</span>], label=y))</div><div class="line">colors = &#123;<span class="number">0</span>:<span class="string">'red'</span>, <span class="number">1</span>:<span class="string">'blue'</span>&#125;</div><div class="line">fig, ax = pyplot.subplots()</div><div class="line">grouped = df.groupby(<span class="string">'label'</span>)</div><div class="line"><span class="keyword">for</span> key, group <span class="keyword">in</span> grouped:</div><div class="line">   group.plot(ax=ax, kind=<span class="string">'scatter'</span>, x=<span class="string">'x'</span>, y=<span class="string">'y'</span>, label=key, color=colors[key])</div><div class="line">pyplot.show()</div></pre></td></tr></table></figure>
-<p>make_circles() 函数生成一个数据集落入同心圆的二进制分类问题。再一次地，与 moons 测试问题一样，你可以控制形状中的噪声量。该测试问题适用于可以学习复杂的非线性流行的算法。下面的例子中生成了一个具有一定噪音的 circles 数据集。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> make_circles</div><div class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</div><div class="line"><span class="keyword">from</span> pandas <span class="keyword">import</span> DataFrame</div><div class="line"><span class="comment"># generate 2d classification dataset</span></div><div class="line">X, y = make_circles(n_samples=<span class="number">100</span>, noise=<span class="number">0.05</span>)</div><div class="line"><span class="comment"># scatter plot, dots colored by class value</span></div><div class="line">df = DataFrame(dict(x=X[:,<span class="number">0</span>], y=X[:,<span class="number">1</span>], label=y))</div><div class="line">colors = &#123;<span class="number">0</span>:<span class="string">'red'</span>, <span class="number">1</span>:<span class="string">'blue'</span>&#125;</div><div class="line">fig, ax = pyplot.subplots()</div><div class="line">grouped = df.groupby(<span class="string">'label'</span>)</div><div class="line"><span class="keyword">for</span> key, group <span class="keyword">in</span> grouped:</div><div class="line">   group.plot(ax=ax, kind=<span class="string">'scatter'</span>, x=<span class="string">'x'</span>, y=<span class="string">'y'</span>, label=key, color=colors[key])</div><div class="line">pyplot.show()</div></pre></td></tr></table></figure>
-<h1 id="回归测试问题"><a href="#回归测试问题" class="headerlink" title="回归测试问题"></a>回归测试问题</h1><h2 id="线性回归"><a href="#线性回归" class="headerlink" title="线性回归"></a>线性回归</h2><p>make_regression() 函数将创建一个输入和输出具有线性关系的数据集。你可以配置样本数量，输入特征数量，噪声级别等等。该数据集适用于可以学习线性回归函数的算法。</p>
-<p>下面的例子将生成 100 个示例，他们具有适度的噪声，都有一个输入特征和一个输出特征。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> make_regression</div><div class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</div><div class="line"><span class="comment"># generate regression dataset</span></div><div class="line">X, y = make_regression(n_samples=<span class="number">100</span>, n_features=<span class="number">1</span>, noise=<span class="number">0.1</span>)</div><div class="line"><span class="comment"># plot regression dataset</span></div><div class="line">pyplot.scatter(X,y)</div><div class="line">pyplot.show()</div></pre></td></tr></table></figure>
-<p>通过这些测试集可以：</p>
-<ul>
-<li><strong>比较算法</strong>。选择一个测试问题，并比较该问题的一系列算法并汇报性能。</li>
-<li><strong>放大问题</strong>。选择一个测试问题并探索将其放大，用级数法来可视化结果，也可以探索一个特定算法模型技能和问题规模。</li>
-</ul>
-<p>代码见<code>blogcodes\sclearn_testDataset.py</code></p>
 
           
         
@@ -2370,6 +2130,204 @@
 <h1 id="python从文件插入到ES"><a href="#python从文件插入到ES" class="headerlink" title="python从文件插入到ES"></a>python从文件插入到ES</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">def set_pois_data(es, input_file, index_name=&quot;pois&quot;, doc_type_name=&quot;iclick&quot;):</div><div class="line">    #读入数据</div><div class="line">    fp = open(input_file)</div><div class="line"></div><div class="line">    #创建ACTIONS</div><div class="line">    ACTIONS = []</div><div class="line">    for line in fp:</div><div class="line">        fields = line.strip(&apos;\n&apos;).split(&quot;\t&quot;)</div><div class="line">        name = fields[0]</div><div class="line">        location = fields[2] + &quot;,&quot; + fields[3]</div><div class="line"></div><div class="line">        action = &#123;</div><div class="line">            &quot;_index&quot;: index_name,</div><div class="line">            &quot;_type&quot;: doc_type_name,</div><div class="line">            &quot;_source&quot;: &#123;</div><div class="line">                  &quot;name&quot; : name,</div><div class="line">                  &quot;pois&quot; : location,</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        #print action</div><div class="line">        ACTIONS.append(action)</div><div class="line"></div><div class="line">    # 批量处理</div><div class="line">    success, _ = bulk(es, ACTIONS, index=index_name, raise_on_error=True)</div><div class="line">    print(&apos;Performed %d actions&apos; % success)</div></pre></td></tr></table></figure>
 <h1 id="复制index的数据到另一个"><a href="#复制index的数据到另一个" class="headerlink" title="复制index的数据到另一个"></a>复制index的数据到另一个</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">import pyes</div><div class="line">conn = pyes.es.ES(&quot;http://10.xx.xx.xx:8305/&quot;)</div><div class="line">search = pyes.query.MatchAllQuery().search(bulk_read=1000)</div><div class="line">hits = conn.search(search, &apos;store_v1&apos;, &apos;client&apos;, scan=True, scroll=&quot;30m&quot;, model=lambda _,hit: hit)</div><div class="line">for hit in hits:</div><div class="line">     #print hit</div><div class="line">     conn.index(hit[&apos;_source&apos;], &apos;store_v2&apos;, &apos;client&apos;, hit[&apos;_id&apos;], bulk=True)</div><div class="line">conn.flush()</div></pre></td></tr></table></figure>
 <h1 id="统计数组的元素个数的sum、avg"><a href="#统计数组的元素个数的sum、avg" class="headerlink" title="统计数组的元素个数的sum、avg"></a>统计数组的元素个数的sum、avg</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">GET iclick_persona/iclick/_search?size=0</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;bool&quot;: &#123;</div><div class="line">      &quot;must&quot;: [</div><div class="line">        &#123;&quot;term&quot;: &#123;</div><div class="line">          &quot;device&quot;: &#123;</div><div class="line">            &quot;value&quot;: &quot;PC&quot;</div><div class="line">          &#125;</div><div class="line">        &#125;&#125;</div><div class="line">      ],</div><div class="line">      &quot;filter&quot;: [</div><div class="line">        &#123;&quot;script&quot;:&#123;&quot;script&quot;:&quot;doc[&apos;articles.domains&apos;].values.length&gt;1&quot;&#125;&#125;</div><div class="line">      ]</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;NAME&quot;: &#123;</div><div class="line">      &quot;avg&quot;: &#123;</div><div class="line">        &quot;script&quot;: &#123;</div><div class="line">          &quot;inline&quot;: &quot;doc[&apos;articles.domains&apos;].values.length&quot;</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark-sql笔记/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer"/>
+      <meta itemprop="description" content="Record and Think!"/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/07/12/hadoop-spark/spark/spark-sql笔记/" class="post-title-link" itemprop="url">spark-sql笔记</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-01-30 15:49:02" itemprop="dateModified" datetime="2018-01-30T15:49:02+08:00">2018-01-30</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2017/07/12/hadoop-spark/spark/spark-sql笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/spark/spark-sql笔记/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br/>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>spark sql可以用基本的SQL语法，或者hiveQL。Spark SQL也能从hive中读数据。</p>
+<p>Data Frame的来源可以是：结构化数据、hive表、外部数据库或者RDD</p>
+<h2 id="Starting-Point-SQLContext"><a href="#Starting-Point-SQLContext" class="headerlink" title="Starting Point: SQLContext"></a>Starting Point: SQLContext</h2><p>The entry point into all functionality in Spark SQL is the <a href="http://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.sql.SQLContext" target="_blank" rel="noopener"><code>SQLContext</code></a> class, or one of its descendants. To create a basic <code>SQLContext</code>, all you need is a SparkContext.</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> sc: <span class="type">SparkContext</span> <span class="comment">// An existing SparkContext.</span></div><div class="line"><span class="keyword">val</span> sqlContext = <span class="keyword">new</span> org.apache.spark.sql.<span class="type">SQLContext</span>(sc)</div><div class="line"></div><div class="line"><span class="comment">// this is used to implicitly convert an RDD to a DataFrame.</span></div><div class="line"><span class="keyword">import</span> sqlContext.implicits._</div></pre></td></tr></table></figure>
+<p>在SQLContext的基础上，也要创建一个HiveContext，可以用Hive的udf，也能读hive表。<br>HiveContext是一个独立的包，不需要安装hive</p>
+<h2 id="Creating-DataFrames"><a href="#Creating-DataFrames" class="headerlink" title="Creating DataFrames"></a>Creating DataFrames</h2><p>With a <code>SQLContext</code>, applications can create <code>DataFrame</code>s from an <a href="http://spark.apache.org/docs/latest/sql-programming-guide.html#interoperating-with-rdds" target="_blank" rel="noopener">existing <code>RDD</code></a>, from a Hive table, or from <a href="http://spark.apache.org/docs/latest/sql-programming-guide.html#data-sources" target="_blank" rel="noopener">data sources</a>.</p>
+<p>As an example, the following creates a <code>DataFrame</code> based on the content of a JSON file:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> sc: <span class="type">SparkContext</span> <span class="comment">// An existing SparkContext.</span></div><div class="line"><span class="keyword">val</span> sqlContext = <span class="keyword">new</span> org.apache.spark.sql.<span class="type">SQLContext</span>(sc)</div><div class="line"></div><div class="line"><span class="keyword">val</span> df = sqlContext.read.json(<span class="string">"examples/src/main/resources/people.json"</span>)</div><div class="line"></div><div class="line"><span class="comment">// Displays the content of the DataFrame to stdout</span></div><div class="line">df.show()</div></pre></td></tr></table></figure>
+<h2 id="Creating-Datasets"><a href="#Creating-Datasets" class="headerlink" title="Creating Datasets"></a>Creating Datasets</h2><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> org.apache.spark.sql.<span class="type">SQLContext</span></div><div class="line">...</div><div class="line">...</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">// Encoders for most common types are automatically provided by importing sqlContext.implicits._</span></div><div class="line"><span class="keyword">val</span> sqlContext = <span class="type">SQLContext</span>.getOrCreate(sc)</div><div class="line"><span class="keyword">import</span> sqlContext.implicits._</div><div class="line"><span class="keyword">val</span> ds = <span class="type">Seq</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>).toDS()</div><div class="line">ds.map(_ + <span class="number">1</span>).collect() <span class="comment">// Returns: Array(2, 3, 4)</span></div><div class="line"></div><div class="line"><span class="comment">// Encoders are also created for case classes.</span></div><div class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span>(<span class="params">name: <span class="type">String</span>, age: <span class="type">Long</span></span>)</span></div><div class="line"><span class="keyword">val</span> ds = <span class="type">Seq</span>(<span class="type">Person</span>(<span class="string">"Andy"</span>, <span class="number">32</span>)).toDS()</div><div class="line"></div><div class="line"><span class="comment">// DataFrames can be converted to a Dataset by providing a class. Mapping will be done by name.</span></div><div class="line"><span class="keyword">val</span> path = <span class="string">"examples/src/main/resources/people.json"</span></div><div class="line"><span class="keyword">val</span> people = sqlContext.read.json(path).as[<span class="type">Person</span>]</div></pre></td></tr></table></figure>
+<h2 id="在DataFrame中创建表并查询"><a href="#在DataFrame中创建表并查询" class="headerlink" title="在DataFrame中创建表并查询"></a>在DataFrame中创建表并查询</h2><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> sqlContext = <span class="type">SQLContext</span>.getOrCreate(sc)</div><div class="line"><span class="keyword">import</span> sqlContext.implicits._</div><div class="line"></div><div class="line"><span class="comment">//把andy和32匹配到name和age列。</span></div><div class="line"><span class="comment">//先创建一个DataFrame，再注册为table</span></div><div class="line"><span class="keyword">val</span> ds = sc.parallelize(<span class="type">Seq</span>((<span class="string">"Andy"</span>, <span class="number">32</span>))).toDF(<span class="string">"name"</span>,<span class="string">"age"</span>)    </div><div class="line">ds.registerTempTable(<span class="string">"ds1"</span>)</div><div class="line">sqlContext.sql(<span class="string">"select * from ds1"</span>)</div></pre></td></tr></table></figure>
+<h2 id="sparkSQL链接GP"><a href="#sparkSQL链接GP" class="headerlink" title="sparkSQL链接GP"></a>sparkSQL链接GP</h2><p>1、maven中增加包<br>一开始试过8.2的包就不行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;postgresql&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;postgresql&lt;/artifactId&gt;</div><div class="line">    &lt;version&gt;8.3-606.jdbc3&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure></p>
+<p>2、连接jdbc<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> jdbcDF = sqlContext.read.format(<span class="string">"jdbc"</span>).options(</div><div class="line">      <span class="type">Map</span>(<span class="string">"url"</span> -&gt; <span class="string">"jdbc:postgresql://10.1.1.230:5432/xmo_dw"</span>,</div><div class="line">          <span class="string">"user"</span>-&gt;<span class="string">"david_xu"</span>,  </div><div class="line">          <span class="string">"password"</span>-&gt;<span class="string">"w7dtfxHD"</span>,</div><div class="line">        <span class="string">"dbtable"</span> -&gt; <span class="string">"(select * from xmo_dw.bshare_blacklist_tagid) as aa"</span>)).load().show()</div></pre></td></tr></table></figure></p>
+<h2 id="在spark-sql命令行中测试连接"><a href="#在spark-sql命令行中测试连接" class="headerlink" title="在spark sql命令行中测试连接"></a>在spark sql命令行中测试连接</h2><p>/usr/lib/spark/bin/spark-sql —jars /home/david/jars/postgresql-8.3-606.jdbc4.jar</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="type">CREATE</span> <span class="type">TEMPORARY</span> <span class="type">TABLE</span> temp_imageviews</div><div class="line"><span class="type">USING</span> org.apache.spark.sql.jdbc</div><div class="line"><span class="type">OPTIONS</span> (</div><div class="line">  driver <span class="string">"org.postgresql.Driver"</span>,</div><div class="line">  url <span class="string">"jdbc:postgresql://10.1.1.230:5432/xmo_dw"</span>,</div><div class="line">  user <span class="string">"david_xu"</span>,</div><div class="line">  password <span class="string">"w7dtfxHD"</span>,</div><div class="line">  dbtable <span class="string">"(select date_i,opxpid::text from xmo_dw.imageviews where date_i=20160512 limit 20000000) as aa"</span>,</div><div class="line">  numPartitions <span class="string">"6"</span></div><div class="line">);</div></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">cd /usr/lib/spark/bin/</div><div class="line">/usr/lib/spark/bin/spark-sql <span class="comment">--executor-memory 100g</span></div><div class="line"></div><div class="line">add jar /home/wilson/sparksql/postgresql-8.3-606.jdbc3.jar;</div><div class="line"><span class="keyword">set</span>  spark.sql.shuffle.partitions=<span class="number">20</span>;</div><div class="line"> <span class="keyword">CREATE</span> <span class="keyword">TEMPORARY</span> <span class="keyword">TABLE</span> temp_imageviews</div><div class="line"><span class="keyword">USING</span> org.apache.spark.sql.jdbc</div><div class="line">OPTIONS (</div><div class="line">  driver <span class="string">"org.postgresql.Driver"</span>,</div><div class="line">  <span class="keyword">url</span> <span class="string">"jdbc:postgresql://10.1.1.230:5432/xmo_dw"</span>,</div><div class="line">  <span class="keyword">user</span> <span class="string">"david_xu"</span>,</div><div class="line">  <span class="keyword">password</span> <span class="string">"w7dtfxHD"</span>,</div><div class="line">  dbtable <span class="string">"(select  timeslot,record_server,referring_site ,opxsid  from  xmo_dw.imageviews   where  date_i=20160515 limit  5000000) as aa"</span>,</div><div class="line">  numPartitions <span class="string">"6"</span>);</div></pre></td></tr></table></figure>
+<h3 id="spark-sql读取HDFS建表"><a href="#spark-sql读取HDFS建表" class="headerlink" title="spark sql读取HDFS建表"></a>spark sql读取HDFS建表</h3><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">/usr/lib/spark/bin/spark-sql -e "CREATE TEMPORARY TABLE rtbreq_hour</div><div class="line">USING org.apache.spark.sql.bytes</div><div class="line">OPTIONS (</div><div class="line">  paths '$&#123;rtbreq_path&#125;'</div><div class="line">);</div><div class="line">create TEMPORARY TABLE rtbreq_tanx_hour</div><div class="line">USING org.apache.spark.sql.bytes</div><div class="line">OPTIONS(</div><div class="line"> paths '$&#123;rtbreq_tanx_path&#125;'</div><div class="line">);</div><div class="line">select ip,count(1) cnt from (select ip from rtbreq_hour union all select ip from rtbreq_tanx_hour) a group by ip having cnt &gt; 30 order by cnt desc;</div><div class="line">select bxid,count(1) cnt from (select bxid from rtbreq_hour union all select bxid from rtbreq_tanx_hour) a group by bxid having cnt &gt; 1000 order by cnt desc;</div><div class="line">" &gt; rtbreq/$day/$hour.txt</div></pre></td></tr></table></figure>
 
           
         
