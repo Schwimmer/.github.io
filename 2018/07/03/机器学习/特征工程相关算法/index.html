@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="[TOC]  1、卡方检验1.1 简介假设检验就是在样本分布完全未知或只知形式、不知其参数的情况，对样本所提出的假设做出接收还是拒绝的决策。 卡方（$\chi^2$）检验是一种独立性检验（假设检验）工具，被称为20世纪科学技术所有分支的20大发明之一。 1.2 卡方检验基本思想    组别 逾期 不逾期 合计     新车 19 24 43   二手车 34 10 44   合计 53 34 87">
+<meta name="keywords" content="ChiMerge,WOE">
+<meta property="og:type" content="article">
+<meta property="og:title" content="特征工程相关算法">
+<meta property="og:url" content="https://schwimmer.github.io/2018/07/03/机器学习/特征工程相关算法/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="[TOC]  1、卡方检验1.1 简介假设检验就是在样本分布完全未知或只知形式、不知其参数的情况，对样本所提出的假设做出接收还是拒绝的决策。 卡方（$\chi^2$）检验是一种独立性检验（假设检验）工具，被称为20世纪科学技术所有分支的20大发明之一。 1.2 卡方检验基本思想    组别 逾期 不逾期 合计     新车 19 24 43   二手车 34 10 44   合计 53 34 87">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://schwimmer.github.io/.io//david/david/myblog/source/_posts/机器学习/pic/风控模型典型思路.png">
+<meta property="og:image" content="https://schwimmer.github.io/.io//david/david/myblog/source/_posts/机器学习/pic/卡方分布表.png">
+<meta property="og:image" content="https://schwimmer.github.io/.io//ChiMerge1.png">
+<meta property="og:updated_time" content="2018-07-06T08:09:22.699Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="特征工程相关算法">
+<meta name="twitter:description" content="[TOC]  1、卡方检验1.1 简介假设检验就是在样本分布完全未知或只知形式、不知其参数的情况，对样本所提出的假设做出接收还是拒绝的决策。 卡方（$\chi^2$）检验是一种独立性检验（假设检验）工具，被称为20世纪科学技术所有分支的20大发明之一。 1.2 卡方检验基本思想    组别 逾期 不逾期 合计     新车 19 24 43   二手车 34 10 44   合计 53 34 87">
+<meta name="twitter:image" content="https://schwimmer.github.io/.io//david/david/myblog/source/_posts/机器学习/pic/风控模型典型思路.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://schwimmer.github.io/2018/07/03/机器学习/特征工程相关算法/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>特征工程相关算法 | Schwimmer's Blog</title>
+  
+
+
+
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-143240576-1"></script>
+  <script>
+    var host = window.location.hostname;
+    if (host !== "localhost" || !true) {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-143240576-1');
+    }
+  </script>
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/07/03/机器学习/特征工程相关算法/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">特征工程相关算法
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-07-03 11:35:01" itemprop="dateCreated datePublished" datetime="2018-07-03T11:35:01+08:00">2018-07-03</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-07-06 16:09:22" itemprop="dateModified" datetime="2018-07-06T16:09:22+08:00">2018-07-06</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/07/03/机器学习/特征工程相关算法/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/07/03/机器学习/特征工程相关算法/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+                 阅读次数： 
+                <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+              </span>
+            </span>
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>[TOC]</p>
+<p><img src="/.io//david/david/myblog/source/_posts/机器学习/pic/风控模型典型思路.png" alt=""></p>
+<h1 id="1、卡方检验"><a href="#1、卡方检验" class="headerlink" title="1、卡方检验"></a>1、卡方检验</h1><h2 id="1-1-简介"><a href="#1-1-简介" class="headerlink" title="1.1 简介"></a>1.1 简介</h2><p><strong>假设检验</strong>就是在样本分布完全未知或只知形式、不知其参数的情况，对样本所提出的假设做出接收还是拒绝的决策。</p>
+<p>卡方（$\chi^2$）检验是一种独立性检验（假设检验）工具，被称为20世纪科学技术所有分支的20大发明之一。</p>
+<h2 id="1-2-卡方检验基本思想"><a href="#1-2-卡方检验基本思想" class="headerlink" title="1.2 卡方检验基本思想"></a>1.2 卡方检验基本思想</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>组别</th>
+<th>逾期</th>
+<th>不逾期</th>
+<th>合计</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>新车</td>
+<td>19</td>
+<td>24</td>
+<td>43</td>
+</tr>
+<tr>
+<td>二手车</td>
+<td>34</td>
+<td>10</td>
+<td>44</td>
+</tr>
+<tr>
+<td>合计</td>
+<td>53</td>
+<td>34</td>
+<td>87</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>H0：假设特征与类别无关</p>
+<p>H1：假设特征与类别有关</p>
+<p>$\alpha=0.05$</p>
+<p>首先假设<em>H</em>0成立，基于此前提计算出卡方值，它表示观察值与理论值之间的<strong>偏离程度</strong>。根据卡方及自由度可以确定在<em>H</em>0假设成立的情况下的概率。这个概率很小，说明观察值与理论值偏离程度太大，应当拒绝无效假设，也就是说特征与类别有关；否则尚不能说明样本所代表的实际情况和理论假设有差别。</p>
+<h2 id="1-3-计算公式"><a href="#1-3-计算公式" class="headerlink" title="1.3 计算公式"></a>1.3 计算公式</h2><script type="math/tex; mode=display">
+\chi^2 = \sum_{i=1}^m \sum_{j=1}^k= \frac {(A_{ij}-E_{ij})^2} {E_{ij}}</script><p>其中，</p>
+<p>m是要计算的特征值个数</p>
+<p>k是标签类别数</p>
+<p>$A_{ij}$ 是第i个特征在第j个标签内的样本数量</p>
+<p>$R<em>i=\sum</em>{j=1}^k A_{ij}$ 第i个特征的样本数量</p>
+<p>$C<em>j=\sum</em>{i=1}^m A_{ij}$ 第j个类别的样本数量</p>
+<p>$N=\sum_{j=1}^k C_j$ 样本数量</p>
+<p>$E<em>{ij}=\frac {R_i * C_j} {N}$  理论值，$A</em>{ij}$的期望频率</p>
+<h2 id="1-4-示例"><a href="#1-4-示例" class="headerlink" title="1.4 示例"></a>1.4 示例</h2><p>示例</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>组别</th>
+<th>逾期</th>
+<th>不逾期</th>
+<th>合计</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>新车</td>
+<td>19</td>
+<td>24</td>
+<td>43</td>
+</tr>
+<tr>
+<td>二手车</td>
+<td>34</td>
+<td>10</td>
+<td>44</td>
+</tr>
+<tr>
+<td>合计</td>
+<td>53</td>
+<td>34</td>
+<td>87</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>$m=2,k=2,i=0,j=0$</p>
+<p>$A_{ij}=19, R_i=43, C_j=53,N=78$</p>
+<p>$E_{ij}=43*53/87=26.2$</p>
+<p>换种方式看，我们假设汽车的类别与是否逾期是无关的，随机抽取一条样本，逾期的概率就是$53/87=0.609$，那么新车的样本数是43，则新车逾期的样本数就是$43*0.609=26.2$</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>组别</th>
+<th>逾期</th>
+<th>不逾期</th>
+<th>合计</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>新车</td>
+<td>43 * 0.609 = 26.2</td>
+<td>43 * 0.391 = 16.8</td>
+<td>43</td>
+</tr>
+<tr>
+<td>二手车</td>
+<td>44 * 0.609 = 26.8</td>
+<td>44 * 0.391 = 17.2</td>
+<td>44</td>
+</tr>
+<tr>
+<td>合计</td>
+<td>53</td>
+<td>34</td>
+<td>87</td>
+</tr>
+</tbody>
+</table>
+</div>
+<script type="math/tex; mode=display">
+\chi^2= \frac {(19-26.2)^2}{26.2}+ \frac {(34-26.8)^2}{26.8}+ \frac {(24-16.8)^2}{16.8}+ \frac {(10-17.2)^2}{17.2}=10.01</script><p>我们已经得到了卡方值，但是这并不够直接明了的说明问题。因此，我们还需要将卡方值转化为 p-value。p-value是一种给定原假设为真时样本结果出现的概率，我们可以通过简单查表来进行转化。</p>
+<p><img src="/.io//david/david/myblog/source/_posts/机器学习/pic/卡方分布表.png" alt=""></p>
+<p>这里需要用到一个<code>自由度</code>的概念，自由度等于<code>V = (行数 - 1) * (列数 - 1)</code>，对四格表，自由度<code>V = 1</code>。</p>
+<p>查表得，$10.01&gt;9.55$，对应的p-value是0.002，也就是说在假设无关的前提下，只有0.2%的样本符合这种假设，自然就说明特征与类别是相关度很高的。</p>
+<h2 id="1-5-基于卡方的特征选择"><a href="#1-5-基于卡方的特征选择" class="headerlink" title="1.5 基于卡方的特征选择"></a>1.5 基于卡方的特征选择</h2><p>卡方值可以反映特征的独立程度，卡方越小越独立。如果独立性高，那么表示两者没太大关系，特征可以舍弃；如果独立性小，两者相关性高，则说明该特征会对应变量产生比较大的影响，应当选择。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> selector = <span class="keyword">new</span> <span class="type">ChiSqSelector</span>().</span><br><span class="line">      setNumTopFeatures(<span class="number">1</span>).  <span class="comment">//选择TOP N个最重要的特征</span></span><br><span class="line">      setFeaturesCol(<span class="string">"features"</span>).</span><br><span class="line">      setLabelCol(<span class="string">"label"</span>).</span><br><span class="line">      setOutputCol(<span class="string">"selected-feature"</span>)</span><br></pre></td></tr></table></figure>
+<h1 id="2、分箱算法"><a href="#2、分箱算法" class="headerlink" title="2、分箱算法"></a>2、分箱算法</h1><p>也称数据离散化。在建模中，需要对连续变量离散化，特征离散化后，模型会更稳定，降低模型过拟合的风险；并且离散化后的特征可以通过编码的方式更容易搭建模型。</p>
+<h2 id="2-1-等宽和等频分箱"><a href="#2-1-等宽和等频分箱" class="headerlink" title="2.1 等宽和等频分箱"></a>2.1 等宽和等频分箱</h2><p>属于无监督分箱。此外还有基于K-Means聚类的分箱等。</p>
+<p>等宽：从最小到最大值之间，均分成N等份。这样，每个区间的长度为$w=(max-min)/N$</p>
+<p>等频：每个区间包含大致相等的样本数量，比如，若$N=10$，则每个区间应该包含约10%的样本。</p>
+<h2 id="2-2-ChiMerge分箱"><a href="#2-2-ChiMerge分箱" class="headerlink" title="2.2 ChiMerge分箱"></a>2.2 ChiMerge分箱</h2><p>属于有监督分箱，即在分箱时考虑因变量的取值，使得分箱后达到某个期望的结果。此外还有基于信息增益，基尼指数的分箱方法。</p>
+<p><strong>基本思想</strong>：ChiMerge算法用卡方统计量来决定相邻区间是否与类别有相关性。如果两个区间的卡方值很小，说明特征值和类别是相互独立的，就需要合并。否则可以保留分隔状态</p>
+<p><img src="/.io//ChiMerge1.png" alt=""></p>
+<p>ChiMerge算法包括两部分：1、初始化，2、自底向上合并，当满足停止条件的时候，区间合并停止。</p>
+<p><strong>第一步：初始化</strong></p>
+<p>根据要离散的属性对实例进行排序：每个实例属于一个区间</p>
+<p><strong>第二步：合并区间</strong>，又包括两步骤</p>
+<p>(1) 计算每一对相邻区间的卡方值</p>
+<p>(2) 将卡方值最小的一对区间合并</p>
+<p>论文中的停止条件是最小的卡方值达到一定的阈值，但是比较难确定。目前采用的停止条件是设置一个最小区间数和最大迭代次数。</p>
+<p>ChiMerge的优势：</p>
+<ul>
+<li>连续型转离散型</li>
+<li>降低了离群点的影响</li>
+</ul>
+<h1 id="3、WOE和IV计算"><a href="#3、WOE和IV计算" class="headerlink" title="3、WOE和IV计算"></a>3、WOE和IV计算</h1><h2 id="3-1-WOE计算公式"><a href="#3-1-WOE计算公式" class="headerlink" title="3.1 WOE计算公式"></a>3.1 WOE计算公式</h2><p>WOE可以将离散型变量转成连续型变量，假设离散化后共有N组数据，则每组的WOE计算公式为：</p>
+<script type="math/tex; mode=display">
+WOE_i=\ln(\frac {P_{y1}} {P_{y0}}) = \ln( \frac {B_i/B_T}  {G_i/G_T}  ) , i=1,2...,N</script><p>其中，$P<em>{y1}$ 是该组中的响应客户（这里对应的就是逾期客户）占所有样本中所有响应客户的比例，$P</em>{y0}$就是未响应的比例。$B_i$是该组中响应的数量，$B_T$是总响应数量，$G_i$是该组中未响应的数量，$G_T$是总未响应数量。</p>
+<p>从这个公式中可以体现出，WOE表示的是“当前分组中响应客户占所有响应客户的比例”和“当前分组中没有响应的客户占所有没有响应的客户的比例”的差异。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>总里程</th>
+<th>逾期</th>
+<th>不逾期</th>
+<th>响应比例</th>
+<th>WOE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0-10</td>
+<td>10</td>
+<td>1000</td>
+<td>10%</td>
+<td>0</td>
+</tr>
+<tr>
+<td>10-100</td>
+<td>25</td>
+<td>2000</td>
+<td>12.5%</td>
+<td>0.223</td>
+</tr>
+<tr>
+<td>100-500</td>
+<td>15</td>
+<td>2000</td>
+<td>7.5%</td>
+<td>-0.287</td>
+</tr>
+<tr>
+<td>总计</td>
+<td>50</td>
+<td>5000</td>
+<td>10%</td>
+</tr>
+</tbody>
+</table>
+</div>
+<script type="math/tex; mode=display">
+WOE_i= \ln( \frac {B_i/B_T}  {G_i/G_T}  ) =\ln( \frac {B_i/G_i}  {B_T/G_T}  ) , i=1,2...,N</script><p>对WOE稍作变换，可以看出WOE也可以这么理解，他表示的是当前这个组中<strong>响应的客户和未响应客户的比值</strong>，和所有样本中这个比值的差异。这个差异是用这两个比值的比值，再取对数来表示的。WOE越大，这种差异越大，<strong>这个分组里的样本响应的可能性就越大</strong>，WOE越小，差异越小，这个分组里的样本响应的可能性就越小。</p>
+<p>总结WOE的几个性质：</p>
+<p>1）当前分组中，响应的<strong>比例越大，WOE值越大</strong>；</p>
+<p>2）当前分组<strong>WOE的正负</strong>，由当前分组响应和未响应的比例，与样本整体响应和未响应的比例的大小关系决定，当前分组的比例小于样本整体比例时，WOE为负，当前分组的比例大于整体比例时，WOE为正，当前分组的比例和整体比例相等时，WOE为0。</p>
+<p>3）WOE的<strong>取值范围是全体实数</strong>。</p>
+<p>可以看出，采用WOE进行离散转连续的好处是：</p>
+<p>1）WOE相对比离散型变量，可疑反映出自变量与目标变量之间的非线性关系，理论上能够<strong>提升预测的准确率</strong>；</p>
+<p>2）<strong>自变量的标准化处理</strong>。自变量内部的各个取值之间都可以直接进行比较（WOE之间的比较），而不同自变量之间的各种取值也可以通过WOE进行直接的比较。</p>
+<h2 id="3-2-IV计算公式"><a href="#3-2-IV计算公式" class="headerlink" title="3.2 IV计算公式"></a>3.2 IV计算公式</h2><script type="math/tex; mode=display">
+IV_i = (P_{y1}-P_{y0}) * WOE_i \\
+IV=\sum_{i=0}^N IV_i</script><p>IV衡量的是某一个变量的信息量，从公式来看的话，相当于是自变量woe值的一个加权求和，其值的大小决定了自变量对于目标变量的影响程度。</p>
+<p>可见，IV是一个很好的衡量自变量对目标变量影响程度的指标，可以作为特征选择的一个判断依据。</p>
+<h2 id="3-3-特殊情况处理"><a href="#3-3-特殊情况处理" class="headerlink" title="3.3 特殊情况处理"></a>3.3 特殊情况处理</h2><p>变量的任何分组中，不应该出现响应数=0或非响应数=0的情况，这样会导致WOE的值为正负无穷。</p>
+<p>（1）如果可能，直接把这个分组做成一个规则，作为模型的前置条件或补充条件；</p>
+<p>（2）重新对变量进行离散化或分组，使每个分组的响应比例都不为0且不为100%，尤其是当一个分组个体数很小时（比如小于100个），因为本身把一个分组个体数弄得很小就不是太合理。</p>
+<p>（3）如果上面两种方法都无法使用，建议人工把该分组的响应数和非响应的数量进行一定的调整。如果响应数原本为0，可以人工调整响应数为1，如果非响应数原本为0，可以人工调整非响应数为1。</p>
+<p>参考：</p>
+<p><a href="http://www.aaai.org/Papers/AAAI/1992/AAAI92-019.pdf" target="_blank" rel="noopener">ChiMerge: Discretization of Numeric Attributes</a></p>
+<p><a href="https://www.cnblogs.com/barrenlake/p/4354579.html" target="_blank" rel="noopener">https://www.cnblogs.com/barrenlake/p/4354579.html</a></p>
+<p><a href="https://blog.csdn.net/textboy/article/details/47008049" target="_blank" rel="noopener">https://blog.csdn.net/textboy/article/details/47008049</a></p>
+<p><a href="https://blog.csdn.net/u013421629/article/details/78416748" target="_blank" rel="noopener">https://blog.csdn.net/u013421629/article/details/78416748</a></p>
+<p><a href="https://blog.csdn.net/huobanjishijian/article/details/52893357" target="_blank" rel="noopener">https://blog.csdn.net/huobanjishijian/article/details/52893357</a></p>
+<p><a href="https://blog.csdn.net/shuzfan/article/details/52993427" target="_blank" rel="noopener">https://blog.csdn.net/shuzfan/article/details/52993427</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/ChiMerge/" rel="tag"># ChiMerge</a>
+          
+            <a href="/tags/WOE/" rel="tag"># WOE</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/28/hadoop-spark/mllib/mllib的特征选择/" rel="next" title="">
+                <i class="fa fa-chevron-left"></i> 
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/10/hadoop-spark/spark/pyspark笔记/" rel="prev" title="">
+                 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Schwimmer</p>
+              <div class="site-description motion-element" itemprop="description">Record and Think!</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">314</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">59</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1、卡方检验"><span class="nav-number">1.</span> <span class="nav-text">1、卡方检验</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-简介"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-卡方检验基本思想"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 卡方检验基本思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-计算公式"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 计算公式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-示例"><span class="nav-number">1.4.</span> <span class="nav-text">1.4 示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-5-基于卡方的特征选择"><span class="nav-number">1.5.</span> <span class="nav-text">1.5 基于卡方的特征选择</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2、分箱算法"><span class="nav-number">2.</span> <span class="nav-text">2、分箱算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-等宽和等频分箱"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 等宽和等频分箱</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-ChiMerge分箱"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 ChiMerge分箱</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3、WOE和IV计算"><span class="nav-number">3.</span> <span class="nav-text">3、WOE和IV计算</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-WOE计算公式"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 WOE计算公式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-IV计算公式"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 IV计算公式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-特殊情况处理"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 特殊情况处理</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.2.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      "image": {
+        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+        "viewText": "分享到：",
+        "viewSize": "16"
+      },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      </div>
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+  
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-schwimmer-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://schwimmer.github.io/2018/07/03/机器学习/特征工程相关算法/";
+    this.page.identifier = "2018/07/03/机器学习/特征工程相关算法/";
+    this.page.title = '特征工程相关算法';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-schwimmer-github-io.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    window.addEventListener('load', loadComments, false);
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

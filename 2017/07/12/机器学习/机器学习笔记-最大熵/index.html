@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="1、最大熵原理日常生活中，很多事情的发生表现出一定的随机性，试验的结果往往是不确定的，也不知道这个随机现象所服从的概率分布。最大熵的实质就是，在已知部分知识的前提下，关于未知分布最合理的推断就是符合已知知识最不确定或者最随机的推断。任何其他的选择都意味着我们增加了其他的约束和假设。 将最大熵应用到分类，就是最大熵模型。给定一个训练集：  T = \{  (x_1,y_1),  (x_2,y_2),">
+<meta name="keywords" content="最大熵">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习笔记-最大熵">
+<meta property="og:url" content="https://schwimmer.github.io/2017/07/12/机器学习/机器学习笔记-最大熵/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="1、最大熵原理日常生活中，很多事情的发生表现出一定的随机性，试验的结果往往是不确定的，也不知道这个随机现象所服从的概率分布。最大熵的实质就是，在已知部分知识的前提下，关于未知分布最合理的推断就是符合已知知识最不确定或者最随机的推断。任何其他的选择都意味着我们增加了其他的约束和假设。 将最大熵应用到分类，就是最大熵模型。给定一个训练集：  T = \{  (x_1,y_1),  (x_2,y_2),">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://schwimmer.github.io/.io//最大熵1.png">
+<meta property="og:updated_time" content="2018-03-17T12:50:31.539Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="机器学习笔记-最大熵">
+<meta name="twitter:description" content="1、最大熵原理日常生活中，很多事情的发生表现出一定的随机性，试验的结果往往是不确定的，也不知道这个随机现象所服从的概率分布。最大熵的实质就是，在已知部分知识的前提下，关于未知分布最合理的推断就是符合已知知识最不确定或者最随机的推断。任何其他的选择都意味着我们增加了其他的约束和假设。 将最大熵应用到分类，就是最大熵模型。给定一个训练集：  T = \{  (x_1,y_1),  (x_2,y_2),">
+<meta name="twitter:image" content="https://schwimmer.github.io/.io//最大熵1.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://schwimmer.github.io/2017/07/12/机器学习/机器学习笔记-最大熵/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>机器学习笔记-最大熵 | Schwimmer's Blog</title>
+  
+
+
+
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-143240576-1"></script>
+  <script>
+    var host = window.location.hostname;
+    if (host !== "localhost" || !true) {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-143240576-1');
+    }
+  </script>
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/机器学习笔记-最大熵/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">机器学习笔记-最大熵
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-03-17 20:50:31" itemprop="dateModified" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2017/07/12/机器学习/机器学习笔记-最大熵/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/机器学习笔记-最大熵/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+                 阅读次数： 
+                <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+              </span>
+            </span>
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1、最大熵原理"><a href="#1、最大熵原理" class="headerlink" title="1、最大熵原理"></a>1、最大熵原理</h1><p>日常生活中，很多事情的发生表现出一定的随机性，试验的结果往往是不确定的，也不知道这个随机现象所服从的概率分布。<strong>最大熵的实质</strong>就是，在已知部分知识的前提下，关于未知分布最合理的推断就是符合已知知识最不确定或者最随机的推断。任何其他的选择都意味着我们增加了其他的约束和假设。</p>
+<p>将最大熵应用到分类，就是最大熵模型。给定一个训练集：</p>
+<script type="math/tex; mode=display">
+T = \{  (x_1,y_1),  (x_2,y_2),..., (x_N,y_N)\}</script><p>其中$x_i \in X$是输入，$y_i \in Y$是输出，X和Y表示输入和输出空间。N为样本数。<strong>目标是</strong>，利用最大熵原理选出一个最好的分类模型，即对于任意给定的输入$x \in X$，可以以概率$p(y|x)$输出$y \in Y$ 。</p>
+<p>按照最大熵原理，应该<strong>优先保证模型满足已知的所有约束</strong>。思路是，从训练数据T中抽取若干有用的特征，要求这些特征在T上关于经验分布$\tilde{p}(x,y)$的数学期望与它们在模型中关于$p(x,y)$的数学期望相等。这样，一个特征就是一个约束了。</p>
+<p>这里就涉及到，<strong>特征如何刻画？经验分布如何表示？</strong></p>
+<h1 id="2、特征函数"><a href="#2、特征函数" class="headerlink" title="2、特征函数"></a>2、特征函数</h1><p>假设通过特征选择，抽取若干特征。特征通常由特征函数来表示。例如</p>
+<script type="math/tex; mode=display">
+f(x,y) =\left\{\begin{matrix}
+\begin{aligned}
+& 1，若x,y满足某个事实 \\ 
+& 0，否则
+\end{aligned}
+\end{matrix}\right.</script><p>这里的特征不是指输入的某个特征，而是指输入和输出共同的特征。</p>
+<blockquote>
+<p>例如，假设我们需要判断“打”是动词还是量词，已知的训练数据有</p>
+<p>(x1,y1)=(一打火柴，量词);</p>
+<p>(x2,y2)=(三打啤酒，量词);</p>
+<p>(x3,y3)=(打电话，动词);</p>
+<p>(x4,y4)=(打篮球，动词);</p>
+<p>通过观察，发现“打”前面是数字时，是量词，“打”后面是名词时，是动词。这就是从训练数据中提取的两个特征，可分别用特征函数表示为</p>
+</blockquote>
+<h1 id="3、经验分布"><a href="#3、经验分布" class="headerlink" title="3、经验分布"></a>3、经验分布</h1><p>经验（概率）分布就是通过对训练集T进行统计得到的分布，用$\tilde p$表示。这里列举两个经验分布</p>
+<script type="math/tex; mode=display">
+\tilde p(x,y) = \frac {count(x,y)} {N} , \tilde p(x)=\frac {count(x)} {N}</script><p>其中，count表示出现的次数。</p>
+<h1 id="4、约束条件"><a href="#4、约束条件" class="headerlink" title="4、约束条件"></a>4、约束条件</h1><p>对于任意一个特征函数f，$E<em>{\tilde p}f$ 表示f在训练数据T上关于$\tilde p(x,y)$的数学期望， $E</em>{p}f$ 表示f在训练数据T上关于$p(x,y)$的数学期望。按照期望的定义，我们有</p>
+<script type="math/tex; mode=display">
+E_{\tilde p}f=\sum_{x,y}\tilde p(x,y)f(x,y)</script><script type="math/tex; mode=display">
+E_{ p}f=\sum_{x,y} p(x,y)f(x,y)</script><p>其中，p(x,y)是未知的，而建模的目标是生成$p(y|x)$，因此，根据Bayes定理，$p(x,y)=p(x)p(y|x)$。在样本数量足够的条件下，$p(x)$可以用$\tilde p(x)$近似表示。这样</p>
+<script type="math/tex; mode=display">
+E_{ p}f=\sum_{x,y} \tilde p(x)p(y|x)f(x,y)</script><p>对于概率分布$p(y|x)$，我们希望特征f的期望值应该和从训练集中得到的特征期望值是一致的，因此，<strong>增加约束</strong></p>
+<script type="math/tex; mode=display">
+E_{ p}f=E_{\tilde p}f</script><p>假设我们从训练集中抽取了n个特征，相应的，便有n个特征函数$f_i(i=1,2,…,n)$以及n个约束条件</p>
+<script type="math/tex; mode=display">
+C_i:E_{ p}(f_i)=E_{\tilde p}(f_i) \tag {3-1}</script><blockquote>
+<p>关于约束条件的几何解释</p>
+<p><img src="/.io//最大熵1.png" alt="最大熵1"></p>
+<p>（a）：P是所有可能的概率空间，此时没有约束条件，所有的概率模型$p(y|x)$都是允许的；</p>
+<p>（b）：增加了一个线性约束条件$C_1$，此时，目标分布$p(y|x)$只能落在由$C_1$定义的线段上；</p>
+<p>（c）：在（b）的基础上增加了另一个约束条件$C_2$ ，且$C_1 \cap C_2  \neq \varnothing$。此时，目标分布只能落在交点上，即被唯一确定；</p>
+<p>（d）：在（b）基础上增加了另一个约束$C_3$，且$C_1 \cap C_2  = \varnothing$，此时不存在能够同时满足$C_1$和$C_3$的$p(y|x)$。</p>
+</blockquote>
+<p>利用（3-1）定义的约束条件，我们定义P的一个子空间</p>
+<script type="math/tex; mode=display">
+C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><h1 id="5、最大熵模型"><a href="#5、最大熵模型" class="headerlink" title="5、最大熵模型"></a>5、最大熵模型</h1><p>由于我们的目标是获得一个条件分布，因此这里也采用相应的条件熵</p>
+<script type="math/tex; mode=display">
+H(p(y|x))=-\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)</script><p>可以看出这里也是用$\tilde p(x)$来近似$p(x)$。以下将$H(p(y|x))$简记为$H(p)$。至此，可以给出最大熵模型的完整描述。</p>
+<p>对于给定的训练集T，特征函数$f_i(x,y), i=1,2,…n$，最大熵模型就是求解</p>
+<script type="math/tex; mode=display">
+\underset {p \in C} {max} \ \  H(p) = \begin{pmatrix}
+-\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)
+\end{pmatrix}, \\
+s.t. \sum_y p(y|x)=1 \tag {5-1} \\
+s.t. \ C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><p>其中的s.t.是为了保证$p(y|x)$是一个（合法的）条件概率分布。</p>
+<p>等价于一个求极小值问题</p>
+<script type="math/tex; mode=display">
+\underset {p \in C} {min} \ \  -H(p) = \begin{pmatrix}
+\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)
+\end{pmatrix}, \\
+s.t. \sum_y p(y|x)=1 \tag {5-2} \\
+s.t. \ C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><h1 id="6、模型求解"><a href="#6、模型求解" class="headerlink" title="6、模型求解"></a>6、模型求解</h1><p>对于5-1的求解，主要思路和步骤如下：</p>
+<ol>
+<li>利用Lagrange乘子将最大熵模型由一个带约束的最优化问题转为无约束的最优化问题，这是一个<strong>极小极大问题（min max）</strong>。</li>
+<li>利用对偶问题等价性，转化为求解上一步得到的极大/极小问题的对偶问题，也是一个极大极小问题。</li>
+</ol>
+<h2 id="6-1-原始问题和对偶问题"><a href="#6-1-原始问题和对偶问题" class="headerlink" title="6.1 原始问题和对偶问题"></a>6.1 原始问题和对偶问题</h2><p>根据（5-2），引入拉格朗日乘子$\lambda=(\lambda_0,\lambda_1,…,\lambda_n)^T$，定义拉格朗日函数</p>
+<script type="math/tex; mode=display">
+L(p,\lambda) = -H(p) + \lambda_0(1-\sum_y p(y|x))+\sum_{i=1}^n\lambda_i(\tau_i-E_p(f_i))  \tag{6-1}</script><p>利用对偶性，求解（6-1）的<strong>原始问题</strong>表示为：</p>
+<script type="math/tex; mode=display">
+\underset {p \in C} {min}\  \underset {\lambda} {max}\ L(p,\lambda) \tag{6-2}</script><p><strong>对偶问题</strong>为：</p>
+<script type="math/tex; mode=display">
+\underset {\lambda} {max}\ \underset {p \in C} {min}\  L(p,\lambda) \tag{6-3}</script><p>由于$H(p)$是关于p的凸函数，因此要求解最大熵模型，只需求解对偶问题（6-3）即可。</p>
+<h3 id="6-1-1-指数形式的解"><a href="#6-1-1-指数形式的解" class="headerlink" title="6.1.1 指数形式的解"></a>6.1.1 指数形式的解</h3><p>首先求解内部的极小问题。由于$\underset {p \in C} {min}\  L(p,\lambda)$是关于$\lambda$的函数，将其记做：</p>
+<script type="math/tex; mode=display">
+\Psi (\lambda) =\underset {p \in C} {min}\  L(p,\lambda) = L(p_{\lambda}, \lambda) \tag {6-4}</script><p>其中</p>
+<script type="math/tex; mode=display">
+p_{\lambda}=\underset {p \in C} {argmin}\ L(p,\lambda)=p_{\lambda}(y|x) \tag {6-5}</script><p>根据拉格朗日乘子法，求$L(p,\lambda)$对$p(y|x)$的偏导，得（求解过程略）：</p>
+<script type="math/tex; mode=display">
+p_{\lambda}=\frac {1} {Z_{\lambda}(x)} \ \exp(\sum_{i=1}^n \lambda_i f_i(x,y)) \tag{6-6}</script><p>其中，</p>
+<script type="math/tex; mode=display">
+Z_{\lambda}(x)=\sum_y \exp(\sum_{i=1}^n \lambda_i f_i(x,y)) \tag{6-7}</script><p>称为<strong>规范化因子</strong>（normalizing factor）。注意，此时已经没有$\lambda_0$了。</p>
+<p>由（6-6）定义的$p_{\lambda}$就是最大熵模型的解，它具有<strong>指数形式</strong>。其中，$\lambda_i$就是特征$f_i$的权重，越大表示特征越重要。</p>
+<h3 id="6-1-2-最大似然估计"><a href="#6-1-2-最大似然估计" class="headerlink" title="6.1.2 最大似然估计"></a>6.1.2 最大似然估计</h3><p>得到对偶问题的内层极小值问题的解之后，接着求解外层的极大值问题$\underset {\lambda} {max} \ \Psi(\lambda)$。</p>
+<p>设其解为</p>
+<script type="math/tex; mode=display">
+\lambda^* = \underset {\lambda} {argmax} \ \Psi(\lambda) \tag{6-8}</script><p>则最大熵模型的解为</p>
+<script type="math/tex; mode=display">
+p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$与最大似然估计是等价的！</p>
+<h1 id="7、最优化方法"><a href="#7、最优化方法" class="headerlink" title="7、最优化方法"></a>7、最优化方法</h1><p>通用的方法有梯度下降，拟牛顿法等，最大熵模型有两个量身定做的方法：通用迭代尺度法（Generalized Iterative Scaling，GIS）和改进的迭代尺度法（Impoved Iterative Scaling，IIS）。</p>
+<h2 id="7-1-GIS算法"><a href="#7-1-GIS算法" class="headerlink" title="7.1 GIS算法"></a>7.1 GIS算法</h2><blockquote>
+<p>算法1：</p>
+<p>S1：初始化参数，令$\lambda=0$</p>
+<p>S2：计算$E_{\tilde p}(f_i),\ i=1,2,…,n$</p>
+<p>S3：执行一次迭代，对参数做一次刷新。</p>
+<p>​    计算$E<em>{p</em>{\lambda}}(f_i)$</p>
+<p>​    FOR i=1,2,…,n DO {</p>
+<p>​        $\lambda<em>i\  += \ \eta \log\frac {E</em>{\tilde p}(f<em>i)} {E</em>{p_{\lambda}}(f_i)}$</p>
+<p>​    }</p>
+<p>S4：检查是否收敛，若未收敛则继续S3</p>
+</blockquote>
+<p>其中，$\eta$是学习率，在实际中取$\frac {1} {C}$，$$，表示训练数据中包含特征最多的那个样本所包含的特征个数。</p>
+<script type="math/tex; mode=display">
+\Delta\lambda_i=\eta \log\frac {E_{\tilde p}(f_i)} {E_{p_{\lambda}}(f_i)}</script><p>是校正量。</p>
+<p>每次迭代，先用当前的权重估算每个特征$f<em>i$在训练数据中的概率分布的期望，然后逐个与相应的经验分布的期望比较，其偏差程度通过$\log\frac {E</em>{\tilde p}(f<em>i)} {E</em>{p_{\lambda}}(f_i)}$来进行刻画。</p>
+<p>收敛条件就是当两次迭代的$\lambda$在一个较小的范围。</p>
+<p>GIS每次迭代时间很长，不太稳定，容易溢出，一般不会使用。</p>
+<h2 id="7-2-IIS算法"><a href="#7-2-IIS算法" class="headerlink" title="7.2 IIS算法"></a>7.2 IIS算法</h2><p>与GIS的不同主要在$\Delta\lambda_i$的计算上。IIS通过求解方程</p>
+<script type="math/tex; mode=display">
+\sum_{x,y} \tilde p(x)p(y|x)f_i(x,y)\exp(\Delta\lambda_i\sum_{i=1}^nf_i(x,y))=\tilde p(f_i)</script><p>1）若$\sum<em>{i=1}^nf_i(x,y)$为常数，即对任意样本(x,y)，都有$\sum</em>{i=1}^nf_i(x,y)=C$，则</p>
+<script type="math/tex; mode=display">
+\Delta\lambda_i=\frac {1} {C} \log\frac {E_{\tilde p}(f_i)} {E_{p_{\lambda}}(f_i)}</script><p>此时，IIS可以看做是GIS的一种推广。</p>
+<p>2）若$\sum_{i=1}^nf_i(x,y)$不是常数，则需要通过数值方式来求解$\Delta\lambda_i$，如牛顿法。</p>
+<h1 id="8、优缺点"><a href="#8、优缺点" class="headerlink" title="8、优缺点"></a>8、优缺点</h1><p>优点是：在建模时，只需要集中精力选取特征，不需要花费精力考虑如何使用这些特征，可以灵活使用不同类型的特征。</p>
+<p>缺点是计算量大。</p>
+<p>参考</p>
+<p>【1】 <a href="http://blog.csdn.net/itplus/article/details/26550273" target="_blank" rel="noopener">最大熵学习笔记</a></p>
+<p>【2】统计学习方法</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/最大熵/" rel="tag"># 最大熵</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/12/机器学习/NLP/网页关键词提取/" rel="next" title="网页关键词提取">
+                <i class="fa fa-chevron-left"></i> 网页关键词提取
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/12/机器学习/NLP/Gensim-Tutorials/" rel="prev" title="Gensim-Tutorials">
+                Gensim-Tutorials <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Schwimmer</p>
+              <div class="site-description motion-element" itemprop="description">Record and Think!</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">314</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">59</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1、最大熵原理"><span class="nav-number">1.</span> <span class="nav-text">1、最大熵原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2、特征函数"><span class="nav-number">2.</span> <span class="nav-text">2、特征函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3、经验分布"><span class="nav-number">3.</span> <span class="nav-text">3、经验分布</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4、约束条件"><span class="nav-number">4.</span> <span class="nav-text">4、约束条件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5、最大熵模型"><span class="nav-number">5.</span> <span class="nav-text">5、最大熵模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6、模型求解"><span class="nav-number">6.</span> <span class="nav-text">6、模型求解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-原始问题和对偶问题"><span class="nav-number">6.1.</span> <span class="nav-text">6.1 原始问题和对偶问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-1-指数形式的解"><span class="nav-number">6.1.1.</span> <span class="nav-text">6.1.1 指数形式的解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-2-最大似然估计"><span class="nav-number">6.1.2.</span> <span class="nav-text">6.1.2 最大似然估计</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7、最优化方法"><span class="nav-number">7.</span> <span class="nav-text">7、最优化方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#7-1-GIS算法"><span class="nav-number">7.1.</span> <span class="nav-text">7.1 GIS算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-2-IIS算法"><span class="nav-number">7.2.</span> <span class="nav-text">7.2 IIS算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8、优缺点"><span class="nav-number">8.</span> <span class="nav-text">8、优缺点</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.2.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      "image": {
+        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+        "viewText": "分享到：",
+        "viewSize": "16"
+      },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      </div>
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+  
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-schwimmer-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://schwimmer.github.io/2017/07/12/机器学习/机器学习笔记-最大熵/";
+    this.page.identifier = "2017/07/12/机器学习/机器学习笔记-最大熵/";
+    this.page.title = '机器学习笔记-最大熵';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-schwimmer-github-io.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    window.addEventListener('load', loadComments, false);
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
