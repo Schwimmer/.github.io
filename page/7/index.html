@@ -357,6 +357,210 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/05/04/深度学习笔记/tensorflow/基础-莫烦教程/5-1 分类学习/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/04/深度学习笔记/tensorflow/基础-莫烦教程/5-1 分类学习/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-04 10:46:30" itemprop="dateCreated datePublished" datetime="2019-05-04T10:46:30+08:00">2019-05-04</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-05-21 23:17:21" itemprop="dateModified" datetime="2019-05-21T23:17:21+08:00">2019-05-21</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/05/04/深度学习笔记/tensorflow/基础-莫烦教程/5-1 分类学习/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/05/04/深度学习笔记/tensorflow/基础-莫烦教程/5-1 分类学习/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/5-01-classifier/" target="_blank" rel="noopener">https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/5-01-classifier/</a></p>
+<h2 id="MNIST-数据"><a href="#MNIST-数据" class="headerlink" title="MNIST 数据"></a>MNIST 数据</h2><p>首先准备数据（MNIST库）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">from tensorflow.examples.tutorials.mnist import input_data</span><br><span class="line">mnist = input_data.read_data_sets(&apos;MNIST_data&apos;, one_hot=True)</span><br></pre></td></tr></table></figure>
+<h2 id="搭建网络"><a href="#搭建网络" class="headerlink" title="搭建网络"></a>搭建网络</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xs = tf.placeholder(tf.float32, [None, 784]) # 28x28</span><br></pre></td></tr></table></figure>
+<p>每张图片都表示一个数字，所以我们的输出是数字0到9，共10类。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ys = tf.placeholder(tf.float32, [None, 10])</span><br></pre></td></tr></table></figure>
+<p>调用add_layer函数搭建一个最简单的训练网络结构，只有输入层和输出层。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">prediction = add_layer(xs, 784, 10, activation_function=tf.nn.softmax)</span><br></pre></td></tr></table></figure>
+<p>其中输入数据是784个特征，输出数据是10个特征，激励采用softmax函数，网络结构图是这样子的</p>
+<p><img src="/.io//pic/5_01_2.png" alt="img"></p>
+<h2 id="Cross-entropy-loss"><a href="#Cross-entropy-loss" class="headerlink" title="Cross entropy loss"></a>Cross entropy loss</h2><p>loss函数（即最优化目标函数）选用交叉熵函数。交叉熵用来衡量预测值和真实值的相似程度，如果完全相同，它们的交叉熵等于零。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cross_entropy = tf.reduce_mean(-tf.reduce_sum(ys * tf.log(prediction),</span><br><span class="line">reduction_indices=[1])) # loss</span><br></pre></td></tr></table></figure>
+<p>train方法（最优化算法）采用梯度下降法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)</span><br><span class="line">sess = tf.Session()</span><br><span class="line"># tf.initialize_all_variables() 这种写法马上就要被废弃</span><br><span class="line"># 替换成下面的写法:</span><br><span class="line">sess.run(tf.global_variables_initializer())</span><br></pre></td></tr></table></figure>
+<h2 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h2><p>现在开始train，每次只取100张图片，免得数据太多训练太慢。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">batch_xs, batch_ys = mnist.train.next_batch(100)</span><br><span class="line">sess.run(train_step, feed_dict=&#123;xs: batch_xs, ys: batch_ys&#125;)</span><br></pre></td></tr></table></figure>
+<p>每训练50次输出一下预测精度</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if i % 50 == 0:</span><br><span class="line">        print(compute_accuracy(</span><br><span class="line">            mnist.test.images, mnist.test.labels))</span><br></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<p><img src="/.io//pic/5_01_3.png" alt="Classification åç±»å­¦ä¹ "></p>
+<h1 id="Dropout解决过拟合"><a href="#Dropout解决过拟合" class="headerlink" title="Dropout解决过拟合"></a>Dropout解决过拟合</h1><h2 id="建立-dropout-层"><a href="#建立-dropout-层" class="headerlink" title="建立 dropout 层"></a>建立 dropout 层</h2><p>本次内容需要使用一下 sklearn 数据库当中的数据,  没有安装 sklearn 的同学可以参考一下<a href="https://morvanzhou.github.io/tutorials/machine-learning/sklearn/1-2-install/" target="_blank" rel="noopener">这个教程</a> 安装一下. 然后 <code>import</code> 以下模块.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">import tensorflow as tf</span><br><span class="line">from sklearn.datasets import load_digits</span><br><span class="line">from sklearn.cross_validation import train_test_split</span><br><span class="line">from sklearn.preprocessing import LabelBinarizer</span><br><span class="line"></span><br><span class="line">keep_prob = tf.placeholder(tf.float32)</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">Wx_plus_b = tf.nn.dropout(Wx_plus_b, keep_prob)</span><br></pre></td></tr></table></figure>
+<p>这里的<code>keep_prob</code>是保留概率，即我们要保留的结果所占比例，它作为一个<code>placeholder</code>，在<code>run</code>时传入， 当<code>keep_prob=1</code>的时候，相当于100%保留，也就是dropout没有起作用。 下面我们分析一下程序结构，首先准备数据，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">digits = load_digits()</span><br><span class="line">X = digits.data</span><br><span class="line">y = digits.target</span><br><span class="line">y = LabelBinarizer().fit_transform(y)</span><br><span class="line">X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.3)</span><br></pre></td></tr></table></figure>
+<p>其中<code>X_train</code>是训练数据, <code>X_test</code>是测试数据。 然后添加隐含层和输出层</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># add output layer</span><br><span class="line">l1 = add_layer(xs, 64, 50, &apos;l1&apos;, activation_function=tf.nn.tanh)</span><br><span class="line">prediction = add_layer(l1, 50, 10, &apos;l2&apos;, activation_function=tf.nn.softmax)</span><br></pre></td></tr></table></figure>
+<p>loss函数（即最优化目标函数）选用交叉熵函数。交叉熵用来衡量预测值和真实值的相似程度，如果完全相同，交叉熵就等于零。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cross_entropy = tf.reduce_mean(-tf.reduce_sum(ys * tf.log(prediction),</span><br><span class="line">                                              reduction_indices=[1]))  # loss</span><br></pre></td></tr></table></figure>
+<p>train方法（最优化算法）采用梯度下降法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)</span><br></pre></td></tr></table></figure>
+<h2 id="训练-1"><a href="#训练-1" class="headerlink" title="训练"></a>训练</h2><p>最后开始train，总共训练500次。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sess.run(train_step, feed_dict=&#123;xs: X_train, ys: y_train, keep_prob: 0.5&#125;)</span><br><span class="line">#sess.run(train_step, feed_dict=&#123;xs: X_train, ys: y_train, keep_prob: 1&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="可视化结果"><a href="#可视化结果" class="headerlink" title="可视化结果"></a>可视化结果</h2><p>训练中<code>keep_prob=1</code>时，就可以暴露出overfitting问题。<code>keep_prob=0.5</code>时，<code>dropout</code>就发挥了作用。 我们可以两种参数分别运行程序，对比一下结果。</p>
+<p>当<code>keep_prob=1</code>时，模型对训练数据的适应性优于测试数据，存在overfitting，输出如下： 红线是 <code>train</code> 的误差, 蓝线是 <code>test</code> 的误差.</p>
+<p><a href="https://github.com/MorvanZhou/Tensorflow-Tutorial" target="_blank" rel="noopener">https://github.com/MorvanZhou/Tensorflow-Tutorial</a></p>
+<p>这里有简化版代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">Know more, visit my Python tutorial page: https://morvanzhou.github.io/tutorials/</span></span><br><span class="line"><span class="string">My Youtube Channel: https://www.youtube.com/user/MorvanZhou</span></span><br><span class="line"><span class="string">Dependencies:</span></span><br><span class="line"><span class="string">tensorflow: 1.1.0</span></span><br><span class="line"><span class="string">matplotlib</span></span><br><span class="line"><span class="string">numpy</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">tf.set_random_seed(<span class="number">1</span>)</span><br><span class="line">np.random.seed(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Hyper parameters</span></span><br><span class="line">N_SAMPLES = <span class="number">20</span></span><br><span class="line">N_HIDDEN = <span class="number">300</span></span><br><span class="line">LR = <span class="number">0.01</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># training data</span></span><br><span class="line">x = np.linspace(<span class="number">-1</span>, <span class="number">1</span>, N_SAMPLES)[:, np.newaxis]</span><br><span class="line">y = x + <span class="number">0.3</span>*np.random.randn(N_SAMPLES)[:, np.newaxis]</span><br><span class="line"></span><br><span class="line"><span class="comment"># test data</span></span><br><span class="line">test_x = x.copy()</span><br><span class="line">test_y = test_x + <span class="number">0.3</span>*np.random.randn(N_SAMPLES)[:, np.newaxis]</span><br><span class="line"></span><br><span class="line"><span class="comment"># show data</span></span><br><span class="line">plt.scatter(x, y, c=<span class="string">'magenta'</span>, s=<span class="number">50</span>, alpha=<span class="number">0.5</span>, label=<span class="string">'train'</span>)</span><br><span class="line">plt.scatter(test_x, test_y, c=<span class="string">'cyan'</span>, s=<span class="number">50</span>, alpha=<span class="number">0.5</span>, label=<span class="string">'test'</span>)</span><br><span class="line">plt.legend(loc=<span class="string">'upper left'</span>)</span><br><span class="line">plt.ylim((<span class="number">-2.5</span>, <span class="number">2.5</span>))</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># tf placeholders</span></span><br><span class="line">tf_x = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>])</span><br><span class="line">tf_y = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>])</span><br><span class="line">tf_is_training = tf.placeholder(tf.bool, <span class="keyword">None</span>)  <span class="comment"># to control dropout when training and testing</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># overfitting net</span></span><br><span class="line">o1 = tf.layers.dense(tf_x, N_HIDDEN, tf.nn.relu)</span><br><span class="line">o2 = tf.layers.dense(o1, N_HIDDEN, tf.nn.relu)</span><br><span class="line">o_out = tf.layers.dense(o2, <span class="number">1</span>)</span><br><span class="line">o_loss = tf.losses.mean_squared_error(tf_y, o_out)</span><br><span class="line">o_train = tf.train.AdamOptimizer(LR).minimize(o_loss)</span><br><span class="line"></span><br><span class="line"><span class="comment"># dropout net</span></span><br><span class="line">d1 = tf.layers.dense(tf_x, N_HIDDEN, tf.nn.relu)</span><br><span class="line">d1 = tf.layers.dropout(d1, rate=<span class="number">0.5</span>, training=tf_is_training)   <span class="comment"># drop out 50% of inputs</span></span><br><span class="line">d2 = tf.layers.dense(d1, N_HIDDEN, tf.nn.relu)</span><br><span class="line">d2 = tf.layers.dropout(d2, rate=<span class="number">0.5</span>, training=tf_is_training)   <span class="comment"># drop out 50% of inputs</span></span><br><span class="line">d_out = tf.layers.dense(d2, <span class="number">1</span>)</span><br><span class="line">d_loss = tf.losses.mean_squared_error(tf_y, d_out)</span><br><span class="line">d_train = tf.train.AdamOptimizer(LR).minimize(d_loss)</span><br><span class="line"></span><br><span class="line">sess = tf.Session()</span><br><span class="line">sess.run(tf.global_variables_initializer())</span><br><span class="line"></span><br><span class="line">plt.ion()   <span class="comment"># something about plotting</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> range(<span class="number">500</span>):</span><br><span class="line">    sess.run([o_train, d_train], &#123;tf_x: x, tf_y: y, tf_is_training: <span class="keyword">True</span>&#125;)  <span class="comment"># train, set is_training=True</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> t % <span class="number">10</span> == <span class="number">0</span>:</span><br><span class="line">        <span class="comment"># plotting</span></span><br><span class="line">        plt.cla()</span><br><span class="line">        o_loss_, d_loss_, o_out_, d_out_ = sess.run(</span><br><span class="line">            [o_loss, d_loss, o_out, d_out], &#123;tf_x: test_x, tf_y: test_y, tf_is_training: <span class="keyword">False</span>&#125; <span class="comment"># test, set is_training=False</span></span><br><span class="line">        )</span><br><span class="line">        plt.scatter(x, y, c=<span class="string">'magenta'</span>, s=<span class="number">50</span>, alpha=<span class="number">0.3</span>, label=<span class="string">'train'</span>); plt.scatter(test_x, test_y, c=<span class="string">'cyan'</span>, s=<span class="number">50</span>, alpha=<span class="number">0.3</span>, label=<span class="string">'test'</span>)</span><br><span class="line">        plt.plot(test_x, o_out_, <span class="string">'r-'</span>, lw=<span class="number">3</span>, label=<span class="string">'overfitting'</span>); plt.plot(test_x, d_out_, <span class="string">'b--'</span>, lw=<span class="number">3</span>, label=<span class="string">'dropout(50%)'</span>)</span><br><span class="line">        plt.text(<span class="number">0</span>, <span class="number">-1.2</span>, <span class="string">'overfitting loss=%.4f'</span> % o_loss_, fontdict=&#123;<span class="string">'size'</span>: <span class="number">20</span>, <span class="string">'color'</span>:  <span class="string">'red'</span>&#125;); plt.text(<span class="number">0</span>, <span class="number">-1.5</span>, <span class="string">'dropout loss=%.4f'</span> % d_loss_, fontdict=&#123;<span class="string">'size'</span>: <span class="number">20</span>, <span class="string">'color'</span>: <span class="string">'blue'</span>&#125;)</span><br><span class="line">        plt.legend(loc=<span class="string">'upper left'</span>); plt.ylim((<span class="number">-2.5</span>, <span class="number">2.5</span>)); plt.pause(<span class="number">0.1</span>)</span><br><span class="line"></span><br><span class="line">plt.ioff()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/05/03/深度学习笔记/tensorflow/基础-莫烦教程/4-2 TensorBoard训练过程/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -553,170 +757,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/24/读书/OKR/Untitled/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/04/24/读书/OKR/Untitled/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-04-24 12:59:26 / 修改时间：13:01:37" itemprop="dateCreated datePublished" datetime="2019-04-24T12:59:26+08:00">2019-04-24</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/04/24/读书/OKR/Untitled/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/24/读书/OKR/Untitled/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>OKR背景</p>
-<p>1、使命：我们存在的意义是什么？</p>
-<p>贷后反欺诈</p>
-<p>2、愿景：用文字勾勒出未来蓝图</p>
-<p>3、战略：重点和优先处理的事项</p>
-<p>4、目标：近期聚焦达成的事项</p>
-<p>5、关键结果：如何得知我们朝目标推进了多少？</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/19/工具和环境/gitbook/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -737,7 +777,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2019/04/19/工具和环境/gitbook/" class="post-title-link" itemprop="url">未命名</a>
+                <a href="/2019/04/19/工具和环境/gitbook/" class="post-title-link" itemprop="url">【转】Gitbook使用</a>
               
             
           </h1>
@@ -777,11 +817,26 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-04-22 14:40:29" itemprop="dateModified" datetime="2019-04-22T14:40:29+08:00">2019-04-22</time>
+                <time title="修改时间：2019-07-05 16:30:21" itemprop="dateModified" datetime="2019-07-05T16:30:21+08:00">2019-07-05</time>
               </span>
             
           
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/工具和环境/" itemprop="url" rel="index"><span itemprop="name">工具和环境</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -839,165 +894,6 @@
 <h1 id="插件-1"><a href="#插件-1" class="headerlink" title="插件"></a>插件</h1><p>官方v2版本禁用了插件，但是仍可以从github上下载并安装</p>
 <h3 id="Search-Pro"><a href="#Search-Pro" class="headerlink" title="Search Pro"></a>Search Pro</h3><p>支持中文搜索, 需要将默认的search插件去掉, 注意: 如果标题中有包含的关键字, 标题的样式会有所变化<br><a href="https://github.com/gitbook-plugins/gitbook-plugin-search-pro" target="_blank" rel="noopener">插件地址</a></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&quot;plugins&quot;: [</span><br><span class="line">    &quot;-lunr&quot;,</span><br><span class="line">    &quot;-search&quot;,</span><br><span class="line">    &quot;-fontsettings&quot;,</span><br><span class="line">    &quot;search-pro&quot;</span><br><span class="line">  ]</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/18/读书/计算机程序的构造和解释/CH1/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/04/18/读书/计算机程序的构造和解释/CH1/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-04-18 21:54:38 / 修改时间：22:03:24" itemprop="dateCreated datePublished" datetime="2019-04-18T21:54:38+08:00">2019-04-18</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/04/18/读书/计算机程序的构造和解释/CH1/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/18/读书/计算机程序的构造和解释/CH1/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="1-1-程序设计的基本元素"><a href="#1-1-程序设计的基本元素" class="headerlink" title="1.1 程序设计的基本元素"></a>1.1 程序设计的基本元素</h2><p><img src="/.io//pic/image-20190418220257819.png" alt="image-20190418220257819"></p>
-<p><img src="/.io//pic/image-20190418220322387.png" alt="image-20190418220322387"></p>
 
           
         
@@ -2063,11 +1959,174 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/09/深度学习笔记/NLP/seq2seq实例/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/09/深度学习笔记/NLP/seq2seq实例/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-09 23:20:13 / 修改时间：23:24:01" itemprop="dateCreated datePublished" datetime="2019-04-09T23:20:13+08:00">2019-04-09</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/04/09/深度学习笔记/NLP/seq2seq实例/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/09/深度学习笔记/NLP/seq2seq实例/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://zhuanlan.zhihu.com/p/59476019" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/59476019</a></p>
+<p>实现的是一个输出反义词的Seq2Seq</p>
+<p>参考链接：<a href="https://link.zhihu.com/?target=https%3A//github.com/graykode/nlp-tutorial" target="_blank" rel="noopener">graykode/nlp-tutorial</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line">import numpy as np</span><br><span class="line">import tensorflow as tf</span><br><span class="line">char_sum = [c for c in &apos;SEPabcdefghijklmnopqrstuvwxyz&apos;]#定义所有可能出现的char S、E、P是用来填充和界定边界的</span><br><span class="line">dic_char = &#123;c:i for i,c in enumerate(char_sum)&#125;#定义字符对应数字的dic</span><br><span class="line">data = [[&apos;man&apos;,&apos;woman&apos;],[&apos;small&apos;,&apos;large&apos;],[&apos;in&apos;,&apos;out&apos;],[&apos;young&apos;,&apos;old&apos;],[&apos;black&apos;,&apos;white&apos;],[&apos;far&apos;,&apos;near&apos;],[&apos;short&apos;,&apos;long&apos;],[&apos;king&apos;,&apos;queen&apos;],[&apos;up&apos;,&apos;down&apos;]]</span><br><span class="line">#定义一堆反义词 seq2seq的目的就是输出反义词</span><br><span class="line"></span><br><span class="line">#定义一下超参数</span><br><span class="line">n_step=5#最长的词长度不超过5</span><br><span class="line">num_class=len(char_sum)#相当于char的种类数</span><br><span class="line">n_hidden = 128#每个RNN的隐藏单元个数</span><br><span class="line"></span><br><span class="line">def get_batch(data):</span><br><span class="line">    input_batch,output_batch,target_batch = [],[],[]</span><br><span class="line">    for seq in data:#做一个padding的操作</span><br><span class="line">        for i in range(2):#因为只有原词和反义词 所以用的2</span><br><span class="line">            seq[i] = seq[i]+&apos;P&apos;*(n_step-len(seq[i]))#把长度不足5的单词 padding到5</span><br><span class="line">        input_ = [dic_char[n] for n in seq[0]]#[&apos;m&apos;,&apos;a&apos;,&apos;n&apos;,&apos;P&apos;,&apos;P&apos;]-&gt;[&apos;15&apos;,&apos;3&apos;,&apos;16&apos;,&apos;2&apos;,&apos;2&apos;]</span><br><span class="line">        output_ = [dic_char[n] for n in (&apos;S&apos; + seq[1])]#seq2seq要求target前有一位</span><br><span class="line">        target_ = [dic_char[n] for n in (seq[1] + &apos;E&apos;)]#[25, 17, 15, 3, 16, 1]</span><br><span class="line">        #用one-hot表示各个字符</span><br><span class="line">        input_batch.append(np.eye(num_class)[input_])#从一个对角矩阵中找ont-hot向量</span><br><span class="line">        output_batch.append(np.eye(num_class)[output_])#</span><br><span class="line">        target_batch.append(target_)</span><br><span class="line">    #print(input_batch[0].shape)#（5，29）5个char 每个char由一个29维的one-hot表示</span><br><span class="line">    return input_batch,output_batch,target_batch</span><br><span class="line"></span><br><span class="line">#定义model</span><br><span class="line">encoder_input = tf.placeholder(tf.float32,[None,None,num_class])#(batch_size,max_len,num_class)</span><br><span class="line">decoder_input = tf.placeholder(tf.float32,[None,None,num_class])#(batch_size,max_len+1,num_class) max_len+1 because&apos;S&apos;</span><br><span class="line">target = tf.placeholder(tf.int32,[None,None])#(batch_size,max_len+1)max_len+1 because&apos;E&apos;</span><br><span class="line"></span><br><span class="line">#encoder</span><br><span class="line">with tf.variable_scope(&apos;encoder&apos;):</span><br><span class="line">    encoder = tf.contrib.rnn.BasicRNNCell(n_hidden)#根据每个RNN的隐藏单元个数 创建RNN cell</span><br><span class="line">    encoder = tf.contrib.rnn.DropoutWrapper(encoder,output_keep_prob=0.5)#dropout 随机失活</span><br><span class="line">    _,encoder_output = tf.nn.dynamic_rnn(encoder,encoder_input,dtype=tf.float32)</span><br><span class="line"></span><br><span class="line">#decoder</span><br><span class="line">with tf.variable_scope(&apos;decoder&apos;):</span><br><span class="line">    decoder = tf.contrib.rnn.BasicRNNCell(n_hidden)#根据每个RNN的隐藏单元个数 创建RNN cell</span><br><span class="line">    decoder = tf.contrib.rnn.DropoutWrapper(decoder,output_keep_prob=0.5)#dropout 随机失活</span><br><span class="line">    decoder_output,_ = tf.nn.dynamic_rnn(decoder,decoder_input,initial_state=encoder_output,dtype=tf.float32)</span><br><span class="line"></span><br><span class="line">#还需要过一个全连接 把得到的值映射到29个类别</span><br><span class="line">model = tf.layers.dense(decoder_output,num_class,activation=None)</span><br><span class="line"></span><br><span class="line">#计算loss 以及优化</span><br><span class="line">cost = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=model,labels=target))</span><br><span class="line">optimizer = tf.train.AdamOptimizer(0.001).minimize(cost)</span><br><span class="line"></span><br><span class="line">#定义测试函数 测试的是一个单词</span><br><span class="line">def test(word):</span><br><span class="line">    seq_data = [word,&apos;P&apos;*len(word)]</span><br><span class="line">    input_batch,output_batch,_ = get_batch([seq_data])</span><br><span class="line">    predict = tf.argmax(model,2) # model : [batch_size, max_len+1, n_class]</span><br><span class="line">    res = sess.run(predict,feed_dict=&#123;encoder_input:input_batch,decoder_input:output_batch&#125;)</span><br><span class="line">    decoded = [char_sum[i] for i in res[0]]</span><br><span class="line">    end = decoded.index(&apos;E&apos;)</span><br><span class="line">    translated = &apos;&apos;.join(decoded[:end])</span><br><span class="line">    return translated</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">sess = tf.Session()</span><br><span class="line">#初始化</span><br><span class="line">sess.run(tf.global_variables_initializer())</span><br><span class="line">#准备batch</span><br><span class="line">input_batch,output_batch,target_batch = get_batch(data)</span><br><span class="line">for i in range(5000):#跑5000轮</span><br><span class="line">    _,cost_ = sess.run([optimizer,cost],</span><br><span class="line">                        feed_dict=&#123;encoder_input:input_batch,decoder_input:output_batch,target:target_batch&#125;)</span><br><span class="line">    if (i+1)%1000 == 0:</span><br><span class="line">        print(&apos;Epoch %04d:&apos; % (i+1))</span><br><span class="line">        print(&apos;cost:%.6f&apos; % cost_)</span><br><span class="line">print(&apos;test&apos;)</span><br><span class="line">print(&apos;man -&gt;&apos;, test(&apos;man&apos;))</span><br><span class="line">print(&apos;mans -&gt;&apos;, test(&apos;mans&apos;))</span><br><span class="line">print(&apos;king -&gt;&apos;, test(&apos;king&apos;))</span><br><span class="line">print(&apos;black -&gt;&apos;, test(&apos;black&apos;))</span><br><span class="line">print(&apos;up -&gt;&apos;, test(&apos;up&apos;))</span><br></pre></td></tr></table></figure>
+<p>在易学上直接能跑</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/home/ubuntu/MyFiles/dl_codes/nlp-tutorial.ipynb</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/32/">32</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/30/">30</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2109,7 +2168,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">314</span>
+                    <span class="site-state-item-count">300</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2170,7 +2229,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">22</span>
+                      
+                    
+                    <span class="site-state-item-count">23</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -2305,7 +2366,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">59</span>
+                      
+                    
+                    <span class="site-state-item-count">60</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
