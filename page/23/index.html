@@ -357,7 +357,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/23/机器学习/NLP/新词发现/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/23/hadoop-spark/kafka的log存储/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -377,7 +377,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/03/23/机器学习/NLP/新词发现/" class="post-title-link" itemprop="url">新词发现</a>
+                <a href="/2018/03/23/hadoop-spark/kafka的log存储/" class="post-title-link" itemprop="url">kafka的log存储</a>
               
             
           </h1>
@@ -417,7 +417,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
 
                 
                 
@@ -435,8 +435,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/23/机器学习/NLP/新词发现/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/23/机器学习/NLP/新词发现/" itemprop="commentCount"></span>
+                <a href="/2018/03/23/hadoop-spark/kafka的log存储/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/23/hadoop-spark/kafka的log存储/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -469,76 +469,7 @@
       
         
           
-            <p>代码在</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/spark-buzzads/src/main/scala/com/iclick/word_segmentation/WordSegment.scala</span><br></pre></td></tr></table></figure>
-<p>自己测试的代码在</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/spark-test/src/main/scala/com/iclick/word_segmentation/WordTest.scala</span><br></pre></td></tr></table></figure>
-<p>新词发现的原理是</p>
-<p><a href="http://blog.csdn.net/wendingzhulu/article/details/44464895" target="_blank" rel="noopener">中文新词发现算法解析</a></p>
-<p><a href="http://www.matrix67.com/blog/archives/5044" target="_blank" rel="noopener">互联网时代的社会语言学：基于SNS的文本数据挖掘</a></p>
-<p>从凝固度和自由度两个角度考虑你通过一元分词的相邻词组合而成的“新词”是否是语境中真正的一个词。</p>
-<h1 id="算法原理"><a href="#算法原理" class="headerlink" title="算法原理"></a>算法原理</h1><p>把可能成词的文本片段全部提取出来，再跟已有词库比较，找出新词。</p>
-<p>怎样的文本片段可以认为是词？</p>
-<h2 id="凝固度"><a href="#凝固度" class="headerlink" title="凝固度"></a>凝固度</h2><p>光看词频是不够的，比如“的电影”出现300次，“电影院”出现100次。因为电影和院凝固的更紧一些。</p>
-<p>首先要枚举凝固方式</p>
-<p>令 p(x) 为文本片段 x 在整个语料中出现的概率，那么我们定义“电影院”的凝合程度就是 p(电影院) 与 p(电) · p(影院) 比值和 p(电影院) 与 p(电影) · p(院) 的比值中的较小值，“的电影”的凝合程度则是 p(的电影) 分别除以 p(的) · p(电影) 和 p(的电) · p(影) 所得的商的较小值。</p>
-<h2 id="自由度"><a href="#自由度" class="headerlink" title="自由度"></a>自由度</h2><p>把一个文本片段的自由运用程度定义为它的左邻字信息熵和右邻字信息熵中的较小值。如果太小，就不能成单独的词（因为都是跟着左、右一起出现的）。</p>
-<p>抽词后，按照频度从高到低排序。</p>
-<p>定义候选词的最大长度，再为出现频数、凝固程度和自由程度各设定一个阈值，然后只需要提取出所有满足阈值要求的候选词即可。</p>
-<p>左右邻字的熵取较小值。</p>
-<p>熵较小，说明该词往往是固定搭配，不能成词。</p>
-<p>示例文本是</p>
-<p>ab我 ef</p>
-<p>cd</p>
-<h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><p>1、对语料用标点分隔，这里不需要去掉停用词。</p>
-<p>2、在设定的最长词长度内，提取所有可能成词的词（至少大于2,小于max长度），并保存每个词的左邻近和右邻近字。</p>
-<p>3、计算</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">val conf = new SparkConf().setAppName(&quot;wordSegname&quot;).setMaster(&quot;local[4]&quot;).</span><br><span class="line"></span><br><span class="line">    set(&quot;spark.sql.shuffle.partitions&quot;,&quot;10&quot;).set(&quot;spark.network.timeout&quot;,&quot;30s&quot;)</span><br></pre></td></tr></table></figure>
-<p>local[4]是指在本地运行，用4核CPU。</p>
-<p>spark.sql.shuffle.partitions是指partition的数量。SparkSQL在运行时，将一个查询任务分解成多个task，一个task就是一个partition。默认是200个partition，而如果实际集群只能并行3个task，则跑完200个partition要200/3=67次。</p>
-<p>spark.network.timeout是指所有网络通信的超时时间，默认是120s</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">val word1=sc.textFile(path).map&#123;x=&gt; </span><br><span class="line"></span><br><span class="line">      val x_filter=x.replaceAll(&quot;\p&#123;Punct&#125;&quot;, &quot; &quot;).replaceAll(&quot;\pP&quot;, &quot; &quot;)</span><br><span class="line">                .replaceAll(&quot;　&quot;, &quot; &quot;).replaceAll(&quot;[&quot; + AtomsUitl.stopwords + &quot;]&quot;, &quot; &quot;).replaceAll(&quot;\p&#123;Blank&#125;&quot;, &quot; &quot;).replaceAll(&quot;\p&#123;Space&#125;&quot;, &quot; &quot;).replaceAll(&quot;\p&#123;Cntrl&#125;&quot;, &quot; &quot;)</span><br><span class="line">      x_filter</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>停用词，标点等转换为空格。</p>
-<p>replaceAll中是正则表达式。上文中，是将所有的特殊字符都用空格代替</p>
-<p>AtomsUitl.stopwords停用词是”的很了么呢是嘛个都也比还这于不与才上用就好在和对挺去后没说”</p>
-<p>sc.textFile读取文件后，生成一个RDD，以行为单位，所以后面的map是对每行的操作</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val sum_document = word1.count()</span><br></pre></td></tr></table></figure>
-<p>打印出所有的元素，用</p>
-<p>word1.foreach { x =&gt; println(x) }  </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">val word_document = word1.zipWithIndex.filter &#123; x =&gt; !StringUtils.isBlank(x._1) &#125;.flatMap &#123; x =&gt;</span><br><span class="line">      val arr = ArrayBuffer[(String, Int)]()</span><br><span class="line">      val line = x._1.split(&quot; &quot;)    //对于每一行，都用空格分割</span><br><span class="line">      for (i &lt;- line) &#123;    </span><br><span class="line">        arr += ((i, x._2.toInt))    //分割后，每一个tuple加到数组中</span><br><span class="line">      &#125;</span><br><span class="line">      arr</span><br><span class="line">    &#125;.map &#123; x =&gt; (x._1.trim, x._2) &#125;.filter(x =&gt; !StringUtils.isBlank(x._1))</span><br></pre></td></tr></table></figure>
-<p>zipWithIndex用带有index的来压缩RDD，索引从0开始</p>
-<p>word1.zipWithIndex.foreach { x =&gt; println(x) }</p>
-<p>(ab ef,0)</p>
-<p>(cd,1)</p>
-<p>上述代码得到的结果是</p>
-<p>(ab,0)</p>
-<p>(ef,0)</p>
-<p>(cd,1)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">val wordleft = word.map(x =&gt; AtomsUitl.reverse(x)).map &#123; x =&gt; &quot;&quot; + x + &quot;&quot; &#125;.flatMap &#123;</span><br><span class="line"></span><br><span class="line">  x =&gt;</span><br><span class="line"></span><br><span class="line">    var arr = ArrayBufferString</span><br><span class="line"></span><br><span class="line">    for (y &lt;- 1 to AtomsUitl.len(x) - 2) &#123;</span><br><span class="line"></span><br><span class="line">      //             arr+=x.substring(y, Math.min(maxLen + y,  x.length()))</span><br><span class="line"></span><br><span class="line">      arr += AtomsUitl.substring(x, y, Math.min(maxLen + y, AtomsUitl.len(x)))</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    arr</span><br><span class="line"></span><br><span class="line">&#125;.sortBy(x =&gt; x)</span><br></pre></td></tr></table></figure>
-<p>将每个句子倒序排列，提取每个子集</p>
-<p>今$</p>
-<p>四期星天今</p>
-<p>处言语然自</p>
-<p>天今$</p>
-<p>星天今$</p>
-<p>期星天今$</p>
-<p>然自$</p>
-<p>理处言语然</p>
-<p>自$</p>
-<p>言语然自</p>
-<p>语然自$</p>
-<p>$</p>
-<p>\<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">val wordleft_caculate = wordleft.map &#123;</span><br><span class="line"></span><br><span class="line">​      s =&gt;</span><br><span class="line"></span><br><span class="line">​        val first = AtomsUitl.substring(s, 0, 1).toString</span><br><span class="line"></span><br><span class="line">​        (first, s)</span><br><span class="line"></span><br><span class="line">​    &#125;.groupBy(f =&gt; f._1).map &#123;</span><br><span class="line"></span><br><span class="line">​      x =&gt; x._2</span><br><span class="line"></span><br><span class="line">​    &#125;</span><br><span class="line"></span><br><span class="line">wordleft_caculate.foreach&#123;x=&gt; println(x.iterator.next())&#125;  </span><br><span class="line"></span><br><span class="line">\</span><br></pre></td></tr></table></figure></p>
-<p>groupBy之后得到</p>
-<p>(期, CompactBuffer((期,期星天今$))等</p>
-<p>这个是Iterable，可迭代的。可以转换为一个迭代器x.iterator.next()。迭代出来就是</p>
-<p>(期,期星天今$) 等</p>
-<p>结果如：</p>
-<p>[維他命,105,5.103775510263332,2.120730528309974,41,3362341]</p>
-<p>[红庙路口,10,3.969704104467617,1.3592367006650063,6,3362341]</p>
-<p>[红裙艳丽,8,4.516740790602718,1.2554823251787535,4,3362341]</p>
-<p>[绛侯,85,3.85163302224936,1.8033243982880292,37,3362341]</p>
-<p>其中，第一列是新词，第二列是总词频，第三列是凝聚度，第四列是左熵右熵取最小值，第五列是出现该词的文档数，最后一列是总文档数</p>
+            <p>转自<a href="https://www.cnblogs.com/dorothychai/p/6181058.html" target="_blank" rel="noopener">https://www.cnblogs.com/dorothychai/p/6181058.html</a></p>
 
           
         
@@ -1822,6 +1753,211 @@ a \cdot b = a_1b_1+a_2b_2...a_nb_n</script><figure class="highlight python"><tab
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/逻辑回归/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/03/17/机器学习/逻辑回归/" class="post-title-link" itemprop="url">逻辑回归</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-03-17 20:50:31" itemprop="dateCreated datePublished" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-06 14:33:39" itemprop="dateModified" datetime="2019-07-06T14:33:39+08:00">2019-07-06</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/03/17/机器学习/逻辑回归/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/逻辑回归/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'''</span></span><br><span class="line"><span class="string">Created on Oct 27, 2010</span></span><br><span class="line"><span class="string">Logistic Regression Working Module</span></span><br><span class="line"><span class="string">@author: Peter</span></span><br><span class="line"><span class="string">'''</span></span><br><span class="line"><span class="keyword">from</span> numpy <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">loadDataSet</span><span class="params">()</span>:</span></span><br><span class="line">    dataMat = []; labelMat = []</span><br><span class="line">    fr = open(<span class="string">'testSet.txt'</span>)</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> fr.readlines():</span><br><span class="line">        lineArr = line.strip().split()</span><br><span class="line">        dataMat.append([<span class="number">1.0</span>, float(lineArr[<span class="number">0</span>]), float(lineArr[<span class="number">1</span>])])</span><br><span class="line">        labelMat.append(int(lineArr[<span class="number">2</span>]))</span><br><span class="line">    <span class="keyword">return</span> dataMat,labelMat</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sigmoid</span><span class="params">(inX)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">1.0</span>/(<span class="number">1</span>+exp(-inX))</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gradAscent</span><span class="params">(dataMatIn, classLabels)</span>:</span></span><br><span class="line">    dataMatrix = mat(dataMatIn)             <span class="comment">#convert to NumPy matrix</span></span><br><span class="line">    labelMat = mat(classLabels).transpose() <span class="comment">#convert to NumPy matrix</span></span><br><span class="line">    m,n = shape(dataMatrix)</span><br><span class="line">    alpha = <span class="number">0.001</span></span><br><span class="line">    maxCycles = <span class="number">500</span></span><br><span class="line">    weights = ones((n,<span class="number">1</span>))</span><br><span class="line">    <span class="keyword">for</span> k <span class="keyword">in</span> range(maxCycles):              <span class="comment">#heavy on matrix operations</span></span><br><span class="line">        h = sigmoid(dataMatrix*weights)     <span class="comment">#matrix mult</span></span><br><span class="line">        error = (labelMat - h)              <span class="comment">#vector subtraction</span></span><br><span class="line">        weights = weights + alpha * dataMatrix.transpose()* error <span class="comment">#matrix mult</span></span><br><span class="line">    <span class="keyword">return</span> weights</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">plotBestFit</span><span class="params">(weights)</span>:</span></span><br><span class="line">    <span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">    dataMat,labelMat=loadDataSet()</span><br><span class="line">    dataArr = array(dataMat)</span><br><span class="line">    n = shape(dataArr)[<span class="number">0</span>] </span><br><span class="line">    xcord1 = []; ycord1 = []</span><br><span class="line">    xcord2 = []; ycord2 = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(n):</span><br><span class="line">        <span class="keyword">if</span> int(labelMat[i])== <span class="number">1</span>:</span><br><span class="line">            xcord1.append(dataArr[i,<span class="number">1</span>]); ycord1.append(dataArr[i,<span class="number">2</span>])</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            xcord2.append(dataArr[i,<span class="number">1</span>]); ycord2.append(dataArr[i,<span class="number">2</span>])</span><br><span class="line">    fig = plt.figure()</span><br><span class="line">    ax = fig.add_subplot(<span class="number">111</span>)</span><br><span class="line">    ax.scatter(xcord1, ycord1, s=<span class="number">30</span>, c=<span class="string">'red'</span>, marker=<span class="string">'s'</span>)</span><br><span class="line">    ax.scatter(xcord2, ycord2, s=<span class="number">30</span>, c=<span class="string">'green'</span>)</span><br><span class="line">    x = arange(<span class="number">-3.0</span>, <span class="number">3.0</span>, <span class="number">0.1</span>)</span><br><span class="line">    y = (-weights[<span class="number">0</span>]-weights[<span class="number">1</span>]*x)/weights[<span class="number">2</span>]</span><br><span class="line">    ax.plot(x, y)</span><br><span class="line">    plt.xlabel(<span class="string">'X1'</span>); plt.ylabel(<span class="string">'X2'</span>);</span><br><span class="line">    plt.show()</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">stocGradAscent0</span><span class="params">(dataMatrix, classLabels)</span>:</span></span><br><span class="line">    m,n = shape(dataMatrix)</span><br><span class="line">    alpha = <span class="number">0.01</span></span><br><span class="line">    weights = ones(n)   <span class="comment">#initialize to all ones</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(m):</span><br><span class="line">        h = sigmoid(sum(dataMatrix[i]*weights))</span><br><span class="line">        error = classLabels[i] - h</span><br><span class="line">        weights = weights + alpha * error * dataMatrix[i]</span><br><span class="line">    <span class="keyword">return</span> weights</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">stocGradAscent1</span><span class="params">(dataMatrix, classLabels, numIter=<span class="number">150</span>)</span>:</span></span><br><span class="line">    m,n = shape(dataMatrix)</span><br><span class="line">    weights = ones(n)   <span class="comment">#initialize to all ones</span></span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> range(numIter):</span><br><span class="line">        dataIndex = range(m)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(m):</span><br><span class="line">            alpha = <span class="number">4</span>/(<span class="number">1.0</span>+j+i)+<span class="number">0.0001</span>    <span class="comment">#apha decreases with iteration, does not </span></span><br><span class="line">            randIndex = int(random.uniform(<span class="number">0</span>,len(dataIndex)))<span class="comment">#go to 0 because of the constant</span></span><br><span class="line">            h = sigmoid(sum(dataMatrix[randIndex]*weights))</span><br><span class="line">            error = classLabels[randIndex] - h</span><br><span class="line">            weights = weights + alpha * error * dataMatrix[randIndex]</span><br><span class="line">            <span class="keyword">del</span>(dataIndex[randIndex])</span><br><span class="line">    <span class="keyword">return</span> weights</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">classifyVector</span><span class="params">(inX, weights)</span>:</span></span><br><span class="line">    prob = sigmoid(sum(inX*weights))</span><br><span class="line">    <span class="keyword">if</span> prob &gt; <span class="number">0.5</span>: <span class="keyword">return</span> <span class="number">1.0</span></span><br><span class="line">    <span class="keyword">else</span>: <span class="keyword">return</span> <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">colicTest</span><span class="params">()</span>:</span></span><br><span class="line">    frTrain = open(<span class="string">'horseColicTraining.txt'</span>); frTest = open(<span class="string">'horseColicTest.txt'</span>)</span><br><span class="line">    trainingSet = []; trainingLabels = []</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> frTrain.readlines():</span><br><span class="line">        currLine = line.strip().split(<span class="string">'\t'</span>)</span><br><span class="line">        lineArr =[]</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">21</span>):</span><br><span class="line">            lineArr.append(float(currLine[i]))</span><br><span class="line">        trainingSet.append(lineArr)</span><br><span class="line">        trainingLabels.append(float(currLine[<span class="number">21</span>]))</span><br><span class="line">    trainWeights = stocGradAscent1(array(trainingSet), trainingLabels, <span class="number">1000</span>)</span><br><span class="line">    errorCount = <span class="number">0</span>; numTestVec = <span class="number">0.0</span></span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> frTest.readlines():</span><br><span class="line">        numTestVec += <span class="number">1.0</span></span><br><span class="line">        currLine = line.strip().split(<span class="string">'\t'</span>)</span><br><span class="line">        lineArr =[]</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">21</span>):</span><br><span class="line">            lineArr.append(float(currLine[i]))</span><br><span class="line">        <span class="keyword">if</span> int(classifyVector(array(lineArr), trainWeights))!= int(currLine[<span class="number">21</span>]):</span><br><span class="line">            errorCount += <span class="number">1</span></span><br><span class="line">    errorRate = (float(errorCount)/numTestVec)</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"the error rate of this test is: %f"</span> % errorRate</span><br><span class="line">    <span class="keyword">return</span> errorRate</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">multiTest</span><span class="params">()</span>:</span></span><br><span class="line">    numTests = <span class="number">10</span>; errorSum=<span class="number">0.0</span></span><br><span class="line">    <span class="keyword">for</span> k <span class="keyword">in</span> range(numTests):</span><br><span class="line">        errorSum += colicTest()</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"after %d iterations the average error rate is: %f"</span> % (numTests, errorSum/float(numTests))</span><br></pre></td></tr></table></figure>
+<p><a href="http://blog.csdn.net/ljn113399/article/details/52725736" target="_blank" rel="noopener">逻辑回归详解</a></p>
+<p>对随机梯度下降算法，我们做两处改进来避免上述的波动问题：</p>
+<p>1）在每次迭代时，调整更新步长alpha的值。随着迭代的进行，alpha越来越小，这会缓解系数的高频波动（也就是每次迭代系数改变得太大，跳的跨度太大）。当然了，为了避免alpha随着迭代不断减小到接近于0（这时候，系数几乎没有调整，那么迭代也没有意义了），我们约束alpha一定大于一个稍微大点的常数项，具体见代码。</p>
+<p>2）每次迭代，改变样本的优化顺序。也就是随机选择样本来更新回归系数。这样做可以减少周期性的波动，因为样本顺序的改变，使得每次迭代不再形成周期性。</p>
+<h1 id="sklearn的LR"><a href="#sklearn的LR" class="headerlink" title="sklearn的LR"></a>sklearn的LR</h1><p><a href="http://www.cnblogs.com/pinard/p/6035872.html" target="_blank" rel="noopener">scikit-learn 逻辑回归类库使用小结</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding: utf-8</span></span><br><span class="line"><span class="comment"># pylint: disable = invalid-name, C0111</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> itertools <span class="keyword">import</span> cycle</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> svm, datasets</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> roc_curve, auc</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> label_binarize</span><br><span class="line"><span class="keyword">from</span> sklearn.multiclass <span class="keyword">import</span> OneVsRestClassifier</span><br><span class="line"><span class="keyword">from</span> scipy <span class="keyword">import</span> interp</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> confusion_matrix</span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> OneHotEncoder</span><br><span class="line"><span class="keyword">import</span> zipfile</span><br><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LogisticRegression</span><br><span class="line"><span class="keyword">from</span> sklearn.externals <span class="keyword">import</span> joblib</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># with zipfile.ZipFile('df_allfeature_train1-7.csv.zip', 'r') as z:</span></span><br><span class="line"><span class="comment">#     f = z.open('df_allfeature_train1-7.csv')</span></span><br><span class="line"><span class="comment">#     df = pd.read_csv(f, header=0)</span></span><br><span class="line"></span><br><span class="line">df = pd.read_csv(<span class="string">'df_allfeature_train_lite.csv'</span>, header=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">col_imp = [<span class="string">'product_code'</span>, <span class="string">'now_term_rate'</span>, <span class="string">'label'</span>]</span><br><span class="line">df = pd.DataFrame(df, columns=col_imp)</span><br><span class="line"></span><br><span class="line">y_train = df.label</span><br><span class="line">X_train = df.drop([<span class="string">'label'</span>], axis=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">f</span><span class="params">(col)</span>:</span></span><br><span class="line">    y = abs(col) * <span class="number">100000</span></span><br><span class="line">    colDict = dict()</span><br><span class="line">    <span class="keyword">for</span> idx, val <span class="keyword">in</span> enumerate(set(y)):</span><br><span class="line">        colDict[int(val)] = int(idx)</span><br><span class="line">    print(colDict)</span><br><span class="line">    <span class="keyword">return</span> pd.Series([colDict[int(x)] <span class="keyword">for</span> x <span class="keyword">in</span> y])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 每一列的WOE处理成int的编号</span></span><br><span class="line">X_train = X_train.apply(f, axis=<span class="number">0</span>)</span><br><span class="line">print(X_train)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 变成one-hot encoder</span></span><br><span class="line">enc = OneHotEncoder()</span><br><span class="line">enc.fit(X_train)</span><br><span class="line">print(enc.n_values_)</span><br><span class="line">print(enc.feature_indices_)</span><br><span class="line"></span><br><span class="line">X_train = pd.DataFrame(enc.fit_transform(X_train).todense())</span><br><span class="line">print(X_train.shape)</span><br><span class="line">print(X_train.head(<span class="number">2</span>))</span><br><span class="line"></span><br><span class="line">classifier = LogisticRegression()  <span class="comment"># 使用类，参数全是默认的</span></span><br><span class="line">classifier.fit(X_train, y_train)  <span class="comment"># 训练数据来学习，不需要返回值</span></span><br><span class="line">print(<span class="string">"Coefficients:%s, intercept %s"</span>%(classifier.coef_,classifier.intercept_))</span><br><span class="line"><span class="comment"># joblib.dump(classifier, 'lr.m')</span></span><br></pre></td></tr></table></figure>
+<p><code>clf.coef_</code>就是权重矩阵，<code>classifier.intercept_</code>是偏置</p>
+<h1 id="逻辑回归的结果解释"><a href="#逻辑回归的结果解释" class="headerlink" title="逻辑回归的结果解释"></a>逻辑回归的结果解释</h1><p><a href="https://www.jianshu.com/p/a72302fa03d7" target="_blank" rel="noopener">https://www.jianshu.com/p/a72302fa03d7</a></p>
+<p><a href="https://blog.csdn.net/sjpljr/article/details/70169046" target="_blank" rel="noopener">https://blog.csdn.net/sjpljr/article/details/70169046</a></p>
+<p><a href="https://wenku.baidu.com/view/953be54268eae009581b6bd97f1922791688be6c.html" target="_blank" rel="noopener">https://wenku.baidu.com/view/953be54268eae009581b6bd97f1922791688be6c.html</a></p>
+<h1 id="原理讲解"><a href="#原理讲解" class="headerlink" title="原理讲解"></a>原理讲解</h1><p><a href="http://blog.sina.com.cn/s/blog_44befaf60102vznn.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_44befaf60102vznn.html</a></p>
+<p>Logistic回归虽然名字叫”回归” ，但却是一种分类学习方法。使用场景大概有两个：第一用来预测，第二寻找因变量的影响因素。 </p>
+<p><strong>一 从线性回归到Logistic回归</strong></p>
+<p>线性回归和Logistic回归都是广义线性模型的特例。</p>
+<p>假设有一个因变量y和一组自变量x1, x2, x3, … , xn，其中y为连续变量，我们可以拟合一个线性方程：</p>
+<p>y =β0 +β1<em>x1 +β2</em>x2 +β3<em>x3 +…+βn</em>xn</p>
+<p>并通过最小二乘法估计各个β系数的值。</p>
+<p>如果y为二分类变量，只能取值0或1，那么线性回归方程就会遇到困难: 方程右侧是一个连续的值，取值为负无穷到正无穷，而左侧只能取值[0,1]，无法对应。为了继续使用线性回归的思想，统计学家想到了一个变换方法，就是将方程右边的取值变换为[0,1]。最后选中了Logistic函数：</p>
+<p>y = 1 / (1+e-x)</p>
+<p>这是一个S型函数，值域为(0,1)，能将任何数值映射到(0,1)，且具有无限阶可导等优良数学性质。</p>
+<h1 id="机器学习sklearn19-0——Logistic回归算法"><a href="#机器学习sklearn19-0——Logistic回归算法" class="headerlink" title="机器学习sklearn19.0——Logistic回归算法"></a>机器学习sklearn19.0——Logistic回归算法</h1><p><a href="https://blog.csdn.net/loveliuzz/article/details/78708359" target="_blank" rel="noopener">https://blog.csdn.net/loveliuzz/article/details/78708359</a></p>
+<p>参数讲解全面</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/评价指标/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -2033,211 +2169,6 @@ F_1 = \frac{2PR}{P+R} = \frac{2TP}{2TP + FP + FN}</script><h1 id="多分类的�
 <ul>
 <li>消除了样本数量和特征数量的影响</li>
 </ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/逻辑回归/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/03/17/机器学习/逻辑回归/" class="post-title-link" itemprop="url">逻辑回归</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-03-17 20:50:31" itemprop="dateCreated datePublished" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-06 14:33:39" itemprop="dateModified" datetime="2019-07-06T14:33:39+08:00">2019-07-06</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/17/机器学习/逻辑回归/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/逻辑回归/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'''</span></span><br><span class="line"><span class="string">Created on Oct 27, 2010</span></span><br><span class="line"><span class="string">Logistic Regression Working Module</span></span><br><span class="line"><span class="string">@author: Peter</span></span><br><span class="line"><span class="string">'''</span></span><br><span class="line"><span class="keyword">from</span> numpy <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">loadDataSet</span><span class="params">()</span>:</span></span><br><span class="line">    dataMat = []; labelMat = []</span><br><span class="line">    fr = open(<span class="string">'testSet.txt'</span>)</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> fr.readlines():</span><br><span class="line">        lineArr = line.strip().split()</span><br><span class="line">        dataMat.append([<span class="number">1.0</span>, float(lineArr[<span class="number">0</span>]), float(lineArr[<span class="number">1</span>])])</span><br><span class="line">        labelMat.append(int(lineArr[<span class="number">2</span>]))</span><br><span class="line">    <span class="keyword">return</span> dataMat,labelMat</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sigmoid</span><span class="params">(inX)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">1.0</span>/(<span class="number">1</span>+exp(-inX))</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gradAscent</span><span class="params">(dataMatIn, classLabels)</span>:</span></span><br><span class="line">    dataMatrix = mat(dataMatIn)             <span class="comment">#convert to NumPy matrix</span></span><br><span class="line">    labelMat = mat(classLabels).transpose() <span class="comment">#convert to NumPy matrix</span></span><br><span class="line">    m,n = shape(dataMatrix)</span><br><span class="line">    alpha = <span class="number">0.001</span></span><br><span class="line">    maxCycles = <span class="number">500</span></span><br><span class="line">    weights = ones((n,<span class="number">1</span>))</span><br><span class="line">    <span class="keyword">for</span> k <span class="keyword">in</span> range(maxCycles):              <span class="comment">#heavy on matrix operations</span></span><br><span class="line">        h = sigmoid(dataMatrix*weights)     <span class="comment">#matrix mult</span></span><br><span class="line">        error = (labelMat - h)              <span class="comment">#vector subtraction</span></span><br><span class="line">        weights = weights + alpha * dataMatrix.transpose()* error <span class="comment">#matrix mult</span></span><br><span class="line">    <span class="keyword">return</span> weights</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">plotBestFit</span><span class="params">(weights)</span>:</span></span><br><span class="line">    <span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">    dataMat,labelMat=loadDataSet()</span><br><span class="line">    dataArr = array(dataMat)</span><br><span class="line">    n = shape(dataArr)[<span class="number">0</span>] </span><br><span class="line">    xcord1 = []; ycord1 = []</span><br><span class="line">    xcord2 = []; ycord2 = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(n):</span><br><span class="line">        <span class="keyword">if</span> int(labelMat[i])== <span class="number">1</span>:</span><br><span class="line">            xcord1.append(dataArr[i,<span class="number">1</span>]); ycord1.append(dataArr[i,<span class="number">2</span>])</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            xcord2.append(dataArr[i,<span class="number">1</span>]); ycord2.append(dataArr[i,<span class="number">2</span>])</span><br><span class="line">    fig = plt.figure()</span><br><span class="line">    ax = fig.add_subplot(<span class="number">111</span>)</span><br><span class="line">    ax.scatter(xcord1, ycord1, s=<span class="number">30</span>, c=<span class="string">'red'</span>, marker=<span class="string">'s'</span>)</span><br><span class="line">    ax.scatter(xcord2, ycord2, s=<span class="number">30</span>, c=<span class="string">'green'</span>)</span><br><span class="line">    x = arange(<span class="number">-3.0</span>, <span class="number">3.0</span>, <span class="number">0.1</span>)</span><br><span class="line">    y = (-weights[<span class="number">0</span>]-weights[<span class="number">1</span>]*x)/weights[<span class="number">2</span>]</span><br><span class="line">    ax.plot(x, y)</span><br><span class="line">    plt.xlabel(<span class="string">'X1'</span>); plt.ylabel(<span class="string">'X2'</span>);</span><br><span class="line">    plt.show()</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">stocGradAscent0</span><span class="params">(dataMatrix, classLabels)</span>:</span></span><br><span class="line">    m,n = shape(dataMatrix)</span><br><span class="line">    alpha = <span class="number">0.01</span></span><br><span class="line">    weights = ones(n)   <span class="comment">#initialize to all ones</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(m):</span><br><span class="line">        h = sigmoid(sum(dataMatrix[i]*weights))</span><br><span class="line">        error = classLabels[i] - h</span><br><span class="line">        weights = weights + alpha * error * dataMatrix[i]</span><br><span class="line">    <span class="keyword">return</span> weights</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">stocGradAscent1</span><span class="params">(dataMatrix, classLabels, numIter=<span class="number">150</span>)</span>:</span></span><br><span class="line">    m,n = shape(dataMatrix)</span><br><span class="line">    weights = ones(n)   <span class="comment">#initialize to all ones</span></span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> range(numIter):</span><br><span class="line">        dataIndex = range(m)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(m):</span><br><span class="line">            alpha = <span class="number">4</span>/(<span class="number">1.0</span>+j+i)+<span class="number">0.0001</span>    <span class="comment">#apha decreases with iteration, does not </span></span><br><span class="line">            randIndex = int(random.uniform(<span class="number">0</span>,len(dataIndex)))<span class="comment">#go to 0 because of the constant</span></span><br><span class="line">            h = sigmoid(sum(dataMatrix[randIndex]*weights))</span><br><span class="line">            error = classLabels[randIndex] - h</span><br><span class="line">            weights = weights + alpha * error * dataMatrix[randIndex]</span><br><span class="line">            <span class="keyword">del</span>(dataIndex[randIndex])</span><br><span class="line">    <span class="keyword">return</span> weights</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">classifyVector</span><span class="params">(inX, weights)</span>:</span></span><br><span class="line">    prob = sigmoid(sum(inX*weights))</span><br><span class="line">    <span class="keyword">if</span> prob &gt; <span class="number">0.5</span>: <span class="keyword">return</span> <span class="number">1.0</span></span><br><span class="line">    <span class="keyword">else</span>: <span class="keyword">return</span> <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">colicTest</span><span class="params">()</span>:</span></span><br><span class="line">    frTrain = open(<span class="string">'horseColicTraining.txt'</span>); frTest = open(<span class="string">'horseColicTest.txt'</span>)</span><br><span class="line">    trainingSet = []; trainingLabels = []</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> frTrain.readlines():</span><br><span class="line">        currLine = line.strip().split(<span class="string">'\t'</span>)</span><br><span class="line">        lineArr =[]</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">21</span>):</span><br><span class="line">            lineArr.append(float(currLine[i]))</span><br><span class="line">        trainingSet.append(lineArr)</span><br><span class="line">        trainingLabels.append(float(currLine[<span class="number">21</span>]))</span><br><span class="line">    trainWeights = stocGradAscent1(array(trainingSet), trainingLabels, <span class="number">1000</span>)</span><br><span class="line">    errorCount = <span class="number">0</span>; numTestVec = <span class="number">0.0</span></span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> frTest.readlines():</span><br><span class="line">        numTestVec += <span class="number">1.0</span></span><br><span class="line">        currLine = line.strip().split(<span class="string">'\t'</span>)</span><br><span class="line">        lineArr =[]</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">21</span>):</span><br><span class="line">            lineArr.append(float(currLine[i]))</span><br><span class="line">        <span class="keyword">if</span> int(classifyVector(array(lineArr), trainWeights))!= int(currLine[<span class="number">21</span>]):</span><br><span class="line">            errorCount += <span class="number">1</span></span><br><span class="line">    errorRate = (float(errorCount)/numTestVec)</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"the error rate of this test is: %f"</span> % errorRate</span><br><span class="line">    <span class="keyword">return</span> errorRate</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">multiTest</span><span class="params">()</span>:</span></span><br><span class="line">    numTests = <span class="number">10</span>; errorSum=<span class="number">0.0</span></span><br><span class="line">    <span class="keyword">for</span> k <span class="keyword">in</span> range(numTests):</span><br><span class="line">        errorSum += colicTest()</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"after %d iterations the average error rate is: %f"</span> % (numTests, errorSum/float(numTests))</span><br></pre></td></tr></table></figure>
-<p><a href="http://blog.csdn.net/ljn113399/article/details/52725736" target="_blank" rel="noopener">逻辑回归详解</a></p>
-<p>对随机梯度下降算法，我们做两处改进来避免上述的波动问题：</p>
-<p>1）在每次迭代时，调整更新步长alpha的值。随着迭代的进行，alpha越来越小，这会缓解系数的高频波动（也就是每次迭代系数改变得太大，跳的跨度太大）。当然了，为了避免alpha随着迭代不断减小到接近于0（这时候，系数几乎没有调整，那么迭代也没有意义了），我们约束alpha一定大于一个稍微大点的常数项，具体见代码。</p>
-<p>2）每次迭代，改变样本的优化顺序。也就是随机选择样本来更新回归系数。这样做可以减少周期性的波动，因为样本顺序的改变，使得每次迭代不再形成周期性。</p>
-<h1 id="sklearn的LR"><a href="#sklearn的LR" class="headerlink" title="sklearn的LR"></a>sklearn的LR</h1><p><a href="http://www.cnblogs.com/pinard/p/6035872.html" target="_blank" rel="noopener">scikit-learn 逻辑回归类库使用小结</a></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding: utf-8</span></span><br><span class="line"><span class="comment"># pylint: disable = invalid-name, C0111</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> itertools <span class="keyword">import</span> cycle</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> svm, datasets</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> roc_curve, auc</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> label_binarize</span><br><span class="line"><span class="keyword">from</span> sklearn.multiclass <span class="keyword">import</span> OneVsRestClassifier</span><br><span class="line"><span class="keyword">from</span> scipy <span class="keyword">import</span> interp</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> confusion_matrix</span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> OneHotEncoder</span><br><span class="line"><span class="keyword">import</span> zipfile</span><br><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LogisticRegression</span><br><span class="line"><span class="keyword">from</span> sklearn.externals <span class="keyword">import</span> joblib</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># with zipfile.ZipFile('df_allfeature_train1-7.csv.zip', 'r') as z:</span></span><br><span class="line"><span class="comment">#     f = z.open('df_allfeature_train1-7.csv')</span></span><br><span class="line"><span class="comment">#     df = pd.read_csv(f, header=0)</span></span><br><span class="line"></span><br><span class="line">df = pd.read_csv(<span class="string">'df_allfeature_train_lite.csv'</span>, header=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">col_imp = [<span class="string">'product_code'</span>, <span class="string">'now_term_rate'</span>, <span class="string">'label'</span>]</span><br><span class="line">df = pd.DataFrame(df, columns=col_imp)</span><br><span class="line"></span><br><span class="line">y_train = df.label</span><br><span class="line">X_train = df.drop([<span class="string">'label'</span>], axis=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">f</span><span class="params">(col)</span>:</span></span><br><span class="line">    y = abs(col) * <span class="number">100000</span></span><br><span class="line">    colDict = dict()</span><br><span class="line">    <span class="keyword">for</span> idx, val <span class="keyword">in</span> enumerate(set(y)):</span><br><span class="line">        colDict[int(val)] = int(idx)</span><br><span class="line">    print(colDict)</span><br><span class="line">    <span class="keyword">return</span> pd.Series([colDict[int(x)] <span class="keyword">for</span> x <span class="keyword">in</span> y])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 每一列的WOE处理成int的编号</span></span><br><span class="line">X_train = X_train.apply(f, axis=<span class="number">0</span>)</span><br><span class="line">print(X_train)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 变成one-hot encoder</span></span><br><span class="line">enc = OneHotEncoder()</span><br><span class="line">enc.fit(X_train)</span><br><span class="line">print(enc.n_values_)</span><br><span class="line">print(enc.feature_indices_)</span><br><span class="line"></span><br><span class="line">X_train = pd.DataFrame(enc.fit_transform(X_train).todense())</span><br><span class="line">print(X_train.shape)</span><br><span class="line">print(X_train.head(<span class="number">2</span>))</span><br><span class="line"></span><br><span class="line">classifier = LogisticRegression()  <span class="comment"># 使用类，参数全是默认的</span></span><br><span class="line">classifier.fit(X_train, y_train)  <span class="comment"># 训练数据来学习，不需要返回值</span></span><br><span class="line">print(<span class="string">"Coefficients:%s, intercept %s"</span>%(classifier.coef_,classifier.intercept_))</span><br><span class="line"><span class="comment"># joblib.dump(classifier, 'lr.m')</span></span><br></pre></td></tr></table></figure>
-<p><code>clf.coef_</code>就是权重矩阵，<code>classifier.intercept_</code>是偏置</p>
-<h1 id="逻辑回归的结果解释"><a href="#逻辑回归的结果解释" class="headerlink" title="逻辑回归的结果解释"></a>逻辑回归的结果解释</h1><p><a href="https://www.jianshu.com/p/a72302fa03d7" target="_blank" rel="noopener">https://www.jianshu.com/p/a72302fa03d7</a></p>
-<p><a href="https://blog.csdn.net/sjpljr/article/details/70169046" target="_blank" rel="noopener">https://blog.csdn.net/sjpljr/article/details/70169046</a></p>
-<p><a href="https://wenku.baidu.com/view/953be54268eae009581b6bd97f1922791688be6c.html" target="_blank" rel="noopener">https://wenku.baidu.com/view/953be54268eae009581b6bd97f1922791688be6c.html</a></p>
-<h1 id="原理讲解"><a href="#原理讲解" class="headerlink" title="原理讲解"></a>原理讲解</h1><p><a href="http://blog.sina.com.cn/s/blog_44befaf60102vznn.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_44befaf60102vznn.html</a></p>
-<p>Logistic回归虽然名字叫”回归” ，但却是一种分类学习方法。使用场景大概有两个：第一用来预测，第二寻找因变量的影响因素。 </p>
-<p><strong>一 从线性回归到Logistic回归</strong></p>
-<p>线性回归和Logistic回归都是广义线性模型的特例。</p>
-<p>假设有一个因变量y和一组自变量x1, x2, x3, … , xn，其中y为连续变量，我们可以拟合一个线性方程：</p>
-<p>y =β0 +β1<em>x1 +β2</em>x2 +β3<em>x3 +…+βn</em>xn</p>
-<p>并通过最小二乘法估计各个β系数的值。</p>
-<p>如果y为二分类变量，只能取值0或1，那么线性回归方程就会遇到困难: 方程右侧是一个连续的值，取值为负无穷到正无穷，而左侧只能取值[0,1]，无法对应。为了继续使用线性回归的思想，统计学家想到了一个变换方法，就是将方程右边的取值变换为[0,1]。最后选中了Logistic函数：</p>
-<p>y = 1 / (1+e-x)</p>
-<p>这是一个S型函数，值域为(0,1)，能将任何数值映射到(0,1)，且具有无限阶可导等优良数学性质。</p>
-<h1 id="机器学习sklearn19-0——Logistic回归算法"><a href="#机器学习sklearn19-0——Logistic回归算法" class="headerlink" title="机器学习sklearn19.0——Logistic回归算法"></a>机器学习sklearn19.0——Logistic回归算法</h1><p><a href="https://blog.csdn.net/loveliuzz/article/details/78708359" target="_blank" rel="noopener">https://blog.csdn.net/loveliuzz/article/details/78708359</a></p>
-<p>参数讲解全面</p>
 
           
         

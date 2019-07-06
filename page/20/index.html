@@ -1622,6 +1622,198 @@ k = \ln 2 * \frac {m} {n}</script><p>计算出约为14个。</p>
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/31/地理信息挖掘/经纬度判断城市/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/03/31/地理信息挖掘/经纬度判断城市/" class="post-title-link" itemprop="url">经纬度判断城市</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-03-31 10:30:28" itemprop="dateCreated datePublished" datetime="2018-03-31T10:30:28+08:00">2018-03-31</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-05 14:40:53" itemprop="dateModified" datetime="2019-07-05T14:40:53+08:00">2019-07-05</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/地理信息处理和挖掘/" itemprop="url" rel="index"><span itemprop="name">地理信息处理和挖掘</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/03/31/地理信息挖掘/经纬度判断城市/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/31/地理信息挖掘/经纬度判断城市/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/geo-poi/src/main/java/com/iclick/geo/search/Geolocation.java</span><br></pre></td></tr></table></figure>
+<p>有数据<code>district_v2.tar.gz</code> 包括每个行政区划的边界经纬度和中心经纬度</p>
+<h2 id="district-v2的结构"><a href="#district-v2的结构" class="headerlink" title="district_v2的结构"></a>district_v2的结构</h2><p>爬去的高德的数据</p>
+<p>每行对应一个城市的区县</p>
+<p>citycode 城市代码</p>
+<p>adcode是全国行政区划代码</p>
+<p>code编码数据来源于国家标准行政区划代码（adcode）映射表《》</p>
+<p>解析数据，将每个district的边界坐标保存到<code>districts</code> 。对于一个经纬度，遍历每个district，判断点是否在多边形内，找到所属行政区划。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * 判断目标点是否在多边形内(由多个点组成)&lt;br/&gt;  </span></span><br><span class="line"><span class="comment"> *   </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> px 目标点的经度坐标  </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> py 目标点的纬度坐标  </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> polygonXA 多边形的经度坐标集合  </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> polygonYA 多边形的纬度坐标集合  </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span>  </span></span><br><span class="line"><span class="comment"> */</span>  </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isPointInPolygon</span> <span class="params">( <span class="keyword">double</span> px , <span class="keyword">double</span> py , ArrayList&lt;Double&gt; polygonXA , ArrayList&lt;Double&gt; polygonYA )</span>    </span></span><br><span class="line"><span class="function"></span>&#123;    </span><br><span class="line">    <span class="keyword">boolean</span> isInside = <span class="keyword">false</span>;    </span><br><span class="line">    <span class="keyword">double</span> ESP = <span class="number">1e-9</span>;    </span><br><span class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;    </span><br><span class="line">    <span class="keyword">double</span> linePoint1x;    </span><br><span class="line">    <span class="keyword">double</span> linePoint1y;    </span><br><span class="line">    <span class="keyword">double</span> linePoint2x = <span class="number">180</span>;    </span><br><span class="line">    <span class="keyword">double</span> linePoint2y;    </span><br><span class="line">  </span><br><span class="line">    linePoint1x = px;    </span><br><span class="line">    linePoint1y = py;    </span><br><span class="line">    linePoint2y = py;    </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; polygonXA.size() - <span class="number">1</span>; i++)    </span><br><span class="line">    &#123;    </span><br><span class="line">        <span class="keyword">double</span> cx1 = polygonXA.get(i);    </span><br><span class="line">        <span class="keyword">double</span> cy1 = polygonYA.get(i);    </span><br><span class="line">        <span class="keyword">double</span> cx2 = polygonXA.get(i + <span class="number">1</span>);    </span><br><span class="line">        <span class="keyword">double</span> cy2 = polygonYA.get(i + <span class="number">1</span>);   </span><br><span class="line">        <span class="comment">//如果目标点在任何一条线上  </span></span><br><span class="line">        <span class="keyword">if</span> ( isPointOnLine(px, py, cx1, cy1, cx2, cy2) )    </span><br><span class="line">        &#123;    </span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;    </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="comment">//如果线段的长度无限小(趋于零)那么这两点实际是重合的，不足以构成一条线段  </span></span><br><span class="line">        <span class="keyword">if</span> ( Math.abs(cy2 - cy1) &lt; ESP )    </span><br><span class="line">        &#123;    </span><br><span class="line">            <span class="keyword">continue</span>;    </span><br><span class="line">        &#125;    </span><br><span class="line">        <span class="comment">//第一个点是否在以目标点为基础衍生的平行纬度线  </span></span><br><span class="line">        <span class="keyword">if</span> ( isPointOnLine(cx1, cy1, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </span><br><span class="line">        &#123;    </span><br><span class="line">            <span class="comment">//第二个点在第一个的下方,靠近赤道纬度为零(最小纬度)  </span></span><br><span class="line">            <span class="keyword">if</span> ( cy1 &gt; cy2 )    </span><br><span class="line">                count++;    </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="comment">//第二个点是否在以目标点为基础衍生的平行纬度线  </span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ( isPointOnLine(cx2, cy2, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </span><br><span class="line">        &#123;    </span><br><span class="line">            <span class="comment">//第二个点在第一个的上方,靠近极点(南极或北极)纬度为90(最大纬度)  </span></span><br><span class="line">            <span class="keyword">if</span> ( cy2 &gt; cy1 )    </span><br><span class="line">                count++;    </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="comment">//由两点组成的线段是否和以目标点为基础衍生的平行纬度线相交  </span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ( isIntersect(cx1, cy1, cx2, cy2, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </span><br><span class="line">        &#123;    </span><br><span class="line">            count++;    </span><br><span class="line">        &#125;    </span><br><span class="line">    &#125;    </span><br><span class="line">    <span class="keyword">if</span> ( count % <span class="number">2</span> == <span class="number">1</span> )    </span><br><span class="line">    &#123;    </span><br><span class="line">        isInside = <span class="keyword">true</span>;    </span><br><span class="line">    &#125;    </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> isInside;    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>也可以用geojson配合qgis的api，geojson文件为<code>BOUNT_poly.geojson</code></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/31/hadoop-spark/数据仓库框架对比/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1762,198 +1954,6 @@ k = \ln 2 * \frac {m} {n}</script><p>计算出约为14个。</p>
 <p>1、基于hbase预聚合的。适合<strong>相对固定的业务报表类需求</strong>。需要指定预聚合的指标，在数据接入的时候根据指定的指标进行聚合运算，只需要统计少量维度即可满足业务报表需求。比如Opentsdb,Kylin,Druid等</p>
 <p>2、基于Parquet列式存储的，基本是完全基于内存的并行计算，Parquet系能降低存储空间，提高IO效率，以离线处理为主，<strong>很难提高数据写的实时性，超大表的join支持可能不够好</strong>。spark sql也算类似，但它在内存不足时可以spill disk来支持超大数据查询和join。比如Presto, Drill，Impala等</p>
 <p>3、基于lucene外部索引的，比如ElasticSearch和Solr,能够满足的的查询场景远多于传统的数据库存储，但对于日志、行为类时序数据，所有的搜索请求都也必须搜索所有的分片，另外，对于聚合分析场景的支持也是软肋    </p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/31/地理信息挖掘/经纬度判断城市/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/03/31/地理信息挖掘/经纬度判断城市/" class="post-title-link" itemprop="url">经纬度判断城市</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-03-31 10:30:28" itemprop="dateCreated datePublished" datetime="2018-03-31T10:30:28+08:00">2018-03-31</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-05 14:40:53" itemprop="dateModified" datetime="2019-07-05T14:40:53+08:00">2019-07-05</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/地理信息处理和挖掘/" itemprop="url" rel="index"><span itemprop="name">地理信息处理和挖掘</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/31/地理信息挖掘/经纬度判断城市/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/31/地理信息挖掘/经纬度判断城市/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/geo-poi/src/main/java/com/iclick/geo/search/Geolocation.java</span><br></pre></td></tr></table></figure>
-<p>有数据<code>district_v2.tar.gz</code> 包括每个行政区划的边界经纬度和中心经纬度</p>
-<h2 id="district-v2的结构"><a href="#district-v2的结构" class="headerlink" title="district_v2的结构"></a>district_v2的结构</h2><p>爬去的高德的数据</p>
-<p>每行对应一个城市的区县</p>
-<p>citycode 城市代码</p>
-<p>adcode是全国行政区划代码</p>
-<p>code编码数据来源于国家标准行政区划代码（adcode）映射表《》</p>
-<p>解析数据，将每个district的边界坐标保存到<code>districts</code> 。对于一个经纬度，遍历每个district，判断点是否在多边形内，找到所属行政区划。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * 判断目标点是否在多边形内(由多个点组成)&lt;br/&gt;  </span></span><br><span class="line"><span class="comment"> *   </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> px 目标点的经度坐标  </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> py 目标点的纬度坐标  </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> polygonXA 多边形的经度坐标集合  </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> polygonYA 多边形的纬度坐标集合  </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span>  </span></span><br><span class="line"><span class="comment"> */</span>  </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isPointInPolygon</span> <span class="params">( <span class="keyword">double</span> px , <span class="keyword">double</span> py , ArrayList&lt;Double&gt; polygonXA , ArrayList&lt;Double&gt; polygonYA )</span>    </span></span><br><span class="line"><span class="function"></span>&#123;    </span><br><span class="line">    <span class="keyword">boolean</span> isInside = <span class="keyword">false</span>;    </span><br><span class="line">    <span class="keyword">double</span> ESP = <span class="number">1e-9</span>;    </span><br><span class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;    </span><br><span class="line">    <span class="keyword">double</span> linePoint1x;    </span><br><span class="line">    <span class="keyword">double</span> linePoint1y;    </span><br><span class="line">    <span class="keyword">double</span> linePoint2x = <span class="number">180</span>;    </span><br><span class="line">    <span class="keyword">double</span> linePoint2y;    </span><br><span class="line">  </span><br><span class="line">    linePoint1x = px;    </span><br><span class="line">    linePoint1y = py;    </span><br><span class="line">    linePoint2y = py;    </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; polygonXA.size() - <span class="number">1</span>; i++)    </span><br><span class="line">    &#123;    </span><br><span class="line">        <span class="keyword">double</span> cx1 = polygonXA.get(i);    </span><br><span class="line">        <span class="keyword">double</span> cy1 = polygonYA.get(i);    </span><br><span class="line">        <span class="keyword">double</span> cx2 = polygonXA.get(i + <span class="number">1</span>);    </span><br><span class="line">        <span class="keyword">double</span> cy2 = polygonYA.get(i + <span class="number">1</span>);   </span><br><span class="line">        <span class="comment">//如果目标点在任何一条线上  </span></span><br><span class="line">        <span class="keyword">if</span> ( isPointOnLine(px, py, cx1, cy1, cx2, cy2) )    </span><br><span class="line">        &#123;    </span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;    </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="comment">//如果线段的长度无限小(趋于零)那么这两点实际是重合的，不足以构成一条线段  </span></span><br><span class="line">        <span class="keyword">if</span> ( Math.abs(cy2 - cy1) &lt; ESP )    </span><br><span class="line">        &#123;    </span><br><span class="line">            <span class="keyword">continue</span>;    </span><br><span class="line">        &#125;    </span><br><span class="line">        <span class="comment">//第一个点是否在以目标点为基础衍生的平行纬度线  </span></span><br><span class="line">        <span class="keyword">if</span> ( isPointOnLine(cx1, cy1, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </span><br><span class="line">        &#123;    </span><br><span class="line">            <span class="comment">//第二个点在第一个的下方,靠近赤道纬度为零(最小纬度)  </span></span><br><span class="line">            <span class="keyword">if</span> ( cy1 &gt; cy2 )    </span><br><span class="line">                count++;    </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="comment">//第二个点是否在以目标点为基础衍生的平行纬度线  </span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ( isPointOnLine(cx2, cy2, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </span><br><span class="line">        &#123;    </span><br><span class="line">            <span class="comment">//第二个点在第一个的上方,靠近极点(南极或北极)纬度为90(最大纬度)  </span></span><br><span class="line">            <span class="keyword">if</span> ( cy2 &gt; cy1 )    </span><br><span class="line">                count++;    </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="comment">//由两点组成的线段是否和以目标点为基础衍生的平行纬度线相交  </span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ( isIntersect(cx1, cy1, cx2, cy2, linePoint1x, linePoint1y, linePoint2x, linePoint2y) )    </span><br><span class="line">        &#123;    </span><br><span class="line">            count++;    </span><br><span class="line">        &#125;    </span><br><span class="line">    &#125;    </span><br><span class="line">    <span class="keyword">if</span> ( count % <span class="number">2</span> == <span class="number">1</span> )    </span><br><span class="line">    &#123;    </span><br><span class="line">        isInside = <span class="keyword">true</span>;    </span><br><span class="line">    &#125;    </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> isInside;    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>也可以用geojson配合qgis的api，geojson文件为<code>BOUNT_poly.geojson</code></p>
 
           
         
@@ -2534,7 +2534,7 @@ k = \ln 2 * \frac {m} {n}</script><p>计算出约为14个。</p>
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/31/地理信息挖掘/经纬度找POI/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/31/hadoop-spark/hive笔记/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -2554,7 +2554,7 @@ k = \ln 2 * \frac {m} {n}</script><p>计算出约为14个。</p>
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/03/31/地理信息挖掘/经纬度找POI/" class="post-title-link" itemprop="url">经纬度找POI</a>
+                <a href="/2018/03/31/hadoop-spark/hive笔记/" class="post-title-link" itemprop="url">hive技巧总结</a>
               
             
           </h1>
@@ -2594,7 +2594,7 @@ k = \ln 2 * \frac {m} {n}</script><p>计算出约为14个。</p>
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-05 14:42:47" itemprop="dateModified" datetime="2019-07-05T14:42:47+08:00">2019-07-05</time>
+                <time title="修改时间：2019-07-04 16:55:19" itemprop="dateModified" datetime="2019-07-04T16:55:19+08:00">2019-07-04</time>
               </span>
             
           
@@ -2608,7 +2608,7 @@ k = \ln 2 * \frac {m} {n}</script><p>计算出约为14个。</p>
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/地理信息处理和挖掘/" itemprop="url" rel="index"><span itemprop="name">地理信息处理和挖掘</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/大数据平台工具/" itemprop="url" rel="index"><span itemprop="name">大数据平台工具</span></a></span>
 
                 
                 
@@ -2626,8 +2626,8 @@ k = \ln 2 * \frac {m} {n}</script><p>计算出约为14个。</p>
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/31/地理信息挖掘/经纬度找POI/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/31/地理信息挖掘/经纬度找POI/" itemprop="commentCount"></span>
+                <a href="/2018/03/31/hadoop-spark/hive笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/31/hadoop-spark/hive笔记/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -2660,38 +2660,298 @@ k = \ln 2 * \frac {m} {n}</script><p>计算出约为14个。</p>
       
         
           
-            <h1 id="定时任务"><a href="#定时任务" class="headerlink" title="定时任务"></a>定时任务</h1><p>每天有定时任务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">00 07 * * * source /etc/profile; python /opt/pig_home/mobile_poi/lbspoi.py &gt;&gt; /opt/pig_home/mobile_poi/lbs.log 2&gt;&amp;1</span><br></pre></td></tr></table></figure>
-<h2 id="generate-mobile-geo-info"><a href="#generate-mobile-geo-info" class="headerlink" title="generate_mobile_geo_info"></a>generate_mobile_geo_info</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">USE</span> <span class="keyword">default</span>;</span><br><span class="line">                ADD JAR hdfs://iclick/zyz/udf/zyz_udf2.jar;</span><br><span class="line">                <span class="keyword">CREATE</span> <span class="keyword">TEMPORARY</span> <span class="keyword">FUNCTION</span> get_region <span class="keyword">as</span> <span class="string">'org.apache.hadoop.hive.ql.udf.Ip2GeoCodeUDF'</span>;</span><br><span class="line">                <span class="keyword">INSERT</span> OVERWRITE <span class="keyword">TABLE</span> shortdata.mobile_poi_raw <span class="keyword">partition</span>(day_id=<span class="string">'%s'</span>,city)</span><br><span class="line">                <span class="keyword">SELECT</span></span><br><span class="line">                    zuid, gps, ip, ts, slot_id, city_code <span class="keyword">AS</span> city</span><br><span class="line">                <span class="keyword">FROM</span></span><br><span class="line">                  (</span><br><span class="line">                    <span class="keyword">SELECT</span></span><br><span class="line">                      region_code, city_code</span><br><span class="line">                    <span class="keyword">FROM</span></span><br><span class="line">                      persona.pois_city_dict</span><br><span class="line">                  ) a <span class="keyword">join</span> (</span><br><span class="line">                    <span class="keyword">SELECT</span></span><br><span class="line">                      zuid,gps,ip,ts,slot_id,get_region(ip) region_code,day_id</span><br><span class="line">                    <span class="keyword">FROM</span></span><br><span class="line">                      nobid</span><br><span class="line">                    <span class="keyword">WHERE</span></span><br><span class="line">                      day_id=<span class="string">'%s'</span></span><br><span class="line">                      <span class="keyword">AND</span> gps!=<span class="string">''</span></span><br><span class="line">                      <span class="keyword">AND</span> dt!=<span class="number">0</span></span><br><span class="line">                      <span class="keyword">AND</span> <span class="keyword">length</span>(zuid)=<span class="number">32</span></span><br><span class="line">                      <span class="keyword">AND</span> ip!=<span class="string">''</span></span><br><span class="line">                      <span class="keyword">AND</span> slot_id !=<span class="string">''</span></span><br><span class="line">                  ) b</span><br><span class="line">                <span class="keyword">on</span>(a.region_code=b.region_code);</span><br></pre></td></tr></table></figure>
-<p>从<code>persona.pois_city_dict</code> 取地理编码region_code和城市区号city_code，从<code>nobid</code>中取zuid，gps等，通过region_code做join，结果放到<code>shortdata.mobile_poi_raw</code> ，包括<code>zuid, gps, ip, ts, slot_id, city_code</code></p>
-<h2 id="check-raw-data"><a href="#check-raw-data" class="headerlink" title="check_raw_data"></a>check_raw_data</h2><p>检查</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/shortdata/mobile_poi_raw/day_id=%s</span><br></pre></td></tr></table></figure>
-<p>是否有数据</p>
-<h2 id="create-mobile-es-index"><a href="#create-mobile-es-index" class="headerlink" title="create_mobile_es_index"></a>create_mobile_es_index</h2><p>ES中创建索引</p>
-<h2 id="generate-poi-content"><a href="#generate-poi-content" class="headerlink" title="generate_poi_content"></a>generate_poi_content</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop fs -ls /shortdata/mobile_poi_raw/day_id=%s|awk -F&apos;city=&apos; &apos;NF==2&#123;print $2&#125;&apos;</span><br></pre></td></tr></table></figure>
-<p>目录下找出所有的城市的区号。对于每个区号，执行</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pig -p MOBILE_POI_RAW=/shortdata/mobile_poi_raw/day_id=%s/city=%s -p CITY_CODE=%s -p MOBILE_POI_INFO=/shortdata/persona/mobile_poi/%s/%s /opt/pig_home/mobile_poi/GeneratePoiContent.pig</span><br></pre></td></tr></table></figure>
-<p><code>MOBILE_POI_RAW</code>的字段包括数据如<code>mid,geo,ip,timestamp,ban</code>，ban不知道是什么。数据例如</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">(0072e62dcb59f4193a87c57b52f72f40,0.000000_-0.000000,223.104.106.193,1522251854,9641490506058567536)</span><br><span class="line">(00a416a2bf6155061378554128e6d34e,0.000000_-0.000000,223.104.63.204,1522177840,2079384033841789443)</span><br><span class="line">(00a78ac01d879f209f0d9ca1c44c8e7f,116.272537_39.905327,114.248.119.130,1522242470,12150475897216517376)</span><br><span class="line">(012ddc44478c6d828ab151b6ca683916,0.000000_-0.000000,117.157.192.13,1522193641,11414853793502166973)</span><br><span class="line">(025f2ed81db51d3d99d9a47bf9aeb9a0,0.000000_-0.000000,47.94.140.78,1522187326,18293937070879238797)</span><br><span class="line">(02bf4d8bdc38ac1f6fdd52209e84039c,115.123116_35.816261,223.104.108.158,1522242477,17879387064476989398)</span><br><span class="line">(02c18f312fa72708909183b040e74e13,120.034416_32.183392,36.149.39.178,1522181536,16092911831591004172)</span><br><span class="line">(03279dff09e62f9eaba637fa43744dd6,0.000000_-0.000000,223.72.77.105,1522201115,692495996220981070)</span><br><span class="line">(034cd47c18e030379ac5bdfaa4c2f1cb,106.306679_26.233530,223.104.95.36,1522191134,2612)</span><br></pre></td></tr></table></figure>
-<p>后面会对<code>mid,geo,ip,timestamp</code>去重，ban就去掉了。</p>
-<p>有一个关键的UDF</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DEFINE getPoiContent com.buzzinate.pig.udf.util.SearchPoiContentHdfs();</span><br><span class="line"></span><br><span class="line">mobile_poi_city = FOREACH mobile_poi GENERATE mid,FLATTEN(getPoiContent('$CITY_CODE',mid,timestamp,ip,geo,50.0)) as content;</span><br></pre></td></tr></table></figure>
-<p><code>SearchPoiContentHdfs</code> 首先初始化<code>/geo-poi/src/main/java/com/iclick/geo/search/GeoPois.java</code> 。初始化时要加载POI文件，如<code>010.csv</code>，然后添加到前缀树<code>TrieTree</code> 中。</p>
-<p>然后给定一个经纬度坐标和搜索范围，搜索POI点。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> rlng     WGS84坐标系的经度</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> rlat     WGS84坐标系的纬度</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> accuracy 匹配精度</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 匹配到的POI列表</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> List&lt;POINode&gt; <span class="title">search</span><span class="params">(<span class="keyword">double</span> rlng, <span class="keyword">double</span> rlat, <span class="keyword">double</span> accuracy, TrieTree trieTree)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 转成火星坐标系</span></span><br><span class="line">    Double[] gc = GPSTransform.wgs84Togcj02(rlng, rlat);</span><br><span class="line">    Double lng = gc[<span class="number">0</span>];</span><br><span class="line">    Double lat = gc[<span class="number">1</span>];</span><br><span class="line">    List&lt;POINode&gt; pois = <span class="keyword">new</span> ArrayList&lt;POINode&gt;();</span><br><span class="line">    HashSet&lt;String&gt; fn = <span class="keyword">new</span> HashSet&lt;String&gt;();</span><br><span class="line">  <span class="comment">// 根据精度误差，得到geohash编码长度</span></span><br><span class="line">    <span class="keyword">int</span> rlen = getAccuracyRange(accuracy);</span><br><span class="line">    String shash = <span class="string">""</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        shash = GeoHash.encodeHash(lat, lng, rlen);</span><br><span class="line">        fn.add(shash);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IllegalArgumentException e) &#123;</span><br><span class="line">        <span class="keyword">return</span> pois;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (String nbour : GeoHash.neighbours(shash)) &#123;</span><br><span class="line">        fn.add(nbour.substring(<span class="number">0</span>, rlen));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (String thash : fn) &#123;</span><br><span class="line">        <span class="keyword">for</span> (Entry&lt;String, LinkedList&lt;POINode&gt;&gt; entry : trieTree.getPrefixString(thash).entrySet()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (entry.getValue() != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (POINode poi : entry.getValue()) &#123;</span><br><span class="line">                    Double distance = PointUtils.distance(lng, lat, poi.lng, poi.lat);</span><br><span class="line">                    <span class="keyword">if</span> (distance &lt;= accuracy) &#123;</span><br><span class="line">                        pois.add(poi);</span><br><span class="line">                        poi.setDistance(distance);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> pois;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>首先要进行坐标转换，<code>GPSTransform</code></p>
-<p><code>getAccuracyRange</code>的代码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">/*</span></span><br><span class="line"><span class="comment">  * 根据精度误差，得到geohash编码长度</span></span><br><span class="line"><span class="comment">  *</span></span><br><span class="line"><span class="comment">  * accuracy: 精度误差</span></span><br><span class="line"><span class="comment">  *</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getAccuracyRange</span><span class="params">(<span class="keyword">double</span> accuracy)</span> </span>&#123;</span><br><span class="line">     <span class="comment">/*</span></span><br><span class="line"><span class="comment">      *</span></span><br><span class="line"><span class="comment">* 具体的计算方法：</span></span><br><span class="line"><span class="comment">Latitude的范围是：-90 到 +90</span></span><br><span class="line"><span class="comment">Longitude的范围：-180 到 +180</span></span><br><span class="line"><span class="comment">地球参考球体的周长：40075016.68米</span></span><br><span class="line"><span class="comment">geohash长度	Lat位数	Lng位数	Lat误差	Lng误差	km误差</span></span><br><span class="line"><span class="comment">1	2	3	±23	±23	±2500</span></span><br><span class="line"><span class="comment">2	5	5	± 2.8	±5.6	±630</span></span><br><span class="line"><span class="comment">3	7	8	± 0.70	± 0.7	±78</span></span><br><span class="line"><span class="comment">4	10	10	± 0.087	± 0.18	±20</span></span><br><span class="line"><span class="comment">5	12	13	± 0.022	± 0.022	±2.4</span></span><br><span class="line"><span class="comment">6	15	15	± 0.0027	± 0.0055	±0.61</span></span><br><span class="line"><span class="comment">7	17	18	±0.00068	±0.00068	±0.076</span></span><br><span class="line"><span class="comment">8	20	20	±0.000086	±0.000172	±0.01911</span></span><br><span class="line"><span class="comment">9	22	23	±0.000021	±0.000021	±0.00478</span></span><br><span class="line"><span class="comment">10	25	25	±0.00000268	±0.00000536	±0.0005971</span></span><br><span class="line"><span class="comment">11	27	28	±0.00000067	±0.00000067	±0.0001492</span></span><br><span class="line"><span class="comment">12	30	30	±0.00000008	±0.00000017	±0.0000186</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">     <span class="keyword">if</span> (accuracy &gt; <span class="number">76</span>) &#123;  <span class="comment">//当精度要求大于76米的时候，geohash长度为６</span></span><br><span class="line">         <span class="keyword">return</span> <span class="number">6</span>;</span><br><span class="line">     &#125; <span class="keyword">else</span> <span class="keyword">if</span> (accuracy &gt; <span class="number">19</span>) &#123; <span class="comment">//当精度要求19米 &lt; 76米的时候，geohash长度为７</span></span><br><span class="line">         <span class="keyword">return</span> <span class="number">7</span>;</span><br><span class="line">     &#125; <span class="keyword">else</span> &#123; <span class="comment">//当精度要求 &lt; 19米的时候，geohash长度为8</span></span><br><span class="line">         <span class="keyword">return</span> <span class="number">8</span>;</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
-<p>将经纬度转成geohash，找到邻近的geohash。对每个邻近的遍历前缀树，找到邻近的POI点，提取符合要求的。</p>
-<p>看每个cookie的经纬度最近的POI是什么，最后得出每个POI的分布</p>
-<h3 id="3-1-ES的index"><a href="#3-1-ES的index" class="headerlink" title="3.1 ES的index"></a>3.1 ES的index</h3><p>1、<code>pois_v2</code> ：所有的POI信息</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;name&quot;: &quot;华光庙大街二巷8号&quot;,</span><br><span class="line">  &quot;citycode&quot;: &quot;020&quot;,</span><br><span class="line">  &quot;city&quot;: &quot;广州市&quot;,</span><br><span class="line">  &quot;district&quot;: &quot;番禺区&quot;,</span><br><span class="line">  &quot;street&quot;: &quot;钟村镇&quot;,</span><br><span class="line">  &quot;location&quot;: &quot;22.984817,113.309482&quot;,</span><br><span class="line">  &quot;slatlng&quot;: &quot;22.984817,113.309482&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>2、<code>lbs_v2</code> ：每个cookie的位置属于哪个POI</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">          &quot;id&quot;: &quot;17fa0f7bc0e06a5f9cac64547ce5b24b&quot;,</span><br><span class="line">          &quot;ip&quot;: &quot;223.73.116.54&quot;,</span><br><span class="line">          &quot;citycode&quot;: &quot;020&quot;,</span><br><span class="line">          &quot;location&quot;: &quot;23.1024,113.28197&quot;,</span><br><span class="line">          &quot;slatlng&quot;: &quot;23.1024,113.28197&quot;,</span><br><span class="line">          &quot;city&quot;: &quot;广州市&quot;,</span><br><span class="line">          &quot;district&quot;: &quot;海珠区&quot;,</span><br><span class="line">          &quot;street&quot;: &quot;滨江街道&quot;,</span><br><span class="line">          &quot;name&quot;: &quot;万寿门诊部&quot;,</span><br><span class="line">          &quot;create_time&quot;: &quot;2017-12-05 21:03:25&quot;,</span><br><span class="line">          &quot;index_time&quot;: &quot;2017-12-05&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="3-2-查询"><a href="#3-2-查询" class="headerlink" title="3.2 查询"></a>3.2 查询</h3><p>LBS api的使用：</p>
-<h4 id="3-2-1-通过POI点的关键词、城市找到按经纬度分布的POI数量"><a href="#3-2-1-通过POI点的关键词、城市找到按经纬度分布的POI数量" class="headerlink" title="3.2.1 通过POI点的关键词、城市找到按经纬度分布的POI数量"></a>3.2.1 通过POI点的关键词、城市找到按经纬度分布的POI数量</h4><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">GET pois_v2/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"size"</span> : <span class="number">10000</span>,</span><br><span class="line">  <span class="attr">"query"</span> : &#123;</span><br><span class="line">    <span class="attr">"bool"</span> : &#123;</span><br><span class="line">      <span class="attr">"filter"</span> : [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">"terms"</span> : &#123;</span><br><span class="line">            <span class="attr">"citycode"</span> : [</span><br><span class="line">              <span class="string">"010"</span></span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">"boost"</span> : <span class="number">1.0</span></span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      ],</span><br><span class="line">      <span class="attr">"should"</span> : [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">"match_phrase"</span> : &#123;</span><br><span class="line">            <span class="attr">"name"</span> : &#123;</span><br><span class="line">              <span class="attr">"query"</span> : <span class="string">"星巴克"</span>,</span><br><span class="line">              <span class="attr">"slop"</span> : <span class="number">0</span>,</span><br><span class="line">              <span class="attr">"boost"</span> : <span class="number">1.0</span></span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      ],</span><br><span class="line">      <span class="attr">"disable_coord"</span> : <span class="literal">true</span>,</span><br><span class="line">      <span class="attr">"adjust_pure_negative"</span> : <span class="literal">true</span>,</span><br><span class="line">      <span class="attr">"minimum_should_match"</span> : <span class="string">"1"</span>,</span><br><span class="line">      <span class="attr">"boost"</span> : <span class="number">1.0</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"aggregations"</span> : &#123;</span><br><span class="line">    <span class="attr">"geo"</span> : &#123;</span><br><span class="line">      <span class="attr">"terms"</span> : &#123;</span><br><span class="line">        <span class="attr">"field"</span> : <span class="string">"slatlng"</span>,</span><br><span class="line">        <span class="attr">"size"</span> : <span class="number">10000</span>,</span><br><span class="line">        <span class="attr">"shard_size"</span> : <span class="number">-1</span>,</span><br><span class="line">        <span class="attr">"min_doc_count"</span> : <span class="number">1</span>,</span><br><span class="line">        <span class="attr">"shard_min_doc_count"</span> : <span class="number">0</span>,</span><br><span class="line">        <span class="attr">"show_term_doc_count_error"</span> : <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">"order"</span> : [</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">"_count"</span> : <span class="string">"desc"</span></span><br><span class="line">          &#125;,</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">"_term"</span> : <span class="string">"asc"</span></span><br><span class="line">          &#125;</span><br><span class="line">        ]</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"ext"</span> : &#123; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="3-2-2-通过关键词、城市，查询每个区，每个街道的POI点有多少PV和UV"><a href="#3-2-2-通过关键词、城市，查询每个区，每个街道的POI点有多少PV和UV" class="headerlink" title="3.2.2 通过关键词、城市，查询每个区，每个街道的POI点有多少PV和UV"></a>3.2.2 通过关键词、城市，查询每个区，每个街道的POI点有多少PV和UV</h4><p>DSL为：</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br></pre></td><td class="code"><pre><span class="line">GET lbs_v2/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"size"</span> : <span class="number">0</span>,</span><br><span class="line">  <span class="attr">"query"</span> : &#123;</span><br><span class="line">    <span class="attr">"bool"</span> : &#123;</span><br><span class="line">      <span class="attr">"filter"</span> : [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">"terms"</span> : &#123;</span><br><span class="line">            <span class="attr">"citycode"</span> : [</span><br><span class="line">              <span class="string">"010"</span></span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">"boost"</span> : <span class="number">1.0</span></span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      ],</span><br><span class="line">      <span class="attr">"should"</span> : [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">"match_phrase"</span> : &#123;</span><br><span class="line">            <span class="attr">"name"</span> : &#123;</span><br><span class="line">              <span class="attr">"query"</span> : <span class="string">"星巴克"</span>,</span><br><span class="line">              <span class="attr">"slop"</span> : <span class="number">0</span>,</span><br><span class="line">              <span class="attr">"boost"</span> : <span class="number">1.0</span></span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      ],</span><br><span class="line">      <span class="attr">"disable_coord"</span> : <span class="literal">true</span>,</span><br><span class="line">      <span class="attr">"adjust_pure_negative"</span> : <span class="literal">true</span>,</span><br><span class="line">      <span class="attr">"minimum_should_match"</span> : <span class="string">"1"</span>,</span><br><span class="line">      <span class="attr">"boost"</span> : <span class="number">1.0</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"aggregations"</span> : &#123;</span><br><span class="line">    <span class="attr">"city"</span> : &#123;</span><br><span class="line">      <span class="attr">"terms"</span> : &#123;</span><br><span class="line">        <span class="attr">"field"</span> : <span class="string">"city"</span>,</span><br><span class="line">        <span class="attr">"size"</span> : <span class="number">1000</span>,</span><br><span class="line">        <span class="attr">"shard_size"</span> : <span class="number">-1</span>,</span><br><span class="line">        <span class="attr">"min_doc_count"</span> : <span class="number">1</span>,</span><br><span class="line">        <span class="attr">"shard_min_doc_count"</span> : <span class="number">0</span>,</span><br><span class="line">        <span class="attr">"show_term_doc_count_error"</span> : <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">"order"</span> : [</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">"_count"</span> : <span class="string">"desc"</span></span><br><span class="line">          &#125;,</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">"_term"</span> : <span class="string">"asc"</span></span><br><span class="line">          &#125;</span><br><span class="line">        ]</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="attr">"aggregations"</span> : &#123;</span><br><span class="line">        <span class="attr">"district"</span> : &#123;</span><br><span class="line">          <span class="attr">"terms"</span> : &#123;</span><br><span class="line">            <span class="attr">"field"</span> : <span class="string">"district"</span>,</span><br><span class="line">            <span class="attr">"size"</span> : <span class="number">30</span>,</span><br><span class="line">            <span class="attr">"shard_size"</span> : <span class="number">-1</span>,</span><br><span class="line">            <span class="attr">"min_doc_count"</span> : <span class="number">1</span>,</span><br><span class="line">            <span class="attr">"shard_min_doc_count"</span> : <span class="number">0</span>,</span><br><span class="line">            <span class="attr">"show_term_doc_count_error"</span> : <span class="literal">false</span>,</span><br><span class="line">            <span class="attr">"order"</span> : [</span><br><span class="line">              &#123;</span><br><span class="line">                <span class="attr">"_count"</span> : <span class="string">"desc"</span></span><br><span class="line">              &#125;,</span><br><span class="line">              &#123;</span><br><span class="line">                <span class="attr">"_term"</span> : <span class="string">"asc"</span></span><br><span class="line">              &#125;</span><br><span class="line">            ]</span><br><span class="line">          &#125;,</span><br><span class="line">          <span class="attr">"aggregations"</span> : &#123;</span><br><span class="line">            <span class="attr">"street"</span> : &#123;</span><br><span class="line">              <span class="attr">"terms"</span> : &#123;</span><br><span class="line">                <span class="attr">"field"</span> : <span class="string">"street"</span>,</span><br><span class="line">                <span class="attr">"size"</span> : <span class="number">30</span>,</span><br><span class="line">                <span class="attr">"shard_size"</span> : <span class="number">-1</span>,</span><br><span class="line">                <span class="attr">"min_doc_count"</span> : <span class="number">1</span>,</span><br><span class="line">                <span class="attr">"shard_min_doc_count"</span> : <span class="number">0</span>,</span><br><span class="line">                <span class="attr">"show_term_doc_count_error"</span> : <span class="literal">false</span>,</span><br><span class="line">                <span class="attr">"order"</span> : [</span><br><span class="line">                  &#123;</span><br><span class="line">                    <span class="attr">"_count"</span> : <span class="string">"desc"</span></span><br><span class="line">                  &#125;,</span><br><span class="line">                  &#123;</span><br><span class="line">                    <span class="attr">"_term"</span> : <span class="string">"asc"</span></span><br><span class="line">                  &#125;</span><br><span class="line">                ]</span><br><span class="line">              &#125;,</span><br><span class="line">              <span class="attr">"aggregations"</span> : &#123;</span><br><span class="line">                <span class="attr">"uniq"</span> : &#123;</span><br><span class="line">                  <span class="attr">"cardinality"</span> : &#123;</span><br><span class="line">                    <span class="attr">"field"</span> : <span class="string">"id"</span></span><br><span class="line">                  &#125;</span><br><span class="line">                &#125;</span><br><span class="line">              &#125;</span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="attr">"uniq"</span> : &#123;</span><br><span class="line">              <span class="attr">"cardinality"</span> : &#123;</span><br><span class="line">                <span class="attr">"field"</span> : <span class="string">"id"</span></span><br><span class="line">              &#125;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">"poi"</span> : &#123;</span><br><span class="line">          <span class="attr">"terms"</span> : &#123;</span><br><span class="line">            <span class="attr">"field"</span> : <span class="string">"slatlng"</span>,</span><br><span class="line">            <span class="attr">"size"</span> : <span class="number">10000</span>,</span><br><span class="line">            <span class="attr">"shard_size"</span> : <span class="number">-1</span>,</span><br><span class="line">            <span class="attr">"min_doc_count"</span> : <span class="number">1</span>,</span><br><span class="line">            <span class="attr">"shard_min_doc_count"</span> : <span class="number">0</span>,</span><br><span class="line">            <span class="attr">"show_term_doc_count_error"</span> : <span class="literal">false</span>,</span><br><span class="line">            <span class="attr">"order"</span> : [</span><br><span class="line">              &#123;</span><br><span class="line">                <span class="attr">"_count"</span> : <span class="string">"desc"</span></span><br><span class="line">              &#125;,</span><br><span class="line">              &#123;</span><br><span class="line">                <span class="attr">"_term"</span> : <span class="string">"asc"</span></span><br><span class="line">              &#125;</span><br><span class="line">            ]</span><br><span class="line">          &#125;,</span><br><span class="line">          <span class="attr">"aggregations"</span> : &#123;</span><br><span class="line">            <span class="attr">"uniq"</span> : &#123;</span><br><span class="line">              <span class="attr">"cardinality"</span> : &#123;</span><br><span class="line">                <span class="attr">"field"</span> : <span class="string">"id"</span></span><br><span class="line">              &#125;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">"uniq"</span> : &#123;</span><br><span class="line">          <span class="attr">"cardinality"</span> : &#123;</span><br><span class="line">            <span class="attr">"field"</span> : <span class="string">"id"</span></span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"uniq"</span> : &#123;</span><br><span class="line">      <span class="attr">"cardinality"</span> : &#123;</span><br><span class="line">        <span class="attr">"field"</span> : <span class="string">"id"</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"ext"</span> : &#123; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            <h1 id="插入hive表控制part文件数量"><a href="#插入hive表控制part文件数量" class="headerlink" title="插入hive表控制part文件数量"></a>插入hive表控制part文件数量</h1><p><a href="http://blog.sina.com.cn/s/blog_604c7cdd0102wbsw.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_604c7cdd0102wbsw.html</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-- 每个文件上限500M</span><br><span class="line">set hive.exec.reducers.bytes.per.reducer=512000000;</span><br><span class="line">insert overwrite table carthage.gps_address_info_weekly_bak PARTITION(DATA_DATE=&apos;2019-01-15&apos;)</span><br><span class="line">select * from carthage.gps_address_info DISTRIBUTE by RAND();</span><br><span class="line">-- DISTRIBUTE by RAND()主要靠这个控制reduce的文件数</span><br></pre></td></tr></table></figure>
+<h1 id="strict模式"><a href="#strict模式" class="headerlink" title="strict模式"></a>strict模式</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set hive.mapred.mode=strict</span><br></pre></td></tr></table></figure>
+<p>有助于前置解决一些语法和可能的逻辑错误。</p>
+<h1 id="限制小文件数量"><a href="#限制小文件数量" class="headerlink" title="限制小文件数量"></a>限制小文件数量</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">set mapred.max.split.size=256000000;        -- 决定每个map处理的最大的文件大小，单位为B</span><br><span class="line">set mapred.min.split.size.per.node=10000000;         -- 节点中可以处理的最小的文件大小</span><br><span class="line">set mapred.min.split.size.per.rack=10000000;          -- 机架中可以处理的最小的文件大小</span><br></pre></td></tr></table></figure>
+<h1 id="查询时如何去掉重复数据"><a href="#查询时如何去掉重复数据" class="headerlink" title="查询时如何去掉重复数据"></a>查询时如何去掉重复数据</h1><p>假设数据为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">name  adx        tran_id                  cost        ts</span><br><span class="line">ck        5         125.168.10.0           33.00   1407234660</span><br><span class="line">ck        5         187.18.99.00           33.32   1407234661</span><br><span class="line">ck        5         125.168.10.0           33.24   1407234661</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from (select *,row_number() over (partition by tran_id order by timestamp asc) num from table) t where t.num=1;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>附上：<br><strong>ROW_NUMBER() OVER函数的基本用法 </strong></p>
+<p>语法：ROW_NUMBER() OVER(PARTITION BY COLUMN ORDER BY COLUMN) </p>
+<p>简单的说row_number()从1开始，为每一条分组记录返回一个数字，这里的ROW_NUMBER() OVER (ORDER BY xlh DESC) 是先把xlh列降序，再为降序以后的没条xlh记录返回一个序号。<br>示例： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt; xlh           row_num </span><br><span class="line">&gt; 1700              1 </span><br><span class="line">&gt; 1500              2 </span><br><span class="line">&gt; 1085              3 </span><br><span class="line">&gt; 710                4 </span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>&gt;</p>
+<blockquote>
+<p>row_number() OVER (PARTITION BY COL1 ORDER BY COL2) 表示根据COL1分组，在分组内部根据 COL2排序，而此函数计算的值就表示每组内部排序后的顺序编号（组内连续的唯一的) </p>
+</blockquote>
+<h1 id="split后的数组长度"><a href="#split后的数组长度" class="headerlink" title="split后的数组长度"></a>split后的数组长度</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">size(split(driving_districts,&apos;;&apos;))</span><br></pre></td></tr></table></figure>
+<h1 id="切换队列"><a href="#切换队列" class="headerlink" title="切换队列"></a>切换队列</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set mapred.job.queue.name=data;</span><br></pre></td></tr></table></figure>
+<p>sqoop切换队列是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-D mapred.job.queue.name=data</span><br></pre></td></tr></table></figure>
+<h1 id="加载hdfs的udf"><a href="#加载hdfs的udf" class="headerlink" title="加载hdfs的udf"></a>加载hdfs的udf</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ADD JAR hdfs://iclick/zyz/udf/zyz_udf2.jar;</span><br><span class="line">CREATE TEMPORARY FUNCTION get_region as &apos;org.apache.hadoop.hive.ql.udf.Ip2GeoCodeUDF&apos;;</span><br></pre></td></tr></table></figure>
+<h1 id="Hive-Trash"><a href="#Hive-Trash" class="headerlink" title="Hive Trash"></a>Hive Trash</h1><p>hive删除表时，会移除表的元数据和数据，而HDFS上的数据，如果配置了Trash，会移到.Trash/Current目录下。删除外部表时，表中的数据不会被删除。</p>
+<h1 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h1><p>用groupby代替distinct，少用orderby</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">同事写了个hive的sql语句，执行效率特别慢，跑了一个多小时程序只是map完了，reduce进行到20%。</span><br><span class="line">该Hive语句如下：</span><br><span class="line">select count(distinct ip) </span><br><span class="line">from (select ip as ip from comprehensive.f_client_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot;  </span><br><span class="line">union all </span><br><span class="line">select pub_ip as ip from f_app_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot; </span><br><span class="line">union all select ip as ip from format_log.format_pv1 where year=&quot;2013&quot; and month=&quot;10&quot; and url_first_id=1 </span><br><span class="line">) d </span><br><span class="line"></span><br><span class="line">       分析：select ip as ip from comprehensive.f_client_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot;这个语句筛选出来的数据约有10亿条，select pub_ip as ip from f_app_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot;约有10亿条条，select ip as ip from format_log.format_pv1 where year=&quot;2013&quot; and month=&quot;10&quot; and url_first_id=1 筛选出来的数据约有10亿条，总的数据量大约30亿条。这么大的数据量，使用disticnt函数，所有的数据只会shuffle到一个reducer上，导致reducer数据倾斜严重。</span><br><span class="line">       解决办法：</span><br><span class="line">       首先，通过使用groupby，按照ip进行分组。改写后的sql语句如下：</span><br><span class="line">select count(*) </span><br><span class="line">from </span><br><span class="line">(select ip </span><br><span class="line">from</span><br><span class="line">(select ip as ip from comprehensive.f_client_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot; </span><br><span class="line">union all </span><br><span class="line">select pub_ip as ip from f_app_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot; </span><br><span class="line">union all select ip as ip from format_log.format_pv1 where year=&quot;2013&quot; and month=&quot;10&quot; and url_first_id=1</span><br><span class="line">) d </span><br><span class="line">group by ip ) b </span><br><span class="line">       然后，合理的设置reducer数量，将数据分散到多台机器上。set mapred.reduce.tasks=50; </span><br><span class="line">       经过优化后，速度提高非常明显。整个作业跑完大约只需要20多分钟的时间。</span><br></pre></td></tr></table></figure>
+<p>提高order by的性能<a href="https://blog.csdn.net/djd1234567/article/details/51917603" target="_blank" rel="noopener">https://blog.csdn.net/djd1234567/article/details/51917603</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">Hive中的order by跟传统的sql语言中的order by作用是一样的，会对查询的结果做一次全局排序，所以说，只有hive的sql中制定了order by所有的数据都会到同一个reducer进行处理（不管有多少map，也不管文件有多少的block只会启动一个reducer）。但是对于大量数据这 将会消耗很长的时间去执行。</span><br><span class="line"></span><br><span class="line">    这里跟传统的sql还有一点区别：如果指定了hive.mapred.mode=strict（默认值是nonstrict）,这时就必须指定limit 来限制输出条数，原因是：所有的数据都会在同一个reducer端进行，数据量大的情况下可能不能出结果，那么在这样的严格模式下，必须指定输出的条数。</span><br><span class="line"></span><br><span class="line">    所以数据量大的时候能不用order by就不用，可以使用sort by结合distribute by来进行实现。sort by是局部排序，而distribute by是控制map怎么划分reducer。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    Hive中指定了sort by，那么在每个reducer端都会做排序，也就是说保证了局部有序（每个reducer出来的数据是有序的，但是不能保证所有的数据是有序的，除非只有一个reducer），好处是：执行了局部排序之后可以为接下去的全局排序提高不少的效率（其实就是做一次归并排序就可以做到全局排序了）</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    ditribute by是控制map的输出在reducer是如何划分的，举个例子，我们有一张表，mid是指这个store所属的商户，money是这个商户的盈利，name是这个store的名字</span><br><span class="line"></span><br><span class="line">store:</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mid	money	name</span><br><span class="line">AA	15.0	商店1</span><br><span class="line">AA	20.0	商店2</span><br><span class="line">BB	22.0	商店3</span><br><span class="line">CC	44.0	商店4</span><br><span class="line">    执行hive语句：</span><br><span class="line"></span><br><span class="line">[sql] view plain copy</span><br><span class="line">select mid, money, name from store distribute by mid sort by mid asc, money asc  </span><br><span class="line">我 们所有的mid相同的数据会被送到同一个reducer去处理，这就是因为指定了distribute by mid，这样的话就可以统计出每个商户中各个商店盈利的排序了（这个肯定是全局有序的，因为相同的商户会放到同一个reducer去处理）。这里需要注意 的是distribute by必须要写在sort by之前。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">cluster by</span><br><span class="line">    cluster by的功能就是distribute by和sort by相结合，如下2个语句是等价的：</span><br><span class="line"></span><br><span class="line">[sql] view plain copy</span><br><span class="line">select mid, money, name from store cluster by mid  </span><br><span class="line">select mid, money, name from store distribute by mid sort by mid  </span><br><span class="line">    如果需要获得与上面的中语句一样的效果：</span><br><span class="line"></span><br><span class="line">[sql] view plain copy</span><br><span class="line">select mid, money, name from store cluster by mid sort by money  </span><br><span class="line">    注意被cluster by指定的列只能是降序，不能指定asc和desc。</span><br></pre></td></tr></table></figure>
+<h1 id="问题集"><a href="#问题集" class="headerlink" title="问题集"></a>问题集</h1><h2 id="查询ES表报错"><a href="#查询ES表报错" class="headerlink" title="查询ES表报错"></a>查询ES表报错</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Failed with exception java.io.IOException:org.elasticsearch.hadoop.rest.EsHadoopInvalidRequest: The number of slices [1126] is too large. It must be less than [1024]. This limit can be set by changing the [index.max_slices_per_scroll] index level settin</span><br></pre></td></tr></table></figure>
+<p>修改es的设置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">PUT /megacorp/_settings</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">  &quot;index&quot;: &#123;</span><br><span class="line"></span><br><span class="line">    &quot;max_slices_per_scroll&quot; : 1126</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="上传hive-UDF包后重启hive-server报错"><a href="#上传hive-UDF包后重启hive-server报错" class="headerlink" title="上传hive UDF包后重启hive server报错"></a>上传hive UDF包后重启hive server报错</h2><h2 id="hive-udf没有权限执行"><a href="#hive-udf没有权限执行" class="headerlink" title="hive udf没有权限执行"></a>hive udf没有权限执行</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error while compiling statement: FAILED: SemanticException No valid privileges User dmp does not have privileges for CREATEFUNCTION The required privileges: Server=server1-&gt;URI=file:///home/hive/aux_libs/carthage-common-udf-hive-test.jar-&gt;action=*;</span><br></pre></td></tr></table></figure>
+<h2 id="没有找到jar包的报错"><a href="#没有找到jar包的报错" class="headerlink" title="没有找到jar包的报错"></a>没有找到jar包的报错</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error while compiling statement: FAILED: SemanticException [Error 10014]: Line 1:7 Wrong arguments &apos;70.0&apos;: org.apache.hadoop.hive.ql.metadata.HiveException: Unable to execute method public java.lang.String com.mljr.carthage.common.geo.udf.hive.UDFGeoLocation.evaluate(java.lang.Double,java.lang.Double) on object com.mljr.carthage.common.geo.udf.hive.UDFGeoLocation@54ee9573 of class com.mljr.carthage.common.geo.udf.hive.UDFGeoLocation with arguments &#123;50.0:java.lang.Double, 70.0:java.lang.Double&#125; of size 2</span><br></pre></td></tr></table></figure>
+<p>其他都是可以的，就这个udf的第二个参数一直报错。经测试，还是UDF本身的问题，跟参数的设置没有关系。</p>
+<p>最后发现问题是udf的jar包上传后，关联的一些jar包没有打进去，手动加上</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&lt;plugin&gt;</span><br><span class="line">				&lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;</span><br><span class="line">				&lt;artifactId&gt;maven-shade-plugin&lt;/artifactId&gt;</span><br><span class="line">				&lt;version&gt;1.6&lt;/version&gt;</span><br><span class="line">				&lt;executions&gt;</span><br><span class="line">					&lt;execution&gt;</span><br><span class="line">						&lt;phase&gt;package&lt;/phase&gt;</span><br><span class="line">						&lt;goals&gt;</span><br><span class="line">							&lt;goal&gt;shade&lt;/goal&gt;</span><br><span class="line">						&lt;/goals&gt;</span><br><span class="line">						&lt;configuration&gt;</span><br><span class="line">							&lt;artifactSet&gt;</span><br><span class="line">								&lt;includes&gt;</span><br><span class="line">									&lt;include&gt;com.mljr.carthage:carthage-common-geo&lt;/include&gt;</span><br><span class="line">									&lt;include&gt;com.alibaba:fastjson&lt;/include&gt;</span><br><span class="line">									&lt;include&gt;com.github.davidmoten:geo&lt;/include&gt;</span><br><span class="line">									&lt;include&gt;com.github.davidmoten:grumpy-core&lt;/include&gt;</span><br><span class="line">								&lt;/includes&gt;</span><br><span class="line">							&lt;/artifactSet&gt;</span><br><span class="line">						&lt;/configuration&gt;</span><br><span class="line">					&lt;/execution&gt;</span><br><span class="line">				&lt;/executions&gt;</span><br><span class="line">			&lt;/plugin&gt;</span><br></pre></td></tr></table></figure>
+<h1 id="hive用高版本的UDF"><a href="#hive用高版本的UDF" class="headerlink" title="hive用高版本的UDF"></a>hive用高版本的UDF</h1><p>在hive2.0中有类似于months_between的函数，可以实现2个时间之间的月份差。但是低版本没有这个函数</p>
+<p>解决：</p>
+<p>下载hive-2.1源码包</p>
+<p><a href="http://mirrors.hust.edu.cn/apache/hive/hive-2.2.0/" target="_blank" rel="noopener">http://mirrors.hust.edu.cn/apache/hive/hive-2.2.0/</a></p>
+<p>导入eclipse，查找months_between</p>
+<p>在org.apache.hadoop.hive.ql.udf.generic包下找到GenericUDFMonthsBetween类，移植即可</p>
+<p>/ql/src/java/org/apache/hadoop/hive/ql/udf/generic/GenericUDFMonthsBetween.java</p>
+<h1 id="String转date"><a href="#String转date" class="headerlink" title="String转date"></a>String转date</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select cast(to_date(from_unixtime(unix_timestamp(&apos;12-05-2010&apos;, &apos;dd-MM-yyyy&apos;))) as date)</span><br></pre></td></tr></table></figure>
+<h1 id="MapJoin异常问题处理总结"><a href="#MapJoin异常问题处理总结" class="headerlink" title="MapJoin异常问题处理总结"></a>MapJoin异常问题处理总结</h1><p><a href="https://yq.aliyun.com/articles/64306" target="_blank" rel="noopener">https://yq.aliyun.com/articles/64306</a></p>
+<h1 id="替换hive分隔符"><a href="#替换hive分隔符" class="headerlink" title="替换hive分隔符"></a>替换hive分隔符</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;.bak&apos; &apos;s/^A/,/g&apos; baseinfo05.csv</span><br></pre></td></tr></table></figure>
+<p><code>^A</code>要用ctrl+V+A打出来</p>
+<h1 id="Beeline导出csv后特殊符号"><a href="#Beeline导出csv后特殊符号" class="headerlink" title="Beeline导出csv后特殊符号"></a>Beeline导出csv后特殊符号</h1><p>导出csv后，由于某个字段（比如经纬度），本身就包括逗号，于是在导出时加上了特殊字符。</p>
+<p>sublime打开是</p>
+<p><img src="/.io//pic/image-20190704165407658.png" alt="image-20190704165407658"></p>
+<p>于是搜索替换的方法，用vim打开后，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:%s/\%x00/&quot;/g</span><br></pre></td></tr></table></figure>
+<p>就替换为了双引号，这样在读取csv的时候会将双引号自动转义</p>
+<h1 id="LOAD-DATA"><a href="#LOAD-DATA" class="headerlink" title="LOAD DATA"></a>LOAD DATA</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LOAD DATA [LOCAL] INPATH &apos;filepath&apos; [OVERWRITE] INTO TABLE tablename[PARTITION (partcol1=val1,partcol2=val2,…)]</span><br></pre></td></tr></table></figure>
+<p>最好不要用LOCAL，要从hadoop加载数据。local读的是hive服务器的本地路径。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"># coding:utf-8</span><br><span class="line">from pyhive import hive</span><br><span class="line">from TCLIService.ttypes import TOperationState</span><br><span class="line"></span><br><span class="line"># 打开hive连接</span><br><span class="line">hiveConn = hive.connect(host=&apos;192.168.83.135&apos;,port=11111,username=&apos;hadoop&apos;)</span><br><span class="line">cursor = hiveConn.cursor()</span><br><span class="line"></span><br><span class="line"># 执行sql语句</span><br><span class="line">sql = &apos;&apos;&apos; LOAD DATA LOCAL INPATH &apos;/home/hadoop/HivePy/employee.txt&apos; OVERWRITE INTO TABLE userdbbypy.employee &apos;&apos;&apos;</span><br><span class="line">cursor.execute(sql, async=True)</span><br><span class="line"></span><br><span class="line"># 得到执行语句的状态</span><br><span class="line">status = cursor.poll().operationState</span><br><span class="line">print &quot;status:&quot;,status</span><br><span class="line"></span><br><span class="line"># 关闭hive连接</span><br><span class="line">cursor.close()</span><br><span class="line">hiveConn.close()</span><br></pre></td></tr></table></figure>
+<h1 id="return-code-3"><a href="#return-code-3" class="headerlink" title="return code 3"></a>return code 3</h1><p>试试</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set hive.vectorized.execution.enabled=false;</span><br></pre></td></tr></table></figure>
+<h1 id="hive锁表"><a href="#hive锁表" class="headerlink" title="hive锁表"></a>hive锁表</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Completed compiling command</span><br></pre></td></tr></table></figure>
+<p>若卡在上面的语句，说明锁表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">show locks carthage_dev.baseinfo_personal_info;</span><br><span class="line">-- 如果是</span><br><span class="line"></span><br><span class="line">unlock table dwh_dml_risk_dev.rec_car_operation;</span><br><span class="line">show locks carthage_dev.baseinfo_personal_info partition(data_date=&apos;20180517&apos;);</span><br><span class="line">unlock table dwh_dml_risk_dev.rec_car_operation partition(data_date=&apos;2018-09-30&apos;);</span><br></pre></td></tr></table></figure>
+<p>hive解锁的脚本是<code>all_hive_unlock.sh</code></p>
+<h1 id="hive新增列报错"><a href="#hive新增列报错" class="headerlink" title="hive新增列报错"></a>hive新增列报错</h1><p>在添加字段是可以通过CASCADE关键字来，避免出现这种问题。如alter table table_name add columns(age int) CASCADE</p>
+<p><a href="https://qubole.zendesk.com/hc/en-us/articles/115002396646-Hive-Null-Pointer-Exception-in-select-query-after-modifying-table-definition" target="_blank" rel="noopener">https://qubole.zendesk.com/hc/en-us/articles/115002396646-Hive-Null-Pointer-Exception-in-select-query-after-modifying-table-definition</a></p>
+<blockquote>
+<p>This can happen in the scenario where table definition and specific partition definition is different, and the underlying data matches table definition but not partition definition.</p>
+<p>When a table with partitions is altered to add a column using statement:</p>
+<p><em>ALTER TABLE <tablename> ADD COLUMNS (c1 int);</tablename></em></p>
+<p>The table definition for existing partitions don’t get modified as per the above statement. As a result of this there is a mismatch between partition and table definition. </p>
+<p>This is ok if the partition data matches the definition of partition, but if the data matches definition of table itself, NPE is thrown as there is a mismatch in data vs definition.</p>
+<p>To avoid this issue, this statement should be used in hadoop2</p>
+<p><em>ALTER TABLE <tablename> ADD COLUMNS (c1 int) CASCADE;</tablename></em> </p>
+<p>In case of hadoop1, CASCADE option is not available. Hence, as long as the table is external table, following can be done:</p>
+<ol>
+<li>Drop and recreate partitions for this table</li>
+<li>Alter partition definition for specific partition having issues</li>
+</ol>
+</blockquote>
+<p>用了cascade 无效。</p>
+<p>找到原因：</p>
+<p>hive表是ORC格式的，因此cascade无效，若改成text格式则成功。</p>
+<p>解决方案：</p>
+<p>若必须是ORC格式，建表是先预留若干字段，后期改名字</p>
+<h1 id="hive分区解锁"><a href="#hive分区解锁" class="headerlink" title="hive分区解锁"></a>hive分区解锁</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">show locks carthage_dev.baseinfo_personal_info;</span><br><span class="line">unlock table carthage_dev.baseinfo_personal_info;</span><br><span class="line">show locks carthage_dev.baseinfo_personal_info partition(data_date=&apos;20180517&apos;);</span><br><span class="line">unlock table carthage_dev.baseinfo_personal_info partition(data_date=&apos;20180517&apos;);</span><br></pre></td></tr></table></figure>
+<p>解锁的技巧：</p>
+<p>1、定位哪张表锁住，可以分批执行sql，定位关键表</p>
+<p>2、show locks并下载，观察锁表的状态，通过</p>
+<p><code>show locks table extends</code>可以看依赖的表</p>
+<p>3、用脚本all_hive_unlock.sh解锁</p>
+<h2 id="hive-column-rename"><a href="#hive-column-rename" class="headerlink" title="hive column rename"></a>hive column rename</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter table carthage_dev.gps_wx_stop_status CHANGE stop_region_center_lon stop_status_center_lon string</span><br></pre></td></tr></table></figure>
+<h1 id="hive配置"><a href="#hive配置" class="headerlink" title="hive配置"></a>hive配置</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-- 输出为gzip</span><br><span class="line">set hive.exec.compress.output=true;    </span><br><span class="line">set mapred.output.compression.codec=org.apache.hadoop.io.compress.GzipCodec;</span><br><span class="line">-- 输出为一个文件</span><br><span class="line">set mapred.reduce.tasks=1;</span><br></pre></td></tr></table></figure>
+<h1 id="hive-timestamp转时间"><a href="#hive-timestamp转时间" class="headerlink" title="hive timestamp转时间"></a>hive timestamp转时间</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from_unixtime(unix_timestamp(),‘yyyy/MM/dd HH:mm:ss’);</span><br><span class="line"></span><br><span class="line">from_unixtime(cast(cast(time as bigint)/1000 as bigint),&apos;yyyy/MM/dd HH:mm:ss&apos;)</span><br></pre></td></tr></table></figure>
+<h1 id="常用日期函数"><a href="#常用日期函数" class="headerlink" title="常用日期函数"></a>常用日期函数</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">to_date：日期时间转日期函数    </span><br><span class="line">	select to_date(&apos;2018-04-02 13:34:12&apos;);   输出：2018-04-02   </span><br><span class="line">from_unixtime：转化unix时间戳到当前时区的时间格式    </span><br><span class="line">	select from_unixtime(1524573762,&apos;yyyy-MM-dd HH:mm:ss&apos;);    输出：2018-04-24 20:42:42</span><br><span class="line">unix_timestamp：获取当前unix时间戳    </span><br><span class="line">	select unix_timestamp();    输出：1524573762  </span><br><span class="line">	select unix_timestamp(&apos;2018-04-01 13:01:20&apos;);  输出：1522558880</span><br><span class="line">datediff：返回开始日期减去结束日期的天数    </span><br><span class="line">	select datediff(&apos;2018-04-09&apos;,&apos;2018-04-01&apos;);    输出：8    </span><br><span class="line">date_sub：返回日期前n天的日期    </span><br><span class="line">	select date_sub(&apos;2018-04-09&apos;,4);    输出：2018-04-05    </span><br><span class="line">date_add：返回日期后n天的日期    </span><br><span class="line">	select date_add(&apos;2018-04-09&apos;,4);    输出：2018-04-13  </span><br><span class="line">add_months：月份增加函数</span><br><span class="line">	select add_months(&apos;2018-02-10&apos;, 2 );    输出：2018-04-10 </span><br><span class="line">last_day：返回当月底日期</span><br><span class="line">	select last_day(&apos;2018-02-21&apos;);    输出：2018-02-28</span><br></pre></td></tr></table></figure>
+<h1 id="hive-字符串函数"><a href="#hive-字符串函数" class="headerlink" title="hive 字符串函数"></a>hive 字符串函数</h1><p><strong>1. 字符串长度函数：length</strong></p>
+<p>语法: length(string A)</p>
+<p>返回值: int</p>
+<p>说明：返回字符串A的长度</p>
+<p>举例：</p>
+<p>hive&gt; select length(‘abcedfg’) from lxw_dual;</p>
+<p>7</p>
+<p><strong>2. 字符串反转函数：reverse</strong></p>
+<p>语法: reverse(string A)</p>
+<p>返回值: string</p>
+<p>说明：返回字符串A的反转结果</p>
+<p>举例：</p>
+<p>hive&gt; select reverse(abcedfg’) from lxw_dual;</p>
+<p>gfdecba</p>
+<p><strong>3. 字符串连接函数：concat</strong></p>
+<p>语法: concat(string A, string B…)</p>
+<p>返回值: string</p>
+<p>说明：返回输入字符串连接后的结果，支持任意个输入字符串</p>
+<p>举例：</p>
+<p>hive&gt; select concat(‘abc’,’def’,’gh’) from lxw_dual;</p>
+<p>abcdefgh</p>
+<p><strong>4. 带分隔符字符串连接函数：concat_ws</strong></p>
+<p>语法: concat_ws(string SEP, string A, string B…)</p>
+<p>返回值: string</p>
+<p>说明：返回输入字符串连接后的结果，SEP表示各个字符串间的分隔符</p>
+<p>举例：</p>
+<p>hive&gt; select concat_ws(‘,’,’abc’,’def’,’gh’) from lxw_dual;</p>
+<p>abc,def,gh</p>
+<p><strong>5. 字符串截取函数：substr,substring</strong></p>
+<p>语法: substr(string A, int start),substring(string A, int start)</p>
+<p>返回值: string</p>
+<p>说明：返回字符串A从start位置到结尾的字符串</p>
+<p>举例：</p>
+<p>hive&gt; select substr(‘abcde’,3) from lxw_dual;</p>
+<p>cde</p>
+<p>hive&gt; select substring(‘abcde’,3) from lxw_dual;</p>
+<p>cde</p>
+<p>hive&gt;  selectsubstr(‘abcde’,-1) from lxw_dual;  （和ORACLE相同）</p>
+<p>e</p>
+<p><strong>6. 字符串截取函数：substr,substring</strong></p>
+<p>语法: substr(string A, int start, int len),substring(string A, intstart, int len)</p>
+<p>返回值: string</p>
+<p>说明：返回字符串A从start位置开始，长度为len的字符串</p>
+<p>举例：</p>
+<p>hive&gt; select substr(‘abcde’,3,2) from lxw_dual;</p>
+<p>cd</p>
+<p>hive&gt; select substring(‘abcde’,3,2) from lxw_dual;</p>
+<p>cd</p>
+<p>hive&gt;select substring(‘abcde’,-2,2) from lxw_dual;</p>
+<p>de</p>
+<p><strong>7. 字符串转大写函数：upper,ucase</strong></p>
+<p>语法: upper(string A) ucase(string A)</p>
+<p>返回值: string</p>
+<p>说明：返回字符串A的大写格式</p>
+<p>举例：</p>
+<p>hive&gt; select upper(‘abSEd’) from lxw_dual;</p>
+<p>ABSED</p>
+<p>hive&gt; select ucase(‘abSEd’) from lxw_dual;</p>
+<p>ABSED</p>
+<p><strong>8. 字符串转小写函数：lower,lcase</strong></p>
+<p>语法: lower(string A) lcase(string A)</p>
+<p>返回值: string</p>
+<p>说明：返回字符串A的小写格式</p>
+<p>举例：</p>
+<p>hive&gt; select lower(‘abSEd’) from lxw_dual;</p>
+<p>absed</p>
+<p>hive&gt; select lcase(‘abSEd’) from lxw_dual;</p>
+<p>absed</p>
+<p><strong>9. 去空格函数：trim</strong></p>
+<p>语法: trim(string A)</p>
+<p>返回值: string</p>
+<p>说明：去除字符串两边的空格</p>
+<p>举例：</p>
+<p>hive&gt; select trim(‘ abc ‘) from lxw_dual;</p>
+<p>abc</p>
+<p><strong>10. 左边去空格函数：ltrim</strong></p>
+<p>语法: ltrim(string A)</p>
+<p>返回值: string</p>
+<p>说明：去除字符串左边的空格</p>
+<p>举例：</p>
+<p>hive&gt; select ltrim(‘ abc ‘) from lxw_dual;</p>
+<p>abc</p>
+<p><strong>11. 右边去空格函数：rtrim</strong></p>
+<p>语法: rtrim(string A)</p>
+<p>返回值: string</p>
+<p>说明：去除字符串右边的空格</p>
+<p>举例：</p>
+<p>hive&gt; select rtrim(‘ abc ‘) from lxw_dual;</p>
+<p>abc</p>
+<p><strong>12. 正则表达式替换函数：regexp_replace</strong></p>
+<p>语法: regexp_replace(string A, string B, string C)</p>
+<p>返回值: string</p>
+<p>说明：将字符串A中的符合java正则表达式B的部分替换为C。注意，在有些情况下要使用转义字符,类似oracle中的regexp_replace函数。</p>
+<p>举例：</p>
+<p>hive&gt; select regexp_replace(‘foobar’, ‘oo|ar’, ‘’) from lxw_dual;</p>
+<p>fb</p>
+<p><strong>13. 正则表达式解析函数：regexp_extract</strong></p>
+<p>语法: regexp_extract(string subject, string pattern, int index)</p>
+<p>返回值: string</p>
+<p>说明：将字符串subject按照pattern正则表达式的规则拆分，返回index指定的字符。</p>
+<p>举例：</p>
+<p>hive&gt; select regexp_extract(‘foothebar’, ‘foo(.*?)(bar)’, 1) fromlxw_dual;</p>
+<p>the</p>
+<p>hive&gt; select regexp_extract(‘foothebar’, ‘foo(.*?)(bar)’, 2) fromlxw_dual;</p>
+<p>bar</p>
+<p>hive&gt; select regexp_extract(‘foothebar’, ‘foo(.*?)(bar)’, 0) fromlxw_dual;</p>
+<p>foothebar</p>
+<p><strong>注意，在有些情况下要使用转义字符，下面的等号要用双竖线转义，这是java**</strong>正则表达式的规则。**</p>
+<p>select data_field,</p>
+<p>​     regexp_extract(data_field,’.*?bgStart\=(<sup><a href="#fn_&" id="reffn_&">&</a></sup>+)’,1) as aaa,</p>
+<p>​     regexp_extract(data_field,’.*?contentLoaded_headStart\=(<sup><a href="#fn_&" id="reffn_&">&</a></sup>+)’,1) as bbb,</p>
+<p>​     regexp_extract(data_field,’.*?AppLoad2Req\=(<sup><a href="#fn_&" id="reffn_&">&</a></sup>+)’,1) as ccc</p>
+<p>​     from pt_nginx_loginlog_st</p>
+<p>​     where pt = ‘2012-03-26’limit 2;</p>
+<p><strong>14. URL解析函数：parse_url</strong></p>
+<p>语法: parse_url(string urlString, string partToExtract [, stringkeyToExtract])</p>
+<p>返回值: string</p>
+<p>说明：返回URL中指定的部分。partToExtract的有效值为：HOST, PATH, QUERY, REF, PROTOCOL, AUTHORITY, FILE, and USERINFO.</p>
+<p>举例：</p>
+<p>hive&gt; selectparse_url(‘<a href="http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1" target="_blank" rel="noopener">http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1</a>‘, ‘HOST’) fromlxw_dual;</p>
+<p>facebook.com</p>
+<p>hive&gt; selectparse_url(‘<a href="http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1" target="_blank" rel="noopener">http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1</a>‘, ‘QUERY’,’k1’) from lxw_dual;</p>
+<p>v1</p>
+<p><strong>15. json解析函数：get_json_object</strong></p>
+<p>语法: get_json_object(string json_string, string path)</p>
+<p>返回值: string</p>
+<p>说明：解析json的字符串json_string,返回path指定的内容。如果输入的json字符串无效，那么返回NULL。</p>
+<p>举例：</p>
+<p>hive&gt; select get_json_object(‘{“store”:</p>
+<p>>  {“fruit”:[{“weight”:8,”type”:”apple”},{“weight”:9,”type”:”pear”}],</p>
+<p>>   “bicycle”:{“price”:19.95,”color”:”red”}</p>
+<p>>   },</p>
+<p>> “email”:”amy@only_for_json_udf_test.net”,</p>
+<p>>  “owner”:”amy”</p>
+<p>> }</p>
+<p>> ‘,’$.owner’) from lxw_dual;</p>
+<p>amy</p>
+<p><strong>16. 空格字符串函数：space</strong></p>
+<p>语法: space(int n)</p>
+<p>返回值: string</p>
+<p>说明：返回长度为n的字符串</p>
+<p>举例：</p>
+<p>hive&gt; select space(10) from lxw_dual;</p>
+<p>hive&gt; select length(space(10)) from lxw_dual;</p>
+<p>10</p>
+<p><strong>17. 重复字符串函数：repeat</strong></p>
+<p>语法: repeat(string str, int n)</p>
+<p>返回值: string</p>
+<p>说明：返回重复n次后的str字符串</p>
+<p>举例：</p>
+<p>hive&gt; select repeat(‘abc’,5) from lxw_dual;</p>
+<p>abcabcabcabcabc</p>
+<p><strong>18. 首字符ascii函数：ascii</strong></p>
+<p>语法: ascii(string str)</p>
+<p>返回值: int</p>
+<p>说明：返回字符串str第一个字符的ascii码</p>
+<p>举例：</p>
+<p>hive&gt; select ascii(‘abcde’) from lxw_dual;</p>
+<p>97</p>
+<p><strong>19. 左补足函数：lpad</strong></p>
+<p>语法: lpad(string str, int len, string pad)</p>
+<p>返回值: string</p>
+<p>说明：将str进行用pad进行左补足到len位</p>
+<p>举例：</p>
+<p>hive&gt; select lpad(‘abc’,10,’td’) from lxw_dual;</p>
+<p>tdtdtdtabc</p>
+<p><strong>注意：与GP**</strong>，ORACLE<strong>**不同，pad</strong> <strong>不能默认</strong></p>
+<p><strong>20. 右补足函数：rpad</strong></p>
+<p>语法: rpad(string str, int len, string pad)</p>
+<p>返回值: string</p>
+<p>说明：将str进行用pad进行右补足到len位</p>
+<p>举例：</p>
+<p>hive&gt; select rpad(‘abc’,10,’td’) from lxw_dual;</p>
+<p>abctdtdtdt</p>
+<p><strong>21. 分割字符串函数: split</strong></p>
+<p>语法:  split(string str, stringpat)</p>
+<p>返回值:  array</p>
+<p>说明: 按照pat字符串分割str，会返回分割后的字符串数组</p>
+<p>举例：</p>
+<p>hive&gt; select split(‘abtcdtef’,’t’) from lxw_dual;</p>
+<p>[“ab”,”cd”,”ef”]</p>
+<p><strong>22. 集合查找函数:find_in_set</strong></p>
+<p>语法: find_in_set(string str, string strList)</p>
+<p>返回值: int</p>
+<p>说明: 返回str在strlist第一次出现的位置，strlist是用逗号分割的字符串。如果没有找该str字符，则返回0</p>
+<p>举例：</p>
+<p>hive&gt; select find_in_set(‘ab’,’ef,ab,de’) from lxw_dual;</p>
+<p>2</p>
+<p>hive&gt; select find_in_set(‘at’,’ef,ab,de’) from lxw_dual;</p>
+<p>0</p>
+<p>instr</p>
+<h1 id="group后拼接"><a href="#group后拼接" class="headerlink" title="group后拼接"></a>group后拼接</h1><p>group_concat( [distinct] 要连接的字段 [order by 排序字段 asc/desc ] [separator ‘分隔符’] )</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select userid,bankid,group_concat(cast(creditlimit as string))</span><br><span class="line">from vdm_fin.cc_user_bill_0724</span><br><span class="line">group by userid,bankid</span><br></pre></td></tr></table></figure>
+<p><img src="/.io//pic/70.png" alt="è¿éåå¾çæè¿°"></p>
+<p><strong>hive实现相同的功能：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT id,</span><br><span class="line">concat_ws(&apos;|&apos;, collect_set(str)) </span><br><span class="line">FROM t  </span><br><span class="line">GROUP BY id;1234</span><br></pre></td></tr></table></figure>
+<p>主意:collect_set 只能返回不重复的集合<br>若要返回带重复的要用collect_list</p>
+<p>2、collect_list 展示子表排序后结果，collect_set 不受子表排序影响<br>select phone,collect_list(user_id) ,collect_set(user_id) from<br>(select * from a order by order_time asc)b<br>group by phone<br>结果：123456789    [1,1,3,2,2]    [1,3,2]</p>
+<p>a表数据如下<br>phone    user_id order_time<br>123456789    1    2018/8/23<br>123456789    3    2018/8/24<br>123456789    2    2018/8/25<br>123456789    1    2018/8/22<br>123456789    2    2018/8/26</p>
 
           
         
