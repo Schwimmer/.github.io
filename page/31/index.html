@@ -357,191 +357,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/hive笔记-orc格式读写/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/12/hadoop-spark/hive笔记-orc格式读写/" class="post-title-link" itemprop="url">hive笔记-orc格式读写</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-01-30 15:52:38" itemprop="dateModified" datetime="2018-01-30T15:52:38+08:00">2018-01-30</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/hadoop-spark/hive笔记-orc格式读写/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/hive笔记-orc格式读写/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>需要引入的包：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">                        &lt;groupId&gt;org.apache.hadoop&lt;/groupId&gt;</span><br><span class="line">                        &lt;artifactId&gt;hadoop-core&lt;/artifactId&gt;</span><br><span class="line">                        &lt;version&gt;2.6.0-mr1-cdh5.9.1&lt;/version&gt;</span><br><span class="line">                &lt;/dependency&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">                        &lt;groupId&gt;org.apache.hive&lt;/groupId&gt;</span><br><span class="line">                        &lt;artifactId&gt;hive-common&lt;/artifactId&gt;</span><br><span class="line">                        &lt;version&gt;1.1.0-cdh5.9.1&lt;/version&gt;</span><br><span class="line">                &lt;/dependency&gt;</span><br><span class="line">                &lt;dependency&gt;</span><br><span class="line">                        &lt;groupId&gt;org.apache.hive&lt;/groupId&gt;</span><br><span class="line">                        &lt;artifactId&gt;hive-exec&lt;/artifactId&gt;</span><br><span class="line">                        &lt;version&gt;1.1.0-cdh5.9.1&lt;/version&gt;</span><br><span class="line">                &lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> fs = <span class="type">FileSystem</span>.get(conf);</span><br><span class="line"><span class="keyword">val</span> prop = <span class="type">Config</span>.getConfig(<span class="string">"config.properties"</span>)</span><br><span class="line">println(sdf.format(<span class="keyword">new</span> <span class="type">Date</span>))</span><br><span class="line"><span class="keyword">val</span> readerOpts = <span class="type">OrcFile</span>.readerOptions(conf)</span><br><span class="line"><span class="keyword">val</span> reader = <span class="type">OrcFile</span>.createReader(<span class="keyword">new</span> <span class="type">Path</span>(iaxReqPath+<span class="string">"/ds=17-08-21/20170821000000antispam_2529853576425433.orc"</span>), readerOpts)</span><br><span class="line"><span class="keyword">val</span> inspector = reader.getObjectInspector().asInstanceOf[<span class="type">StructObjectInspector</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> count = reader.getNumberOfRows</span><br><span class="line">info(<span class="string">"the count is: "</span> + count.toString())</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> fields = inspector.getAllStructFieldRefs()</span><br><span class="line"></span><br><span class="line">fields.foreach &#123; x =&gt; </span><br><span class="line">  println(x.getFieldObjectInspector.getCategory)  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> records = reader.rows()</span><br><span class="line"><span class="keyword">var</span> n=<span class="number">0</span></span><br><span class="line"><span class="keyword">val</span> loop = <span class="keyword">new</span> <span class="type">Breaks</span></span><br><span class="line">loop.breakable(&#123;</span><br><span class="line">  <span class="keyword">while</span>(records.hasNext)&#123;</span><br><span class="line">    <span class="keyword">if</span> (n&gt;<span class="number">5</span>) loop.<span class="keyword">break</span></span><br><span class="line">    <span class="keyword">val</span> row = records.next(<span class="literal">null</span>)</span><br><span class="line">    <span class="keyword">val</span> valueList = inspector.getStructFieldsDataAsList(row)</span><br><span class="line">    info(valueList.get(<span class="number">10</span>).toString)</span><br><span class="line">    info(row.toString())</span><br><span class="line">    n = n+<span class="number">1</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/hadoop笔记/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -728,7 +543,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/模型集成/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -748,7 +563,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/机器学习/模型集成/" class="post-title-link" itemprop="url">模型集成</a>
+                <a href="/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/" class="post-title-link" itemprop="url">4-1 TensorBoard网络结构</a>
               
             
           </h1>
@@ -788,7 +603,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-02-11 09:26:22" itemprop="dateModified" datetime="2018-02-11T09:26:22+08:00">2018-02-11</time>
+                <time title="修改时间：2019-06-03 09:31:14" itemprop="dateModified" datetime="2019-06-03T09:31:14+08:00">2019-06-03</time>
               </span>
             
           
@@ -802,7 +617,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/深度学习/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a></span>
 
                 
                 
@@ -820,8 +635,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/机器学习/模型集成/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/模型集成/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -854,24 +669,39 @@
       
         
           
-            <p><a href="https://www.jiqizhixin.com/articles/2018-01-14-8" target="_blank" rel="noopener">每个Kaggle冠军的获胜法门：揭秘Python中的模型集成</a></p>
-<p><img src="https://image.jiqizhixin.com/uploads/wangeditor/c897487a-bf02-4023-9355-24c747d7ef62/43133image%20(1" alt="">.png)</p>
-<p>Example Schematics of an ensemble.  An input array X is fed through two proprocessing pipelines and then to a set of base learners f(i). The ensemble combines all base learner predictions into a final prediction array P. </p>
-<p>By the end of the post, you will:</p>
-<ul>
-<li>understand the fundamentals of ensembles</li>
-<li>know how to code them</li>
-<li>understand the main pitfalls and drawbacks of ensembles</li>
-</ul>
-<h2 id="Predicting-Republican-and-Democratic-donations"><a href="#Predicting-Republican-and-Democratic-donations" class="headerlink" title="Predicting Republican and Democratic donations"></a>Predicting Republican and Democratic donations</h2><p>we’ll use a data set on U.S. political contributions. The <a href="https://github.com/fivethirtyeight/data/tree/master/science-giving" target="_blank" rel="noopener">original data set</a> was prepared by <a href="https://fivethirtyeight.com/contributors/ben-wieder/" target="_blank" rel="noopener">Ben Wieder</a> at <a href="https://fivethirtyeight.com/" target="_blank" rel="noopener">FiveThirtyEight</a>, who dug around the U.S. government’s political contribution registry and found that when <a href="https://fivethirtyeight.com/features/when-scientists-donate-to-politicians-its-usually-to-democrats/" target="_blank" rel="noopener">scientists donate to politician, it’s usually to Democrats</a>.</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">%matplotlib inline</span><br><span class="line"></span><br><span class="line"><span class="comment">### Import data</span></span><br><span class="line"><span class="comment"># Always good to set a seed for reproducibility</span></span><br><span class="line">SEED = <span class="number">222</span></span><br><span class="line">np.random.seed(SEED)</span><br><span class="line"></span><br><span class="line">df = pd.read_csv(<span class="string">'input.csv'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">### Training and test set</span></span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> roc_auc_score</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_train_test</span><span class="params">(test_size=<span class="number">0.95</span>)</span>:</span></span><br><span class="line">    <span class="string">"""Split Data into train and test sets."""</span></span><br><span class="line">    y = <span class="number">1</span> * (df.cand_pty_affiliation == <span class="string">"REP"</span>)</span><br><span class="line">    X = df.drop([<span class="string">"cand_pty_affiliation"</span>], axis=<span class="number">1</span>)</span><br><span class="line">    X = pd.get_dummies(X, sparse=<span class="keyword">True</span>)</span><br><span class="line">    X.drop(X.columns[X.std() == <span class="number">0</span>], axis=<span class="number">1</span>, inplace=<span class="keyword">True</span>)</span><br><span class="line">    <span class="keyword">return</span> train_test_split(X, y, test_size=test_size, random_state=SEED)</span><br><span class="line"></span><br><span class="line">xtrain, xtest, ytrain, ytest = get_train_test()</span><br><span class="line"></span><br><span class="line"><span class="comment"># A look at the data</span></span><br><span class="line">print(<span class="string">"\nExample data:"</span>)</span><br><span class="line">df.head()</span><br><span class="line"></span><br><span class="line">df.cand_pty_affiliation.value_counts(normalize=<span class="keyword">True</span>).plot(</span><br><span class="line">    kind=<span class="string">"bar"</span>, title=<span class="string">"Share of No. donations"</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
-<p>This claim is based on the observation on the share of donations being made to Republicans and Democrats. However, there’s plenty more that can be said: for instance, which scientific discipline is most likely to make a Republican donation, and which state is most likely to make Democratic donations? We will go one step further and <em>predict</em> whether a donation is most likely to be a to a Republican or Democrat.</p>
-<h2 id="What-is-an-ensemble"><a href="#What-is-an-ensemble" class="headerlink" title="What is an ensemble?"></a>What is an ensemble?</h2><p>Combining predictions from several models averages out idiosyncratic errors and yield better overall predictions.</p>
-<p>How to combine predictions?</p>
-<p>Machine learning is remarkably similar in classification problems: <strong>taking the most common class label prediction is equivalent to a majority voting rule</strong>. But there are many other ways to combine predictions, and more generally we can use a <strong>model to <em>learn</em></strong> how to best combine predictions.</p>
-<h3 id="Understanding-ensembles-by-combining-decision-trees"><a href="#Understanding-ensembles-by-combining-decision-trees" class="headerlink" title="Understanding ensembles by combining decision trees"></a>Understanding ensembles by combining decision trees</h3><p>The deeper the tree, the more complex the patterns it can capture, but the <strong>more prone</strong> to overfitting it will be. Because of this, we will need an alternative way of building complex models of decision trees, and an ensemble of different decision trees is one such way.</p>
-<p>We’ll use the below helper function to visualize our decision rules:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pydotplus  <span class="comment"># you can install pydotplus with: pip install pydotplus </span></span><br><span class="line"><span class="keyword">from</span> IPython.display <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> roc_auc_score</span><br><span class="line"><span class="keyword">from</span> sklearn.tree <span class="keyword">import</span> DecisionTreeClassifier, export_graphviz</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">print_graph</span><span class="params">(clf, feature_names)</span>:</span></span><br><span class="line">    <span class="string">"""Print decision tree."""</span></span><br><span class="line">    graph = export_graphviz(</span><br><span class="line">        clf,</span><br><span class="line">        label=<span class="string">"root"</span>,</span><br><span class="line">        proportion=<span class="keyword">True</span>,</span><br><span class="line">        impurity=<span class="keyword">False</span>, </span><br><span class="line">        out_file=<span class="keyword">None</span>, </span><br><span class="line">        feature_names=feature_names,</span><br><span class="line">        class_names=&#123;<span class="number">0</span>: <span class="string">"D"</span>, <span class="number">1</span>: <span class="string">"R"</span>&#125;,</span><br><span class="line">        filled=<span class="keyword">True</span>,</span><br><span class="line">        rounded=<span class="keyword">True</span></span><br><span class="line">    )</span><br><span class="line">    graph = pydotplus.graph_from_dot_data(graph)  </span><br><span class="line">    <span class="keyword">return</span> Image(graph.create_png())</span><br></pre></td></tr></table></figure>
+            <p><a href="https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-1-tensorboard1/" target="_blank" rel="noopener">https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-1-tensorboard1/</a></p>
+<h2 id="各种不同的优化器"><a href="#各种不同的优化器" class="headerlink" title="各种不同的优化器"></a>各种不同的优化器</h2><p>本次课程，我们会讲到<code>Tensorflow</code>里面的优化器。</p>
+<p>Tensorflow 中的优化器会有很多不同的种类。最基本, 也是最常用的一种就是<code>GradientDescentOptimizer</code>。</p>
+<p><code>Tensorflow</code>提供了7种优化器：</p>
+<h2 id="搭建图纸"><a href="#搭建图纸" class="headerlink" title="搭建图纸"></a>搭建图纸</h2><p>首先从 <code>Input</code> 开始：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># define placeholder for inputs to network</span></span><br><span class="line">xs = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>])</span><br><span class="line">ys = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>])</span><br></pre></td></tr></table></figure>
+<p>对于input我们进行如下修改： 首先，可以为<code>xs</code>指定名称为<code>x_in</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xs= tf.placeholder(tf.float32, [None, 1],name=&apos;x_in&apos;)</span><br></pre></td></tr></table></figure>
+<p>然后再次对<code>ys</code>指定名称<code>y_in</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ys= tf.placeholder(tf.loat32, [None, 1],name=&apos;y_in&apos;)</span><br></pre></td></tr></table></figure>
+<p>使用<code>with tf.name_scope(&#39;inputs&#39;)</code>可以将<code>xs</code>和<code>ys</code>包含进来，形成一个大的图层，图层的名字就是<code>with tf.name_scope()</code>方法里的参数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">with tf.name_scope(&apos;inputs&apos;):</span><br><span class="line">    # define placeholder for inputs to network</span><br><span class="line">    xs = tf.placeholder(tf.float32, [None, 1])</span><br><span class="line">    ys = tf.placeholder(tf.float32, [None, 1])</span><br></pre></td></tr></table></figure>
+<p>接下来开始编辑<code>layer</code> ， 请看编辑前的程序片段 ：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></span><br><span class="line">    <span class="comment"># add one more layer and return the output of this layer</span></span><br><span class="line">    Weights = tf.Variable(tf.random_normal([in_size, out_size]))</span><br><span class="line">    biases = tf.Variable(tf.zeros([<span class="number">1</span>, out_size]) + <span class="number">0.1</span>)</span><br><span class="line">    Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</span><br><span class="line">    <span class="keyword">if</span> activation_function <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">        outputs = Wx_plus_b</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        outputs = activation_function(Wx_plus_b, )</span><br><span class="line">    <span class="keyword">return</span> outputs</span><br></pre></td></tr></table></figure>
+<p>这里的名字应该叫layer, 下面是编辑后的:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</span><br><span class="line">    # add one more layer and return the output of this layer</span><br><span class="line">    with tf.name_scope(&apos;layer&apos;):</span><br><span class="line">        Weights= tf.Variable(tf.random_normal([in_size, out_size]))</span><br><span class="line">        # and so on...</span><br></pre></td></tr></table></figure>
+<hr>
+<p>在定义完大的框架<code>layer</code>之后，同时也需要定义每一个’框架‘里面的小部件：(Weights biases 和 activation function): 现在现对 <code>Weights</code> 定义： 定义的方法同上，可以使用<code>tf.name.scope()</code>方法，同时也可以在<code>Weights</code>中指定名称<code>W</code>。 即为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></span><br><span class="line">	<span class="comment">#define layer name</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'layer'</span>):</span><br><span class="line">        <span class="comment">#define weights name </span></span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'weights'</span>):</span><br><span class="line">            Weights= tf.Variable(tf.random_normal([in_size, out_size]),name=<span class="string">'W'</span>)</span><br><span class="line">        <span class="comment">#and so on......</span></span><br></pre></td></tr></table></figure>
+<p>接着继续定义<code>biases</code> ， 定义方式同上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</span><br><span class="line">    #define layer name</span><br><span class="line">    with tf.name_scope(&apos;layer&apos;):</span><br><span class="line">        #define weights name </span><br><span class="line">        with tf.name_scope(&apos;weights&apos;)</span><br><span class="line">            Weights= tf.Variable(tf.random_normal([in_size, out_size]),name=&apos;W&apos;)</span><br><span class="line">        # define biase</span><br><span class="line">        with tf.name_scope(&apos;Wx_plus_b&apos;):</span><br><span class="line">            Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</span><br><span class="line">        # and so on....</span><br></pre></td></tr></table></figure>
+<p><code>activation_function</code> 的话，可以暂时忽略。因为当你自己选择用 tensorflow 中的激励函数（activation function）的时候，tensorflow会默认添加名称。 最终，layer形式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</span><br><span class="line">    # add one more layer and return the output of this layer</span><br><span class="line">    with tf.name_scope(&apos;layer&apos;):</span><br><span class="line">        with tf.name_scope(&apos;weights&apos;):</span><br><span class="line">            Weights = tf.Variable(</span><br><span class="line">            tf.random_normal([in_size, out_size]), </span><br><span class="line">            name=&apos;W&apos;)</span><br><span class="line">        with tf.name_scope(&apos;biases&apos;):</span><br><span class="line">            biases = tf.Variable(</span><br><span class="line">            tf.zeros([1, out_size]) + 0.1, </span><br><span class="line">            name=&apos;b&apos;)</span><br><span class="line">        with tf.name_scope(&apos;Wx_plus_b&apos;):</span><br><span class="line">            Wx_plus_b = tf.add(</span><br><span class="line">            tf.matmul(inputs, Weights), </span><br><span class="line">            biases)</span><br><span class="line">        if activation_function is None:</span><br><span class="line">            outputs = Wx_plus_b</span><br><span class="line">        else:</span><br><span class="line">            outputs = activation_function(Wx_plus_b, )</span><br><span class="line">        return outputs</span><br></pre></td></tr></table></figure>
+<p>最后编辑<code>loss</code>部分：将<code>with tf.name_scope()</code>添加在<code>loss</code>上方，并为它起名为<code>loss</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># the error between prediciton and real data</span><br><span class="line">with tf.name_scope(&apos;loss&apos;):</span><br><span class="line">    loss = tf.reduce_mean(</span><br><span class="line">    tf.reduce_sum(</span><br><span class="line">    tf.square(ys - prediction),</span><br><span class="line">    eduction_indices=[1]</span><br><span class="line">    ))</span><br></pre></td></tr></table></figure>
+<p>使用<code>with tf.name_scope()</code>再次对<code>train_step</code>部分进行编辑,如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">with tf.name_scope(&apos;train&apos;):</span><br><span class="line">    train_step = tf.train.GradientDescentOptimizer(0.1).minimize(loss)</span><br></pre></td></tr></table></figure>
+<p>我们需要使用 <code>tf.summary.FileWriter()</code> (<code>tf.train.SummaryWriter()</code> 这种方式已经在 tf &gt;= 0.12 版本中摒弃) 将上面‘绘画’出的图保存到一个目录中，以方便后期在浏览器中可以浏览。 这个方法中的第二个参数需要使用<code>sess.graph</code> ， 因此我们需要把这句话放在获取<code>session</code>的后面。 这里的<code>graph</code>是将前面定义的框架信息收集起来，然后放在<code>logs/</code>目录下面。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sess = tf.Session() # get session</span><br><span class="line"># tf.train.SummaryWriter soon be deprecated, use following</span><br><span class="line">writer = tf.summary.FileWriter(&quot;logs/&quot;, sess.graph)</span><br></pre></td></tr></table></figure>
+<p>请确保你的 tensorboard 指令是在你的 logs 文件根目录执行的. 如果在其他目录下, 比如 <code>Desktop</code> 等, 可能不会成功看到图. 比如在下面这个目录, 你要 cd 到 <code>project</code> 这个地方执行 <code>/project &gt; tensorboard --logdir logs</code></p>
+<p>完整代码在</p>
+<p><a href="https://github.com/MorvanZhou/tutorials/blob/master/tensorflowTUT/tf14_tensorboard/full_code.py" target="_blank" rel="noopener">https://github.com/MorvanZhou/tutorials/blob/master/tensorflowTUT/tf14_tensorboard/full_code.py</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># View more python learning tutorial on my Youtube and Youku channel!!!</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Youtube video tutorial: https://www.youtube.com/channel/UCdyjiB5H8Pu7aDTNVXTTpcg</span></span><br><span class="line"><span class="comment"># Youku video tutorial: http://i.youku.com/pythontutorial</span></span><br><span class="line"></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">Please note, this code is only for python 3+. If you are using python 2+, please modify the code accordingly.</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span> print_function</span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></span><br><span class="line">    <span class="comment"># add one more layer and return the output of this layer</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'layer'</span>):</span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'weights'</span>):</span><br><span class="line">            Weights = tf.Variable(tf.random_normal([in_size, out_size]), name=<span class="string">'W'</span>)</span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'biases'</span>):</span><br><span class="line">            biases = tf.Variable(tf.zeros([<span class="number">1</span>, out_size]) + <span class="number">0.1</span>, name=<span class="string">'b'</span>)</span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'Wx_plus_b'</span>):</span><br><span class="line">            Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</span><br><span class="line">        <span class="keyword">if</span> activation_function <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">            outputs = Wx_plus_b</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            outputs = activation_function(Wx_plus_b, )</span><br><span class="line">        <span class="keyword">return</span> outputs</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># define placeholder for inputs to network</span></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'inputs'</span>):</span><br><span class="line">    xs = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>], name=<span class="string">'x_input'</span>)</span><br><span class="line">    ys = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>], name=<span class="string">'y_input'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># add hidden layer</span></span><br><span class="line">l1 = add_layer(xs, <span class="number">1</span>, <span class="number">10</span>, activation_function=tf.nn.relu)</span><br><span class="line"><span class="comment"># add output layer</span></span><br><span class="line">prediction = add_layer(l1, <span class="number">10</span>, <span class="number">1</span>, activation_function=<span class="keyword">None</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># the error between prediciton and real data</span></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'loss'</span>):</span><br><span class="line">    loss = tf.reduce_mean(tf.reduce_sum(tf.square(ys - prediction),</span><br><span class="line">                                        reduction_indices=[<span class="number">1</span>]))</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'train'</span>):</span><br><span class="line">    train_step = tf.train.GradientDescentOptimizer(<span class="number">0.1</span>).minimize(loss)</span><br><span class="line"></span><br><span class="line">sess = tf.Session()</span><br><span class="line"></span><br><span class="line"><span class="comment"># tf.train.SummaryWriter soon be deprecated, use following</span></span><br><span class="line"><span class="keyword">if</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">1</span>]) &lt; <span class="number">12</span> <span class="keyword">and</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">0</span>]) &lt; <span class="number">1</span>:  <span class="comment"># tensorflow version &lt; 0.12</span></span><br><span class="line">    writer = tf.train.SummaryWriter(<span class="string">'logs/'</span>, sess.graph)</span><br><span class="line"><span class="keyword">else</span>: <span class="comment"># tensorflow version &gt;= 0.12</span></span><br><span class="line">    writer = tf.summary.FileWriter(<span class="string">"logs/"</span>, sess.graph)</span><br><span class="line"></span><br><span class="line"><span class="comment"># tf.initialize_all_variables() no long valid from</span></span><br><span class="line"><span class="comment"># 2017-03-02 if using tensorflow &gt;= 0.12</span></span><br><span class="line"><span class="keyword">if</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">1</span>]) &lt; <span class="number">12</span> <span class="keyword">and</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">0</span>]) &lt; <span class="number">1</span>:</span><br><span class="line">    init = tf.initialize_all_variables()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    init = tf.global_variables_initializer()</span><br><span class="line">sess.run(init)</span><br><span class="line"></span><br><span class="line"><span class="comment"># direct to the local dir and run this in terminal:</span></span><br><span class="line"><span class="comment"># $ tensorboard --logdir=logs</span></span><br></pre></td></tr></table></figure>
 
           
         
@@ -1116,7 +946,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/NLP/新词发现spark/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习和深度学习算法专题/CNN/CNN/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -1136,7 +966,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/机器学习/NLP/新词发现spark/" class="post-title-link" itemprop="url">spark笔记-新词发现</a>
+                <a href="/2017/07/12/机器学习和深度学习算法专题/CNN/CNN/" class="post-title-link" itemprop="url">CNN</a>
               
             
           </h1>
@@ -1176,7 +1006,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-03-31 10:30:28" itemprop="dateModified" datetime="2018-03-31T10:30:28+08:00">2018-03-31</time>
+                <time title="修改时间：2019-06-16 09:28:37" itemprop="dateModified" datetime="2019-06-16T09:28:37+08:00">2019-06-16</time>
               </span>
             
           
@@ -1190,7 +1020,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/深度学习/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a></span>
 
                 
                 
@@ -1208,8 +1038,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/机器学习/NLP/新词发现spark/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/NLP/新词发现spark/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/机器学习和深度学习算法专题/CNN/CNN/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习和深度学习算法专题/CNN/CNN/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1242,44 +1072,32 @@
       
         
           
-            <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> conf = <span class="keyword">new</span> <span class="type">SparkConf</span>().setAppName(<span class="string">"wordSegname"</span>).setMaster(<span class="string">"local[4]"</span>).</span><br><span class="line">set(<span class="string">"spark.sql.shuffle.partitions"</span>,<span class="string">"10"</span>).set(<span class="string">"spark.network.timeout"</span>,<span class="string">"30s"</span>)</span><br></pre></td></tr></table></figure>
-<p>local[4]是指在本地运行，用4核CPU。</p>
-<p>spark.sql.shuffle.partitions是指partition的数量。SparkSQL在运行时，将一个查询任务分解成多个task，一个task就是一个partition。默认是200个partition，而如果实际集群只能并行3个task，则跑完200个partition要200/3=67次。</p>
-<p>spark.network.timeout是指所有网络通信的超时时间，默认是120s</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> word1=sc.textFile(path).map&#123;x=&gt; </span><br><span class="line"></span><br><span class="line">      <span class="keyword">val</span> x_filter=x.replaceAll(<span class="string">"\p&#123;Punct&#125;"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"\pP"</span>, <span class="string">" "</span>)</span><br><span class="line"></span><br><span class="line">                .replaceAll(<span class="string">"　"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"["</span> + <span class="type">AtomsUitl</span>.stopwords + <span class="string">"]"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"\p&#123;Blank&#125;"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"\p&#123;Space&#125;"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"\p&#123;Cntrl&#125;"</span>, <span class="string">" "</span>)</span><br><span class="line"></span><br><span class="line">                        x_filter</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>replaceAll中是正则表达式。上文中，是将所有的特殊字符都用空格代替</p>
-<p>AtomsUitl.stopwords停用词是”的很了么呢是嘛个都也比还这于不与才上用就好在和对挺去后没说”</p>
-<p>sc.textFile读取文件后，生成一个RDD，以行为单位，所以后面的map是对每行的操作</p>
-<p>打印出所有的元素，用</p>
-<p><code>word1.foreach { x =&gt; println(x) }</code></p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> word_document = word1.zipWithIndex.filter &#123; x =&gt; !<span class="type">StringUtils</span>.isBlank(x._1) &#125;.flatMap &#123; x =&gt;</span><br><span class="line">      <span class="keyword">val</span> arr = <span class="type">ArrayBuffer</span>(<span class="type">String</span>, <span class="type">Int</span>)</span><br><span class="line">      <span class="keyword">val</span> line = x._1.split(<span class="string">" "</span>)    <span class="comment">//对于每一行，都用空格分割</span></span><br><span class="line">      <span class="keyword">for</span> (i &lt;- line) &#123;    </span><br><span class="line">        arr += ((i, x._2.toInt))    <span class="comment">//分割后，每一个tuple加到数组中</span></span><br><span class="line">      &#125;</span><br><span class="line">      arr</span><br><span class="line">    &#125;.map &#123; x =&gt; (x<span class="number">.1</span>.trim, x<span class="number">.2</span>) &#125;.filter(x =&gt; !<span class="type">StringUtils</span>.isBlank(x._1))</span><br></pre></td></tr></table></figure>
-<p>zipWithIndex用带有index的来压缩RDD，索引从0开始</p>
-<p>word1.zipWithIndex.foreach { x =&gt; println(x) }</p>
-<p>(ab ef,0)</p>
-<p>(cd,1)</p>
-<p>上述代码得到的结果是</p>
-<p>(ab,0)</p>
-<p>(ef,0)</p>
-<p>(cd,1)</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> wordleft = word.map(x =&gt; <span class="type">AtomsUitl</span>.reverse(x)).map &#123; x =&gt; <span class="string">""</span> + x + <span class="string">""</span> &#125;.flatMap &#123;</span><br><span class="line">  x =&gt;</span><br><span class="line">    <span class="keyword">var</span> arr = <span class="type">ArrayBufferString</span></span><br><span class="line">    <span class="keyword">for</span> (y &lt;- <span class="number">1</span> to <span class="type">AtomsUitl</span>.len(x) - <span class="number">2</span>) &#123;</span><br><span class="line">      arr += <span class="type">AtomsUitl</span>.substring(x, y, <span class="type">Math</span>.min(maxLen + y, <span class="type">AtomsUitl</span>.len(x)))</span><br><span class="line">    &#125;</span><br><span class="line">    arr</span><br><span class="line">&#125;.sortBy(x =&gt; x)</span><br></pre></td></tr></table></figure>
-<p>将每个句子倒序排列，提取每个子集</p>
-<p>今$</p>
-<p>四期星天今</p>
-<p>处言语然自</p>
-<p>天今$</p>
-<p>星天今$</p>
-<p>期星天今$</p>
-<p>然自$</p>
-<p>理处言语然</p>
-<p>自$</p>
-<p>言语然自</p>
-<p>语然自$</p>
-<p>$</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> wordleft_caculate = wordleft.map &#123;</span><br><span class="line">      s =&gt;</span><br><span class="line">        <span class="keyword">val</span> first = <span class="type">AtomsUitl</span>.substring(s, <span class="number">0</span>, <span class="number">1</span>).toString</span><br><span class="line">        (first, s)</span><br><span class="line">    &#125;.groupBy(f =&gt; f._1).map &#123;</span><br><span class="line">      x =&gt; x._2</span><br><span class="line">    &#125;</span><br><span class="line">wordleft_caculate.foreach&#123;x=&gt; println(x.iterator.next())&#125;</span><br></pre></td></tr></table></figure>
-<p>groupBy之后得到</p>
-<p>(期, CompactBuffer((期,期星天今$))等</p>
-<p>这个是Iterable，可迭代的。可以转换为一个迭代器x.iterator.next()。迭代出来就是</p>
-<p>(期,期星天今$) 等</p>
+            <h1 id="卷积核"><a href="#卷积核" class="headerlink" title="卷积核"></a>卷积核</h1><p>也称为滤波器。</p>
+<p>权重共享：卷积核的权重（矩阵的值）对于不同位置的所有输入都是相同的。</p>
+<h2 id="卷积操作的意义"><a href="#卷积操作的意义" class="headerlink" title="卷积操作的意义"></a>卷积操作的意义</h2><p>例如，有整体边缘滤波器Ke，横向边缘滤波器Kh，纵向边缘滤波器Kv。</p>
+<script type="math/tex; mode=display">
+K_e=\begin{bmatrix}
+0 & -4 & 0\\ 
+-4 & 16 & -4\\ 
+0 & -4 & 0
+\end{bmatrix}\ \ K_h=\begin{bmatrix}
+1 & 2 & 1\\ 
+0 & 0 & 0\\ 
+-1 & -2 & -1
+\end{bmatrix}\ \ K_v=\begin{bmatrix}
+1 & 0 & -1\\ 
+2 & 0 & -2\\ 
+1 & 0 & -1
+\end{bmatrix}</script><p>若某像素位于物体边缘，则周边像素与该像素会有明显差异，用Ke可以放大边缘和周边的差异，起到边缘检测的作用。同理，Kh、Kv可以保留横向、纵向的边缘信息。</p>
+<h1 id="池化层"><a href="#池化层" class="headerlink" title="池化层"></a>池化层</h1><p>也叫汇合层。通常操作有平均值池化（average-pooling）和最大值汇合（max-pooling）。与卷积核操作不同，池化层不包含需要学习的参数。仅指定汇合类型，核大小（kernel size）和步长（stride）。</p>
+<p>汇合的结果相对输入降小了，是一种降采样（down-sampling）操作。也可以看成是一个用p范数（p-norm）作为非线性映射的卷积操作。当p趋于正无穷时就是最大值汇合。</p>
+<p>汇合层的引入是仿照人的视觉系统对视觉输入对象进行降维和抽象。作用有：</p>
+<p>1）特征不变性（feature invariant）。使模型更关注是否存在某些特征而不是特征具体的位置。</p>
+<p>2）特征降维。</p>
+<p>3）一定程度上防止过拟合。</p>
+<h1 id="全连接层"><a href="#全连接层" class="headerlink" title="全连接层"></a>全连接层</h1><p>fully connected layers</p>
+<p>参考：</p>
+<p>【1】解析卷积神经网络.pdf</p>
 
           
         
@@ -1336,7 +1154,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/用scikit-learn生成测试数据集/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark-sql笔记/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -1356,7 +1174,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/机器学习/用scikit-learn生成测试数据集/" class="post-title-link" itemprop="url">用scikit-learn生成测试数据集</a>
+                <a href="/2017/07/12/hadoop-spark/spark/spark-sql笔记/" class="post-title-link" itemprop="url">spark-sql笔记</a>
               
             
           </h1>
@@ -1396,7 +1214,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-07-04 23:22:59" itemprop="dateModified" datetime="2018-07-04T23:22:59+08:00">2018-07-04</time>
+                <time title="修改时间：2018-01-30 15:49:02" itemprop="dateModified" datetime="2018-01-30T15:49:02+08:00">2018-01-30</time>
               </span>
             
           
@@ -1410,7 +1228,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
 
                 
                 
@@ -1428,8 +1246,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/机器学习/用scikit-learn生成测试数据集/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/用scikit-learn生成测试数据集/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/hadoop-spark/spark/spark-sql笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/spark/spark-sql笔记/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1462,25 +1280,286 @@
       
         
           
-            <p>转自<a href="https://www.jiqizhixin.com/articles/2018-02-05-2" target="_blank" rel="noopener">https://www.jiqizhixin.com/articles/2018-02-05-2</a></p>
-<h1 id="分类测试问题"><a href="#分类测试问题" class="headerlink" title="分类测试问题"></a>分类测试问题</h1><p>将看三个分类问题：blobs、moons 和 circles。</p>
-<h2 id="线性分类"><a href="#线性分类" class="headerlink" title="线性分类"></a>线性分类</h2><p> make_blobs() 函数可被用于生成具有高斯分布的 blobs 点。你可以控制生成 blobs 的数量，生成样本的数量以及一系列其他属性。考虑到 blobs 的线性可分性质，该问题也适用于线性分类问题。</p>
-<p>下面的例子是一个多类分类预测问题，它生成了一个具有三个 blobs 的 2D 样本数据集。每个数据有两个输入和 0、1 或 2 个类的值。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.datasets.samples_generator <span class="keyword">import</span> make_blobs</span><br><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</span><br><span class="line"><span class="keyword">from</span> pandas <span class="keyword">import</span> DataFrame</span><br><span class="line"><span class="comment"># generate 2d classification dataset</span></span><br><span class="line">X, y = make_blobs(n_samples=<span class="number">100</span>, centers=<span class="number">3</span>, n_features=<span class="number">2</span>)</span><br><span class="line"><span class="comment"># dict中定义三个key，分别是坐标和label，再通过dict创建DataFrame</span></span><br><span class="line">df = DataFrame(dict(x=X[:,<span class="number">0</span>], y=X[:,<span class="number">1</span>], label=y))</span><br><span class="line">colors = &#123;<span class="number">0</span>:<span class="string">'red'</span>, <span class="number">1</span>:<span class="string">'blue'</span>, <span class="number">2</span>:<span class="string">'green'</span>&#125;</span><br><span class="line">fig, ax = pyplot.subplots()</span><br><span class="line"><span class="comment">#groupby可以通过传入需要分组的参数实现对数据的分组</span></span><br><span class="line">grouped = df.groupby(<span class="string">'label'</span>)</span><br><span class="line"><span class="keyword">for</span> key, group <span class="keyword">in</span> grouped:</span><br><span class="line">   group.plot(ax=ax, kind=<span class="string">'scatter'</span>, x=<span class="string">'x'</span>, y=<span class="string">'y'</span>, label=key, color=colors[key])</span><br><span class="line">pyplot.show()</span><br></pre></td></tr></table></figure>
-<h2 id="非线性分类"><a href="#非线性分类" class="headerlink" title="非线性分类"></a>非线性分类</h2><p>make_moons() 函数用于二进制分类并且将生成一个漩涡模式，或者两个 moons。你可以控制 moon 形状中的噪声量，以及要生产的样本数量。</p>
-<p>这个测试问题适用于能够学习非线性类边界的算法。下面的例子生成了一个中等噪音的 moon 数据集。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> make_moons</span><br><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</span><br><span class="line"><span class="keyword">from</span> pandas <span class="keyword">import</span> DataFrame</span><br><span class="line"><span class="comment"># generate 2d classification dataset</span></span><br><span class="line">X, y = make_moons(n_samples=<span class="number">100</span>, noise=<span class="number">0.1</span>)</span><br><span class="line"><span class="comment"># scatter plot, dots colored by class value</span></span><br><span class="line">df = DataFrame(dict(x=X[:,<span class="number">0</span>], y=X[:,<span class="number">1</span>], label=y))</span><br><span class="line">colors = &#123;<span class="number">0</span>:<span class="string">'red'</span>, <span class="number">1</span>:<span class="string">'blue'</span>&#125;</span><br><span class="line">fig, ax = pyplot.subplots()</span><br><span class="line">grouped = df.groupby(<span class="string">'label'</span>)</span><br><span class="line"><span class="keyword">for</span> key, group <span class="keyword">in</span> grouped:</span><br><span class="line">   group.plot(ax=ax, kind=<span class="string">'scatter'</span>, x=<span class="string">'x'</span>, y=<span class="string">'y'</span>, label=key, color=colors[key])</span><br><span class="line">pyplot.show()</span><br></pre></td></tr></table></figure>
-<p>make_circles() 函数生成一个数据集落入同心圆的二进制分类问题。再一次地，与 moons 测试问题一样，你可以控制形状中的噪声量。该测试问题适用于可以学习复杂的非线性流行的算法。下面的例子中生成了一个具有一定噪音的 circles 数据集。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> make_circles</span><br><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</span><br><span class="line"><span class="keyword">from</span> pandas <span class="keyword">import</span> DataFrame</span><br><span class="line"><span class="comment"># generate 2d classification dataset</span></span><br><span class="line">X, y = make_circles(n_samples=<span class="number">100</span>, noise=<span class="number">0.05</span>)</span><br><span class="line"><span class="comment"># scatter plot, dots colored by class value</span></span><br><span class="line">df = DataFrame(dict(x=X[:,<span class="number">0</span>], y=X[:,<span class="number">1</span>], label=y))</span><br><span class="line">colors = &#123;<span class="number">0</span>:<span class="string">'red'</span>, <span class="number">1</span>:<span class="string">'blue'</span>&#125;</span><br><span class="line">fig, ax = pyplot.subplots()</span><br><span class="line">grouped = df.groupby(<span class="string">'label'</span>)</span><br><span class="line"><span class="keyword">for</span> key, group <span class="keyword">in</span> grouped:</span><br><span class="line">   group.plot(ax=ax, kind=<span class="string">'scatter'</span>, x=<span class="string">'x'</span>, y=<span class="string">'y'</span>, label=key, color=colors[key])</span><br><span class="line">pyplot.show()</span><br></pre></td></tr></table></figure>
-<h1 id="回归测试问题"><a href="#回归测试问题" class="headerlink" title="回归测试问题"></a>回归测试问题</h1><h2 id="线性回归"><a href="#线性回归" class="headerlink" title="线性回归"></a>线性回归</h2><p>make_regression() 函数将创建一个输入和输出具有线性关系的数据集。你可以配置样本数量，输入特征数量，噪声级别等等。该数据集适用于可以学习线性回归函数的算法。</p>
-<p>下面的例子将生成 100 个示例，他们具有适度的噪声，都有一个输入特征和一个输出特征。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> make_regression</span><br><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</span><br><span class="line"><span class="comment"># generate regression dataset</span></span><br><span class="line">X, y = make_regression(n_samples=<span class="number">100</span>, n_features=<span class="number">1</span>, noise=<span class="number">0.1</span>)</span><br><span class="line"><span class="comment"># plot regression dataset</span></span><br><span class="line">pyplot.scatter(X,y)</span><br><span class="line">pyplot.show()</span><br></pre></td></tr></table></figure>
-<p>通过这些测试集可以：</p>
-<ul>
-<li><strong>比较算法</strong>。选择一个测试问题，并比较该问题的一系列算法并汇报性能。</li>
-<li><strong>放大问题</strong>。选择一个测试问题并探索将其放大，用级数法来可视化结果，也可以探索一个特定算法模型技能和问题规模。</li>
+            <p>spark sql可以用基本的SQL语法，或者hiveQL。Spark SQL也能从hive中读数据。</p>
+<p>Data Frame的来源可以是：结构化数据、hive表、外部数据库或者RDD</p>
+<h2 id="Starting-Point-SQLContext"><a href="#Starting-Point-SQLContext" class="headerlink" title="Starting Point: SQLContext"></a>Starting Point: SQLContext</h2><p>The entry point into all functionality in Spark SQL is the <a href="http://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.sql.SQLContext" target="_blank" rel="noopener"><code>SQLContext</code></a> class, or one of its descendants. To create a basic <code>SQLContext</code>, all you need is a SparkContext.</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> sc: <span class="type">SparkContext</span> <span class="comment">// An existing SparkContext.</span></span><br><span class="line"><span class="keyword">val</span> sqlContext = <span class="keyword">new</span> org.apache.spark.sql.<span class="type">SQLContext</span>(sc)</span><br><span class="line"></span><br><span class="line"><span class="comment">// this is used to implicitly convert an RDD to a DataFrame.</span></span><br><span class="line"><span class="keyword">import</span> sqlContext.implicits._</span><br></pre></td></tr></table></figure>
+<p>在SQLContext的基础上，也要创建一个HiveContext，可以用Hive的udf，也能读hive表。<br>HiveContext是一个独立的包，不需要安装hive</p>
+<h2 id="Creating-DataFrames"><a href="#Creating-DataFrames" class="headerlink" title="Creating DataFrames"></a>Creating DataFrames</h2><p>With a <code>SQLContext</code>, applications can create <code>DataFrame</code>s from an <a href="http://spark.apache.org/docs/latest/sql-programming-guide.html#interoperating-with-rdds" target="_blank" rel="noopener">existing <code>RDD</code></a>, from a Hive table, or from <a href="http://spark.apache.org/docs/latest/sql-programming-guide.html#data-sources" target="_blank" rel="noopener">data sources</a>.</p>
+<p>As an example, the following creates a <code>DataFrame</code> based on the content of a JSON file:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> sc: <span class="type">SparkContext</span> <span class="comment">// An existing SparkContext.</span></span><br><span class="line"><span class="keyword">val</span> sqlContext = <span class="keyword">new</span> org.apache.spark.sql.<span class="type">SQLContext</span>(sc)</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> df = sqlContext.read.json(<span class="string">"examples/src/main/resources/people.json"</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Displays the content of the DataFrame to stdout</span></span><br><span class="line">df.show()</span><br></pre></td></tr></table></figure>
+<h2 id="Creating-Datasets"><a href="#Creating-Datasets" class="headerlink" title="Creating Datasets"></a>Creating Datasets</h2><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.spark.sql.<span class="type">SQLContext</span></span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// Encoders for most common types are automatically provided by importing sqlContext.implicits._</span></span><br><span class="line"><span class="keyword">val</span> sqlContext = <span class="type">SQLContext</span>.getOrCreate(sc)</span><br><span class="line"><span class="keyword">import</span> sqlContext.implicits._</span><br><span class="line"><span class="keyword">val</span> ds = <span class="type">Seq</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>).toDS()</span><br><span class="line">ds.map(_ + <span class="number">1</span>).collect() <span class="comment">// Returns: Array(2, 3, 4)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Encoders are also created for case classes.</span></span><br><span class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span>(<span class="params">name: <span class="type">String</span>, age: <span class="type">Long</span></span>)</span></span><br><span class="line"><span class="class"><span class="title">val</span> <span class="title">ds</span> </span>= <span class="type">Seq</span>(<span class="type">Person</span>(<span class="string">"Andy"</span>, <span class="number">32</span>)).toDS()</span><br><span class="line"></span><br><span class="line"><span class="comment">// DataFrames can be converted to a Dataset by providing a class. Mapping will be done by name.</span></span><br><span class="line"><span class="keyword">val</span> path = <span class="string">"examples/src/main/resources/people.json"</span></span><br><span class="line"><span class="keyword">val</span> people = sqlContext.read.json(path).as[<span class="type">Person</span>]</span><br></pre></td></tr></table></figure>
+<h2 id="在DataFrame中创建表并查询"><a href="#在DataFrame中创建表并查询" class="headerlink" title="在DataFrame中创建表并查询"></a>在DataFrame中创建表并查询</h2><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> sqlContext = <span class="type">SQLContext</span>.getOrCreate(sc)</span><br><span class="line"><span class="keyword">import</span> sqlContext.implicits._</span><br><span class="line"></span><br><span class="line"><span class="comment">//把andy和32匹配到name和age列。</span></span><br><span class="line"><span class="comment">//先创建一个DataFrame，再注册为table</span></span><br><span class="line"><span class="keyword">val</span> ds = sc.parallelize(<span class="type">Seq</span>((<span class="string">"Andy"</span>, <span class="number">32</span>))).toDF(<span class="string">"name"</span>,<span class="string">"age"</span>)    </span><br><span class="line">ds.registerTempTable(<span class="string">"ds1"</span>)</span><br><span class="line">sqlContext.sql(<span class="string">"select * from ds1"</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="sparkSQL链接GP"><a href="#sparkSQL链接GP" class="headerlink" title="sparkSQL链接GP"></a>sparkSQL链接GP</h2><p>1、maven中增加包<br>一开始试过8.2的包就不行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;postgresql&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;postgresql&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;8.3-606.jdbc3&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure></p>
+<p>2、连接jdbc<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> jdbcDF = sqlContext.read.format(<span class="string">"jdbc"</span>).options(</span><br><span class="line">      <span class="type">Map</span>(<span class="string">"url"</span> -&gt; <span class="string">"jdbc:postgresql://10.1.1.230:5432/xmo_dw"</span>,</span><br><span class="line">          <span class="string">"user"</span>-&gt;<span class="string">"david_xu"</span>,  </span><br><span class="line">          <span class="string">"password"</span>-&gt;<span class="string">"w7dtfxHD"</span>,</span><br><span class="line">        <span class="string">"dbtable"</span> -&gt; <span class="string">"(select * from xmo_dw.bshare_blacklist_tagid) as aa"</span>)).load().show()</span><br></pre></td></tr></table></figure></p>
+<h2 id="在spark-sql命令行中测试连接"><a href="#在spark-sql命令行中测试连接" class="headerlink" title="在spark sql命令行中测试连接"></a>在spark sql命令行中测试连接</h2><p>/usr/lib/spark/bin/spark-sql —jars /home/david/jars/postgresql-8.3-606.jdbc4.jar</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">CREATE</span> <span class="type">TEMPORARY</span> <span class="type">TABLE</span> temp_imageviews</span><br><span class="line"><span class="type">USING</span> org.apache.spark.sql.jdbc</span><br><span class="line"><span class="type">OPTIONS</span> (</span><br><span class="line">  driver <span class="string">"org.postgresql.Driver"</span>,</span><br><span class="line">  url <span class="string">"jdbc:postgresql://10.1.1.230:5432/xmo_dw"</span>,</span><br><span class="line">  user <span class="string">"david_xu"</span>,</span><br><span class="line">  password <span class="string">"w7dtfxHD"</span>,</span><br><span class="line">  dbtable <span class="string">"(select date_i,opxpid::text from xmo_dw.imageviews where date_i=20160512 limit 20000000) as aa"</span>,</span><br><span class="line">  numPartitions <span class="string">"6"</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/lib/spark/bin/</span><br><span class="line">/usr/lib/spark/bin/spark-sql <span class="comment">--executor-memory 100g</span></span><br><span class="line"></span><br><span class="line">add jar /home/wilson/sparksql/postgresql-8.3-606.jdbc3.jar;</span><br><span class="line"><span class="keyword">set</span>  spark.sql.shuffle.partitions=<span class="number">20</span>;</span><br><span class="line"> <span class="keyword">CREATE</span> <span class="keyword">TEMPORARY</span> <span class="keyword">TABLE</span> temp_imageviews</span><br><span class="line"><span class="keyword">USING</span> org.apache.spark.sql.jdbc</span><br><span class="line">OPTIONS (</span><br><span class="line">  driver <span class="string">"org.postgresql.Driver"</span>,</span><br><span class="line">  <span class="keyword">url</span> <span class="string">"jdbc:postgresql://10.1.1.230:5432/xmo_dw"</span>,</span><br><span class="line">  <span class="keyword">user</span> <span class="string">"david_xu"</span>,</span><br><span class="line">  <span class="keyword">password</span> <span class="string">"w7dtfxHD"</span>,</span><br><span class="line">  dbtable <span class="string">"(select  timeslot,record_server,referring_site ,opxsid  from  xmo_dw.imageviews   where  date_i=20160515 limit  5000000) as aa"</span>,</span><br><span class="line">  numPartitions <span class="string">"6"</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="spark-sql读取HDFS建表"><a href="#spark-sql读取HDFS建表" class="headerlink" title="spark sql读取HDFS建表"></a>spark sql读取HDFS建表</h3><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">/usr/lib/spark/bin/spark-sql -e "<span class="keyword">CREATE</span> <span class="keyword">TEMPORARY</span> <span class="keyword">TABLE</span> rtbreq_hour</span><br><span class="line"><span class="keyword">USING</span> org.apache.spark.sql.bytes</span><br><span class="line">OPTIONS (</span><br><span class="line">  paths <span class="string">'$&#123;rtbreq_path&#125;'</span></span><br><span class="line">);</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">TEMPORARY</span> <span class="keyword">TABLE</span> rtbreq_tanx_hour</span><br><span class="line"><span class="keyword">USING</span> org.apache.spark.sql.bytes</span><br><span class="line">OPTIONS(</span><br><span class="line"> paths <span class="string">'$&#123;rtbreq_tanx_path&#125;'</span></span><br><span class="line">);</span><br><span class="line"><span class="keyword">select</span> ip,<span class="keyword">count</span>(<span class="number">1</span>) cnt <span class="keyword">from</span> (<span class="keyword">select</span> ip <span class="keyword">from</span> rtbreq_hour <span class="keyword">union</span> all <span class="keyword">select</span> ip <span class="keyword">from</span> rtbreq_tanx_hour) a <span class="keyword">group</span> <span class="keyword">by</span> ip <span class="keyword">having</span> cnt &gt; <span class="number">30</span> <span class="keyword">order</span> <span class="keyword">by</span> cnt <span class="keyword">desc</span>;</span><br><span class="line"><span class="keyword">select</span> bxid,<span class="keyword">count</span>(<span class="number">1</span>) cnt <span class="keyword">from</span> (<span class="keyword">select</span> bxid <span class="keyword">from</span> rtbreq_hour <span class="keyword">union</span> all <span class="keyword">select</span> bxid <span class="keyword">from</span> rtbreq_tanx_hour) a <span class="keyword">group</span> <span class="keyword">by</span> bxid <span class="keyword">having</span> cnt &gt; <span class="number">1000</span> <span class="keyword">order</span> <span class="keyword">by</span> cnt <span class="keyword">desc</span>;</span><br><span class="line">" &gt; rtbreq/$day/$hour.txt</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/计算广告/广告反作弊/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/07/12/机器学习/计算广告/广告反作弊/" class="post-title-link" itemprop="url">广告反作弊</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-03-17 20:50:31" itemprop="dateModified" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/计算广告/" itemprop="url" rel="index"><span itemprop="name">计算广告</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2017/07/12/机器学习/计算广告/广告反作弊/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/计算广告/广告反作弊/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>秒针发布过《互联网广告反作弊技术白皮书》</p>
+<p>腾讯灯塔联手秒针、AdMaster发布</p>
+<h1 id="腾讯《2017广告反欺诈白皮书》"><a href="#腾讯《2017广告反欺诈白皮书》" class="headerlink" title="腾讯《2017广告反欺诈白皮书》"></a>腾讯《2017广告反欺诈白皮书》</h1><p>日均校验40亿广告请求，识别的作弊比率在15%左右。部分行业和campaign中，作弊率有60%。</p>
+<h2 id="欺诈手段"><a href="#欺诈手段" class="headerlink" title="欺诈手段"></a>欺诈手段</h2><ul>
+<li>虚假流量。</li>
 </ul>
-<p>代码见<code>blogcodes\sclearn_testDataset.py</code></p>
+<p>某APP在地推时，新增用户暴涨。95%的新增用户的共同特征：</p>
+<p><strong>ROM编译机名称一致；指令逃逸差异数与正常用户不一致；CPU结构为X86，为PC机模拟器；文件系统类型的差异度与正常用户不一致</strong>。</p>
+<p>某APP的新增用户中，工作室批量刷量的特征有：</p>
+<p><strong>安装时间具有明显的规律；手机APP安装数量一致；明显的地域集中性</strong>。</p>
+<p>2.2 黑产技术</p>
+<p>1、广告作弊类型分类</p>
+<p>1）模拟器刷量：电脑模拟器刷量、手机软件模拟刷量、脚本刷量（录制行为跑循环任务）。</p>
+<p>2）真假机用户：储备大量手机或者sim卡，利用数据线push命令到手机，手机执行命令。</p>
+<p>3）静默安装（真机真用户假行为）。人工方式或网络传播方式将木马/具有再分发能力的应用植入到用户手机，形成僵尸网络，在用户无感知的情况下，完成App的下载、激活和删除等一系列操作。</p>
+<p>4）羊毛党（真机真用户真行为假动机）：登录一次就删除应用、使用时长极短、留存率极低。在大部份的情况下，这种用户对业务的健康发展并无太大价值。</p>
+<p>5）广告素材、篇幅偷换（不可见）。“1 像素广告”指在用户的手机屏幕上只展示1个像素大小的广告。这种广告，用户看不见，但统计工具可以统计到，仍然会作为曝光广告与广告主结算，给广告主带来经济损失。</p>
+<p>6）以次充好（不匹配）。部分媒体会将广告主原本定向的一线城市用户偷偷换成二三线城市用户，达到以次充好的目的。</p>
+<h2 id="应对方法"><a href="#应对方法" class="headerlink" title="应对方法"></a>应对方法</h2><p>2.3 反作弊技术</p>
+<p>1）用户群体数据检测。低阶技术，常见方式有：</p>
+<p><strong>a.看留存率</strong>。真实的用户的留存曲线是一条平滑的指数衰减曲线，如果发现留存曲线存在陡升陡降的异常波动，则判断刷量者干预了数据。</p>
+<p><strong>b.看用户终端、网络信息</strong>。如根据经验分析渠道新增用户或者启动用户的设备排名;2G、3G、4G的使用比例分布是否正常等。</p>
+<p><strong>c.看用户注册信息</strong>。比如说注册昵称的分布和规律等。</p>
+<p>以上操作均效率低下。</p>
+<p>2）用户行为特征分析</p>
+<p><strong>a.单个指标</strong>。与黑IP库进行比对，是否为黑名单IP、是否为代理IP;与IMEI库进行对比，是否为为黑IMEI;</p>
+<p><strong>b.群体指标</strong>。用户的IP、IMEI、机型、OS、位置信息、运营商、接入方式的<strong>分布</strong>是否符合先验数据的分布</p>
+<p><strong>c.设备一致性验证</strong>。CPU、制造商、MAC地址、IMEI、机型、操作系统的一致性验证。</p>
+<p>简单粗暴，没有黑白转换机制，误判率高。</p>
+<p><strong>这些方法容易被刷量者利用</strong>。在某电商专业Android app游戏激活、注册、留存、付费、应用市场好评平台上，买主只需要很小的代价，即可刷出完全符合正常用户规律的留存率、IP分布机型分布使用时长等。</p>
+<p>3）终端特征分析+云端交叉验证</p>
+<p>“查”模型负责找寻黑产界的新型作弊方式，提升整体模型的覆盖率</p>
+<p>“杀”模型负责准确识别恶意份子</p>
+<p>“验”模型通过多业务交叉验证，负责保证“查”、“杀”模型的准确率</p>
+<p><strong>终端识别模块</strong>（灯塔SDK稽核模块）:该模块主要是采用机器学习算法选取系统中所有可用的信息作为特征，然后对这些特征进行运算得到该<strong>设备的指纹，</strong>可以有效识别手机模拟器、修改系统参数等行为。</p>
+<p><strong>基于规则的识别模块</strong>（业务自有模块）:该模块一般是通过业务经验及对历史可疑渠道的总结形成的<strong>反作弊规则</strong>，可以理解为多维组合规则，一般需根据业务成本、对渠道的容忍度<strong>设置关键变量的阈值</strong>。</p>
+<p><strong>基于数据挖掘的识别模块</strong>（灯塔云端模块）:该模块主要从硬件信息、用户活跃、用户行为进行多维度、多业务交叉验证，分别计算每个维度下面的不同特征值，结合决策树、LR、贝叶斯网络等多种算法进行精准的定位。<strong>分类</strong></p>
+<p>为了增强识别的准确性和稳定性，模块之间、模块内部均采用集成学习方法的思想，其核心思想是在模块内对同一个训练集训练不同的分类器，然后把这些分类器结合起来构成一个最终的分类器，而每一个模块可以针对不同的作弊手段进行识别，再把模块与模块结合，才能识别所有的作弊手段。    </p>
+<h1 id="admaster《广告反欺诈研究报告》2016"><a href="#admaster《广告反欺诈研究报告》2016" class="headerlink" title="admaster《广告反欺诈研究报告》2016"></a>admaster《广告反欺诈研究报告》2016</h1><p>今年 1 月 29 日和 3 月 2 日,宝洁公司首席品牌官 Marc Pritchard 分别在美国互动广告局(Interactive<br>Advertising Bureau, IAB)和美国广告主协会(Association of National Advertisers, ANA)两个年度<br>重要峰会上进行主题发言,针对数字广告透明度和可见性标准的言论引发了全球营销圈和数字行业的热议。<br>宝洁呼吁业界在四个方面采取行动:</p>
+<ol>
+<li>数字广告采纳一套统一的可见性测量标准;</li>
+<li>贯彻第三方测评机构</li>
+</ol>
+<p>的验证审核;</p>
+<ol>
+<li>提倡全面透明的代理公司合同机制;</li>
+<li>预防广告欺诈。</li>
+</ol>
+<p>AdMaster先后推出了 BlueAir、定投识别 (VOA)、监播实录 (SNAP) 等技术产品,逐步建立了“全方位、深层次、多角度”的广告反欺诈解决方案。尤其在程序化购买中,AdMaster 在投放前预判 (Pre-bid),即事前广告反欺诈技术。</p>
+<p><strong>BlueAir</strong>可以对智能电视IP、地域、频次以及User Agent等维度的异常流量进行甄别，将行为逻辑上不正常的设备加入黑名单，从而保障广告投放的安全。同时，与海信、康佳、创维、欢网等硬件厂家共同建立智能电视设备白名单，以便从设备维度进一步甄别流量真实性。</p>
+<p><strong>定投识别</strong></p>
+<p><strong>监播实录</strong></p>
+<p><strong>投放前预判</strong>。在流量请求、广告未展现时,根据历史流量质量进行排查,从而提前避免广告在无效流量上的投放。</p>
+<h2 id="无效流量类型"><a href="#无效流量类型" class="headerlink" title="无效流量类型"></a>无效流量类型</h2><p>1、广告可见性问题引发的低质量流量</p>
+<p>目前媒体的环境导致广告不易可见。AdMaster 在 AdServing 广告投放管理技术上能够实现广告可见性的预估判断。在多种广告形式的后测方面,通过独创的模型评估广告可见性表现。</p>
+<p>2、机器人无效流量（Non-Human Traffic）</p>
+<p>从最初的 cookie 和 IP不变的前提下,反复刷新页面和点击广告,造成广告曝光和点击的增加,到通过木马或者恶意程序控制海量人肉刷机、伪造大量 IP 与设备信息进行模拟访问、或将 IP 和 cookie、User Agent 一起进行轮替的流量造假方式,都属于机器人无效流量。</p>
+<p><strong>BlueAir</strong> 广告反欺诈技术能够结合历史异常数据,能够在流量请求、广告未展现时,即根据历史流量质量判断此流量的质量,在投放前通过 <strong>Pre-bid</strong> 判断出流量的异常,杜绝流量造假现象发生。</p>
+<p>3、视频类无效流量</p>
+<p>(1)针对剧目投偏现象,AdMaster <strong>定投识别</strong> (VOA) 功能通过 Referrer/ 剧目 ID 等方式解析 广告曝光时所<br><strong>播放剧目名称</strong>,并与广告主定投的剧目内容进行匹配。在移动端定投评估中,高诚信度的视频媒体也提供高度<br>配合。剧目投偏比例,一目了然。</p>
+<p>(2)针对时有发生的曝光代码调用,但是素材未正确展示的广告欺诈现象,AdMaster 利用<strong>监播实录</strong> (SNAP)<br>功能,采用类似于“神秘访客”概念的方法从海量抽样监测,将视频内容播放前的所有贴片内容录制下来,并<br>通过图像识别与适当的素材进行对比,判断素材是否被正确展示,以及是否按照要求展示。</p>
+<p>4、智能电视无效流量</p>
+<p>支持智能电视广告的监测模式一般有 3 种 : 分别是第三方 SDK 监测、C2S 和 S2S 两种 API。前两种相比 S2S 更为安全,也更容易监测流量异常情况,可以说 C2S API 是智能电视广告监测安全的起点和基础(S2S API 传输方式目前很难识别无效流量)。</p>
+<h1 id="inmobi《移动广告反作弊白皮书》"><a href="#inmobi《移动广告反作弊白皮书》" class="headerlink" title="inmobi《移动广告反作弊白皮书》"></a>inmobi《移动广告反作弊白皮书》</h1><p>没技术</p>
+<p>反作弊措施</p>
+<p>1）剔除自动流量。</p>
+<p>识别机器人脚本，分析展示和点击的质量。</p>
+<p>2）数据信号双重检测。</p>
+<p>将媒体共享的人群信息和从SDK收集的信息比对，对所有无效信息定位和删除。</p>
+<p>[部分有关 广告联盟作弊 与反作弊资料收集]（<a href="http://cwiki.apachecn.org/pages/viewpage.action?pageId=4882639）" target="_blank" rel="noopener">http://cwiki.apachecn.org/pages/viewpage.action?pageId=4882639）</a></p>
+<p>roadmap中，AD fraud的业界措施</p>
+<p>监控广告投放的效果；</p>
+<p>保存曝光设备的ip</p>
+<p>记录用户在landing页的行为</p>
+<p>网页分析</p>
+<p><strong>基于数据挖掘的识别模块</strong>（灯塔云端模块）:该模块主要从硬件信息、用户活跃、用户行为进行多维度、多业务交叉验证，分别计算每个维度下面的不同特征值，结合决策树、LR、贝叶斯网络等多种算法进行精准的定位。为了增强识别的准确性和稳定性，模块之间、模块内部均采用集成学习方法的思想，其核心思想是在模块内对同一个训练集训练不同的分类器，然后把这些分类器结合起来构成一个最终的分类器，而每一个模块可以针对不同的作弊手段进行识别，再把模块与模块结合，才能识别所有的作弊手段。</p>
+<p>这个方法未来肯定要实现的，大致是通过集成学习的方式，综合硬件信息，网页特征，用户行为</p>
+<p>最初我们只有url信息，提取url的特征判断投放的网页是否安全；</p>
+<p>后面对每条</p>
+<p>前期，通过分析url内容，判断网页是否安全，是否为虚假网页，网页内容与广告品牌是否有冲突。</p>
+<p>后面，分析曝光的详细信息，包括设备信息，用户特征，判断是否为作弊流量；分析网页元素和广告位置，判断广告可见性。</p>
+<p>再后面，在对url和黑名单有一定积累的基础上，在投放或竞价前检测投放环境，主动识别和屏蔽非安全流量</p>
 
           
         
