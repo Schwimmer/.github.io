@@ -101,9 +101,9 @@
 <meta property="og:site_name" content="Schwimmer&#39;s Blog">
 <meta property="og:description" content="机器学习算法实现解析——word2vec源码解析 源码在/home/david/code/nlp/word2vec/word2vecC/word2vec.c 代码的主要工作包括：  预处理。变量声明，全局变量遍历； 构建词库。包括文本处理，以及是否需要有指定词库。 初始化网络结构。参数初始化，Huffman编码的生成。 多线程模型训练。 最终结果的处理。  以上的过程，可以用下图表示：  输入参数">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://schwimmer.github.io/.io//算法流程.png">
-<meta property="og:image" content="https://schwimmer.github.io/.io//sigmoid1.png">
-<meta property="og:image" content="https://schwimmer.github.io/.io//构建词库.png">
+<meta property="og:image" content="https://schwimmer.github.io/2018/03/17/机器学习/NLP/Word2vec-C代码/算法流程.png">
+<meta property="og:image" content="https://schwimmer.github.io/2018/03/17/机器学习/NLP/Word2vec-C代码/sigmoid1.png">
+<meta property="og:image" content="https://schwimmer.github.io/2018/03/17/机器学习/NLP/Word2vec-C代码/构建词库.png">
 <meta property="og:image" content="http://img.blog.csdn.net/20170227183342463?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ29vZ2xlMTk4OTAxMDI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
 <meta property="og:image" content="http://img.blog.csdn.net/20170224145522192?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ29vZ2xlMTk4OTAxMDI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
 <meta property="og:image" content="http://img.blog.csdn.net/20170228154343740?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ29vZ2xlMTk4OTAxMDI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
@@ -113,7 +113,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Word2Vec源码解读">
 <meta name="twitter:description" content="机器学习算法实现解析——word2vec源码解析 源码在/home/david/code/nlp/word2vec/word2vecC/word2vec.c 代码的主要工作包括：  预处理。变量声明，全局变量遍历； 构建词库。包括文本处理，以及是否需要有指定词库。 初始化网络结构。参数初始化，Huffman编码的生成。 多线程模型训练。 最终结果的处理。  以上的过程，可以用下图表示：  输入参数">
-<meta name="twitter:image" content="https://schwimmer.github.io/.io//算法流程.png">
+<meta name="twitter:image" content="https://schwimmer.github.io/2018/03/17/机器学习/NLP/Word2vec-C代码/算法流程.png">
 
 
 
@@ -507,7 +507,7 @@
 <li>最终结果的处理。</li>
 </ul>
 <p>以上的过程，可以用下图表示：</p>
-<p><img src="/.io//算法流程.png" alt="算法流程"></p>
+<p><img src="//schwimmer.github.io/2018/03/17/机器学习/NLP/Word2vec-C代码/算法流程.png" alt="算法流程"></p>
 <h1 id="输入参数"><a href="#输入参数" class="headerlink" title="输入参数"></a>输入参数</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">-train text8 表示的是输入文件是text8</span><br><span class="line"></span><br><span class="line">-output vectors.bin 输出文件是vectors.bin</span><br><span class="line"></span><br><span class="line">-cbow 1 表示使用cbow模型，默认为Skip-Gram模型</span><br><span class="line"></span><br><span class="line">-size 200 每个单词的向量维度是200</span><br><span class="line"></span><br><span class="line">-window 8 训练的窗口大小为5就是考虑一个词前八个和后八个词语（实际代码中还有一个随机选窗口的过程，窗口大小小于等于8）</span><br><span class="line"></span><br><span class="line">-negative 0 使用ns的时候采样的样本数，默认0，通常是5-10</span><br><span class="line"></span><br><span class="line">-save-vocab 词汇表存储文件</span><br><span class="line"></span><br><span class="line">-read-vocab 词汇表加载文件</span><br><span class="line"></span><br><span class="line">-classes 输出单词类别数，默认为0，即不输出单词</span><br><span class="line"></span><br><span class="line">-hs 1不使用NEG方法，使用HS方法。-</span><br><span class="line"></span><br><span class="line">-sample 亚采样拒绝概率的参数</span><br><span class="line">指的是采样的阈值，如果一个词语在训练样本中出现的频率越大，那么就越会被采样。</span><br><span class="line"></span><br><span class="line">-binary为1指的是结果二进制存储，为0是普通存储（普通存储的时候是可以打开看到词语和对应的向量的）</span><br><span class="line"></span><br><span class="line">-iter 15 迭代次数</span><br></pre></td></tr></table></figure>
 <h1 id="全局变量"><a href="#全局变量" class="headerlink" title="全局变量"></a>全局变量</h1><p><code>int *vocab_hash</code> </p>
 <p>词在词库中的index，在构建词库时先初始化为-1</p>
@@ -520,7 +520,7 @@
 <p><code>syn1</code> ：$\theta_{j-1}^w$</p>
 <p><code>neu1</code> ：映射层的向量，就是输入层的向量之和</p>
 <p><code>neu1e</code> ：对应伪代码中的e</p>
-<h1 id="预处理"><a href="#预处理" class="headerlink" title="预处理"></a>预处理</h1><p><img src="/.io//sigmoid1.png" alt=""></p>
+<h1 id="预处理"><a href="#预处理" class="headerlink" title="预处理"></a>预处理</h1><p><img src="//schwimmer.github.io/2018/03/17/机器学习/NLP/Word2vec-C代码/sigmoid1.png" alt=""></p>
 <p>在预处理部分，对word2vec需要使用的参数进行初始化，在word2vec中是利用传入的方式对参数进行初始化的。</p>
 <p>在预处理部分，实现了sigmoid函数值的近似计算。</p>
 <p>如果每一次都请求计算sigmoid值，对性能将会有一定的影响，当sigmoid的值对精度的要求并不是非常严格时，可以采用近似计算。在word2vec中，将区间[−6,6]（设置的参数<strong>MAX_EXP</strong>为6）等距离划分成<strong>EXP_TABLE_SIZE</strong>等份，并将每个区间中的sigmoid值计算好存入到数组expTable中，需要使用时，直接从数组中查找。</p>
@@ -533,7 +533,7 @@
 <li>指定词库：ReadVocab()方法</li>
 <li>从词的文本构建词库：LearnVocabFromTrainFile()方法</li>
 </ul>
-<h2 id="构建词库的过程"><a href="#构建词库的过程" class="headerlink" title="构建词库的过程"></a>构建词库的过程</h2><p>在这里，我们以从词的文本构建词库为例。构建词库的过程如下所示：<img src="/.io//构建词库.png" alt="构建词库"></p>
+<h2 id="构建词库的过程"><a href="#构建词库的过程" class="headerlink" title="构建词库的过程"></a>构建词库的过程</h2><p>在这里，我们以从词的文本构建词库为例。构建词库的过程如下所示：<img src="//schwimmer.github.io/2018/03/17/机器学习/NLP/Word2vec-C代码/构建词库.png" alt="构建词库"></p>
 <p>在这部分中，最主要的工作是对文本进行处理，包括低频词的处理，hash表的处理等等。首先，会在词库中增加一个“&lt;/s&gt;”的词，同时，在读取文本的过程中，将换行符“\n”也表示成该该词</p>
 <h2 id="对词的哈希处理"><a href="#对词的哈希处理" class="headerlink" title="对词的哈希处理"></a>对词的哈希处理</h2><p>在存储词的过程中，同时保留这两个数组：</p>
 <ul>

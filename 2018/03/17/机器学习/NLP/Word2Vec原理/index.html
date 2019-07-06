@@ -101,18 +101,18 @@
 <meta property="og:site_name" content="Schwimmer&#39;s Blog">
 <meta property="og:description" content="参考 《word2vec数学原理.pdf》 词向量基础​    用词向量来表示词并不是word2vec的首创，在很久之前就出现了。最早的词向量是很冗长的，它使用是词向量维度大小为整个词汇表的大小，对于每个具体的词汇表中的词，将对应的位置置为1。比如我们有下面的5个词组成的词汇表，词”Queen”的序号为2， 那么它的词向量就是(0,1,0,0,0)。同样的道理，词”Woman”的词向量就是(0,0">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://schwimmer.github.io/.io//one%20hot%20representation.png">
-<meta property="og:image" content="https://schwimmer.github.io/.io//Dristributed%20representation.png">
-<meta property="og:image" content="https://schwimmer.github.io/.io//vector%20relation.png">
-<meta property="og:image" content="https://schwimmer.github.io/.io//cbow.png">
-<meta property="og:image" content="https://schwimmer.github.io/.io//神经网络层.png">
-<meta property="og:image" content="https://schwimmer.github.io/.io//cbow_network.png">
-<meta property="og:image" content="https://schwimmer.github.io/.io//table映射.png">
+<meta property="og:image" content="https://schwimmer.github.io/2018/03/17/机器学习/NLP/Word2Vec原理/one%20hot%20representation.png">
+<meta property="og:image" content="https://schwimmer.github.io/2018/03/17/机器学习/NLP/Word2Vec原理/Dristributed%20representation.png">
+<meta property="og:image" content="https://schwimmer.github.io/2018/03/17/机器学习/NLP/Word2Vec原理/vector%20relation.png">
+<meta property="og:image" content="https://schwimmer.github.io/2018/03/17/机器学习/NLP/Word2Vec原理/cbow.png">
+<meta property="og:image" content="https://schwimmer.github.io/2018/03/17/机器学习/NLP/Word2Vec原理/神经网络层.png">
+<meta property="og:image" content="https://schwimmer.github.io/2018/03/17/机器学习/NLP/Word2Vec原理/cbow_network.png">
+<meta property="og:image" content="https://schwimmer.github.io/2018/03/17/机器学习/NLP/Word2Vec原理/table映射.png">
 <meta property="og:updated_time" content="2018-03-25T04:46:10.047Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Word2Vec原理">
 <meta name="twitter:description" content="参考 《word2vec数学原理.pdf》 词向量基础​    用词向量来表示词并不是word2vec的首创，在很久之前就出现了。最早的词向量是很冗长的，它使用是词向量维度大小为整个词汇表的大小，对于每个具体的词汇表中的词，将对应的位置置为1。比如我们有下面的5个词组成的词汇表，词”Queen”的序号为2， 那么它的词向量就是(0,1,0,0,0)。同样的道理，词”Woman”的词向量就是(0,0">
-<meta name="twitter:image" content="https://schwimmer.github.io/.io//one%20hot%20representation.png">
+<meta name="twitter:image" content="https://schwimmer.github.io/2018/03/17/机器学习/NLP/Word2Vec原理/one%20hot%20representation.png">
 
 
 
@@ -498,19 +498,19 @@
         <p>参考</p>
 <p>《word2vec数学原理.pdf》</p>
 <h1 id="词向量基础"><a href="#词向量基础" class="headerlink" title="词向量基础"></a>词向量基础</h1><p>​    用词向量来表示词并不是word2vec的首创，在很久之前就出现了。最早的词向量是很冗长的，它使用是词向量维度大小为整个词汇表的大小，对于每个具体的词汇表中的词，将对应的位置置为1。比如我们有下面的5个词组成的词汇表，词”Queen”的序号为2， 那么它的词向量就是(0,1,0,0,0)。同样的道理，词”Woman”的词向量就是(0,0,0,1,0)。这种词向量的编码方式我们一般叫做1-of-N representation或者one hot representation.</p>
-<p><img src="/.io//one hot representation.png" alt="one hot representation"></p>
+<p><img src="//schwimmer.github.io/2018/03/17/机器学习/NLP/Word2Vec原理/one hot representation.png" alt="one hot representation"></p>
 <p>​    One hot representation用来表示词向量非常简单，但是却有很多问题。最大的问题是我们的词汇表一般都非常大，比如达到百万级别，这样每个词都用百万维的向量来表示简直是内存的灾难。这样的向量其实除了一个位置是1，其余的位置全部都是0，表达的效率不高，能不能把词向量的维度变小呢？</p>
 <p>​    Dristributed representation可以解决One hot representation的问题，它的思路是通过训练，将每个词都映射到一个较短的词向量上来。所有的这些词向量就构成了向量空间，进而可以用普通的统计学的方法来研究词与词之间的关系。这个较短的词向量维度是多大呢？这个一般需要我们在训练时自己来指定。</p>
 <p>​    比如下图我们将词汇表里的词用”Royalty”,”Masculinity”, “Femininity”和”Age”4个维度来表示，King这个词对应的词向量可能是(0.99,0.99,0.05,0.7)(0.99,0.99,0.05,0.7)。当然在实际情况中，我们并不能对词向量的每个维度做一个很好的解释。</p>
-<p><img src="/.io//Dristributed representation.png" alt="Dristributed representation"></p>
+<p><img src="//schwimmer.github.io/2018/03/17/机器学习/NLP/Word2Vec原理/Dristributed representation.png" alt="Dristributed representation"></p>
 <p>​    有了用Dristributed representation表示的较短的词向量，我们就可以较容易的分析词之间的关系了，比如我们将词的维度降维到2维，有一个有趣的研究表明，用下图的词向量表示我们的词时，我们可以发现：</p>
 <script type="math/tex; mode=display">
-\vec {King} - \vec {Man} + \vec {Woman} = \vec {Queen}</script><p><img src="/.io//vector relation.png" alt="vector relation"></p>
+\vec {King} - \vec {Man} + \vec {Woman} = \vec {Queen}</script><p><img src="//schwimmer.github.io/2018/03/17/机器学习/NLP/Word2Vec原理/vector relation.png" alt="vector relation"></p>
 <p>可见我们只要得到了词汇表里所有词对应的词向量，那么我们就可以做很多有趣的事情了。不过，怎么训练得到合适的词向量呢？一个很常见的方法是使用神经网络语言模型。</p>
 <h1 id="2-CBOW与Skip-Gram用于神经网络语言模型"><a href="#2-CBOW与Skip-Gram用于神经网络语言模型" class="headerlink" title="2. CBOW与Skip-Gram用于神经网络语言模型"></a>2. CBOW与Skip-Gram用于神经网络语言模型</h1><p>​    在word2vec出现之前，已经有用神经网络DNN来用训练词向量进而处理词与词之间的关系了。采用的方法一般是一个三层的神经网络结构（当然也可以多层），分为输入层，隐藏层和输出层(softmax层)。</p>
 <p>​    这个模型是如何定义数据的输入和输出呢？一般分为CBOW（Continuous Bag-of-Words） 与Skip-Gram两种模型。</p>
 <h2 id="2-1-CBOW"><a href="#2-1-CBOW" class="headerlink" title="2.1 CBOW"></a>2.1 CBOW</h2><p>上下文相关的词对应的词向量，而输出就是这特定的一个词的词向量。比如下面这段话，我们的上下文大小取值为4，特定的这个词是”Learning”，也就是我们需要的输出词向量,上下文对应的词有8个，前后各4个，这8个词是我们模型的输入。由于CBOW使用的是词袋模型，因此这8个词都是平等的，也就是不考虑他们和我们关注的词之间的距离大小，只要在我们上下文之内即可。</p>
-<p><img src="/.io//cbow.png" alt="cbow"></p>
+<p><img src="//schwimmer.github.io/2018/03/17/机器学习/NLP/Word2Vec原理/cbow.png" alt="cbow"></p>
 <p>在这个CBOW神经网络模型中，输入层有8个神经元（8个词向量），输出层有词汇表D大小的神经元。</p>
 <p>目标函数通常为</p>
 <script type="math/tex; mode=display">
@@ -519,7 +519,7 @@ L=\sum_{w \in C} \log p(w|Context(w))</script><blockquote>
 <p> 根据n-gram模型和对数最大似然，得到这个目标函数。</p>
 </blockquote>
 <p>包括四个层：输入、投影、隐藏、输出。</p>
-<p><img src="/.io//神经网络层.png" alt="神经网络层"></p>
+<p><img src="//schwimmer.github.io/2018/03/17/机器学习/NLP/Word2Vec原理/神经网络层.png" alt="神经网络层"></p>
 <p>对于语料C中的任意一个词w，将Context(w)设为取前面的n-1个词，这样二元对(Context(w),w)就是一个训练样本。</p>
 <p>投影层向量$x_w$的构造是，将输入层的n-1个词向量按顺序首尾相接的拼起来，长度就是m(n-1)了（每个词向量的长度是m）。</p>
 <p>从而</p>
@@ -536,7 +536,7 @@ p(w|Context(w))=\frac {e^{y_{w,i_w}}} {\sum_{i=1}^N e^{y_{w,i_w}}}</script><p>�
 <p>2、词向量自带平滑功能（因为$p(w|Context(w)) \in (0,1)$不会为零）。</p>
 <h2 id="2-2-Skip-Gram"><a href="#2-2-Skip-Gram" class="headerlink" title="2.2 Skip-Gram"></a>2.2 Skip-Gram</h2><p>与CBOW相反，输入是一个特定向量，输出是特定词对应的上下文词向量。</p>
 <h1 id="3、基于Hierarchical-Softmax的模型"><a href="#3、基于Hierarchical-Softmax的模型" class="headerlink" title="3、基于Hierarchical Softmax的模型"></a>3、基于Hierarchical Softmax的模型</h1><h2 id="3-1-CBOW模型"><a href="#3-1-CBOW模型" class="headerlink" title="3.1 CBOW模型"></a>3.1 CBOW模型</h2><p>网络的构建</p>
-<p><img src="/.io//cbow_network.png" alt="cbow_network"></p>
+<p><img src="//schwimmer.github.io/2018/03/17/机器学习/NLP/Word2Vec原理/cbow_network.png" alt="cbow_network"></p>
 <p>输入层是上下文的若干个词的词向量</p>
 <p>投影层就是将这些词向量直接相加。</p>
 <p>层次Softmax的基本思想就是：</p>
@@ -574,7 +574,7 @@ v(\tilde w) = v(\tilde w)+\eta \sum_{j=2}^{l^w} \frac {\partial L(w,j)} {\partia
 len(w)=\frac {count(w)} {\sum_{u \in D} count(u)}</script><p>也就是计算词频再归一化。现在将这些线段首尾相连拼接在一起，形成一个长度为1的单位线段。如果随机往这个单位线段上打点，则其中越长的线段命中概率越大。</p>
 </blockquote>
 <p>通过这些线段得到一个非等距剖分（假设分成N个区间），再定义一个等距剖分（假设分成M个区间），$M &gt;&gt; N$ 。</p>
-<p><img src="/.io//table映射.png" alt="table映射"></p>
+<p><img src="//schwimmer.github.io/2018/03/17/机器学习/NLP/Word2Vec原理/table映射.png" alt="table映射"></p>
 <p>建立如下的映射关系</p>
 <script type="math/tex; mode=display">
 Table(i) = w_k, \ where\  m_i \in I_k,\ i=1,2,...,M-1</script><p>那么，采样就是每次生成一个[1,M-1]之间的整数r，Table(r)就是一个样本。如果负采样的时候选到自己，就跳过再选。</p>
