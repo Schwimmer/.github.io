@@ -357,6 +357,1527 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/02/工具和环境/git开发上线流程/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/02/工具和环境/git开发上线流程/" class="post-title-link" itemprop="url">Git开发上线流程</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-02 11:02:04" itemprop="dateCreated datePublished" datetime="2019-04-02T11:02:04+08:00">2019-04-02</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-05 16:30:02" itemprop="dateModified" datetime="2019-07-05T16:30:02+08:00">2019-07-05</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/工具和环境/" itemprop="url" rel="index"><span itemprop="name">工具和环境</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/04/02/工具和环境/git开发上线流程/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/02/工具和环境/git开发上线流程/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="总体流程图"><a href="#总体流程图" class="headerlink" title="总体流程图"></a>总体流程图</h1><p><img src="/.io//pic/image-20190402103557712.png" alt="image-20190402103557712"></p>
+<h1 id="git开发工具"><a href="#git开发工具" class="headerlink" title="git开发工具"></a>git开发工具</h1><p><a href="https://www.sourcetreeapp.com/" target="_blank" rel="noopener">SourceTree</a></p>
+<h2 id="定义远程仓库"><a href="#定义远程仓库" class="headerlink" title="定义远程仓库"></a>定义远程仓库</h2><p>包括主仓库origin，和个人fork的仓库</p>
+<p><img src="/.io//pic/image-20190402110931886.png" alt="image-20190402110931886"></p>
+<h1 id="git分支命名"><a href="#git分支命名" class="headerlink" title="git分支命名"></a>git分支命名</h1><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>分支</th>
+<th>命名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>主分支</td>
+<td>master</td>
+<td>主分支，所有提供给用户使用的正式版本，都在这个主分支上发布</td>
+</tr>
+<tr>
+<td>开发分支</td>
+<td>develop</td>
+<td>开发分支，永远是功能最新最全的分支</td>
+</tr>
+<tr>
+<td>功能分支</td>
+<td>feature-*</td>
+<td>新功能分支，某个功能点正在开发阶段</td>
+</tr>
+<tr>
+<td>修复分支</td>
+<td>bugfix-*</td>
+<td>修复线上代码的 bug</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>其中，功能分支的命名规范是：</p>
+<blockquote>
+<p>feature-20190402-M029461-3414</p>
+</blockquote>
+<ul>
+<li>20190402是创建feature分支的日期</li>
+<li>M029461是开发者的工号</li>
+<li>3414是JIRA上需求的编号</li>
+</ul>
+<p>修复分支的命名规范是</p>
+<blockquote>
+<p>bugfix-20190402-M029461-3414</p>
+</blockquote>
+<p>leader不定期清理历史创建的feature和bugfix分支。</p>
+<h1 id="具体开发流程"><a href="#具体开发流程" class="headerlink" title="具体开发流程"></a>具体开发流程</h1><h2 id="1、每次迭代开始阶段"><a href="#1、每次迭代开始阶段" class="headerlink" title="1、每次迭代开始阶段"></a>1、每次迭代开始阶段</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">A[leader从master合develop] --&gt; B[开发基于develop创建feature]</span><br><span class="line">B --&gt; C[开发推送分支]</span><br></pre></td></tr></table></figure>
+<p>1）leader从master分支merge到develop分支</p>
+<p>2）根据JIRA上的需求，每个开发者从develop分支创建feature或bugfix分支</p>
+<p><img src="/.io//pic/image-20190402111908096.png" alt="image-20190402111908096"></p>
+<p>3）并分别推送到<strong>个人仓库</strong>和<strong>远程仓库</strong></p>
+<p><img src="/.io//pic/image-20190404100956608.png" alt="image-20190404100956608"></p>
+<p><img src="/.io//pic/image-20190404100943943.png" alt="image-20190404100943943"></p>
+<h2 id="2、某个需求开发阶段"><a href="#2、某个需求开发阶段" class="headerlink" title="2、某个需求开发阶段"></a>2、某个需求开发阶段</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">A[pull develop到本地分支] --&gt; B[公共仓库中, develop到feature的merge]</span><br><span class="line">B --&gt; C[提交本地仓库]</span><br><span class="line">C --&gt; D[推送个人仓库]</span><br><span class="line">D--&gt;E[在gitlab上merge到远程仓库]</span><br><span class="line">E--&gt;F[分支测试]</span><br><span class="line">F--&gt;G[merge到develop]</span><br></pre></td></tr></table></figure>
+<p>1）每次新的commit之前，先拉取develop分支的最新代码，并解决冲突。</p>
+<p><img src="/.io//pic/image-20190402112557003.png" alt="image-20190402112557003"></p>
+<p>2）在公共仓库中，提交develop到feature的merge_request。保证公共仓库的feature分支也是最新的。</p>
+<p><img src="/.io//pic/image-20190404102002294.png" alt="image-20190404102002294"></p>
+<p>3）点击”提交”，提交到本地仓库。</p>
+<p><img src="/.io//pic/image-20190402112735545.png" alt="image-20190402112735545"></p>
+<p>4）点击”推送”，推送到个人仓库的feature分支。</p>
+<p><img src="/.io//pic/image-20190402112816824.png" alt="image-20190402112816824"></p>
+<p>5）在gitlab上，提交merge request，merge到远程仓库的对应分支。</p>
+<p><img src="/.io//pic/image-20190402112345935.png" alt="image-20190402112345935"></p>
+<p>6）在需求开发完成后，若有测试介入，通知测试拉取feature分支进行测试。</p>
+<p>7）若测试无误，创建从feature分支到develop分支的merge request</p>
+<h1 id="3、某个迭代完成阶段"><a href="#3、某个迭代完成阶段" class="headerlink" title="3、某个迭代完成阶段"></a>3、某个迭代完成阶段</h1><p>1）测试基于develop分支做测试，也基于develop分支发布测试环境。</p>
+<p>2）leader收到测试结果，将develop分支合并到master分支，再做一次回归测试。</p>
+<p>3）若测试无误，发布stg环境，观察启动是否有问题，日志记录是否有问题等，若无误，走上线流程，上生产环境。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/23/configs/sorts/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/23/configs/sorts/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-03-23 11:31:54 / 修改时间：11:32:14" itemprop="dateCreated datePublished" datetime="2019-03-23T11:31:54+08:00">2019-03-23</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/03/23/configs/sorts/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/23/configs/sorts/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            {"":["elastic search","myblogs","nlp","hadoop-spark","pic","地理信息挖掘","工具和环境","总结与思考","数学","机器学习","深度学习","特征工程","算法与数据结构","编程语言学习","计算广告","轨迹专著","错题集","风控"],"__positions":{"nlp":3,"算法与数据结构/布隆过滤器":13003,"pic":5,"深度学习":11,"算法与数据结构/图算法/图算法领域10大经典算法.md":13002003,"特征工程":12,"hadoop-spark":4,"算法与数据结构/异常检测":13004,"算法与数据结构/图算法/数据结构-图讲解":13002004,"计算广告":15,"总结与思考":8,"数学":9,"错题集":17,"算法与数据结构":13,"算法与数据结构/leecode":13001,"算法与数据结构/图算法/bfs和dfs.md":13002002,"算法与数据结构/算法导论":13005,"风控":18,"地理信息挖掘":6,"轨迹专著":16,"编程语言学习":14,"工具和环境":7,"算法与数据结构/图算法":13002,"机器学习":10,"elastic search":1,"算法与数据结构/图算法/数据结构-图讲解.md":13002001,"myblogs":2},"算法与数据结构":["leecode","图算法","布隆过滤器","异常检测","算法导论"],"__raw_positions":{"nlp":3,"算法与数据结构/布隆过滤器":3,"pic":5,"深度学习":11,"算法与数据结构/图算法/图算法领域10大经典算法.md":3,"特征工程":12,"hadoop-spark":4,"算法与数据结构/异常检测":4,"编程语言学习":14,"计算广告":15,"总结与思考":8,"数学":9,"错题集":17,"算法与数据结构/算法导论":5,"算法与数据结构/leecode":1,"算法与数据结构/图算法/bfs和dfs.md":2,"算法与数据结构":13,"风控":18,"地理信息挖掘":6,"轨迹专著":16,"算法与数据结构/图算法/数据结构-图讲解":4,"工具和环境":7,"算法与数据结构/图算法":2,"机器学习":10,"elastic search":1,"算法与数据结构/图算法/数据结构-图讲解.md":1,"myblogs":2},"算法与数据结构/图算法":["数据结构-图讲解.md","bfs和dfs.md","图算法领域10大经典算法.md","数据结构-图讲解"]}
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/23/算法与数据结构/图算法/数据结构-图讲解/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/23/算法与数据结构/图算法/数据结构-图讲解/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-03-23 10:53:22" itemprop="dateCreated datePublished" datetime="2019-03-23T10:53:22+08:00">2019-03-23</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-03-31 08:51:05" itemprop="dateModified" datetime="2019-03-31T08:51:05+08:00">2019-03-31</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/03/23/算法与数据结构/图算法/数据结构-图讲解/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/23/算法与数据结构/图算法/数据结构-图讲解/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="数据结构-图基本理论"><a href="#数据结构-图基本理论" class="headerlink" title="数据结构-图基本理论"></a>数据结构-图基本理论</h1><p>[TOC]</p>
+<h1 id="1、概念"><a href="#1、概念" class="headerlink" title="1、概念"></a>1、概念</h1><h2 id="1-1-图"><a href="#1-1-图" class="headerlink" title="1.1 图"></a>1.1 图</h2><p><strong>图</strong>（Graph）是由<strong>顶点的集合</strong>和顶点之间<strong>边的集合</strong>组成，通常表示为：</p>
+<script type="math/tex; mode=display">
+G（V，E）</script><p>其中，G表示一个图，V是图G中顶点的集合，E是图G中边的集合。在图中的数据元素，我们称之为顶点（Vertex），顶点集合<strong>有穷非空</strong>。在图中，任意两个顶点之间都可能有关系，顶点之间的逻辑关系用边来表示，<strong>边集可以是空的</strong>。</p>
+<h2 id="1-2-有向图、无向图"><a href="#1-2-有向图、无向图" class="headerlink" title="1.2 有向图、无向图"></a>1.2 有向图、无向图</h2><p>图按照边的有无方向分为<strong>无向图</strong>和<strong>有向图</strong>。无向图由顶点和边组成，有向图由<strong>顶点和弧</strong>构成。弧有弧尾和弧头之分，带箭头一端为弧头。</p>
+<p><img src="/.io//pic/image-20190323120418426.png" alt="image-20190323120418426"></p>
+<p><img src="/.io//pic/image-20190323120445889.png" alt="image-20190323120445889"></p>
+<p>若边有权重，称为<strong>带权图</strong>。</p>
+<p><img src="/.io//pic/image-20190323120702005.png" alt="image-20190323120702005"></p>
+<p>图按照边或弧的多少分<strong>稀疏图</strong>和<strong>稠密图</strong>。如果图中的任意两个顶点之间都存在边叫做完全图，有向的叫有向完全图。若无重复的边或顶点到自身的边则叫简单图。</p>
+<p><strong>权（Weight）</strong>：与图的边或弧相关的数。</p>
+<p><strong>网（Network）</strong>：带权的图。</p>
+<p><strong>路径的长度</strong>：一条路径上边或弧的数量。</p>
+<p><strong>连通图</strong>：图中任意两个顶点都是连通的。</p>
+<h2 id="1-3-入度和出度"><a href="#1-3-入度和出度" class="headerlink" title="1.3 入度和出度"></a>1.3 入度和出度</h2><p>图中顶点之间有邻接点、依附的概念。无向图顶点的边数叫做<strong>度</strong>。有向图顶点分为<strong>入度</strong>和<strong>出度</strong>。</p>
+<p><strong>入度</strong>就是有多少条边指向这个点，<strong>出度</strong>就是从这个点出发有多少条边。</p>
+<h1 id="2、图的存储"><a href="#2、图的存储" class="headerlink" title="2、图的存储"></a>2、图的存储</h1><h2 id="2-1-邻接矩阵"><a href="#2-1-邻接矩阵" class="headerlink" title="2.1 邻接矩阵"></a>2.1 邻接矩阵</h2><p>图的邻接矩阵的表示方式需要<strong>两个数组</strong>来表示图的信息，一个一维数组表示每个数据元素的信息，一个二维数组（邻接矩阵）表示图中的边或者弧的信息。</p>
+<p>如果图有n个顶点，那么邻接矩阵就是一个n*n的方阵，方阵中每个元素的值的计算公式如下：</p>
+<p><img src="/.io//pic/SouthEast.png" alt="è¿éåå¾çæè¿°"></p>
+<p>邻接矩阵表示图的具体示例如下图所示：</p>
+<p>首先给个无向图的实例：</p>
+<p><img src="/.io//pic/SouthEast-20190323172322251.png" alt="è¿éåå¾çæè¿°"></p>
+<p>下面是一个有向图的实例： </p>
+<p><img src="/.io//pic/SouthEast-20190323172338807.png" alt="è¿éåå¾çæè¿°"></p>
+<p>我们可以从这两个邻接矩阵得出一些结论：</p>
+<ul>
+<li>无向图的邻接矩阵都是<strong>沿对角线对称</strong>的</li>
+<li><p>要知道无向图中某个顶点的度，其实就是这个顶点vi在邻接矩阵中第i行或（第i列）的元素之和；</p>
+</li>
+<li><p>对于有向图，要知道某个顶点的出度，其实就是这个顶点vi在邻接矩阵中<strong>第i行</strong>的元素之和，如果要知道某个顶点的入度，那就是<strong>第i列</strong>的元素之和。</p>
+</li>
+</ul>
+<p>需要注意的是，当边上有权值的时候，称之为<strong>网图</strong>，则邻接矩阵中的元素不再仅是0和1了，邻接矩阵M中的元素定义为</p>
+<p><img src="/.io//pic/031635567312196.png" alt="img"></p>
+<p>无穷大表示一个计算机允许的、大于所有边上权值的值，也就是一个不可能的极限值。</p>
+<p><img src="/.io//pic/SouthEast-20190323174426218.png" alt="è¿éåå¾çæè¿°"></p>
+<p><img src="/.io//pic/SouthEast-20190323174433534.png" alt="è¿éåå¾çæè¿°"></p>
+<h2 id="2-2-邻接表"><a href="#2-2-邻接表" class="headerlink" title="2.2 邻接表"></a>2.2 邻接表</h2><p>对于顶点数很多但是边数很少的图来说，用邻接矩阵显得略为“奢侈”，因为矩阵元素为1的很少，即其中的有用信息很少，但却占了很大的空间。</p>
+<p>邻接表是图的一种链式存储结构。主要是应对于邻接矩阵在顶点多边少的时候，浪费空间的问题。它的方法就是声明两个结构。如下图所示：</p>
+<p><img src="/.io//pic/SouthEast-20190323174541555.png" alt="è¿éåå¾çæè¿°"></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">char</span> Vertextype;</span><br><span class="line"><span class="comment">//表结点结构</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ArcNode</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> adjvex;   <span class="comment">//某条边指向的那个顶点的位置（一般是数组的下标）。</span></span><br><span class="line">    ArcNode * nextarc; <span class="comment">//指向下一个表结点</span></span><br><span class="line">    <span class="keyword">int</span> weight;   <span class="comment">//这个只有网图才需要使用。普通的图可以直接忽略</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//头结点</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Vnode</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    Vertextype data;  <span class="comment">//这个是记录每个顶点的信息（现在一般都不需要怎么使用）</span></span><br><span class="line">    ArcNode * firstarc; <span class="comment">//指向第一条依附在该顶点边的信息（表结点）</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>无向图的示例</p>
+<p><img src="/.io//pic/SouthEast-20190323174604630.png" alt="è¿éåå¾çæè¿°"></p>
+<p>下面再给出一个有向图的例子：</p>
+<p><img src="/.io//pic/SouthEast-20190323180106744.png" alt="è¿éåå¾çæè¿°"></p>
+<ul>
+<li>优点：<br>对于，稀疏图，邻接表比邻接矩阵更节约空间。</li>
+<li>缺点：<br>不容易判断两个顶点是有关系（边），<strong>顶点的出度容易，但是求入度需要遍历整个邻接表</strong>。改进：十字链表</li>
+</ul>
+<h1 id="3、图的遍历"><a href="#3、图的遍历" class="headerlink" title="3、图的遍历"></a>3、图的遍历</h1><h2 id="3-1-广度优先遍历BFS"><a href="#3-1-广度优先遍历BFS" class="headerlink" title="3.1 广度优先遍历BFS"></a>3.1 广度优先遍历BFS</h2><p>广度优先搜索在进一步遍历图中顶点之前，先访问当前顶点的所有邻接结点。</p>
+<p><a href="https://visualgo.net/zh/dfsbfs" target="_blank" rel="noopener">https://visualgo.net/zh/dfsbfs</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 图的广度优先遍历</span></span><br><span class="line"><span class="comment"># 1.利用队列实现</span></span><br><span class="line"><span class="comment"># 2.从源节点开始依次按照宽度进队列，然后弹出</span></span><br><span class="line"><span class="comment"># 3.每弹出一个节点，就把该节点所有没有进过队列的邻接点放入队列</span></span><br><span class="line"><span class="comment"># 4.直到队列变空</span></span><br><span class="line"><span class="keyword">from</span> queue <span class="keyword">import</span> Queue</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bfs</span><span class="params">(node)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> node <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    queue = Queue()</span><br><span class="line">    nodeSet = set()</span><br><span class="line">    queue.put(node)</span><br><span class="line">    nodeSet.add(node)</span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">not</span> queue.empty():</span><br><span class="line">        cur = queue.get()               <span class="comment"># 弹出元素</span></span><br><span class="line">        print(cur.value)                <span class="comment"># 打印元素值</span></span><br><span class="line">        <span class="keyword">for</span> next <span class="keyword">in</span> cur.nexts:          <span class="comment"># 遍历元素的邻接节点</span></span><br><span class="line">            <span class="keyword">if</span> next <span class="keyword">not</span> <span class="keyword">in</span> nodeSet:     <span class="comment"># 若邻接节点没有入过队，加入队列并登记</span></span><br><span class="line">                nodeSet.add(next)</span><br><span class="line">                queue.put(next)</span><br></pre></td></tr></table></figure>
+<h2 id="3-2-深度优先遍历DFS"><a href="#3-2-深度优先遍历DFS" class="headerlink" title="3.2 深度优先遍历DFS"></a>3.2 深度优先遍历DFS</h2><blockquote>
+<p>主要思想：类似于二叉树的先序遍历</p>
+</blockquote>
+<p>深度优先遍历（Depth-First-Search，简称DFS）的主要思想就是：首先以一个未被访问过的顶点作为起始顶点，沿当前顶点的边走到未访问过的顶点；当没有未访问过的顶点时，则回到上一个顶点，继续试探访问别的顶点，直到所有的顶点都被访问。</p>
+<p>沿着某条路径遍历直到末端，然后回溯，再沿着另一条进行同样的遍历，直到所有的顶点都被访问过为止。</p>
+<h3 id="递归解法"><a href="#递归解法" class="headerlink" title="递归解法"></a>递归解法</h3><p>DFS在搜索过程中访问某个顶点后，需要递归地访问此顶点的所有未访问过的相邻顶点。</p>
+<p><a href="https://visualgo.net/zh/dfsbfs" target="_blank" rel="noopener">https://visualgo.net/zh/dfsbfs</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">DFS(u)</span><br><span class="line">for each neighbor v of u</span><br><span class="line">  if v is unvisited, DFS(v)</span><br><span class="line">  else if v is visited, forward/cross edge</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#递归DFS</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">depth_first_search</span><span class="params">(self,root=None)</span>:</span></span><br><span class="line">        order=[]</span><br><span class="line">        <span class="function"><span class="keyword">def</span> <span class="title">dfs</span><span class="params">(node)</span>:</span></span><br><span class="line">            self.visited[node] = <span class="keyword">True</span></span><br><span class="line">            order.append(node)</span><br><span class="line">            <span class="keyword">for</span> n <span class="keyword">in</span> self.node_neighbors[node]:</span><br><span class="line">                <span class="keyword">if</span> <span class="keyword">not</span> n <span class="keyword">in</span> self.visited:</span><br><span class="line">                    dfs(n)</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">if</span> root:</span><br><span class="line">            dfs(root)</span><br><span class="line"> </span><br><span class="line">        <span class="comment">#对于不连通的结点（即dfs（root）完仍是没有visit过的单独处理，再做一次dfs</span></span><br><span class="line">        <span class="keyword">for</span> node <span class="keyword">in</span> self.nodes():</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> node <span class="keyword">in</span> self.visited:</span><br><span class="line">                dfs(node)</span><br><span class="line">        self.visited = &#123;&#125;</span><br><span class="line">        <span class="keyword">print</span> order</span><br></pre></td></tr></table></figure>
+<h3 id="非递归解法"><a href="#非递归解法" class="headerlink" title="非递归解法"></a>非递归解法</h3><p><img src="/.io//pic/081435169934860.png" alt="img"></p>
+<p>图的邻接矩阵存储方式</p>
+<p><img src="/.io//pic/081435533211861.png" alt="img"></p>
+<p>使用一个一维数组存储所有的顶点，对应的下标的元素为1（代表已经被访问），0（代表没有被访问）</p>
+<p><img src="/.io//pic/081436458689807.png" alt="img"></p>
+<p>先访问 v1，0进栈，0处置为1</p>
+<p><img src="/.io//pic/081438226339879.png" alt="img"></p>
+<p><img src="/.io//pic/081438542908941.png" alt="img"></p>
+<p>继续访问 v2，1进栈，1处置为1</p>
+<p><img src="/.io//pic/081439565241196.png" alt="img"></p>
+<p><img src="/.io//pic/081440144152896.png" alt="img"></p>
+<p>继续访问v4（依据邻接矩阵），3入栈，3处置为1</p>
+<p><img src="/.io//pic/081441388052848.png" alt="img"></p>
+<p><img src="/.io//pic/081441325863181.png" alt="img"></p>
+<p>继续访问 v8，7入栈，7处置为1</p>
+<p><img src="/.io//pic/081443087114381.png" alt="img"></p>
+<p><img src="/.io//pic/081442546025292.png" alt="img"></p>
+<p>继续访问 v5，4入栈，4处置为1</p>
+<p><img src="/.io//pic/081444280082222.png" alt="img"></p>
+<p><img src="/.io//pic/081444186968099.png" alt="img"></p>
+<p>继续访问，发现没有还没访问的结点了，那么好，退栈（也就是回退）开始，回退到 v1处，也就是0的时候，发现了没有被访问的结点，那么继续访问之。</p>
+<p>继续访问 v3，2进栈，2处置为1，继续访问v6，5进栈，5处置为1，继续访问v7，6进栈，6处置为1</p>
+<p><img src="/.io//pic/081449102112141.png" alt="img"></p>
+<p><img src="/.io//pic/081449154153751.png" alt="img"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 图的深度优先遍历</span></span><br><span class="line"><span class="comment"># 1.利用栈实现</span></span><br><span class="line"><span class="comment"># 2.从源节点开始把节点按照深度放入栈，然后弹出</span></span><br><span class="line"><span class="comment"># 3.每弹出一个点，把该节点下一个没有进过栈的邻接点放入栈</span></span><br><span class="line"><span class="comment"># 4.直到栈变空</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dfs</span><span class="params">(node)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> node <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    nodeSet = set()</span><br><span class="line">    stack = []</span><br><span class="line">    print(node.value)</span><br><span class="line">    nodeSet.add(node)</span><br><span class="line">    stack.append(node)</span><br><span class="line">    <span class="keyword">while</span> len(stack) &gt; <span class="number">0</span>:</span><br><span class="line">        cur = stack.pop()               <span class="comment"># 弹出最近入栈的节点</span></span><br><span class="line">        <span class="keyword">for</span> next <span class="keyword">in</span> cur.nexts:         <span class="comment"># 遍历该节点的邻接节点</span></span><br><span class="line">            <span class="keyword">if</span> next <span class="keyword">not</span> <span class="keyword">in</span> nodeSet:    <span class="comment"># 如果邻接节点不重复</span></span><br><span class="line">                stack.append(cur)       <span class="comment"># 把节点压入</span></span><br><span class="line">                stack.append(next)      <span class="comment"># 把邻接节点压入</span></span><br><span class="line">                set.add(next)           <span class="comment"># 登记节点</span></span><br><span class="line">                print(next.value)       <span class="comment"># 打印节点值</span></span><br><span class="line">                <span class="keyword">break</span>                   <span class="comment"># 退出，保持深度优先</span></span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://visualgo.net/en" target="_blank" rel="noopener">数据结构在线演示</a></p>
+<p><a href="https://www.cnblogs.com/moonlord/p/5938061.html" target="_blank" rel="noopener">数据结构（七）图</a></p>
+<p><a href="https://blog.csdn.net/qq_35644234/article/details/57083107" target="_blank" rel="noopener">数据结构—-图的详细介绍</a></p>
+<p><a href="https://www.cnblogs.com/zhuozengsi/p/4619616.html" target="_blank" rel="noopener">数据结构之图（一）图的存储结构</a></p>
+<p><a href="https://blog.csdn.net/Ontheroad_/article/details/72739380" target="_blank" rel="noopener">数据结构-图-知识点总结</a></p>
+<p><a href="https://blog.csdn.net/weixin_40314737/article/details/80893507" target="_blank" rel="noopener">Python实现图的DFS（递归和非递归）和BFS</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/23/算法与数据结构/LeeCode/Week3-1/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/23/算法与数据结构/LeeCode/Week3-1/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-03-23 10:08:39 / 修改时间：10:41:35" itemprop="dateCreated datePublished" datetime="2019-03-23T10:08:39+08:00">2019-03-23</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/03/23/算法与数据结构/LeeCode/Week3-1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/23/算法与数据结构/LeeCode/Week3-1/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>有向无环图</strong>（Directed Acyclic Graph, DAG）</p>
+<blockquote>
+<p>如果一个有向图的任意顶点都无法通过一些有向边回到自身，那么称这个有向图为有向无环图(DAG)。</p>
+<p>常常被用来表示<strong>事件之间的驱动依赖关系，管理任务之间的调度</strong>。</p>
+</blockquote>
+<p><strong>拓扑排序</strong></p>
+<blockquote>
+<p>拓扑排序是将有向无环图G的所有顶点排成一个线性序列，使得对图G中的任意两个顶点u、v，</p>
+<p>如果存在边u-&gt;v，那么在序列中u一定在v前面。这个序列又被称为<strong>拓扑序列</strong>。</p>
+<p>也可理解为对某点v而言，只有当v的所有源点均出现了，v才能出现。</p>
+</blockquote>
+<p><img src="/.io//pic/399159-20151229144326901-1530781288.png" alt="img"></p>
+<p>下图给出的顶点排序不是拓扑排序，因为顶点<code>D</code>的邻接点<code>E</code>比其先出现：</p>
+<p><img src="/.io//pic/399159-20151229144340448-1796643731.png" alt="img"></p>
+<p>其实这道题的本质即给定一个图，让我们判断该图是否是拓扑有序。</p>
+<p>这里我们需要用到一个图里<strong>入度</strong>的概念，在初始的图中，<strong>入度为0的点，即是课程中最基础的课程</strong>（需要先修，比如数据结构、C语言基础），在找到图中所有入度为0的点以后，将它们依次放入一个队列中，每次循环从队列头提取一个点，然后将这个点放入图中查询，查出哪些点被这个点所指向，并依次将这些点的入度减1，直观上的看的话，即是一个删除一个入度为0的点的操作，每次减1时，检测其他节点的入度，若出现新的入度为0的点，将其加入队列，循环往复，直到队列为空为止。</p>
+<p>1、找入度为0的点。</p>
+<p>参考</p>
+<p>1、<a href="https://www.cnblogs.com/en-heng/p/5085690.html" target="_blank" rel="noopener">【图论】有向无环图的拓扑排序</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/21/算法与数据结构/PyOD/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/21/算法与数据结构/PyOD/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-03-21 11:58:25 / 修改时间：11:58:37" itemprop="dateCreated datePublished" datetime="2019-03-21T11:58:25+08:00">2019-03-21</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/03/21/算法与数据结构/PyOD/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/21/算法与数据结构/PyOD/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://zhuanlan.zhihu.com/p/58313521" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/58313521</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/18/Elastic Search/地理信息处理/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/18/Elastic Search/地理信息处理/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-03-18 22:56:18 / 修改时间：22:56:34" itemprop="dateCreated datePublished" datetime="2019-03-18T22:56:18+08:00">2019-03-18</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/03/18/Elastic Search/地理信息处理/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/18/Elastic Search/地理信息处理/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://blog.csdn.net/ctwy291314/article/details/82686954" target="_blank" rel="noopener">https://blog.csdn.net/ctwy291314/article/details/82686954</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/17/算法与数据结构/图算法/BFS和DFS/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/17/算法与数据结构/图算法/BFS和DFS/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-03-17 11:29:35" itemprop="dateCreated datePublished" datetime="2019-03-17T11:29:35+08:00">2019-03-17</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-03-20 22:34:34" itemprop="dateModified" datetime="2019-03-20T22:34:34+08:00">2019-03-20</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/03/17/算法与数据结构/图算法/BFS和DFS/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/17/算法与数据结构/图算法/BFS和DFS/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="广度优先BFS"><a href="#广度优先BFS" class="headerlink" title="广度优先BFS"></a>广度优先BFS</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 图的广度优先遍历</span></span><br><span class="line"><span class="comment"># 1.利用队列实现</span></span><br><span class="line"><span class="comment"># 2.从源节点开始依次按照宽度进队列，然后弹出</span></span><br><span class="line"><span class="comment"># 3.每弹出一个节点，就把该节点所有没有进过队列的邻接点放入队列</span></span><br><span class="line"><span class="comment"># 4.直到队列变空</span></span><br><span class="line"><span class="keyword">from</span> queue <span class="keyword">import</span> Queue</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bfs</span><span class="params">(node)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> node <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    queue = Queue()</span><br><span class="line">    nodeSet = set()</span><br><span class="line">    queue.put(node)</span><br><span class="line">    nodeSet.add(node)</span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">not</span> queue.empty():</span><br><span class="line">        cur = queue.get()               <span class="comment"># 弹出元素</span></span><br><span class="line">        print(cur.value)                <span class="comment"># 打印元素值</span></span><br><span class="line">        <span class="keyword">for</span> next <span class="keyword">in</span> cur.nexts:          <span class="comment"># 遍历元素的邻接节点</span></span><br><span class="line">            <span class="keyword">if</span> next <span class="keyword">not</span> <span class="keyword">in</span> nodeSet:     <span class="comment"># 若邻接节点没有入过队，加入队列并登记</span></span><br><span class="line">                nodeSet.add(next)</span><br><span class="line">                queue.put(next)</span><br></pre></td></tr></table></figure>
+<h1 id="深度优先DFS"><a href="#深度优先DFS" class="headerlink" title="深度优先DFS"></a>深度优先DFS</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 图的深度优先遍历</span></span><br><span class="line"><span class="comment"># 1.利用栈实现</span></span><br><span class="line"><span class="comment"># 2.从源节点开始把节点按照深度放入栈，然后弹出</span></span><br><span class="line"><span class="comment"># 3.每弹出一个点，把该节点下一个没有进过栈的邻接点放入栈</span></span><br><span class="line"><span class="comment"># 4.直到栈变空</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dfs</span><span class="params">(node)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> node <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    nodeSet = set()</span><br><span class="line">    stack = []</span><br><span class="line">    print(node.value)</span><br><span class="line">    nodeSet.add(node)</span><br><span class="line">    stack.append(node)</span><br><span class="line">    <span class="keyword">while</span> len(stack) &gt; <span class="number">0</span>:</span><br><span class="line">        cur = stack.pop()               <span class="comment"># 弹出最近入栈的节点</span></span><br><span class="line">        <span class="keyword">for</span> next <span class="keyword">in</span> cur.nexts:         <span class="comment"># 遍历该节点的邻接节点</span></span><br><span class="line">            <span class="keyword">if</span> next <span class="keyword">not</span> <span class="keyword">in</span> nodeSet:    <span class="comment"># 如果邻接节点不重复</span></span><br><span class="line">                stack.append(cur)       <span class="comment"># 把节点压入</span></span><br><span class="line">                stack.append(next)      <span class="comment"># 把邻接节点压入</span></span><br><span class="line">                set.add(next)           <span class="comment"># 登记节点</span></span><br><span class="line">                print(next.value)       <span class="comment"># 打印节点值</span></span><br><span class="line">                <span class="keyword">break</span>                   <span class="comment"># 退出，保持深度优先</span></span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/17/算法与数据结构/图算法/图算法领域10大经典算法/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/17/算法与数据结构/图算法/图算法领域10大经典算法/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-03-17 11:26:09 / 修改时间：11:29:32" itemprop="dateCreated datePublished" datetime="2019-03-17T11:26:09+08:00">2019-03-17</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/03/17/算法与数据结构/图算法/图算法领域10大经典算法/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/17/算法与数据结构/图算法/图算法领域10大经典算法/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>第一章、基本遍历 一、深度优先搜索二、广度优先搜索</strong></p>
+<p>此图遍历中最基本的俩种算法，BFS，DFS，入选本图算法十大算法，自是无可争议。<br>因为，这俩种搜索算法，应用实为广泛而重要。</p>
+<p>关于此BFS、DFS算法，更多，请参考：<br>经典算法研究系列：四、教你通透彻底理解：BFS和DFS优先搜索算法<br><a href="http://blog.csdn.net/v_JULY_v/archive/2011/01/01/6111353.aspx" target="_blank" rel="noopener">http://blog.csdn.net/v_JULY_v/archive/2011/01/01/6111353.aspx</a></p>
+<p><strong>三、A*搜索算法</strong>DFS和BFS在展开子结点时均属于盲目型搜索，也就是说，<br>它不会选择哪个结点在下一次搜索中更优而去跳转到该结点进行下一步的搜索。<br>在运气不好的情形中，均需要试探完整个解集空间, 显然，只能适用于问题规模不大的搜索问题中。</p>
+<p>A<em>算法，作为启发式算法中很重要的一种，被广泛应用在最优路径求解和一些策略设计的问题中。<br>而A</em>算法最为核心的部分，就在于它的一个估值函数的设计上：<br>    f(n)=g(n)+h(n)<br>其中f(n)是每个可能试探点的估值，它有两部分组成：<br>一部分，为g(n)，它表示从起始搜索点到当前点的代价（通常用某结点在搜索树中的深度来表示）。<br>一部分，即h(n)，它表示启发式搜索中最为重要的一部分，即当前结点到目标结点的估值。</p>
+<p>更多，请参考：<br>经典算法研究系列：一、A*搜索算法<br><a href="http://blog.csdn.net/v_JULY_v/archive/2010/12/23/6093380.aspx" target="_blank" rel="noopener">http://blog.csdn.net/v_JULY_v/archive/2010/12/23/6093380.aspx</a></p>
+<p><strong>附：</strong>Flood Fill<br>LeeMaRS、wtzyb4446：<br>图形学中Flood Fill是满水法填充，是用来填充区域的。<br>就好比在一个地方一直到水，水会往四周满延开，直到高地阻挡。</p>
+<p>Flood Fill就是从一个点开始往四周寻找相同的点填充，直到有不同的点为止。<br>我们用的Flood Fill和这个差不多原理,就是BFS的一种形式.</p>
+<p>假设在(i,j)滴好大一滴红墨水,然后水开始漫开,向它的上下左右染色,也就是(i-1,j),(i+1,j),(i,j-1),(i,j+1)这四个点.然后在分别再从这四个点开始向周围染色…直到碰到某种边界为止.</p>
+<p>把这个转化为BFS的思想,就是队列中初始元素是(i,j),然后把(i,j)扩展状态,得到(i-1,j),(i+1,j),(i,j-1),(i,j+1)这四个状态,加入队列.把(i,j)出列,继续扩展下一个结点…如此</p>
+<p><strong>第二章、最短路径算法四、Dijkstra</strong>Dijkstra 算法，又叫迪科斯彻算法（Dijkstra），<br>算法解决的是有向图中单个源点到其他顶点的最短路径问题。</p>
+<p>此Dijkstra 算法已在本BLOG内俩篇文章中，有所具体阐述，请参见：<br>I、经典算法研究系列：二、Dijkstra 算法初探<br><a href="http://blog.csdn.net/v_JULY_v/archive/2010/12/24/6096981.aspx" target="_blank" rel="noopener">http://blog.csdn.net/v_JULY_v/archive/2010/12/24/6096981.aspx</a><br>II、经典算法研究系列：二之续、彻底理解Dijkstra算法<br><a href="http://blog.csdn.net/v_JULY_v/archive/2011/02/13/6182419.aspx" target="_blank" rel="noopener">http://blog.csdn.net/v_JULY_v/archive/2011/02/13/6182419.aspx</a></p>
+<p><strong>五、Bellman-Ford</strong>Bellman-Ford：<br>求单源最短路，可以判断有无负权回路（若有，则不存在最短路），<br>时效性较好，时间复杂度O（VE）。</p>
+<p><strong>附：</strong>SPFA：<br>是Bellman-Ford的队列优化，时效性相对好，时间复杂度O（kE）。（k&lt;&lt;V）。</p>
+<p><strong>六、Floyd-Warshall</strong>Floyd-Warshall：求多源、无负权边的最短路。用矩阵记录图。时效性较差，时间复杂度O(V^3)。此算法是解决任意两点间的最短路径的一种算法，可以正确处理有向图或负权的最短路径问题。</p>
+<p>更多，请参考：<br>几个最短路径算法比较：<br><a href="http://blog.csdn.net/v_JULY_v/archive/2011/02/12/6181485.aspx" target="_blank" rel="noopener">http://blog.csdn.net/v_JULY_v/archive/2011/02/12/6181485.aspx</a></p>
+<p><strong>附：</strong>Kneser图<br>Kneser图是与图的分数染色有关的算法。<br>给定正整数a，b，a≥2b，Kneser图Ka:b是以如下方式定义的一个图：<br>其顶点是从给定的a个元素的集合中选出的b个元素构成的子集，两顶点间有边当且仅当这两个顶点为不交的集合。</p>
+<p><strong>第三章、最小生成树 七、Prim八、Kruskal</strong> 此最小(权值)生成树的俩种算法，日后，会在本BLOG内 具体而深入阐述。</p>
+<p><strong>第四章、图匹配九、匈牙利算法</strong>  匈牙利算法是众多用于解决线性任务分配问题的算法之一，是用来解决二分图最大匹配问题的经典算法，可以在多项式时间内解决问题，由匈牙利数学家Jack Edmonds于1965年提出。<br>这个算法，比较生疏，下面，稍微阐述下：</p>
+<p>I、匈牙利算法应用问题的描述：<br>设G=(V,E)是一个无向图。如顶点集V可分区为两个互不相交的子集V1,V2之并，并且图中每条边依附的两个顶点都分属于这两个不同的子集。则称图G为二分图。二分图也可记为G=(V1,V2,E)。</p>
+<p>给定一个二分图G，在G的一个子图M中，M的边集{E}中的任意两条边都不依附于同一个顶点，则称M是一个匹配。 选择这样的子集中边数最大的子集称为图的最大匹配问题(maximal matching problem)</p>
+<p>如果一个匹配中，图中的每个顶点都和图中某条边相关联，则称此匹配为完全匹配，也称作完备，完美匹配。</p>
+<p>II、算法描述<br>求最大匹配的一种<a href="https://www.baidu.com/s?wd=%E6%98%BE%E8%80%8C%E6%98%93%E8%A7%81&amp;tn=24004469_oem_dg&amp;rsv_dl=gh_pl_sl_csd" target="_blank" rel="noopener">显而易见</a>的算法是：先找出全部匹配，然后保留匹配数最多的。但是这个算法的时间复杂度为边数的指数级函数。因此，需要寻求一种更加高效的算法。</p>
+<p>下面介绍用<a href="https://www.baidu.com/s?wd=%E5%A2%9E%E5%B9%BF%E8%B7%AF&amp;tn=24004469_oem_dg&amp;rsv_dl=gh_pl_sl_csd" target="_blank" rel="noopener">增广路</a>求最大匹配的方法(称作匈牙利算法，匈牙利数学家Edmonds于1965年提出)。<br>增广路的定义(也称增广轨或交错轨)：<br>若P是图G中一条连通两个未匹配顶点的路径，并且属于M的边和不属于M的边(即已匹配和待匹配的边)在P上交替出现，则称P为相对于M的一条增广路径。</p>
+<p>由增广路的定义可以推出下述三个结论：<br>1－P的路径长度必定为奇数，第一条边和最后一条边都不属于M。<br>2－将M和P进行异或操作(去同存异)可以得到一个更大的匹配M’。<br>3－M为G的最大匹配当且仅当不存在M的增广路径。</p>
+<p>算法轮廓：<br>(1)置M为空<br>(2)找出一条增广路径P，通过异或操作获得更大的匹配M’代替M<br>(3)重复(2)操作直到找不出增广路径为止</p>
+<p>III、时间复杂度与空间复杂度<br>时间复杂度<br>邻接矩阵：最坏为O(n^3)      邻接表：O(mn) 　　<br>空间复杂度：<br>邻接矩阵：O(n^2)            邻接表：O(m+n)</p>
+<p><strong>附：</strong>Edmonds’s matching</p>
+<p><strong>第五章、强连通分支算法与网络流十、Ford-Fulkerson</strong>最大流量算法(Ford-Fulkerson Algorithm)，<br>也叫做贝尔曼-福特算法，被用于作为一个距离向量路由协议例如RIP, BGP, ISO IDRP, NOVELL IPX的算法。</p>
+<p><strong>附：</strong>Edmonds-Karp、Dinic、Push-relabel、maximum flow</p>
+<p><strong>强连通分支算法</strong>：<br>Kosaraju、 Gabow、 Tarjan。<br>此类算法，日后阐述。<br>完。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/13/工具和环境/Graphviz/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -713,1604 +2234,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/06/总结与思考/项目复盘示例/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/03/06/总结与思考/项目复盘示例/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-03-06 18:52:23 / 修改时间：18:52:39" itemprop="dateCreated datePublished" datetime="2019-03-06T18:52:23+08:00">2019-03-06</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/03/06/总结与思考/项目复盘示例/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/06/总结与思考/项目复盘示例/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>故障过程:</p>
-<p>​        2月28日晚完成上线</p>
-<p>​        3月1日凌晨宋楠发现存储到数据表的快照协议号出现重复,并且存在一定的规律性.表现为前100000数据无重复,从100001开始到102000持续出现重复,且重复值范围就在100001到102000之间.定位具体原因可能为1.数据库层面查询重复 2.分页组件bug</p>
-<p>​        3月1日上午与倩倩沟通影响范围.与资付产品沟通后认为范围影响不大,确定可以接受后几日补偿推送数据或当日重新推送</p>
-<p>​        3月1日晚上复现问题并解决.紧急上线问题修复.补偿推送当日数据</p>
-<p>​        3月4,5日与DBA占杰共同确定问题发生具体原因</p>
-<p>​    问题影响:</p>
-<p>​        推送数据重复导致部分有效数据未推送到资付,资付的部分资金方无法获取最新的还款计划数据</p>
-<p>​    判断依据:</p>
-<p>​        数据可后续补偿推送</p>
-<p>​        资金方对贷后还款计划关注度不高</p>
-<p>​    本次上线需求:</p>
-<p>​        优化贷后还款计划推送模块,提高效率</p>
-<p>​    问题原因:</p>
-<p>​        <strong>mysql使用distinct+limit时,mysql不会扫描所有记录,而是找到满足条件后立即停止,然后将结果返回.因此需要强制显示指定order by的顺序.告诉mysql根据某子段生成排序后生成临时表，返回满足偏移量结果集</strong></p>
-<p>​    改进计划:</p>
-<p>​        <strong>使用distinct + limit的组合需增加强制排序</strong></p>
-<p>​        <strong>如有有相对复杂且不常用的sql上线前需优先咨询DBA,并按照DBA的建议进行优化</strong></p>
-<p>​        <strong>遇到数据量大的操作评估是否需要从线上拉去部分脱敏数据到测试库中进行充分测试</strong></p>
-<p>​    附出现问题的sql</p>
-<p>​        有问题:</p>
-<p>​            select DISTINCT p.agreement_no</p>
-<p>​                    from repayment_plan p</p>
-<p>​                    where p.modified_time &gt;= ‘开始时间’</p>
-<p>​                    and p.repayment_method != 4</p>
-<p>​                    and p.agreement_type != 2</p>
-<p>​        修复后:</p>
-<p>​            select DISTINCT p.agreement_no</p>
-<p>​                    from repayment_plan p</p>
-<p>​                    where p.modified_time &gt;= ‘开始时间’</p>
-<p>​                    and p.repayment_method != 4</p>
-<p>​                    and p.agreement_type != 2</p>
-<p>​    </p>
-<p>​                </p>
-<p>order by p.agreement_no asc</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/05/深度学习笔记/tensorflow/Transformer写春联/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/03/05/深度学习笔记/tensorflow/Transformer写春联/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-03-05 22:39:59 / 修改时间：23:11:13" itemprop="dateCreated datePublished" datetime="2019-03-05T22:39:59+08:00">2019-03-05</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/03/05/深度学习笔记/tensorflow/Transformer写春联/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/05/深度学习笔记/tensorflow/Transformer写春联/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://mp.weixin.qq.com/s/N6sSQ3EG_NPFaOGwkC0i6w" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/N6sSQ3EG_NPFaOGwkC0i6w</a></p>
-<h1 id="数据集"><a href="#数据集" class="headerlink" title="数据集"></a>数据集</h1><p>数据集来自一位名为冯重朴_梨味斋散叶的博主的新浪博客，总共包含超过70万副对联。</p>
-<p>github地址（脚本已无法使用，可以用我们上传的couplets，google drive需科学翻墙）：</p>
-<p><a href="https://github.com/wb14123/couplet-dataset" target="_blank" rel="noopener">https://github.com/wb14123/couplet-dataset</a></p>
-<p>google drive：</p>
-<p><a href="https://drive.google.com/file/d/13cJWWp_ST2Xqt76pEr5ZWa6LVJwGYC4-/view?usp=sharing" target="_blank" rel="noopener">https://drive.google.com/file/d/13cJWWp_ST2Xqt76pEr5ZWa6LVJwGYC4-/view?usp=sharing</a></p>
-<p>我下载后，放在<code>/Users/david/david/code/deep_learning/duilian/couplet.tar.gz</code></p>
-<p>整个数据集解压过后总共56.9兆，其中训练数据集56.4兆，测试数据集400多KB。另外，数据是以TXT格式储存的。全文不含标点15,153,840字，如果每天看100条的话，20多年都看不完。而文摘菌采用Tesla K80，2个小时就能来一个Epoch。</p>
-<h1 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h1><p>首先进行数据预处理，因为拿到的数据比较干净，所以这任务主要就是创建词表。值得一提的是，数据集的压缩文件中存在着一个创建好的词表。你也可以用数据集给出的词表。因为对联任务并不难，所以我们直接使用字粒度来作为输入，<strong>也就是像“我们”这样的词，我们是把其当做两个单元进行输入，而不是一个。</strong></p>
-<p>关键代码如下：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">make_vocab</span><span class="params">(fpaths, out)</span>:</span></span><br><span class="line">    <span class="string">'''Constructs vocabulary.</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">      fpaths: A string. Input file path.</span></span><br><span class="line"><span class="string">      out: A string. Output file name.</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    '''</span>  </span><br><span class="line">    char2cnt = Counter()</span><br><span class="line">    <span class="keyword">for</span> path <span class="keyword">in</span> fpaths:</span><br><span class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> open(path, <span class="string">'r'</span>):</span><br><span class="line">            line = line.strip()</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> line: <span class="comment"># detect the empty line</span></span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            chars = line.split()</span><br><span class="line">            char2cnt.update(chars)</span><br><span class="line">    <span class="keyword">with</span> open(out, <span class="string">'w'</span>) <span class="keyword">as</span> fout:</span><br><span class="line">        fout.write(<span class="string">"&#123;&#125;\t1000000000\n&#123;&#125;\t1000000000\n&#123;&#125;\t1000000000\n&#123;&#125;\t1000000000\n"</span>.format(<span class="string">"&lt;PAD&gt;"</span>, <span class="string">"&lt;UNK&gt;"</span>, <span class="string">"&lt;S&gt;"</span>, <span class="string">"&lt;/S&gt;"</span>)) <span class="comment"># special tokens</span></span><br><span class="line">        <span class="keyword">for</span> word, cnt <span class="keyword">in</span> char2cnt.most_common(len(char2cnt)):</span><br><span class="line">            fout.write(<span class="string">u"&#123;&#125;\t&#123;&#125;\n"</span>.format(word, cnt))</span><br><span class="line">        print(<span class="string">"%d chars written!"</span> % (len(char2cnt)))</span><br></pre></td></tr></table></figure>
-<p>建立完词表之后，所有单个汉字加上一些特殊字符，总共9126个字符。其实我们看看频率为1的字符就会发现，好像都不认识。一般来说，在序列到序列任务里面，我们会在词表里面忽略频率小不常用的字词。但是因为这里我们词表并不大，所以就全部采用了。</p>
-<p>之后，我们对训练数据的字长进行统计，来决定训练时句子的最大长度。统计后发现，对联数据中单句的长度大部分集中在5-10字之间，最长大概30字左右，所以训练的最大长度文摘菌选的也是30。这个长度并不长，所以之后整个 Transformer 的大小都不是很大。</p>
-<h1 id="模型编写与训练"><a href="#模型编写与训练" class="headerlink" title="模型编写与训练"></a>模型编写与训练</h1><p>这里我们首先搭建好模型，之后通过数据将模型中的参数训练成我们所希望的，之后存储起来。这里便是<strong>一个epoch存储一个模型</strong>。而测试的时候，就可以直接读入参数获得一个训练好的模型来使用。</p>
-<p>此外，我们也可以将保存的模型分享给别人，让其他人也可以直接利用我们的训练结果。</p>
-<p>模型和训练的代码太多，这里就全不放出来了，感兴趣的读者可以去github上下载完整代码。</p>
-<p>github地址：</p>
-<p><a href="https://github.com/andy-yangz/coupletsseq2seqtransformer" target="_blank" rel="noopener">https://github.com/andy-yangz/coupletsseq2seqtransformer</a></p>
-<p>于是整个模型的训练过程主要分为四个步骤：</p>
-<p>第一步，先下载对联数据 couplets, 然后解压到 data 里去</p>
-<p>第二步，调整超参数</p>
-<p>第三步，运行 prepro.py预处理数据，产生词表，也可以用提供的词表</p>
-<p>第四步，运行 train.py 训练模型</p>
-<h1 id="评估"><a href="#评估" class="headerlink" title="评估"></a>评估</h1><p>训练完之后，保存模型，评估脚本会自动读入最新模型来进行评估。</p>
-<p>评估的主要步骤包括：</p>
-<ul>
-<li>建立模型</li>
-<li>读入训练好的参数</li>
-<li>读入测试数据</li>
-<li>将数据喂入模型</li>
-<li>编码解码获得结果</li>
-</ul>
-<p>最主要代码应该是解码这一块：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">### Autoregressive inference</span></span><br><span class="line">preds = np.zeros((<span class="number">1</span>, hp.maxlen), np.int32)</span><br><span class="line"><span class="keyword">for</span> j <span class="keyword">in</span> range(hp.maxlen):</span><br><span class="line">    _preds = sess.run(g.preds, &#123;g.x: x, g.y: preds&#125;)</span><br><span class="line">    preds[:, j] = _preds[:, j]</span><br></pre></td></tr></table></figure>
-<p>最开始喂入x，还有一个空的preds，然后获得一个预测的字，将这个字放在preds相应的位置，之后循环，不断将preds填满。最后就能获得完整的预测结果。</p>
-<p>这里每次预测的字，取得都是预测概率最大的那个字，这叫做 greedy decoding（贪婪搜寻解码），因为每次都是选最大的。这样虽然快，但是也会出现陷入局部最优解的情况。更好些解码方法，可以使用Beam search（束搜索）。</p>
-<p>这是我们训练了6个epoch，也就是模型将数据看了六遍的结果。这次我们总共保存了7个模型，从Epoch1到Epoch7模型，其实要说那个好只能是见仁见智了，比如说我就觉得6个Epoch会好些。但是可以确认的是随着Epoch增加模型就越能学到对联数据里的模式。</p>
-<h1 id="其他模型"><a href="#其他模型" class="headerlink" title="其他模型"></a><strong>其他模型</strong></h1><p>关于AI写对联，其实之前已经有了基于深度学习seq2seq的模型，同样其用到的也是TensorFlow和那位冯重朴_梨味斋散叶的博主提供的数据集。</p>
-<p>目前，代码已经开源，你可以在下面的github中找到：</p>
-<p><a href="https://github.com/wb14123/seq2seq-couplet" target="_blank" rel="noopener">https://github.com/wb14123/seq2seq-couplet</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/01/编程语言学习/JAVA/Spring Boot/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/03/01/编程语言学习/JAVA/Spring Boot/" class="post-title-link" itemprop="url">Spring Boot用法记录</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-03-01 15:51:54" itemprop="dateCreated datePublished" datetime="2019-03-01T15:51:54+08:00">2019-03-01</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-03 22:50:50" itemprop="dateModified" datetime="2019-07-03T22:50:50+08:00">2019-07-03</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/JAVA/" itemprop="url" rel="index"><span itemprop="name">JAVA</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/03/01/编程语言学习/JAVA/Spring Boot/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/01/编程语言学习/JAVA/Spring Boot/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="启动时用DEBUG模式"><a href="#启动时用DEBUG模式" class="headerlink" title="启动时用DEBUG模式"></a>启动时用DEBUG模式</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Users/david/david/gitlab_mljr/carthage-greenwich/carthage-web/src/main/resources/logback.groovy</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root(DEBUG, [&quot;APP_INFO&quot;, &quot;APP_ERROR&quot;, &quot;CONSOLE&quot;])</span><br></pre></td></tr></table></figure>
-<h1 id="项目打包"><a href="#项目打包" class="headerlink" title="项目打包"></a>项目打包</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;plugin&gt;</span><br><span class="line">        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;</span><br><span class="line">        &lt;!--这里写上main方法所在类的路径--&gt;</span><br><span class="line">        &lt;configuration&gt;</span><br><span class="line">          &lt;mainClass&gt;com.mljr.carthage.web.SpringBootFlyingApsarasMain&lt;/mainClass&gt;</span><br><span class="line">        &lt;/configuration&gt;</span><br><span class="line">        &lt;executions&gt;</span><br><span class="line">          &lt;execution&gt;</span><br><span class="line">            &lt;goals&gt;</span><br><span class="line">              &lt;goal&gt;repackage&lt;/goal&gt;</span><br><span class="line">            &lt;/goals&gt;</span><br><span class="line">          &lt;/execution&gt;</span><br><span class="line">        &lt;/executions&gt;</span><br><span class="line">      &lt;/plugin&gt;</span><br></pre></td></tr></table></figure>
-<h1 id="Spring-Boot-推荐目录结构"><a href="#Spring-Boot-推荐目录结构" class="headerlink" title="Spring Boot 推荐目录结构"></a>Spring Boot 推荐目录结构</h1><p>（1）代码层的结构</p>
-<p>　　根目录：com.springboot</p>
-<p>　　　　1.工程启动类(ApplicationServer.java)置于com.springboot.build包下</p>
-<p>　　　　2.实体类(domain)置于com.springboot.domain</p>
-<p>　　　　3.数据访问层(Dao)置于com.springboot.repository</p>
-<p>　　　　4.数据服务层(Service)置于com,springboot.service,数据服务的实现接口(serviceImpl)至于com.springboot.service.impl</p>
-<p>　　　　5.前端控制器(Controller)置于com.springboot.controller</p>
-<p>　　　　6.工具类(utils)置于com.springboot.utils</p>
-<p>　　　　7.常量接口类(constant)置于com.springboot.constant</p>
-<p>　　　　8.配置信息类(config)置于com.springboot.config</p>
-<p>　　　　9.数据传输类(vo)置于com.springboot.vo</p>
-<p>（2）资源文件的结构</p>
-<p>　　根目录:src/main/resources</p>
-<p>　　　　1.配置文件(.properties/.json等)置于config文件夹下</p>
-<p>　　　　2.国际化(i18n))置于i18n文件夹下</p>
-<p>　　　　3.spring.xml置于META-INF/spring文件夹下</p>
-<p>　　　　4.页面以及js/css/image等置于static文件夹下的各自文件下</p>
-<p>实体类，也可以包括调用第三方接口后，解析返回json的类</p>
-<p><img src="/.io//david/david/00projects/00markdown/pic/image-20190301165217946.png" alt="image-20190301165217946"></p>
-<h1 id="queryForList"><a href="#queryForList" class="headerlink" title="queryForList"></a>queryForList</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Map&lt;String, Object&gt;&gt; rows = jdbcTemplate.queryForList(query);</span><br><span class="line">       for(Map&lt;String, Object&gt; row : rows)&#123;</span><br><span class="line">          String id = row.get(&quot;id&quot;).toString();</span><br><span class="line">          String name = (String)row.get(&quot;name&quot;);</span><br><span class="line">          String salary = row.get(&quot;salary&quot;).toString();</span><br><span class="line">          System.out.println(id + &quot; &quot; + name + &quot; &quot; + salary );</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
-<h1 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h1><p><a href="https://blog.csdn.net/qq_38974634/article/details/80650810" target="_blank" rel="noopener">https://blog.csdn.net/qq_38974634/article/details/80650810</a></p>
-<p>现在用redis缓存</p>
-<h1 id="mybatis"><a href="#mybatis" class="headerlink" title="mybatis"></a>mybatis</h1><h2 id="parameterType"><a href="#parameterType" class="headerlink" title="parameterType"></a>parameterType</h2><p><a href="https://www.jianshu.com/p/db20f3224038" target="_blank" rel="noopener">https://www.jianshu.com/p/db20f3224038</a></p>
-<h1 id="错题集"><a href="#错题集" class="headerlink" title="错题集"></a>错题集</h1><h2 id="如果不加BeanPropertyRowMapper会报错"><a href="#如果不加BeanPropertyRowMapper会报错" class="headerlink" title="如果不加BeanPropertyRowMapper会报错"></a>如果不加BeanPropertyRowMapper会报错</h2><p>org.springframework.jdbc.IncorrectResultSetColumnCountException: Incorrect column count: expected 1, actual 4</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 这种不行</span><br><span class="line">jdbcTemplate.queryForObject(sql,</span><br><span class="line">                TopMetricInfoVO.class)</span><br><span class="line">          </span><br><span class="line">// 这种可以</span><br></pre></td></tr></table></figure>
-<h2 id="不能自动注入"><a href="#不能自动注入" class="headerlink" title="不能自动注入"></a>不能自动注入</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">The bean &apos;dashBoardServiceImpl&apos; could not be injected as a &apos;com.mljr.carthage.service.Impl.DashBoardServiceImpl&apos; because it is a JDK dynamic proxy that implements:</span><br><span class="line">	com.mljr.carthage.service.DashboardService</span><br></pre></td></tr></table></figure>
-<h2 id="mybatis-1"><a href="#mybatis-1" class="headerlink" title="mybatis"></a>mybatis</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">不允许有匹配 &quot;[xX][mM][lL]&quot; 的处理指令目标。</span><br></pre></td></tr></table></figure>
-<p>在mapper的xml中不能有代码注释</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">org.apache.ibatis.exceptions.PersistenceException: </span><br><span class="line">### Error querying database.  Cause: com.zaxxer.hikari.pool.HikariPool$PoolInitializationException: Failed to initialize pool: Unable to load authentication plugin &apos;caching_sha2_password&apos;.</span><br><span class="line">### The error may exist in mapper/mybatis/mysql/carthage/gps/AnalysisMapper.xml</span><br><span class="line">### The error may involve com.mljr.carthage.dao.mapper.gps.AnalysisMapper.selectDistributionCount</span><br><span class="line">### The error occurred while executing a query</span><br><span class="line">### Cause: com.zaxxer.hikari.pool.HikariPool$PoolInitializationException: Failed to initialize pool: Unable to load authentication plugin &apos;caching_sha2_password&apos;.</span><br></pre></td></tr></table></figure>
-<p>本地没设密码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER USER &apos;root&apos;@&apos;localhost&apos; IDENTIFIED WITH mysql_native_password BY &apos;123456&apos;;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Unknown system variable &apos;query_cache_size&apos;</span><br></pre></td></tr></table></figure>
-<p>服务器版本低，本地版本是8.0.15</p>
-<h1 id="jdbcTemplate"><a href="#jdbcTemplate" class="headerlink" title="jdbcTemplate"></a>jdbcTemplate</h1><h2 id="返回string的list"><a href="#返回string的list" class="headerlink" title="返回string的list"></a>返回string的list</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; defaultAnomalies = jdbcTemplate.queryForList(sql, String.class);</span><br></pre></td></tr></table></figure>
-<h1 id="Swagger技巧"><a href="#Swagger技巧" class="headerlink" title="Swagger技巧"></a>Swagger技巧</h1><h2 id="配置了-ApiModelProperty的allowableValues属性但不显示"><a href="#配置了-ApiModelProperty的allowableValues属性但不显示" class="headerlink" title="配置了@ApiModelProperty的allowableValues属性但不显示"></a>配置了@ApiModelProperty的allowableValues属性但不显示</h2><p><a href="https://blog.csdn.net/dyc87112/article/details/83241038" target="_blank" rel="noopener">https://blog.csdn.net/dyc87112/article/details/83241038</a></p>
-<p>我们只需要通过,分割来定义可选值，或者用range函数定义范围等方式就能正确显示了，比如：</p>
-<p>public class Filter {</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@ApiModelProperty(allowableValues = &quot;range[1,5]&quot;)</span><br><span class="line">Integer order</span><br><span class="line">@ApiModelProperty(allowableValues = &quot;111, 222&quot;)</span><br><span class="line">String code;</span><br></pre></td></tr></table></figure>
-<h2 id="swagger命名风格"><a href="#swagger命名风格" class="headerlink" title="swagger命名风格"></a>swagger命名风格</h2><p>变量用@ApiModelProperty</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/02/24/算法与数据结构/LeeCode/奇偶跳/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/02/24/算法与数据结构/LeeCode/奇偶跳/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-02-24 22:01:36" itemprop="dateCreated datePublished" datetime="2019-02-24T22:01:36+08:00">2019-02-24</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-02-25 15:55:52" itemprop="dateModified" datetime="2019-02-25T15:55:52+08:00">2019-02-25</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/02/24/算法与数据结构/LeeCode/奇偶跳/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/02/24/算法与数据结构/LeeCode/奇偶跳/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>第奇数次跳，可以跳到后面的所有比当前数字大的，其中最小的那个数字的位置上；</p>
-<p>第偶数次跳，可以跳到后面的所有比当前数字小的，其中最大的那个数字的位置上；</p>
-<p>如果跳到最后的一个位置，就相当于成功了。问有多少个位置可以成功。</p>
-<p>暴力解法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; A.length; i++)</span><br><span class="line">    <span class="keyword">while</span> ( j != A.length - <span class="number">1</span>)</span><br><span class="line">        <span class="keyword">if</span> ( jump % <span class="number">2</span> == <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> k = j + <span class="number">1</span>; k &lt; A.length; k++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (A[j] &lt;= A[k] &amp;&amp; A[k] &lt; tmp) </span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">			</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
-<p>从后往前遍历，<strong>如果某个点能够跳到的点已经被证实可以跳到终点</strong>，那么这个点肯定能跳到终点。</p>
-<p>但是，某个点能不能跳到终点要分情况看的，要看这个点在奇数跳次数和偶数跳次数是不是分别能达到终点。</p>
-<p>比如，从A跳到B，当【从A出发且第一步是奇数步，最后能到达终点】，当且仅当【从B出发，且B的第一步是偶数步能到达终点】。</p>
-<p>所以就要知道每个点出发的时候，奇数步或偶数步能不能到达终点。</p>
-<p>再假设odd_jump[i]表示【从i点进行奇数跳时下一步的位置】，even_jump[i]表示【从i点进行偶数跳时下一步的位置】，若无法跳跃，取值为-1。这个数组的计算先放一边，假设已经算好了。</p>
-<p>再领odd_position[i]表示【从i点开始奇数跳能不能到达终点】，even_position[i]表示【从i点开始偶数跳能不能到达终点】。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">odd_jump = findJump(A)</span><br><span class="line">even_jump = findJump([-e <span class="keyword">for</span> e <span class="keyword">in</span> A])</span><br><span class="line"></span><br><span class="line">N = len(A)</span><br><span class="line">odd_position = [<span class="keyword">False</span>] * N</span><br><span class="line">even_position = [<span class="keyword">False</span>] * N</span><br><span class="line"></span><br><span class="line">result = <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(N)[::<span class="number">-1</span>]:</span><br><span class="line">    <span class="keyword">if</span> i == N - <span class="number">1</span>:</span><br><span class="line">        odd_position[i] = even_position[i] = <span class="keyword">True</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            odd_position[i] = even_position[odd_jump[i]] <span class="keyword">if</span> odd_jump != [<span class="number">-1</span>] then <span class="keyword">False</span></span><br><span class="line">            even_position[i] = odd_position[even_jump[i]] <span class="keyword">if</span> even_jump != [<span class="number">-1</span>] then <span class="keyword">False</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> odd_position[i]:</span><br><span class="line">                result += <span class="number">1</span></span><br></pre></td></tr></table></figure>
-<p>接下来是findJump的实现。</p>
-<p>在一个有序数组中，对于奇数跳，对于某一个数，要找到比它第一个比它大的数的最早出现的位置。</p>
-<p>对于偶数跳，要找到第一个比它小的数的最早出现位置。</p>
-<p>这个用二分法实现。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/02/16/算法与数据结构/LeeCode/Week1-3不含AAA或BBB的字符串/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/02/16/算法与数据结构/LeeCode/Week1-3不含AAA或BBB的字符串/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-02-16 10:08:44" itemprop="dateCreated datePublished" datetime="2019-02-16T10:08:44+08:00">2019-02-16</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-02-25 13:44:29" itemprop="dateModified" datetime="2019-02-25T13:44:29+08:00">2019-02-25</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/02/16/算法与数据结构/LeeCode/Week1-3不含AAA或BBB的字符串/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/02/16/算法与数据结构/LeeCode/Week1-3不含AAA或BBB的字符串/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="方法一：贪心"><a href="#方法一：贪心" class="headerlink" title="方法一：贪心"></a>方法一：贪心</h4><p><strong>思路</strong></p>
-<p>直观感觉，我们应该先选择当前所剩最多的待写字母写入字符串中。举一个例子，如果 <code>A = 6, B = 2</code>，那么我们期望写出 <code>&#39;aabaabaa&#39;</code>。进一步说，设当前所剩最多的待写字母为 <code>x</code>，只有前两个已经写下的字母都是 <code>x</code> 的时候，下一个写入字符串中的字母才不应该选择它。</p>
-<p><strong>算法</strong></p>
-<p>我们定义 <code>A, B</code>：待写的 <code>&#39;a&#39;</code> 与 <code>&#39;b&#39;</code> 的数量。</p>
-<p>设当前还需要写入字符串的 <code>&#39;a&#39;</code> 与 <code>&#39;b&#39;</code> 中较多的那一个为 <code>x</code>，如果我们已经连续写了两个 <code>x</code> 了，下一次我们应该写另一个字母。否则，我们应该继续写 <code>x</code>。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">strWithout3a3b</span><span class="params">(<span class="keyword">int</span> A, <span class="keyword">int</span> B)</span> </span>&#123;</span><br><span class="line">        StringBuilder ans = <span class="keyword">new</span> StringBuilder();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (A &gt; <span class="number">0</span> || B &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">boolean</span> writeA = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">int</span> L = ans.length();</span><br><span class="line">            <span class="keyword">if</span> (L &gt;= <span class="number">2</span> &amp;&amp; ans.charAt(L-<span class="number">1</span>) == ans.charAt(L-<span class="number">2</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (ans.charAt(L-<span class="number">1</span>) == <span class="string">'b'</span>)</span><br><span class="line">                    writeA = <span class="keyword">true</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (A &gt;= B)</span><br><span class="line">                    writeA = <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (writeA) &#123;</span><br><span class="line">                A--;</span><br><span class="line">                ans.append(<span class="string">'a'</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                B--;</span><br><span class="line">                ans.append(<span class="string">'b'</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans.toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>复杂度分析</strong></p>
-<ul>
-<li>时间复杂度：O(A+B)<em>O</em>(<em>A</em>+<em>B</em>)。</li>
-<li>空间复杂度：O(A+B)<em>O</em>(<em>A</em>+<em>B</em>)。 </li>
-</ul>
-<p>若A&gt;=B，</p>
-<p>若i&gt;2且i的前三位是aaa，则b</p>
-<p>s.append(x)</p>
-<p>若A&lt;0或B&lt;0，则报错</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/02/13/算法与数据结构/LeeCode/Week1-2无重复字符的最长子串/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/02/13/算法与数据结构/LeeCode/Week1-2无重复字符的最长子串/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-02-13 11:00:49" itemprop="dateCreated datePublished" datetime="2019-02-13T11:00:49+08:00">2019-02-13</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-02-25 13:44:23" itemprop="dateModified" datetime="2019-02-25T13:44:23+08:00">2019-02-25</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/02/13/算法与数据结构/LeeCode/Week1-2无重复字符的最长子串/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/02/13/算法与数据结构/LeeCode/Week1-2无重复字符的最长子串/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><hr>
-<h4 id="方法一：暴力法"><a href="#方法一：暴力法" class="headerlink" title="方法一：暴力法"></a>方法一：暴力法</h4><p><strong>思路</strong></p>
-<p><strong>逐个检查所有的子字符串</strong>，看它是否不含有重复的字符。</p>
-<p><strong>算法</strong></p>
-<p>假设我们有一个函数 <code>boolean allUnique(String substring)</code> ，如果子字符串中的字符都是唯一的，它会返回true，否则会返回false。 我们可以遍历给定字符串 <code>s</code> 的所有可能的子字符串并调用函数 <code>allUnique</code>。 如果事实证明返回值为true，那么我们将会更新无重复字符子串的最大长度的答案。</p>
-<p>现在让我们填补缺少的部分：</p>
-<ol>
-<li>为了枚举给定字符串的所有子字符串，我们需要枚举它们开始和结束的索引。假设开始和结束的索引分别为$ i$ 和 $j$。那么我们有 $0 \leq i \lt j \leq n $（这里的结束索引 $j$是按惯例排除的）。因此，使用 $i$从0到 $n - 1$ 以及$ j$ 从$ i+1$到 $n$ 这两个嵌套的循环，我们可以枚举出 <code>s</code> 的所有子字符串。</li>
-<li>要检查一个字符串是否有重复字符，我们可以使用集合。我们遍历字符串中的所有字符，并将它们逐个放入 <code>set</code>中。在放置一个字符之前，我们检查该集合是否已经包含它。如果包含，我们会返回 <code>false</code>。循环结束后，我们返回 <code>true</code>。</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">lengthOfLongestSubstring</span><span class="params">(String s)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> n = s.length();</span><br><span class="line">        <span class="keyword">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; i++)</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = i + <span class="number">1</span>; j &lt;= n; j++)</span><br><span class="line">                <span class="keyword">if</span> (allUnique(s, i, j)) ans = Math.max(ans, j - i);</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">allUnique</span><span class="params">(String s, <span class="keyword">int</span> start, <span class="keyword">int</span> end)</span> </span>&#123;</span><br><span class="line">        Set&lt;Character&gt; set = <span class="keyword">new</span> HashSet&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = start; i &lt; end; i++) &#123;</span><br><span class="line">            Character ch = s.charAt(i);</span><br><span class="line">            <span class="keyword">if</span> (set.contains(ch)) <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            set.add(ch);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>复杂度分析</strong></p>
-<ul>
-<li><p>时间复杂度：$O(n^3)$ 。</p>
-<p>要验证索引范围在 $[i, j)​$ 内的字符是否都是唯一的，我们需要检查该范围中的所有字符。 因此，它将花费 $O(j - i)​$ 的时间。</p>
-<p>对于给定的 <code>i</code>，对于所有 $j \in [i+1, n]$ 所耗费的时间总和为：</p>
-<p>$\sum_{i+1}^{n}O(j - i)$</p>
-<p>因此，执行所有步骤耗去的时间总和为：</p>
-<script type="math/tex; mode=display">
-O\left(\sum{i = 0}^{n - 1}\left(\sum{j = i + 1}^{n}(j - i)\right)\right) = O\left(\sum_{i = 0}^{n - 1}\frac{(1 + n - i)(n - i)}{2}\right) = O(n^3)</script></li>
-<li><p>空间复杂度：$O(min(n, m))$，我们需要 $O(k)$ 的空间来检查子字符串中是否有重复字符，其中 $k$ 表示 <code>Set</code> 的大小。而 Set 的大小取决于字符串 $n$ 的大小以及字符集/字母 $m$ 的大小。 </p>
-</li>
-</ul>
-<h4 id="方法二：滑动窗口"><a href="#方法二：滑动窗口" class="headerlink" title="方法二：滑动窗口"></a>方法二：滑动窗口</h4><p><strong>算法</strong></p>
-<p>暴力法非常简单。但它太慢了。那么我们该如何优化它呢？</p>
-<p>在暴力法中，我们会反复检查一个子字符串是否含有有重复的字符，但这是没有必要的。如果从索引 $i$ 到 $j - 1$ 之间的子字符串 $s<em>{ij}$ 已经被检查为没有重复字符。我们只需要检查 $s[j]$ 对应的字符是否已经存在于子字符串 $s</em>{ij}$ 中。</p>
-<p>要检查一个字符是否已经在子字符串中，我们可以检查整个子字符串，这将产生一个复杂度为 $O(n^2)$的算法，但我们可以做得更好。</p>
-<p>通过使用 HashSet 作为滑动窗口，我们可以用 $O(1)$ 的时间来完成对字符是否在当前的子字符串中的检查。</p>
-<p>滑动窗口是数组/字符串问题中常用的抽象概念。 窗口通常是在数组/字符串中由开始和结束索引定义的一系列元素的集合，即 $[i, j)$（左闭，右开）。而滑动窗口是可以将两个边界向某一方向“滑动”的窗口。例如，我们将 $[i, j)$ 向右滑动 1个元素，则它将变为 $[i+1, j+1)$（左闭，右开）。</p>
-<p>回到我们的问题，我们使用 HashSet 将字符存储在当前窗口$ [i, j)$（最初 $j = i$）中。 然后我们向右侧滑动索引$ j$，如果它不在 HashSet 中，我们会继续滑动 $j$。直到 $s[j]$已经存在于 HashSet 中。此时，我们找到的没有重复字符的最长子字符串将会以索引 $i$ 开头。如果我们对所有的 $i​$ 这样做，就可以得到答案。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">lengthOfLongestSubstring</span><span class="params">(String s)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> n = s.length();</span><br><span class="line">        Set&lt;Character&gt; set = <span class="keyword">new</span> HashSet&lt;&gt;();</span><br><span class="line">        <span class="keyword">int</span> ans = <span class="number">0</span>, i = <span class="number">0</span>, j = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (i &lt; n &amp;&amp; j &lt; n) &#123;</span><br><span class="line">            <span class="comment">// try to extend the range [i, j]</span></span><br><span class="line">            <span class="keyword">if</span> (!set.contains(s.charAt(j)))&#123;</span><br><span class="line">                set.add(s.charAt(j++));</span><br><span class="line">                ans = Math.max(ans, j - i);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                set.remove(s.charAt(i++));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>复杂度分析</strong></p>
-<ul>
-<li>时间复杂度：$O(2n) = O(n)$，在最糟糕的情况下，每个字符将被 $i$ 和 $j$访问两次。</li>
-<li>空间复杂度：$O(min(m, n))$，与之前的方法相同。滑动窗口法需要 $O(k)$ 的空间，其中 $k$ 表示 <code>Set</code> 的大小。而Set的大小取决于字符串 $n$ 的大小以及字符集/字母 $m$ 的大小。 </li>
-</ul>
-<h4 id="方法三：优化的滑动窗口"><a href="#方法三：优化的滑动窗口" class="headerlink" title="方法三：优化的滑动窗口"></a>方法三：优化的滑动窗口</h4><p>上述的方法最多需要执行 2n 个步骤。事实上，它可以被进一步优化为仅需要 n 个步骤。我们可以定义字符到索引的映射，而不是使用集合来判断一个字符是否存在。 当我们找到重复的字符时，我们可以立即跳过该窗口。</p>
-<p>也就是说，如果 $s[j]$ 在 $[i, j)$ 范围内有与 $j’$ 重复的字符，我们不需要逐渐增加 $i$ 。 我们可以直接跳过 $[i，j’]$ 范围内的所有元素，并将 $i$ 变为 $j’ + 1$。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">lengthOfLongestSubstring</span><span class="params">(String s)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> n = s.length(), ans = <span class="number">0</span>;</span><br><span class="line">        Map&lt;Character, Integer&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;(); <span class="comment">// current index of character</span></span><br><span class="line">        <span class="comment">// try to extend the range [i, j]</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>, i = <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (map.containsKey(s.charAt(j))) &#123;</span><br><span class="line">                i = Math.max(map.get(s.charAt(j)), i);</span><br><span class="line">            &#125;</span><br><span class="line">            ans = Math.max(ans, j - i + <span class="number">1</span>);</span><br><span class="line">            map.put(s.charAt(j), j + <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>Java（假设字符集为 ASCII 128）</strong></p>
-<p>以前的我们都没有对字符串 <code>s</code> 所使用的字符集进行假设。</p>
-<p>当我们知道该字符集比较小的时侯，我们可以用一个整数数组作为直接访问表来替换 <code>Map</code>。</p>
-<p>常用的表如下所示：</p>
-<ul>
-<li><code>int [26]</code> 用于字母 ‘a’ - ‘z’或 ‘A’ - ‘Z’</li>
-<li><code>int [128]</code> 用于ASCII码</li>
-<li><code>int [256]</code> 用于扩展ASCII码</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">lengthOfLongestSubstring</span><span class="params">(String s)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> n = s.length(), ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span>[] index = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">128</span>]; <span class="comment">// current index of character</span></span><br><span class="line">        <span class="comment">// try to extend the range [i, j]</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>, i = <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">            i = Math.max(index[s.charAt(j)], i);</span><br><span class="line">            ans = Math.max(ans, j - i + <span class="number">1</span>);</span><br><span class="line">            index[s.charAt(j)] = j + <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>复杂度分析</strong></p>
-<ul>
-<li>时间复杂度：$O(n)$，索引 $j$ 将会迭代 $n$ 次。</li>
-<li>空间复杂度（HashMap）：$O(min(m, n))$，与之前的方法相同。</li>
-<li>空间复杂度（Table）：$O(m)$，$m$ 是字符集的大小。</li>
-</ul>
-<h3 id="自己做"><a href="#自己做" class="headerlink" title="自己做"></a>自己做</h3><p>最终代码</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">lengthOfLongestSubstring</span><span class="params">(self, s)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        :type s: str</span></span><br><span class="line"><span class="string">        :rtype: int</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        arr = []</span><br><span class="line">        maxLen = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> s:</span><br><span class="line">            <span class="keyword">if</span> i <span class="keyword">in</span> arr:</span><br><span class="line">                index = arr.index(i)</span><br><span class="line">                arr = arr[index+<span class="number">1</span>:]</span><br><span class="line">            arr.append(i)</span><br><span class="line">            <span class="keyword">if</span> len(arr) &gt; maxLen:</span><br><span class="line">                maxLen = len(arr)</span><br><span class="line">        <span class="keyword">return</span> maxLen</span><br></pre></td></tr></table></figure>
-<p>1、”dvdf”失败</p>
-<p>原因：做法是遇到一个重复的字符就清空数组，这种情况下就有问题了。</p>
-<p>解决方案：遇到重复时，删掉重复的前面的所有字符</p>
-<p>2、”aabaab!bb”失败</p>
-<p>原因：代码写错了，</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">index = s.index(i) -&gt; index = arr.index(i)</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/02/08/算法与数据结构/LeeCode/Week1-1两数之和/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/02/08/算法与数据结构/LeeCode/Week1-1两数之和/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-02-08 18:11:57" itemprop="dateCreated datePublished" datetime="2019-02-08T18:11:57+08:00">2019-02-08</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-02-25 14:09:28" itemprop="dateModified" datetime="2019-02-25T14:09:28+08:00">2019-02-25</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/02/08/算法与数据结构/LeeCode/Week1-1两数之和/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/02/08/算法与数据结构/LeeCode/Week1-1两数之和/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="方法一：暴力法"><a href="#方法一：暴力法" class="headerlink" title="方法一：暴力法"></a>方法一：暴力法</h4><p>暴力法很简单。遍历每个元素 $x$，并查找是否存在一个值与 target - x相等的目标元素。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">int</span>[] twoSum(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> target) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = i + <span class="number">1</span>; j &lt; nums.length; j++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (nums[j] == target - nums[i]) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">int</span>[] &#123; i, j &#125;;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"No two sum solution"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>复杂度分析：</strong></p>
-<ul>
-<li><p>时间复杂度：$O(n^2)​$， 对于每个元素，我们试图通过遍历数组的其余部分来寻找它所对应的目标元素，这将耗费 $O(n)​$ 的时间。因此时间复杂度为 $O(n^2)​$。</p>
-</li>
-<li><p>空间复杂度：$O(1)​$。</p>
-</li>
-</ul>
-<h4 id="方法二：两遍哈希表"><a href="#方法二：两遍哈希表" class="headerlink" title="方法二：两遍哈希表"></a>方法二：两遍哈希表</h4><p>为了对运行时间复杂度进行优化，我们需要一种更有效的方法来检查数组中是否存在目标元素。如果存在，我们需要找出它的索引。保持数组中的每个元素与其索引相互对应的最好方法是什么？哈希表。</p>
-<p>通过以空间换取速度的方式，我们可以将查找时间从 O(n) 降低到 O(1)。哈希表正是为此目的而构建的，它支持以 <em>近似</em> 恒定的时间进行快速查找。我用“近似”来描述，是因为一旦出现冲突，查找用时可能会退化到 O(n)。但只要你仔细地挑选哈希函数，在哈希表中进行查找的用时应当被摊销为 O(1)。</p>
-<p>一个简单的实现使用了两次迭代。在第一次迭代中，我们将每个元素的值和它的索引添加到表中。然后，在第二次迭代中，我们将检查每个元素所对应的目标元素（target - nums[i]）是否存在于表中。注意，该目标元素不能是 nums[i]本身！</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">int</span>[] twoSum(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> target) &#123;</span><br><span class="line">    Map&lt;Integer, Integer&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">        map.put(nums[i], i);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">        <span class="keyword">int</span> complement = target - nums[i];</span><br><span class="line">        <span class="keyword">if</span> (map.containsKey(complement) &amp;&amp; map.get(complement) != i) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">int</span>[] &#123; i, map.get(complement) &#125;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"No two sum solution"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>复杂度分析：</strong></p>
-<ul>
-<li>时间复杂度：O(n)， 我们把包含有 n 个元素的列表遍历两次。由于哈希表将查找时间缩短到 O(1) ，所以时间复杂度为 O(n)。</li>
-<li>空间复杂度：O(n)， 所需的额外空间取决于哈希表中存储的元素数量，该表中存储了 n个元素。 </li>
-</ul>
-<h4 id="方法三：一遍哈希表"><a href="#方法三：一遍哈希表" class="headerlink" title="方法三：一遍哈希表"></a>方法三：一遍哈希表</h4><p>事实证明，我们可以一次完成。在进行迭代并将元素插入到表中的同时，我们还会回过头来检查表中是否已经存在当前元素所对应的目标元素。如果它存在，那我们已经找到了对应解，并立即将其返回。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">int</span>[] twoSum(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> target) &#123;</span><br><span class="line">    Map&lt;Integer, Integer&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">        <span class="keyword">int</span> complement = target - nums[i];</span><br><span class="line">        <span class="keyword">if</span> (map.containsKey(complement)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">int</span>[] &#123; map.get(complement), i &#125;;</span><br><span class="line">        &#125;</span><br><span class="line">        map.put(nums[i], i);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"No two sum solution"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>复杂度分析：</strong></p>
-<ul>
-<li>时间复杂度：O(n)， 我们只遍历了包含有 n个元素的列表一次。在表中进行的每次查找只花费 O(1) 的时间。</li>
-<li>空间复杂度：O(n)， 所需的额外空间取决于哈希表中存储的元素数量，该表最多需要存储 n个元素。</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/02/08/编程语言学习/PYTHON/问题集/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/02/08/编程语言学习/PYTHON/问题集/" class="post-title-link" itemprop="url">Python出错总结</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-02-08 17:28:33" itemprop="dateCreated datePublished" datetime="2019-02-08T17:28:33+08:00">2019-02-08</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-03 22:57:22" itemprop="dateModified" datetime="2019-07-03T22:57:22+08:00">2019-07-03</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/02/08/编程语言学习/PYTHON/问题集/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/02/08/编程语言学习/PYTHON/问题集/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="inconsistent-use-of-tabs-and-spaces-in-indentation"><a href="#inconsistent-use-of-tabs-and-spaces-in-indentation" class="headerlink" title="inconsistent use of tabs and spaces in indentation"></a>inconsistent use of tabs and spaces in indentation</h1><p><a href="https://blog.csdn.net/godot06/article/details/80974884" target="_blank" rel="noopener">https://blog.csdn.net/godot06/article/details/80974884</a></p>
-<p><strong>这个错误目前笔者在Subline3遇到的都是看似空格实则没有空格引起的:：</strong></p>
-<p>解决方法：就是打开subline的空格制表显示就可以清楚的显示出自己是否真的空格了。</p>
-<p>Subline3显示空格制表符的设置方法：</p>
-<p>①.Preferences -&gt;  Setting</p>
-<p>②在Preferences-&gt;Settings-User中添加以下代码：（如上图）</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">"draw_white_space": "all",</span><br></pre></td></tr></table></figure>
-<h1 id="‘ascii’-codec-can’t-decode-byte-0xe2-in-position-5-ordinal-not-in-range-128"><a href="#‘ascii’-codec-can’t-decode-byte-0xe2-in-position-5-ordinal-not-in-range-128" class="headerlink" title="‘ascii’ codec can’t decode byte 0xe2 in position 5: ordinal not in range(128)"></a>‘ascii’ codec can’t decode byte 0xe2 in position 5: ordinal not in range(128)</h1><p>产生原因：</p>
-<p>有些字符加了u，有些没有加</p>
-<p>解决</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">import sys  </span><br><span class="line"></span><br><span class="line">reload(sys)  </span><br><span class="line">sys.setdefaultencoding(&apos;utf8&apos;)</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/9/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/30/">30</a><a class="extend next" rel="next" href="/page/11/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/9/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/31/">31</a><a class="extend next" rel="next" href="/page/11/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2352,7 +2280,7 @@ O\left(\sum{i = 0}^{n - 1}\left(\sum{j = i + 1}^{n}(j - i)\right)\right) = O\lef
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">300</span>
+                    <span class="site-state-item-count">308</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2415,7 +2343,11 @@ O\left(\sum{i = 0}^{n - 1}\left(\sum{j = i + 1}^{n}(j - i)\right)\right) = O\lef
                     
                       
                     
-                    <span class="site-state-item-count">23</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -2552,7 +2484,9 @@ O\left(\sum{i = 0}^{n - 1}\left(\sum{j = i + 1}^{n}(j - i)\right)\right) = O\lef
                     
                       
                     
-                    <span class="site-state-item-count">60</span>
+                      
+                    
+                    <span class="site-state-item-count">61</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
