@@ -357,7 +357,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/机器学习笔记-最大熵/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/模型评估与选择/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -377,7 +377,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/机器学习/机器学习笔记-最大熵/" class="post-title-link" itemprop="url">机器学习笔记-最大熵</a>
+                <a href="/2017/07/12/机器学习/模型评估与选择/" class="post-title-link" itemprop="url">模型评估与选择</a>
               
             
           </h1>
@@ -417,7 +417,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-03-17 20:50:31" itemprop="dateModified" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
+                <time title="修改时间：2018-01-29 21:43:42" itemprop="dateModified" datetime="2018-01-29T21:43:42+08:00">2018-01-29</time>
               </span>
             
           
@@ -449,8 +449,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/机器学习/机器学习笔记-最大熵/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/机器学习笔记-最大熵/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/机器学习/模型评估与选择/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/模型评估与选择/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -483,514 +483,30 @@
       
         
           
-            <h1 id="1、最大熵原理"><a href="#1、最大熵原理" class="headerlink" title="1、最大熵原理"></a>1、最大熵原理</h1><p>日常生活中，很多事情的发生表现出一定的随机性，试验的结果往往是不确定的，也不知道这个随机现象所服从的概率分布。<strong>最大熵的实质</strong>就是，在已知部分知识的前提下，关于未知分布最合理的推断就是符合已知知识最不确定或者最随机的推断。任何其他的选择都意味着我们增加了其他的约束和假设。</p>
-<p>将最大熵应用到分类，就是最大熵模型。给定一个训练集：</p>
-<script type="math/tex; mode=display">
-T = \{  (x_1,y_1),  (x_2,y_2),..., (x_N,y_N)\}</script><p>其中$x_i \in X$是输入，$y_i \in Y$是输出，X和Y表示输入和输出空间。N为样本数。<strong>目标是</strong>，利用最大熵原理选出一个最好的分类模型，即对于任意给定的输入$x \in X$，可以以概率$p(y|x)$输出$y \in Y$ 。</p>
-<p>按照最大熵原理，应该<strong>优先保证模型满足已知的所有约束</strong>。思路是，从训练数据T中抽取若干有用的特征，要求这些特征在T上关于经验分布$\tilde{p}(x,y)$的数学期望与它们在模型中关于$p(x,y)$的数学期望相等。这样，一个特征就是一个约束了。</p>
-<p>这里就涉及到，<strong>特征如何刻画？经验分布如何表示？</strong></p>
-<h1 id="2、特征函数"><a href="#2、特征函数" class="headerlink" title="2、特征函数"></a>2、特征函数</h1><p>假设通过特征选择，抽取若干特征。特征通常由特征函数来表示。例如</p>
-<script type="math/tex; mode=display">
-f(x,y) =\left\{\begin{matrix}
-\begin{aligned}
-& 1，若x,y满足某个事实 \\ 
-& 0，否则
-\end{aligned}
-\end{matrix}\right.</script><p>这里的特征不是指输入的某个特征，而是指输入和输出共同的特征。</p>
-<blockquote>
-<p>例如，假设我们需要判断“打”是动词还是量词，已知的训练数据有</p>
-<p>(x1,y1)=(一打火柴，量词);</p>
-<p>(x2,y2)=(三打啤酒，量词);</p>
-<p>(x3,y3)=(打电话，动词);</p>
-<p>(x4,y4)=(打篮球，动词);</p>
-<p>通过观察，发现“打”前面是数字时，是量词，“打”后面是名词时，是动词。这就是从训练数据中提取的两个特征，可分别用特征函数表示为</p>
+            <h1 id="1、模型评估方法"><a href="#1、模型评估方法" class="headerlink" title="1、模型评估方法"></a>1、模型评估方法</h1><blockquote>
+<p>可重复采样：<strong>在训练集小</strong>，难以划分训练/测试集是有用。此外，能产生多个不同训练集，对<strong>集成学习</strong>等方法有很大的好处。但是会改变初始数据集分布。</p>
+<p>在<strong>初始数据量足够</strong>时，用留出法或者交叉验证法。</p>
 </blockquote>
-<h1 id="3、经验分布"><a href="#3、经验分布" class="headerlink" title="3、经验分布"></a>3、经验分布</h1><p>经验（概率）分布就是通过对训练集T进行统计得到的分布，用$\tilde p$表示。这里列举两个经验分布</p>
+<h2 id="1-1-留出法Hold-out"><a href="#1-1-留出法Hold-out" class="headerlink" title="1.1 留出法Hold-out"></a>1.1 留出法Hold-out</h2><p>将数据集D分成两个互斥的集合。</p>
+<p>训练/测试集尽量保证数据一致性，用分层采样，正负样本同比例。</p>
+<p>由于单次估计结果往往不可靠，使用留出法时，一般要采用若干次随机划分，重复进行实验后取平均值作为评估值。      ‘</p>
+<h2 id="1-2-交叉验证法"><a href="#1-2-交叉验证法" class="headerlink" title="1.2 交叉验证法"></a>1.2 交叉验证法</h2><p>将D分成k个大小相似的互斥子集，每个子集用分层采样得到。</p>
+<p>每次用k-1个子集的并集作为训练集，余下的子集作为测试集。这样获得k组训练/测试集。最终返回是k个测试结果的均值。</p>
+<p>常用10折交叉验证。</p>
+<h2 id="1-3-可重复采样"><a href="#1-3-可重复采样" class="headerlink" title="1.3 可重复采样"></a>1.3 可重复采样</h2><p>bootstrapping sampling：给定包含m个样本的数据集D，我们进行采样产生数据集$D’$，每次随机从D中挑选一个样本，将其拷贝放入$D’$，再将样本放回D。重复m次，得到包含m个样本的$D’$。</p>
+<p>样本在m次采样中始终不被采到的概率是$(1-\frac 1 m)^m$，取极限得到</p>
 <script type="math/tex; mode=display">
-\tilde p(x,y) = \frac {count(x,y)} {N} , \tilde p(x)=\frac {count(x)} {N}</script><p>其中，count表示出现的次数。</p>
-<h1 id="4、约束条件"><a href="#4、约束条件" class="headerlink" title="4、约束条件"></a>4、约束条件</h1><p>对于任意一个特征函数f，$E<em>{\tilde p}f$ 表示f在训练数据T上关于$\tilde p(x,y)$的数学期望， $E</em>{p}f$ 表示f在训练数据T上关于$p(x,y)$的数学期望。按照期望的定义，我们有</p>
-<script type="math/tex; mode=display">
-E_{\tilde p}f=\sum_{x,y}\tilde p(x,y)f(x,y)</script><script type="math/tex; mode=display">
-E_{ p}f=\sum_{x,y} p(x,y)f(x,y)</script><p>其中，p(x,y)是未知的，而建模的目标是生成$p(y|x)$，因此，根据Bayes定理，$p(x,y)=p(x)p(y|x)$。在样本数量足够的条件下，$p(x)$可以用$\tilde p(x)$近似表示。这样</p>
-<script type="math/tex; mode=display">
-E_{ p}f=\sum_{x,y} \tilde p(x)p(y|x)f(x,y)</script><p>对于概率分布$p(y|x)$，我们希望特征f的期望值应该和从训练集中得到的特征期望值是一致的，因此，<strong>增加约束</strong></p>
-<script type="math/tex; mode=display">
-E_{ p}f=E_{\tilde p}f</script><p>假设我们从训练集中抽取了n个特征，相应的，便有n个特征函数$f_i(i=1,2,…,n)$以及n个约束条件</p>
-<script type="math/tex; mode=display">
-C_i:E_{ p}(f_i)=E_{\tilde p}(f_i) \tag {3-1}</script><blockquote>
-<p>关于约束条件的几何解释</p>
-<p><img src="/.io//最大熵1.png" alt="最大熵1"></p>
-<p>（a）：P是所有可能的概率空间，此时没有约束条件，所有的概率模型$p(y|x)$都是允许的；</p>
-<p>（b）：增加了一个线性约束条件$C_1$，此时，目标分布$p(y|x)$只能落在由$C_1$定义的线段上；</p>
-<p>（c）：在（b）的基础上增加了另一个约束条件$C_2$ ，且$C_1 \cap C_2  \neq \varnothing$。此时，目标分布只能落在交点上，即被唯一确定；</p>
-<p>（d）：在（b）基础上增加了另一个约束$C_3$，且$C_1 \cap C_2  = \varnothing$，此时不存在能够同时满足$C_1$和$C_3$的$p(y|x)$。</p>
+{\lim_{m \mapsto \infty  }}(1-\frac 1 m)^m  \mapsto \frac 1 e\approx0.368</script><p>即通过bootstrapping，D中有36.8%的样本未出现在$D’$中，于是可以将$D’$作为训练集，$D-D’$作为测试集，这样可以有1/3个未出现在训练集的样本用于测试。测试结果称为“包外估计”（out-of-bag estimate）。</p>
+<h2 id="1-4-调参"><a href="#1-4-调参" class="headerlink" title="1.4 调参"></a>1.4 调参</h2><blockquote>
+<p>我们在模型评估时往往用来确定算法和参数。当这些确定后，要用所有的D再训练一次，才是最终的模型。</p>
 </blockquote>
-<p>利用（3-1）定义的约束条件，我们定义P的一个子空间</p>
+<h1 id="2、性能度量"><a href="#2、性能度量" class="headerlink" title="2、性能度量"></a>2、性能度量</h1><p>回归最常用的是“均方误差”（mean squared error）</p>
 <script type="math/tex; mode=display">
-C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><h1 id="5、最大熵模型"><a href="#5、最大熵模型" class="headerlink" title="5、最大熵模型"></a>5、最大熵模型</h1><p>由于我们的目标是获得一个条件分布，因此这里也采用相应的条件熵</p>
+E(f;D) = \frac 1 m \sum_{i=1}^m(f(x_i)-y_i )^2</script><p>更一般的，对于数据分布D和概率密度函数$p(\cdot )$，均方误差可描述为</p>
 <script type="math/tex; mode=display">
-H(p(y|x))=-\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)</script><p>可以看出这里也是用$\tilde p(x)$来近似$p(x)$。以下将$H(p(y|x))$简记为$H(p)$。至此，可以给出最大熵模型的完整描述。</p>
-<p>对于给定的训练集T，特征函数$f_i(x,y), i=1,2,…n$，最大熵模型就是求解</p>
-<script type="math/tex; mode=display">
-\underset {p \in C} {max} \ \  H(p) = \begin{pmatrix}
--\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)
-\end{pmatrix}, \\
-s.t. \sum_y p(y|x)=1 \tag {5-1} \\
-s.t. \ C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><p>其中的s.t.是为了保证$p(y|x)$是一个（合法的）条件概率分布。</p>
-<p>等价于一个求极小值问题</p>
-<script type="math/tex; mode=display">
-\underset {p \in C} {min} \ \  -H(p) = \begin{pmatrix}
-\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)
-\end{pmatrix}, \\
-s.t. \sum_y p(y|x)=1 \tag {5-2} \\
-s.t. \ C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><h1 id="6、模型求解"><a href="#6、模型求解" class="headerlink" title="6、模型求解"></a>6、模型求解</h1><p>对于5-1的求解，主要思路和步骤如下：</p>
-<ol>
-<li>利用Lagrange乘子将最大熵模型由一个带约束的最优化问题转为无约束的最优化问题，这是一个<strong>极小极大问题（min max）</strong>。</li>
-<li>利用对偶问题等价性，转化为求解上一步得到的极大/极小问题的对偶问题，也是一个极大极小问题。</li>
-</ol>
-<h2 id="6-1-原始问题和对偶问题"><a href="#6-1-原始问题和对偶问题" class="headerlink" title="6.1 原始问题和对偶问题"></a>6.1 原始问题和对偶问题</h2><p>根据（5-2），引入拉格朗日乘子$\lambda=(\lambda_0,\lambda_1,…,\lambda_n)^T$，定义拉格朗日函数</p>
-<script type="math/tex; mode=display">
-L(p,\lambda) = -H(p) + \lambda_0(1-\sum_y p(y|x))+\sum_{i=1}^n\lambda_i(\tau_i-E_p(f_i))  \tag{6-1}</script><p>利用对偶性，求解（6-1）的<strong>原始问题</strong>表示为：</p>
-<script type="math/tex; mode=display">
-\underset {p \in C} {min}\  \underset {\lambda} {max}\ L(p,\lambda) \tag{6-2}</script><p><strong>对偶问题</strong>为：</p>
-<script type="math/tex; mode=display">
-\underset {\lambda} {max}\ \underset {p \in C} {min}\  L(p,\lambda) \tag{6-3}</script><p>由于$H(p)$是关于p的凸函数，因此要求解最大熵模型，只需求解对偶问题（6-3）即可。</p>
-<h3 id="6-1-1-指数形式的解"><a href="#6-1-1-指数形式的解" class="headerlink" title="6.1.1 指数形式的解"></a>6.1.1 指数形式的解</h3><p>首先求解内部的极小问题。由于$\underset {p \in C} {min}\  L(p,\lambda)$是关于$\lambda$的函数，将其记做：</p>
-<script type="math/tex; mode=display">
-\Psi (\lambda) =\underset {p \in C} {min}\  L(p,\lambda) = L(p_{\lambda}, \lambda) \tag {6-4}</script><p>其中</p>
-<script type="math/tex; mode=display">
-p_{\lambda}=\underset {p \in C} {argmin}\ L(p,\lambda)=p_{\lambda}(y|x) \tag {6-5}</script><p>根据拉格朗日乘子法，求$L(p,\lambda)$对$p(y|x)$的偏导，得（求解过程略）：</p>
-<script type="math/tex; mode=display">
-p_{\lambda}=\frac {1} {Z_{\lambda}(x)} \ \exp(\sum_{i=1}^n \lambda_i f_i(x,y)) \tag{6-6}</script><p>其中，</p>
-<script type="math/tex; mode=display">
-Z_{\lambda}(x)=\sum_y \exp(\sum_{i=1}^n \lambda_i f_i(x,y)) \tag{6-7}</script><p>称为<strong>规范化因子</strong>（normalizing factor）。注意，此时已经没有$\lambda_0$了。</p>
-<p>由（6-6）定义的$p_{\lambda}$就是最大熵模型的解，它具有<strong>指数形式</strong>。其中，$\lambda_i$就是特征$f_i$的权重，越大表示特征越重要。</p>
-<h3 id="6-1-2-最大似然估计"><a href="#6-1-2-最大似然估计" class="headerlink" title="6.1.2 最大似然估计"></a>6.1.2 最大似然估计</h3><p>得到对偶问题的内层极小值问题的解之后，接着求解外层的极大值问题$\underset {\lambda} {max} \ \Psi(\lambda)$。</p>
-<p>设其解为</p>
-<script type="math/tex; mode=display">
-\lambda^* = \underset {\lambda} {argmax} \ \Psi(\lambda) \tag{6-8}</script><p>则最大熵模型的解为</p>
-<script type="math/tex; mode=display">
-p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$与最大似然估计是等价的！</p>
-<h1 id="7、最优化方法"><a href="#7、最优化方法" class="headerlink" title="7、最优化方法"></a>7、最优化方法</h1><p>通用的方法有梯度下降，拟牛顿法等，最大熵模型有两个量身定做的方法：通用迭代尺度法（Generalized Iterative Scaling，GIS）和改进的迭代尺度法（Impoved Iterative Scaling，IIS）。</p>
-<h2 id="7-1-GIS算法"><a href="#7-1-GIS算法" class="headerlink" title="7.1 GIS算法"></a>7.1 GIS算法</h2><blockquote>
-<p>算法1：</p>
-<p>S1：初始化参数，令$\lambda=0$</p>
-<p>S2：计算$E_{\tilde p}(f_i),\ i=1,2,…,n$</p>
-<p>S3：执行一次迭代，对参数做一次刷新。</p>
-<p>​    计算$E<em>{p</em>{\lambda}}(f_i)$</p>
-<p>​    FOR i=1,2,…,n DO {</p>
-<p>​        $\lambda<em>i\  += \ \eta \log\frac {E</em>{\tilde p}(f<em>i)} {E</em>{p_{\lambda}}(f_i)}$</p>
-<p>​    }</p>
-<p>S4：检查是否收敛，若未收敛则继续S3</p>
-</blockquote>
-<p>其中，$\eta$是学习率，在实际中取$\frac {1} {C}$，$$，表示训练数据中包含特征最多的那个样本所包含的特征个数。</p>
-<script type="math/tex; mode=display">
-\Delta\lambda_i=\eta \log\frac {E_{\tilde p}(f_i)} {E_{p_{\lambda}}(f_i)}</script><p>是校正量。</p>
-<p>每次迭代，先用当前的权重估算每个特征$f<em>i$在训练数据中的概率分布的期望，然后逐个与相应的经验分布的期望比较，其偏差程度通过$\log\frac {E</em>{\tilde p}(f<em>i)} {E</em>{p_{\lambda}}(f_i)}$来进行刻画。</p>
-<p>收敛条件就是当两次迭代的$\lambda$在一个较小的范围。</p>
-<p>GIS每次迭代时间很长，不太稳定，容易溢出，一般不会使用。</p>
-<h2 id="7-2-IIS算法"><a href="#7-2-IIS算法" class="headerlink" title="7.2 IIS算法"></a>7.2 IIS算法</h2><p>与GIS的不同主要在$\Delta\lambda_i$的计算上。IIS通过求解方程</p>
-<script type="math/tex; mode=display">
-\sum_{x,y} \tilde p(x)p(y|x)f_i(x,y)\exp(\Delta\lambda_i\sum_{i=1}^nf_i(x,y))=\tilde p(f_i)</script><p>1）若$\sum<em>{i=1}^nf_i(x,y)$为常数，即对任意样本(x,y)，都有$\sum</em>{i=1}^nf_i(x,y)=C$，则</p>
-<script type="math/tex; mode=display">
-\Delta\lambda_i=\frac {1} {C} \log\frac {E_{\tilde p}(f_i)} {E_{p_{\lambda}}(f_i)}</script><p>此时，IIS可以看做是GIS的一种推广。</p>
-<p>2）若$\sum_{i=1}^nf_i(x,y)$不是常数，则需要通过数值方式来求解$\Delta\lambda_i$，如牛顿法。</p>
-<h1 id="8、优缺点"><a href="#8、优缺点" class="headerlink" title="8、优缺点"></a>8、优缺点</h1><p>优点是：在建模时，只需要集中精力选取特征，不需要花费精力考虑如何使用这些特征，可以灵活使用不同类型的特征。</p>
-<p>缺点是计算量大。</p>
-<p>参考</p>
-<p>【1】 <a href="http://blog.csdn.net/itplus/article/details/26550273" target="_blank" rel="noopener">最大熵学习笔记</a></p>
-<p>【2】统计学习方法</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习和深度学习算法专题/CNN/CNN/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/12/机器学习和深度学习算法专题/CNN/CNN/" class="post-title-link" itemprop="url">CNN</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-06-16 09:28:37" itemprop="dateModified" datetime="2019-06-16T09:28:37+08:00">2019-06-16</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/深度学习/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/机器学习和深度学习算法专题/CNN/CNN/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习和深度学习算法专题/CNN/CNN/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="卷积核"><a href="#卷积核" class="headerlink" title="卷积核"></a>卷积核</h1><p>也称为滤波器。</p>
-<p>权重共享：卷积核的权重（矩阵的值）对于不同位置的所有输入都是相同的。</p>
-<h2 id="卷积操作的意义"><a href="#卷积操作的意义" class="headerlink" title="卷积操作的意义"></a>卷积操作的意义</h2><p>例如，有整体边缘滤波器Ke，横向边缘滤波器Kh，纵向边缘滤波器Kv。</p>
-<script type="math/tex; mode=display">
-K_e=\begin{bmatrix}
-0 & -4 & 0\\ 
--4 & 16 & -4\\ 
-0 & -4 & 0
-\end{bmatrix}\ \ K_h=\begin{bmatrix}
-1 & 2 & 1\\ 
-0 & 0 & 0\\ 
--1 & -2 & -1
-\end{bmatrix}\ \ K_v=\begin{bmatrix}
-1 & 0 & -1\\ 
-2 & 0 & -2\\ 
-1 & 0 & -1
-\end{bmatrix}</script><p>若某像素位于物体边缘，则周边像素与该像素会有明显差异，用Ke可以放大边缘和周边的差异，起到边缘检测的作用。同理，Kh、Kv可以保留横向、纵向的边缘信息。</p>
-<h1 id="池化层"><a href="#池化层" class="headerlink" title="池化层"></a>池化层</h1><p>也叫汇合层。通常操作有平均值池化（average-pooling）和最大值汇合（max-pooling）。与卷积核操作不同，池化层不包含需要学习的参数。仅指定汇合类型，核大小（kernel size）和步长（stride）。</p>
-<p>汇合的结果相对输入降小了，是一种降采样（down-sampling）操作。也可以看成是一个用p范数（p-norm）作为非线性映射的卷积操作。当p趋于正无穷时就是最大值汇合。</p>
-<p>汇合层的引入是仿照人的视觉系统对视觉输入对象进行降维和抽象。作用有：</p>
-<p>1）特征不变性（feature invariant）。使模型更关注是否存在某些特征而不是特征具体的位置。</p>
-<p>2）特征降维。</p>
-<p>3）一定程度上防止过拟合。</p>
-<h1 id="全连接层"><a href="#全连接层" class="headerlink" title="全连接层"></a>全连接层</h1><p>fully connected layers</p>
-<p>参考：</p>
-<p>【1】解析卷积神经网络.pdf</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/算法与数据结构/优先级队列/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/12/算法与数据结构/优先级队列/" class="post-title-link" itemprop="url">优先级队列</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-02-18 10:04:47" itemprop="dateModified" datetime="2018-02-18T10:04:47+08:00">2018-02-18</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/算法与数据结构/" itemprop="url" rel="index"><span itemprop="name">算法与数据结构</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/算法与数据结构/优先级队列/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/算法与数据结构/优先级队列/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PriorityQueue</span>[<span class="type">E</span>](<span class="params">top: <span class="type">Int</span></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">import</span> <span class="type">PriorityQueue</span>.<span class="type">Entry</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">var</span> nsize = <span class="number">0</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">val</span> heap = <span class="type">Array</span>.ofDim[<span class="type">Entry</span>[<span class="type">E</span>]](top+<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Adds an Object to a PriorityQueue in log(size) time. It returns the</span></span><br><span class="line"><span class="comment">   * object (if any) that was dropped off the heap because it was full. This</span></span><br><span class="line"><span class="comment">   * can be the given parameter (in case it is smaller than the full heap's</span></span><br><span class="line"><span class="comment">   * minimum, and couldn't be added), or another object that was previously</span></span><br><span class="line"><span class="comment">   * the smallest value in the heap and now has been replaced by a larger one,</span></span><br><span class="line"><span class="comment">   * or null if the queue wasn't yet full with maxSize elements.</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">add</span></span>(key: <span class="type">Double</span>, value: <span class="type">E</span>): <span class="type">Option</span>[<span class="type">Entry</span>[<span class="type">E</span>]] = &#123;</span><br><span class="line">    <span class="keyword">if</span> (nsize &lt; top) &#123;</span><br><span class="line">      nsize += <span class="number">1</span></span><br><span class="line">      heap(nsize) = <span class="type">Entry</span>(key, value)</span><br><span class="line">      upHeap</span><br><span class="line">      <span class="type">None</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (nsize &gt; <span class="number">0</span> &amp;&amp; key &gt;= heap(<span class="number">1</span>).key) &#123;</span><br><span class="line">      <span class="keyword">val</span> old = heap(<span class="number">1</span>)</span><br><span class="line">      heap(<span class="number">1</span>) = <span class="type">Entry</span>(key, value)</span><br><span class="line">      updateTop</span><br><span class="line">      <span class="type">Some</span>(old)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="type">Some</span>(<span class="type">Entry</span>(key, value))</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">values</span></span>(): <span class="type">List</span>[<span class="type">E</span>] = &#123;</span><br><span class="line">    <span class="keyword">val</span> entries = <span class="type">Array</span>.ofDim[<span class="type">Entry</span>[<span class="type">E</span>]](nsize)</span><br><span class="line">    <span class="type">System</span>.arraycopy(heap, <span class="number">1</span>, entries, <span class="number">0</span>, nsize)</span><br><span class="line">    entries sortBy(-_.key) map(_.value) toList</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Removes and returns the least element of the PriorityQueue in log(size)</span></span><br><span class="line"><span class="comment">   * time.</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">pop</span></span>(): <span class="type">Option</span>[<span class="type">Entry</span>[<span class="type">E</span>]] = &#123;</span><br><span class="line">    <span class="keyword">if</span> (nsize &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="keyword">val</span> result = heap(<span class="number">1</span>)</span><br><span class="line">      heap(<span class="number">1</span>) = heap(nsize)</span><br><span class="line">      heap(nsize) = <span class="literal">null</span></span><br><span class="line">      nsize -= <span class="number">1</span></span><br><span class="line">      downHeap</span><br><span class="line">      <span class="type">Some</span>(result)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="type">None</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/** Returns the number of elements currently stored in the PriorityQueue. */</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">size</span></span>(): <span class="type">Int</span> = nsize</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Should be called when the Object at top changes values. Still log(n)</span></span><br><span class="line"><span class="comment">   * worst case, but it's at least twice as fast to</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * &lt;pre&gt;</span></span><br><span class="line"><span class="comment">   * pq.top().change();</span></span><br><span class="line"><span class="comment">   * pq.updateTop();</span></span><br><span class="line"><span class="comment">   * &lt;/pre&gt;</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * instead of</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * &lt;pre&gt;</span></span><br><span class="line"><span class="comment">   * o = pq.pop();</span></span><br><span class="line"><span class="comment">   * o.change();</span></span><br><span class="line"><span class="comment">   * pq.push(o);</span></span><br><span class="line"><span class="comment">   * &lt;/pre&gt;</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * @return the new 'top' element.</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">updateTop</span></span>(): <span class="type">Entry</span>[<span class="type">E</span>] = &#123;</span><br><span class="line">    downHeap</span><br><span class="line">    heap(<span class="number">1</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="function"><span class="keyword">def</span> <span class="title">upHeap</span></span>(): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">var</span> i = nsize</span><br><span class="line">    <span class="keyword">val</span> node = heap(i)</span><br><span class="line">    <span class="keyword">var</span> j = i &gt;&gt;&gt; <span class="number">1</span></span><br><span class="line">    <span class="keyword">while</span> (j &gt; <span class="number">0</span> &amp;&amp; node.key &lt; heap(j).key) &#123;</span><br><span class="line">      heap(i) = heap(j)</span><br><span class="line">      i = j</span><br><span class="line">      j = j &gt;&gt;&gt; <span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line">    heap(i) = node</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="function"><span class="keyword">def</span> <span class="title">downHeap</span></span>(): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">var</span> i = <span class="number">1</span></span><br><span class="line">    <span class="keyword">val</span> node = heap(i)</span><br><span class="line">    <span class="keyword">var</span> j = i &lt;&lt; <span class="number">1</span></span><br><span class="line">    <span class="keyword">var</span> k = j + <span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span> (k &lt;= nsize &amp;&amp; heap(k).key &lt; heap(j).key) &#123;</span><br><span class="line">      j = k</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span> (j &lt;= nsize &amp;&amp; heap(j).key &lt; node.key) &#123;</span><br><span class="line">      heap(i) = heap(j)</span><br><span class="line">      i = j</span><br><span class="line">      j = i &lt;&lt; <span class="number">1</span></span><br><span class="line">      k = j + <span class="number">1</span></span><br><span class="line">      <span class="keyword">if</span> (k &lt;= nsize &amp;&amp; heap(k).key &lt; heap(j).key) &#123;</span><br><span class="line">        j = k</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    heap(i) = node</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">PriorityQueue</span> </span>&#123;</span><br><span class="line">  <span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>[<span class="type">E</span>](<span class="params">key: <span class="type">Double</span>, value: <span class="type">E</span></span>)</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">  <span class="title">def</span> <span class="title">main</span>(<span class="params">args: <span class="type">Array</span>[<span class="type">String</span>]</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">val</span> pq = <span class="keyword">new</span> <span class="type">PriorityQueue</span>[(<span class="type">Int</span>, <span class="type">Double</span>)](<span class="number">4</span>)</span><br><span class="line">    <span class="keyword">val</span> ds = <span class="type">Array</span>[<span class="type">Double</span>](<span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.7</span>, <span class="number">0.2</span>, <span class="number">0.2</span>, <span class="number">0.3</span>, <span class="number">0.3</span>, <span class="number">0.5</span>, <span class="number">0.5</span>, <span class="number">0.5</span>)</span><br><span class="line">    <span class="keyword">for</span> (i &lt;- <span class="number">0</span> until ds.length) &#123;</span><br><span class="line">      <span class="keyword">val</span> e = pq.add(ds(i), (i, ds(i)))</span><br><span class="line">      println((i, ds(i)) + <span class="string">" =&gt; "</span> + e)</span><br><span class="line">    &#125;</span><br><span class="line">    println(pq.values)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复杂</p>
+<h2 id="2-1-错误率和精度"><a href="#2-1-错误率和精度" class="headerlink" title="2.1 错误率和精度"></a>2.1 错误率和精度</h2><p>错误率：分类错误的样本占总样本的比例</p>
+<p>精度：分类正确的样本占总样本的比例</p>
 
           
         
@@ -1243,7 +759,7 @@ K_e=\begin{bmatrix}
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark笔记-local开发/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/模型集成/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -1263,7 +779,7 @@ K_e=\begin{bmatrix}
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/hadoop-spark/spark/spark笔记-local开发/" class="post-title-link" itemprop="url">spark笔记-local开发</a>
+                <a href="/2017/07/12/机器学习/模型集成/" class="post-title-link" itemprop="url">模型集成</a>
               
             
           </h1>
@@ -1303,7 +819,7 @@ K_e=\begin{bmatrix}
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-11-13 10:00:42" itemprop="dateModified" datetime="2018-11-13T10:00:42+08:00">2018-11-13</time>
+                <time title="修改时间：2018-02-11 09:26:22" itemprop="dateModified" datetime="2018-02-11T09:26:22+08:00">2018-02-11</time>
               </span>
             
           
@@ -1317,7 +833,7 @@ K_e=\begin{bmatrix}
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
 
                 
                 
@@ -1335,8 +851,8 @@ K_e=\begin{bmatrix}
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/hadoop-spark/spark/spark笔记-local开发/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/spark/spark笔记-local开发/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/机器学习/模型集成/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/模型集成/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1369,47 +885,427 @@ K_e=\begin{bmatrix}
       
         
           
-            <h1 id="mac安装spark环境"><a href="#mac安装spark环境" class="headerlink" title="mac安装spark环境"></a>mac安装spark环境</h1><p><a href="https://blog.csdn.net/python_tty/article/details/72820469" target="_blank" rel="noopener">https://blog.csdn.net/python_tty/article/details/72820469</a></p>
-<h2 id="安装scala"><a href="#安装scala" class="headerlink" title="安装scala"></a>安装scala</h2><p><a href="https://downloads.lightbend.com/scala/2.10.7/scala-2.10.7.tgz" target="_blank" rel="noopener">2.10.7</a></p>
-<p>下载后放到<code>david/david/opt/scala</code></p>
-<p>修改<code>.bash_profile</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export SCALA_HOME=&quot;/Users/david/david/opt/scala-2.10.7&quot;</span><br><span class="line">export PATH=&quot;$SCALA_HOME/bin:$PATH&quot;</span><br></pre></td></tr></table></figure>
-<h2 id="下载spark"><a href="#下载spark" class="headerlink" title="下载spark"></a>下载spark</h2><p><a href="http://spark.apache.org/downloads.html" target="_blank" rel="noopener">http://spark.apache.org/downloads.html</a></p>
-<p>下载的是1.6.3的版本</p>
-<p>加到环境变量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export SPARK_HOME=&quot;/Users/david/david/opt/spark-1.6.3-bin-hadoop2.6&quot;</span><br><span class="line">export PATH=&quot;$SPARK_HOME/bin:$PATH&quot;</span><br></pre></td></tr></table></figure>
-<h2 id="允许ssh"><a href="#允许ssh" class="headerlink" title="允许ssh"></a>允许ssh</h2><h2 id="启动spark-shell"><a href="#启动spark-shell" class="headerlink" title="启动spark-shell"></a>启动spark-shell</h2><p>进入到spark安装目录的sbin/目录下，执行 ./start-all 启动spark </p>
-<p>进入到spark安装目录的bin/目录下，执行 ./spark-shell，看spark 是否安装成功</p>
-<h1 id="spark开发环境"><a href="#spark开发环境" class="headerlink" title="spark开发环境"></a>spark开发环境</h1><p>一、环境</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">			&lt;groupId&gt;org.apache.spark&lt;/groupId&gt;</span><br><span class="line">			&lt;artifactId&gt;spark-core_2.10&lt;/artifactId&gt;</span><br><span class="line">			&lt;version&gt;1.6.1&lt;/version&gt;</span><br><span class="line">		&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<p>二、编写local的spark程序<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">import org.apache.log4j.&#123; Level, Logger &#125;</span><br><span class="line">import org.apache.spark.&#123; SparkConf, SparkContext &#125;</span><br><span class="line"></span><br><span class="line">def main(args: Array[String]): Unit = &#123;</span><br><span class="line">    //关闭一些不必要的日志</span><br><span class="line">    Logger.getLogger(&quot;org.apache.spark&quot;).setLevel(Level.WARN)</span><br><span class="line">    Logger.getLogger(&quot;org.eclipse.jetty.server&quot;).setLevel(Level.OFF)</span><br><span class="line">    </span><br><span class="line">    val conf = new SparkConf().setAppName(&quot;wordSegname&quot;).setMaster(&quot;local[4]&quot;).</span><br><span class="line">    set(&quot;spark.sql.shuffle.partitions&quot;,&quot;10&quot;).set(&quot;spark.network.timeout&quot;,&quot;30s&quot;)</span><br><span class="line">    .set(&quot;spark.shuffle.compress&quot;,&quot;true&quot;).set(&quot;spark.shuffle.spill.compress&quot;,&quot;true&quot;)</span><br><span class="line">    .set(&quot;spark.shuffle.manager&quot;,&quot;sort&quot;)</span><br><span class="line">    val sc = new SparkContext(conf)</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
-<p>程序示例<code>[WordTest.scala](../../../../code/spark/spark-buzzads/src/main/scala/com/iclick/word_segmentation/WordTest.scala)</code></p>
-<h1 id="spark数据操作"><a href="#spark数据操作" class="headerlink" title="spark数据操作"></a>spark数据操作</h1><h2 id="sparkRDD"><a href="#sparkRDD" class="headerlink" title="sparkRDD"></a>sparkRDD</h2><h3 id="创建RDD"><a href="#创建RDD" class="headerlink" title="创建RDD"></a>创建RDD</h3><p>1、数据集合</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">    var data = Array(1,2,3,4,5,6,7,8,9)</span><br><span class="line">    var disData = sc.parallelize(data,3)</span><br></pre></td></tr></table></figure>
-<p>创建一个RDD，包括1-9，分在3个分区</p>
-<p>2、外部数据源</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">textFile(path:String, minPartitions:Int) //第一个指定路径，第二个指定分区</span><br></pre></td></tr></table></figure>
-<h3 id="RDD转换"><a href="#RDD转换" class="headerlink" title="RDD转换"></a>RDD转换</h3><p>1、map，对每个元素执行一个指定函数产生新的RDD<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val rdd1 = sc.parallelize(1 to 9, 3)</span><br><span class="line">val rdd2 = rdd1.map(x =&gt; x*2)</span><br></pre></td></tr></table></figure></p>
-<h1 id="spark-hive-local"><a href="#spark-hive-local" class="headerlink" title="spark hive local"></a>spark hive local</h1><p>local的spark连接测试服务器的hive</p>
-<p>1、复制hive环境上的<code>hdfs-site.xml</code>和<code>hive-site.xml</code>到项目的resource，如果有不识别的hostname则修改</p>
-<p>2、写法类似于</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.mljr.spark.gps.sample</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.spark.&#123;<span class="type">SparkConf</span>, <span class="type">SparkContext</span>&#125;</span><br><span class="line"><span class="keyword">import</span> org.apache.spark.sql.hive.<span class="type">HiveContext</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">HiveTest</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">val</span> conf = <span class="keyword">new</span> <span class="type">SparkConf</span>().setAppName(<span class="string">"test"</span>).setMaster(<span class="string">"local[2]"</span>)</span><br><span class="line">    <span class="keyword">val</span> sc = <span class="keyword">new</span> <span class="type">SparkContext</span>(conf)</span><br><span class="line">    <span class="keyword">val</span> sqlContext = <span class="keyword">new</span> <span class="type">HiveContext</span>(sc)</span><br><span class="line">    sqlContext.sql(<span class="string">"SELECT * FROM bdwh_tbl.tbl_s057_car_gps_position limit 1"</span>).collect.foreach(println)</span><br><span class="line">	sc.stop()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.lang.RuntimeException: Unable to instantiate org.apache.hadoop.hive.ql.metadata.Session</span><br></pre></td></tr></table></figure>
-<p>这是因为在创建<code>SQLContext</code>实例的时候，要求spark编译的Hive版本和HiveMetaStore里面记录的Hive版本一致，我们可以通过配置<code>hive.metastore.schema.verification</code>参数来取消这种验证，这个参数的默认值是true，我们可以取消验证，配置如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;property&gt;  </span><br><span class="line">   &lt;name&gt;hive.metastore.schema.verification&lt;/name&gt;  </span><br><span class="line">   &lt;value&gt;false&lt;/value&gt;  </span><br><span class="line">    &lt;description&gt;  </span><br><span class="line">    Enforce metastore schema version consistency.  </span><br><span class="line">    True: Verify that version information stored in metastore matches with one from Hive jars.  Also disable automatic  </span><br><span class="line">          schema migration attempt. Users are required to manully migrate schema after Hive upgrade which ensures  </span><br><span class="line">          proper metastore schema migration. (Default)  </span><br><span class="line">    False: Warn if the version information stored in metastore doesn&apos;t match with one from in Hive jars.  </span><br><span class="line">    &lt;/description&gt;  </span><br><span class="line"> &lt;/property&gt;</span><br></pre></td></tr></table></figure>
-<p>再报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Could not connect to meta store using any of the URIs provided. Most recent failure: org.apache.thrift.transport.TTransportException: java.net.UnknownHostException: slave1</span><br></pre></td></tr></table></figure>
-<h1 id="控制日志输出级别"><a href="#控制日志输出级别" class="headerlink" title="控制日志输出级别"></a>控制日志输出级别</h1><p>修改log4j.properties</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">log4j.rootCategory=WARN, console</span><br></pre></td></tr></table></figure>
-<p>默认是<code>INFO, console</code>，</p>
-<p>更丰富的可以是<code>STDOUT, DEBUG, INFO, console</code></p>
-<p>精简的是<code>WARN, console</code></p>
-<h1 id="no-snappyjava-in-java-library-path"><a href="#no-snappyjava-in-java-library-path" class="headerlink" title="no snappyjava in java.library.path"></a>no snappyjava in java.library.path</h1><p><a href="https://stackoverflow.com/questions/30039976/unsatisfiedlinkerror-no-snappyjava-in-java-library-path-when-running-spark-mlli" target="_blank" rel="noopener">https://stackoverflow.com/questions/30039976/unsatisfiedlinkerror-no-snappyjava-in-java-library-path-when-running-spark-mlli</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.apache.spark&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spark-core_2.10&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;$&#123;spark.version&#125;&lt;/version&gt;</span><br><span class="line">    &lt;exclusions&gt;</span><br><span class="line">        &lt;exclusion&gt;</span><br><span class="line">           &lt;groupId&gt;org.xerial.snappy&lt;/groupId&gt;</span><br><span class="line">           &lt;artifactId&gt;snappy-java&lt;/artifactId&gt;</span><br><span class="line">        &lt;/exclusion&gt;</span><br><span class="line">    &lt;/exclusions&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<p>and then adding</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.xerial.snappy&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;snappy-java&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;1.0.5&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<h2 id=""><a href="#" class="headerlink" title=" "></a> </h2>
+            <p><a href="https://www.jiqizhixin.com/articles/2018-01-14-8" target="_blank" rel="noopener">每个Kaggle冠军的获胜法门：揭秘Python中的模型集成</a></p>
+<p><img src="https://image.jiqizhixin.com/uploads/wangeditor/c897487a-bf02-4023-9355-24c747d7ef62/43133image%20(1" alt="">.png)</p>
+<p>Example Schematics of an ensemble.  An input array X is fed through two proprocessing pipelines and then to a set of base learners f(i). The ensemble combines all base learner predictions into a final prediction array P. </p>
+<p>By the end of the post, you will:</p>
+<ul>
+<li>understand the fundamentals of ensembles</li>
+<li>know how to code them</li>
+<li>understand the main pitfalls and drawbacks of ensembles</li>
+</ul>
+<h2 id="Predicting-Republican-and-Democratic-donations"><a href="#Predicting-Republican-and-Democratic-donations" class="headerlink" title="Predicting Republican and Democratic donations"></a>Predicting Republican and Democratic donations</h2><p>we’ll use a data set on U.S. political contributions. The <a href="https://github.com/fivethirtyeight/data/tree/master/science-giving" target="_blank" rel="noopener">original data set</a> was prepared by <a href="https://fivethirtyeight.com/contributors/ben-wieder/" target="_blank" rel="noopener">Ben Wieder</a> at <a href="https://fivethirtyeight.com/" target="_blank" rel="noopener">FiveThirtyEight</a>, who dug around the U.S. government’s political contribution registry and found that when <a href="https://fivethirtyeight.com/features/when-scientists-donate-to-politicians-its-usually-to-democrats/" target="_blank" rel="noopener">scientists donate to politician, it’s usually to Democrats</a>.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">%matplotlib inline</span><br><span class="line"></span><br><span class="line"><span class="comment">### Import data</span></span><br><span class="line"><span class="comment"># Always good to set a seed for reproducibility</span></span><br><span class="line">SEED = <span class="number">222</span></span><br><span class="line">np.random.seed(SEED)</span><br><span class="line"></span><br><span class="line">df = pd.read_csv(<span class="string">'input.csv'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">### Training and test set</span></span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> roc_auc_score</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_train_test</span><span class="params">(test_size=<span class="number">0.95</span>)</span>:</span></span><br><span class="line">    <span class="string">"""Split Data into train and test sets."""</span></span><br><span class="line">    y = <span class="number">1</span> * (df.cand_pty_affiliation == <span class="string">"REP"</span>)</span><br><span class="line">    X = df.drop([<span class="string">"cand_pty_affiliation"</span>], axis=<span class="number">1</span>)</span><br><span class="line">    X = pd.get_dummies(X, sparse=<span class="keyword">True</span>)</span><br><span class="line">    X.drop(X.columns[X.std() == <span class="number">0</span>], axis=<span class="number">1</span>, inplace=<span class="keyword">True</span>)</span><br><span class="line">    <span class="keyword">return</span> train_test_split(X, y, test_size=test_size, random_state=SEED)</span><br><span class="line"></span><br><span class="line">xtrain, xtest, ytrain, ytest = get_train_test()</span><br><span class="line"></span><br><span class="line"><span class="comment"># A look at the data</span></span><br><span class="line">print(<span class="string">"\nExample data:"</span>)</span><br><span class="line">df.head()</span><br><span class="line"></span><br><span class="line">df.cand_pty_affiliation.value_counts(normalize=<span class="keyword">True</span>).plot(</span><br><span class="line">    kind=<span class="string">"bar"</span>, title=<span class="string">"Share of No. donations"</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p>This claim is based on the observation on the share of donations being made to Republicans and Democrats. However, there’s plenty more that can be said: for instance, which scientific discipline is most likely to make a Republican donation, and which state is most likely to make Democratic donations? We will go one step further and <em>predict</em> whether a donation is most likely to be a to a Republican or Democrat.</p>
+<h2 id="What-is-an-ensemble"><a href="#What-is-an-ensemble" class="headerlink" title="What is an ensemble?"></a>What is an ensemble?</h2><p>Combining predictions from several models averages out idiosyncratic errors and yield better overall predictions.</p>
+<p>How to combine predictions?</p>
+<p>Machine learning is remarkably similar in classification problems: <strong>taking the most common class label prediction is equivalent to a majority voting rule</strong>. But there are many other ways to combine predictions, and more generally we can use a <strong>model to <em>learn</em></strong> how to best combine predictions.</p>
+<h3 id="Understanding-ensembles-by-combining-decision-trees"><a href="#Understanding-ensembles-by-combining-decision-trees" class="headerlink" title="Understanding ensembles by combining decision trees"></a>Understanding ensembles by combining decision trees</h3><p>The deeper the tree, the more complex the patterns it can capture, but the <strong>more prone</strong> to overfitting it will be. Because of this, we will need an alternative way of building complex models of decision trees, and an ensemble of different decision trees is one such way.</p>
+<p>We’ll use the below helper function to visualize our decision rules:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pydotplus  <span class="comment"># you can install pydotplus with: pip install pydotplus </span></span><br><span class="line"><span class="keyword">from</span> IPython.display <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> roc_auc_score</span><br><span class="line"><span class="keyword">from</span> sklearn.tree <span class="keyword">import</span> DecisionTreeClassifier, export_graphviz</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">print_graph</span><span class="params">(clf, feature_names)</span>:</span></span><br><span class="line">    <span class="string">"""Print decision tree."""</span></span><br><span class="line">    graph = export_graphviz(</span><br><span class="line">        clf,</span><br><span class="line">        label=<span class="string">"root"</span>,</span><br><span class="line">        proportion=<span class="keyword">True</span>,</span><br><span class="line">        impurity=<span class="keyword">False</span>, </span><br><span class="line">        out_file=<span class="keyword">None</span>, </span><br><span class="line">        feature_names=feature_names,</span><br><span class="line">        class_names=&#123;<span class="number">0</span>: <span class="string">"D"</span>, <span class="number">1</span>: <span class="string">"R"</span>&#125;,</span><br><span class="line">        filled=<span class="keyword">True</span>,</span><br><span class="line">        rounded=<span class="keyword">True</span></span><br><span class="line">    )</span><br><span class="line">    graph = pydotplus.graph_from_dot_data(graph)  </span><br><span class="line">    <span class="keyword">return</span> Image(graph.create_png())</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark-streaming笔记/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/07/12/hadoop-spark/spark/spark-streaming笔记/" class="post-title-link" itemprop="url">spark-streaming笔记</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-01-30 15:47:26" itemprop="dateModified" datetime="2018-01-30T15:47:26+08:00">2018-01-30</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2017/07/12/hadoop-spark/spark/spark-streaming笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/spark/spark-streaming笔记/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="spark-streaming的示例"><a href="#spark-streaming的示例" class="headerlink" title="spark streaming的示例"></a>spark streaming的示例</h1><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span>   <span class="title">main</span> </span>( args : <span class="type">Array</span>[ <span class="type">String</span> ]): <span class="type">Unit</span> = &#123;</span><br><span class="line">         <span class="comment">//关闭一些不必要的日志</span></span><br><span class="line">        <span class="type">Logger</span>. getLogger ( <span class="string">"org.apache.spark"</span> ). setLevel (<span class="type">Level</span>. <span class="type">WARN</span> )</span><br><span class="line">        <span class="type">Logger</span>. getLogger ( <span class="string">"org.eclipse.jetty.server"</span> ). setLevel (<span class="type">Level</span>. <span class="type">OFF</span> )</span><br><span class="line">      </span><br><span class="line">         <span class="keyword">val</span>   conf  =  <span class="keyword">new</span>  <span class="type">SparkConf</span>(). setAppName ( <span class="string">"wordStreaming"</span> ). setMaster ( <span class="string">"local[2]"</span> ).</span><br><span class="line">         set ( <span class="string">"spark.sql.shuffle.partitions"</span> , <span class="string">"10"</span> ). set ( <span class="string">"spark.network.timeout"</span> , <span class="string">"30s"</span> )</span><br><span class="line">        . set ( <span class="string">"spark.shuffle.compress"</span> , <span class="string">"true"</span> ). set ( <span class="string">"spark.shuffle.spill.compress"</span> , <span class="string">"true"</span> )</span><br><span class="line">        . set ( <span class="string">"spark.shuffle.manager"</span> , <span class="string">"sort"</span> )</span><br><span class="line">         <span class="keyword">val</span>   sc  =  <span class="keyword">new</span>  <span class="type">SparkContext</span>( conf )</span><br><span class="line">        </span><br><span class="line">         <span class="comment">// 创建 StreamingContext，1 秒一个批次。这里要用 sc ，而不是 conf ，因为 sc 已经创建了</span></span><br><span class="line">         <span class="keyword">val</span>   ssc  =  <span class="keyword">new</span>  <span class="type">StreamingContext</span>( sc ,  <span class="type">Seconds</span> ( <span class="number">1</span> ))</span><br><span class="line">         <span class="comment">// 获得一个 DStream 负责连接 监听端口:地址</span></span><br><span class="line">         <span class="keyword">val</span>   lines  =  ssc . socketTextStream ( <span class="string">"192.168.37.129"</span> ,  <span class="number">9999</span> )</span><br><span class="line">         <span class="comment">// 对每一行数据执行 Split 操作</span></span><br><span class="line">         <span class="keyword">val</span>   words  =  lines . flatMap ( _. split ( <span class="string">" "</span> ) )</span><br><span class="line">         <span class="comment">// 统计 word 的数量</span></span><br><span class="line">         <span class="keyword">val</span>   pairs  =  words . map ( word  =&gt; ( word ,  <span class="number">1</span> ))</span><br><span class="line">         <span class="keyword">val</span>   wordCounts  =  pairs . reduceByKey (_  +  _)</span><br><span class="line">         <span class="comment">// 输出结果</span></span><br><span class="line">         wordCounts . print ()</span><br><span class="line">        </span><br><span class="line">         ssc . start ()</span><br><span class="line">         ssc . awaitTermination () &#125;</span><br></pre></td></tr></table></figure>
+<p>一开始会报错：<br>Exception in thread “main”  org.apache.spark.SparkException : Only one SparkContext may be running in this JVM (see SPARK-2243). To ignore this error, set spark.driver.allowMultipleContexts = true. The currently running SparkContext was created at: org.apache.spark.SparkContext.<init>( SparkContext.scala:82 )</init></p>
+<p>错误是在<br>val   ssc  =  new  StreamingContext( conf ,  Seconds ( 1 ))   </p>
+<p>因为之前sc已经创建了，所以这里的conf要改成sc</p>
+<p>之后，在 192.168.37.129上启动netcat<br>nc -lk 9999<br>输入hello world</p>
+<p>再启动spark的程序，可以看出会输出<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Time: 1462790166000 ms</span><br><span class="line"></span><br><span class="line">(hello,1)</span><br><span class="line">(world,1)</span><br></pre></td></tr></table></figure></p>
+<h1 id="streaming读取本地文件"><a href="#streaming读取本地文件" class="headerlink" title="streaming读取本地文件"></a>streaming读取本地文件</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val lines = ssc.textFileStream(&quot;E:\\spark&quot;)</span><br></pre></td></tr></table></figure>
+<p>每当该文件夹内有新文件生成，就会自动读取</p>
+<blockquote>
+<p>Spark Streaming将会监控dataDirectory目录，并且处理目录下生成的任何文件（嵌套目录不被支持）。需要注意一下三点：<br>1 所有文件必须具有相同的数据格式<br>2 所有文件必须在<code>dataDirectory</code>目录下创建，文件是自动的移动和重命名到数据目录下<br>3 一旦移动，文件必须被修改。所以如果文件被持续的附加数据，新的数据不会被读取。<br>对于简单的文本文件，有一个更简单的方法streamingContext.textFileStream(dataDirectory)可以被调用。文件流不需要运行一个receiver，所以不需要分配核。</p>
+</blockquote>
+<h1 id="spark-streaming连接kafka"><a href="#spark-streaming连接kafka" class="headerlink" title="spark streaming连接kafka"></a>spark streaming连接kafka</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val topics = Set(&quot;test1&quot;)</span><br><span class="line">val kafkaParm = Map(&quot;metadata.broker.list&quot; -&gt; &quot;192.168.255.128:9092&quot;)</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习和深度学习算法专题/CNN/CNN/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/07/12/机器学习和深度学习算法专题/CNN/CNN/" class="post-title-link" itemprop="url">CNN</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-16 09:28:37" itemprop="dateModified" datetime="2019-06-16T09:28:37+08:00">2019-06-16</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/深度学习/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2017/07/12/机器学习和深度学习算法专题/CNN/CNN/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习和深度学习算法专题/CNN/CNN/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="卷积核"><a href="#卷积核" class="headerlink" title="卷积核"></a>卷积核</h1><p>也称为滤波器。</p>
+<p>权重共享：卷积核的权重（矩阵的值）对于不同位置的所有输入都是相同的。</p>
+<h2 id="卷积操作的意义"><a href="#卷积操作的意义" class="headerlink" title="卷积操作的意义"></a>卷积操作的意义</h2><p>例如，有整体边缘滤波器Ke，横向边缘滤波器Kh，纵向边缘滤波器Kv。</p>
+<script type="math/tex; mode=display">
+K_e=\begin{bmatrix}
+0 & -4 & 0\\ 
+-4 & 16 & -4\\ 
+0 & -4 & 0
+\end{bmatrix}\ \ K_h=\begin{bmatrix}
+1 & 2 & 1\\ 
+0 & 0 & 0\\ 
+-1 & -2 & -1
+\end{bmatrix}\ \ K_v=\begin{bmatrix}
+1 & 0 & -1\\ 
+2 & 0 & -2\\ 
+1 & 0 & -1
+\end{bmatrix}</script><p>若某像素位于物体边缘，则周边像素与该像素会有明显差异，用Ke可以放大边缘和周边的差异，起到边缘检测的作用。同理，Kh、Kv可以保留横向、纵向的边缘信息。</p>
+<h1 id="池化层"><a href="#池化层" class="headerlink" title="池化层"></a>池化层</h1><p>也叫汇合层。通常操作有平均值池化（average-pooling）和最大值汇合（max-pooling）。与卷积核操作不同，池化层不包含需要学习的参数。仅指定汇合类型，核大小（kernel size）和步长（stride）。</p>
+<p>汇合的结果相对输入降小了，是一种降采样（down-sampling）操作。也可以看成是一个用p范数（p-norm）作为非线性映射的卷积操作。当p趋于正无穷时就是最大值汇合。</p>
+<p>汇合层的引入是仿照人的视觉系统对视觉输入对象进行降维和抽象。作用有：</p>
+<p>1）特征不变性（feature invariant）。使模型更关注是否存在某些特征而不是特征具体的位置。</p>
+<p>2）特征降维。</p>
+<p>3）一定程度上防止过拟合。</p>
+<h1 id="全连接层"><a href="#全连接层" class="headerlink" title="全连接层"></a>全连接层</h1><p>fully connected layers</p>
+<p>参考：</p>
+<p>【1】解析卷积神经网络.pdf</p>
+
           
         
       
@@ -1744,7 +1640,7 @@ K_e=\begin{bmatrix}
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/算法与数据结构/最长公共子串/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/机器学习笔记-最大熵/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -1764,7 +1660,7 @@ K_e=\begin{bmatrix}
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/算法与数据结构/最长公共子串/" class="post-title-link" itemprop="url">最长公共子串</a>
+                <a href="/2017/07/12/机器学习/机器学习笔记-最大熵/" class="post-title-link" itemprop="url">机器学习笔记-最大熵</a>
               
             
           </h1>
@@ -1818,7 +1714,7 @@ K_e=\begin{bmatrix}
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/算法与数据结构/" itemprop="url" rel="index"><span itemprop="name">算法与数据结构</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
 
                 
                 
@@ -1836,8 +1732,8 @@ K_e=\begin{bmatrix}
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/算法与数据结构/最长公共子串/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/算法与数据结构/最长公共子串/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/机器学习/机器学习笔记-最大熵/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/机器学习笔记-最大熵/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1870,205 +1766,123 @@ K_e=\begin{bmatrix}
       
         
           
-            <p>找出最长子串，需要知道子串的<strong>起始位置</strong>和子串的<strong>长度</strong>。</p>
-<p>因此，维护一个二维数组，存放两个字符串的字符关系，再创建两个变量存放index和maxLen。</p>
-<p><img src="https://segmentfault.com/img/remote/1460000007963599?w=684&amp;h=644" alt=""></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">findLcsNew</span><span class="params">(String str1, String str2)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">int</span> len1, len2;</span><br><span class="line">		len1 = str1.length();</span><br><span class="line">		len2 = str2.length();</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">int</span> maxLen = <span class="number">0</span>, index = <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">int</span>[][] arr = <span class="keyword">new</span> <span class="keyword">int</span>[len1 + <span class="number">1</span>][len2 + <span class="number">1</span>];</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len1; i++) &#123;</span><br><span class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; len2; j++) &#123;</span><br><span class="line">				<span class="keyword">if</span> ( i == <span class="number">0</span> || j == <span class="number">0</span> ) &#123;</span><br><span class="line">                  <span class="comment">// 第一行和第一列都是0</span></span><br><span class="line">					arr[i][j] = <span class="number">0</span>;</span><br><span class="line">				&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                  <span class="comment">// 该字符和上一个字符均相等时</span></span><br><span class="line">					<span class="keyword">if</span> (str1.charAt(i) == str2.charAt(j) &amp;&amp; str1.charAt(i-<span class="number">1</span>) == str2.charAt(j-<span class="number">1</span>)) &#123;</span><br><span class="line">						arr[i][j] = arr[i-<span class="number">1</span>][j-<span class="number">1</span>] + <span class="number">1</span>;</span><br><span class="line">					&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">						arr[i][j] = <span class="number">0</span>;</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				</span><br><span class="line">				<span class="keyword">if</span> (arr[i][j] &gt; maxLen) &#123;</span><br><span class="line">					maxLen = arr[i][j];</span><br><span class="line">					index = i;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		String newStr = str1.substring(index - maxLen, index + <span class="number">1</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">return</span> newStr;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-<p>也可以用一维数组实现，同时可以记录多个相同长度的最长子串</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">findLcs</span><span class="params">(String str1, String str2)</span> </span>&#123;</span><br><span class="line">	StringBuffer buff = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">	<span class="keyword">int</span> i, j;</span><br><span class="line">	<span class="keyword">int</span> len1, len2;</span><br><span class="line">	len1 = str1.length();</span><br><span class="line">	len2 = str2.length();</span><br><span class="line">	<span class="keyword">int</span> maxLen = len1 &gt; len2 ? len1 : len2;</span><br><span class="line">	<span class="keyword">int</span>[] max = <span class="keyword">new</span> <span class="keyword">int</span>[maxLen];</span><br><span class="line">	<span class="keyword">int</span>[] maxIndex = <span class="keyword">new</span> <span class="keyword">int</span>[maxLen];</span><br><span class="line">	<span class="keyword">int</span>[] c = <span class="keyword">new</span> <span class="keyword">int</span>[maxLen];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; len2; i++) &#123;</span><br><span class="line">		<span class="keyword">for</span> (j = len1 - <span class="number">1</span>; j &gt;= <span class="number">0</span>; j--) &#123;</span><br><span class="line">			<span class="keyword">if</span> (str2.charAt(i) == str1.charAt(j)) &#123;</span><br><span class="line">				<span class="keyword">if</span> ((i == <span class="number">0</span>) || (j == <span class="number">0</span>))</span><br><span class="line">					c[j] = <span class="number">1</span>;</span><br><span class="line">				<span class="keyword">else</span></span><br><span class="line">					c[j] = c[j - <span class="number">1</span>] + <span class="number">1</span>;</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				c[j] = <span class="number">0</span>;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> (c[j] &gt; max[<span class="number">0</span>]) &#123; <span class="comment">// 如果是大于那暂时只有一个是最长的,而且要把后面的清0;</span></span><br><span class="line">				max[<span class="number">0</span>] = c[j];</span><br><span class="line">				maxIndex[<span class="number">0</span>] = j;</span><br><span class="line"></span><br><span class="line">				<span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">1</span>; k &lt; maxLen; k++) &#123;</span><br><span class="line">					max[k] = <span class="number">0</span>;</span><br><span class="line">					maxIndex[k] = <span class="number">0</span>;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125; <span class="keyword">else</span> <span class="keyword">if</span> (c[j] == max[<span class="number">0</span>]) &#123; <span class="comment">// 有多个是相同长度的子串</span></span><br><span class="line">				<span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">1</span>; k &lt; maxLen; k++) &#123;</span><br><span class="line">					<span class="keyword">if</span> (max[k] == <span class="number">0</span>) &#123;</span><br><span class="line">						max[k] = c[j];</span><br><span class="line">						maxIndex[k] = j;</span><br><span class="line">						<span class="keyword">break</span>; <span class="comment">// 在后面加一个就要退出循环了</span></span><br><span class="line">					&#125;</span><br><span class="line"></span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; maxLen; j++) &#123;</span><br><span class="line">		<span class="keyword">if</span> (max[j] &gt; <span class="number">0</span>) &#123;</span><br><span class="line">			<span class="keyword">for</span> (i = maxIndex[j] - max[j] + <span class="number">1</span>; i &lt;= maxIndex[j]; i++)</span><br><span class="line">				buff.append(str1.charAt(i));			</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> buff.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark笔记-操作elastic-search/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/12/hadoop-spark/spark/spark笔记-操作elastic-search/" class="post-title-link" itemprop="url">spark笔记-操作elastic search</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-01-30 15:50:16" itemprop="dateModified" datetime="2018-01-30T15:50:16+08:00">2018-01-30</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/hadoop-spark/spark/spark笔记-操作elastic-search/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/spark/spark笔记-操作elastic-search/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="最简单的例子"><a href="#最简单的例子" class="headerlink" title="最简单的例子"></a>最简单的例子</h1><p>1、在pom.xml中增加<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.elasticsearch&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;elasticsearch-spark_2.10&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.2.1&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure></p>
-<p>2、在spark的main中导入<code>org.elasticsearch.spark</code>包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">import org.elasticsearch.spark._</span><br></pre></td></tr></table></figure></p>
-<p>3、在spark的conf中增加如下配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set(&quot;es.index.auto.create&quot;, &quot;true&quot;).set(&quot;es.nodes&quot;, &quot;192.168.37.129&quot;).set(&quot;es.port&quot;,&quot;9200&quot;)</span><br></pre></td></tr></table></figure></p>
-<p>其中，<code>es.nodes</code>是ElasticSearch的host</p>
-<p>4、简单的写法如下<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> conf = ...</span><br><span class="line"><span class="keyword">val</span> sc = <span class="keyword">new</span> <span class="type">SparkContext</span>(conf)         </span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> numbers = <span class="type">Map</span>(<span class="string">"one"</span> -&gt; <span class="number">1</span>, <span class="string">"two"</span> -&gt; <span class="number">2</span>, <span class="string">"three"</span> -&gt; <span class="number">3</span>)</span><br><span class="line"><span class="keyword">val</span> airports = <span class="type">Map</span>(<span class="string">"arrival"</span> -&gt; <span class="string">"Otopeni"</span>, <span class="string">"SFO"</span> -&gt; <span class="string">"San Fran"</span>)</span><br><span class="line"></span><br><span class="line">sc.makeRDD(<span class="type">Seq</span>(numbers, airports)).saveToEs(<span class="string">"spark/docs"</span>)</span><br></pre></td></tr></table></figure></p>
-<p>也可以用case class来写<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Trip</span>(<span class="params">departrue: <span class="type">String</span>, arrival: <span class="type">String</span></span>)</span></span><br><span class="line"><span class="class">    </span></span><br><span class="line"><span class="class"><span class="title">val</span> <span class="title">upTrip</span> </span>= <span class="type">Trip</span>(<span class="string">"OTF"</span>, <span class="string">"SFO"</span>)</span><br><span class="line"><span class="keyword">val</span> downTrip = <span class="type">Trip</span>(<span class="string">"MUC"</span>, <span class="string">"OTP"</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> rdd = sc.makeRDD(<span class="type">Seq</span>(upTrip, downTrip))</span><br><span class="line"><span class="type">EsSpark</span>.saveToEs(rdd, <span class="string">"spark/docs"</span>)</span><br></pre></td></tr></table></figure></p>
-<p>5、在Elastic Search的Sense中查询<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /spark/docs/_search</span><br></pre></td></tr></table></figure></p>
-<p>返回<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;took&quot;: 4,</span><br><span class="line">  &quot;timed_out&quot;: false,</span><br><span class="line">  &quot;_shards&quot;: &#123;</span><br><span class="line">    &quot;total&quot;: 5,</span><br><span class="line">    &quot;successful&quot;: 5,</span><br><span class="line">    &quot;failed&quot;: 0</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;hits&quot;: &#123;</span><br><span class="line">    &quot;total&quot;: 2,</span><br><span class="line">    &quot;max_score&quot;: 1,</span><br><span class="line">    &quot;hits&quot;: [</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;_index&quot;: &quot;spark&quot;,</span><br><span class="line">        &quot;_type&quot;: &quot;docs&quot;,</span><br><span class="line">        &quot;_id&quot;: &quot;AVSkEdTv9l_YEZuMmxgt&quot;,</span><br><span class="line">        &quot;_score&quot;: 1,</span><br><span class="line">        &quot;_source&quot;: &#123;</span><br><span class="line">          &quot;arrival&quot;: &quot;Otopeni&quot;,</span><br><span class="line">          &quot;SFO&quot;: &quot;San Fran&quot;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;_index&quot;: &quot;spark&quot;,</span><br><span class="line">        &quot;_type&quot;: &quot;docs&quot;,</span><br><span class="line">        &quot;_id&quot;: &quot;AVSkEdZp9l_YEZuMmxgu&quot;,</span><br><span class="line">        &quot;_score&quot;: 1,</span><br><span class="line">        &quot;_source&quot;: &#123;</span><br><span class="line">          &quot;one&quot;: 1,</span><br><span class="line">          &quot;three&quot;: 3,</span><br><span class="line">          &quot;two&quot;: 2</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>测试通过</p>
-<h1 id="与spark-streaming结合"><a href="#与spark-streaming结合" class="headerlink" title="与spark streaming结合"></a>与spark streaming结合</h1><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建 StreamingContext，5秒一个批次</span></span><br><span class="line"><span class="keyword">val</span> ssc = <span class="keyword">new</span> <span class="type">StreamingContext</span>(sc, <span class="type">Seconds</span>(<span class="number">3</span>))</span><br><span class="line"><span class="keyword">val</span> lines = ssc.socketTextStream(<span class="string">"192.168.37.129"</span>, <span class="number">9999</span>)</span><br><span class="line"><span class="comment">// 对每一行数据执行 Split 操作</span></span><br><span class="line"><span class="keyword">val</span> words = lines.flatMap(_.split(<span class="string">" "</span>))</span><br><span class="line"><span class="comment">// 统计 word 的数量</span></span><br><span class="line"><span class="keyword">val</span> pairs = words.map(word =&gt; (word, <span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">pairs.foreachRDD&#123;</span><br><span class="line">x =&gt;</span><br><span class="line">x.saveToEs(<span class="string">"spark/words"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ssc.start()</span><br><span class="line">ssc.awaitTermination()</span><br></pre></td></tr></table></figure>
-<p>pairs是一个DSteamRDD，通过foreachRDD来遍历其中的每个RDD，对于每个RDD，可以saveToEs</p>
+            <h1 id="1、最大熵原理"><a href="#1、最大熵原理" class="headerlink" title="1、最大熵原理"></a>1、最大熵原理</h1><p>日常生活中，很多事情的发生表现出一定的随机性，试验的结果往往是不确定的，也不知道这个随机现象所服从的概率分布。<strong>最大熵的实质</strong>就是，在已知部分知识的前提下，关于未知分布最合理的推断就是符合已知知识最不确定或者最随机的推断。任何其他的选择都意味着我们增加了其他的约束和假设。</p>
+<p>将最大熵应用到分类，就是最大熵模型。给定一个训练集：</p>
+<script type="math/tex; mode=display">
+T = \{  (x_1,y_1),  (x_2,y_2),..., (x_N,y_N)\}</script><p>其中$x_i \in X$是输入，$y_i \in Y$是输出，X和Y表示输入和输出空间。N为样本数。<strong>目标是</strong>，利用最大熵原理选出一个最好的分类模型，即对于任意给定的输入$x \in X$，可以以概率$p(y|x)$输出$y \in Y$ 。</p>
+<p>按照最大熵原理，应该<strong>优先保证模型满足已知的所有约束</strong>。思路是，从训练数据T中抽取若干有用的特征，要求这些特征在T上关于经验分布$\tilde{p}(x,y)$的数学期望与它们在模型中关于$p(x,y)$的数学期望相等。这样，一个特征就是一个约束了。</p>
+<p>这里就涉及到，<strong>特征如何刻画？经验分布如何表示？</strong></p>
+<h1 id="2、特征函数"><a href="#2、特征函数" class="headerlink" title="2、特征函数"></a>2、特征函数</h1><p>假设通过特征选择，抽取若干特征。特征通常由特征函数来表示。例如</p>
+<script type="math/tex; mode=display">
+f(x,y) =\left\{\begin{matrix}
+\begin{aligned}
+& 1，若x,y满足某个事实 \\ 
+& 0，否则
+\end{aligned}
+\end{matrix}\right.</script><p>这里的特征不是指输入的某个特征，而是指输入和输出共同的特征。</p>
+<blockquote>
+<p>例如，假设我们需要判断“打”是动词还是量词，已知的训练数据有</p>
+<p>(x1,y1)=(一打火柴，量词);</p>
+<p>(x2,y2)=(三打啤酒，量词);</p>
+<p>(x3,y3)=(打电话，动词);</p>
+<p>(x4,y4)=(打篮球，动词);</p>
+<p>通过观察，发现“打”前面是数字时，是量词，“打”后面是名词时，是动词。这就是从训练数据中提取的两个特征，可分别用特征函数表示为</p>
+</blockquote>
+<h1 id="3、经验分布"><a href="#3、经验分布" class="headerlink" title="3、经验分布"></a>3、经验分布</h1><p>经验（概率）分布就是通过对训练集T进行统计得到的分布，用$\tilde p$表示。这里列举两个经验分布</p>
+<script type="math/tex; mode=display">
+\tilde p(x,y) = \frac {count(x,y)} {N} , \tilde p(x)=\frac {count(x)} {N}</script><p>其中，count表示出现的次数。</p>
+<h1 id="4、约束条件"><a href="#4、约束条件" class="headerlink" title="4、约束条件"></a>4、约束条件</h1><p>对于任意一个特征函数f，$E<em>{\tilde p}f$ 表示f在训练数据T上关于$\tilde p(x,y)$的数学期望， $E</em>{p}f$ 表示f在训练数据T上关于$p(x,y)$的数学期望。按照期望的定义，我们有</p>
+<script type="math/tex; mode=display">
+E_{\tilde p}f=\sum_{x,y}\tilde p(x,y)f(x,y)</script><script type="math/tex; mode=display">
+E_{ p}f=\sum_{x,y} p(x,y)f(x,y)</script><p>其中，p(x,y)是未知的，而建模的目标是生成$p(y|x)$，因此，根据Bayes定理，$p(x,y)=p(x)p(y|x)$。在样本数量足够的条件下，$p(x)$可以用$\tilde p(x)$近似表示。这样</p>
+<script type="math/tex; mode=display">
+E_{ p}f=\sum_{x,y} \tilde p(x)p(y|x)f(x,y)</script><p>对于概率分布$p(y|x)$，我们希望特征f的期望值应该和从训练集中得到的特征期望值是一致的，因此，<strong>增加约束</strong></p>
+<script type="math/tex; mode=display">
+E_{ p}f=E_{\tilde p}f</script><p>假设我们从训练集中抽取了n个特征，相应的，便有n个特征函数$f_i(i=1,2,…,n)$以及n个约束条件</p>
+<script type="math/tex; mode=display">
+C_i:E_{ p}(f_i)=E_{\tilde p}(f_i) \tag {3-1}</script><blockquote>
+<p>关于约束条件的几何解释</p>
+<p><img src="/.io//最大熵1.png" alt="最大熵1"></p>
+<p>（a）：P是所有可能的概率空间，此时没有约束条件，所有的概率模型$p(y|x)$都是允许的；</p>
+<p>（b）：增加了一个线性约束条件$C_1$，此时，目标分布$p(y|x)$只能落在由$C_1$定义的线段上；</p>
+<p>（c）：在（b）的基础上增加了另一个约束条件$C_2$ ，且$C_1 \cap C_2  \neq \varnothing$。此时，目标分布只能落在交点上，即被唯一确定；</p>
+<p>（d）：在（b）基础上增加了另一个约束$C_3$，且$C_1 \cap C_2  = \varnothing$，此时不存在能够同时满足$C_1$和$C_3$的$p(y|x)$。</p>
+</blockquote>
+<p>利用（3-1）定义的约束条件，我们定义P的一个子空间</p>
+<script type="math/tex; mode=display">
+C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><h1 id="5、最大熵模型"><a href="#5、最大熵模型" class="headerlink" title="5、最大熵模型"></a>5、最大熵模型</h1><p>由于我们的目标是获得一个条件分布，因此这里也采用相应的条件熵</p>
+<script type="math/tex; mode=display">
+H(p(y|x))=-\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)</script><p>可以看出这里也是用$\tilde p(x)$来近似$p(x)$。以下将$H(p(y|x))$简记为$H(p)$。至此，可以给出最大熵模型的完整描述。</p>
+<p>对于给定的训练集T，特征函数$f_i(x,y), i=1,2,…n$，最大熵模型就是求解</p>
+<script type="math/tex; mode=display">
+\underset {p \in C} {max} \ \  H(p) = \begin{pmatrix}
+-\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)
+\end{pmatrix}, \\
+s.t. \sum_y p(y|x)=1 \tag {5-1} \\
+s.t. \ C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><p>其中的s.t.是为了保证$p(y|x)$是一个（合法的）条件概率分布。</p>
+<p>等价于一个求极小值问题</p>
+<script type="math/tex; mode=display">
+\underset {p \in C} {min} \ \  -H(p) = \begin{pmatrix}
+\sum_{x,y} \tilde p(x)p(y|x)\log p(y|x)
+\end{pmatrix}, \\
+s.t. \sum_y p(y|x)=1 \tag {5-2} \\
+s.t. \ C=\{p \in P | E_p(f_i)={\tau}_i, i=1,2,...,n\}</script><h1 id="6、模型求解"><a href="#6、模型求解" class="headerlink" title="6、模型求解"></a>6、模型求解</h1><p>对于5-1的求解，主要思路和步骤如下：</p>
+<ol>
+<li>利用Lagrange乘子将最大熵模型由一个带约束的最优化问题转为无约束的最优化问题，这是一个<strong>极小极大问题（min max）</strong>。</li>
+<li>利用对偶问题等价性，转化为求解上一步得到的极大/极小问题的对偶问题，也是一个极大极小问题。</li>
+</ol>
+<h2 id="6-1-原始问题和对偶问题"><a href="#6-1-原始问题和对偶问题" class="headerlink" title="6.1 原始问题和对偶问题"></a>6.1 原始问题和对偶问题</h2><p>根据（5-2），引入拉格朗日乘子$\lambda=(\lambda_0,\lambda_1,…,\lambda_n)^T$，定义拉格朗日函数</p>
+<script type="math/tex; mode=display">
+L(p,\lambda) = -H(p) + \lambda_0(1-\sum_y p(y|x))+\sum_{i=1}^n\lambda_i(\tau_i-E_p(f_i))  \tag{6-1}</script><p>利用对偶性，求解（6-1）的<strong>原始问题</strong>表示为：</p>
+<script type="math/tex; mode=display">
+\underset {p \in C} {min}\  \underset {\lambda} {max}\ L(p,\lambda) \tag{6-2}</script><p><strong>对偶问题</strong>为：</p>
+<script type="math/tex; mode=display">
+\underset {\lambda} {max}\ \underset {p \in C} {min}\  L(p,\lambda) \tag{6-3}</script><p>由于$H(p)$是关于p的凸函数，因此要求解最大熵模型，只需求解对偶问题（6-3）即可。</p>
+<h3 id="6-1-1-指数形式的解"><a href="#6-1-1-指数形式的解" class="headerlink" title="6.1.1 指数形式的解"></a>6.1.1 指数形式的解</h3><p>首先求解内部的极小问题。由于$\underset {p \in C} {min}\  L(p,\lambda)$是关于$\lambda$的函数，将其记做：</p>
+<script type="math/tex; mode=display">
+\Psi (\lambda) =\underset {p \in C} {min}\  L(p,\lambda) = L(p_{\lambda}, \lambda) \tag {6-4}</script><p>其中</p>
+<script type="math/tex; mode=display">
+p_{\lambda}=\underset {p \in C} {argmin}\ L(p,\lambda)=p_{\lambda}(y|x) \tag {6-5}</script><p>根据拉格朗日乘子法，求$L(p,\lambda)$对$p(y|x)$的偏导，得（求解过程略）：</p>
+<script type="math/tex; mode=display">
+p_{\lambda}=\frac {1} {Z_{\lambda}(x)} \ \exp(\sum_{i=1}^n \lambda_i f_i(x,y)) \tag{6-6}</script><p>其中，</p>
+<script type="math/tex; mode=display">
+Z_{\lambda}(x)=\sum_y \exp(\sum_{i=1}^n \lambda_i f_i(x,y)) \tag{6-7}</script><p>称为<strong>规范化因子</strong>（normalizing factor）。注意，此时已经没有$\lambda_0$了。</p>
+<p>由（6-6）定义的$p_{\lambda}$就是最大熵模型的解，它具有<strong>指数形式</strong>。其中，$\lambda_i$就是特征$f_i$的权重，越大表示特征越重要。</p>
+<h3 id="6-1-2-最大似然估计"><a href="#6-1-2-最大似然估计" class="headerlink" title="6.1.2 最大似然估计"></a>6.1.2 最大似然估计</h3><p>得到对偶问题的内层极小值问题的解之后，接着求解外层的极大值问题$\underset {\lambda} {max} \ \Psi(\lambda)$。</p>
+<p>设其解为</p>
+<script type="math/tex; mode=display">
+\lambda^* = \underset {\lambda} {argmax} \ \Psi(\lambda) \tag{6-8}</script><p>则最大熵模型的解为</p>
+<script type="math/tex; mode=display">
+p^*=p_{\lambda^*} \tag{6-9}</script><p>根据推导，最大化$\Psi(\lambda)$与最大似然估计是等价的！</p>
+<h1 id="7、最优化方法"><a href="#7、最优化方法" class="headerlink" title="7、最优化方法"></a>7、最优化方法</h1><p>通用的方法有梯度下降，拟牛顿法等，最大熵模型有两个量身定做的方法：通用迭代尺度法（Generalized Iterative Scaling，GIS）和改进的迭代尺度法（Impoved Iterative Scaling，IIS）。</p>
+<h2 id="7-1-GIS算法"><a href="#7-1-GIS算法" class="headerlink" title="7.1 GIS算法"></a>7.1 GIS算法</h2><blockquote>
+<p>算法1：</p>
+<p>S1：初始化参数，令$\lambda=0$</p>
+<p>S2：计算$E_{\tilde p}(f_i),\ i=1,2,…,n$</p>
+<p>S3：执行一次迭代，对参数做一次刷新。</p>
+<p>​    计算$E<em>{p</em>{\lambda}}(f_i)$</p>
+<p>​    FOR i=1,2,…,n DO {</p>
+<p>​        $\lambda<em>i\  += \ \eta \log\frac {E</em>{\tilde p}(f<em>i)} {E</em>{p_{\lambda}}(f_i)}$</p>
+<p>​    }</p>
+<p>S4：检查是否收敛，若未收敛则继续S3</p>
+</blockquote>
+<p>其中，$\eta$是学习率，在实际中取$\frac {1} {C}$，$$，表示训练数据中包含特征最多的那个样本所包含的特征个数。</p>
+<script type="math/tex; mode=display">
+\Delta\lambda_i=\eta \log\frac {E_{\tilde p}(f_i)} {E_{p_{\lambda}}(f_i)}</script><p>是校正量。</p>
+<p>每次迭代，先用当前的权重估算每个特征$f<em>i$在训练数据中的概率分布的期望，然后逐个与相应的经验分布的期望比较，其偏差程度通过$\log\frac {E</em>{\tilde p}(f<em>i)} {E</em>{p_{\lambda}}(f_i)}$来进行刻画。</p>
+<p>收敛条件就是当两次迭代的$\lambda$在一个较小的范围。</p>
+<p>GIS每次迭代时间很长，不太稳定，容易溢出，一般不会使用。</p>
+<h2 id="7-2-IIS算法"><a href="#7-2-IIS算法" class="headerlink" title="7.2 IIS算法"></a>7.2 IIS算法</h2><p>与GIS的不同主要在$\Delta\lambda_i$的计算上。IIS通过求解方程</p>
+<script type="math/tex; mode=display">
+\sum_{x,y} \tilde p(x)p(y|x)f_i(x,y)\exp(\Delta\lambda_i\sum_{i=1}^nf_i(x,y))=\tilde p(f_i)</script><p>1）若$\sum<em>{i=1}^nf_i(x,y)$为常数，即对任意样本(x,y)，都有$\sum</em>{i=1}^nf_i(x,y)=C$，则</p>
+<script type="math/tex; mode=display">
+\Delta\lambda_i=\frac {1} {C} \log\frac {E_{\tilde p}(f_i)} {E_{p_{\lambda}}(f_i)}</script><p>此时，IIS可以看做是GIS的一种推广。</p>
+<p>2）若$\sum_{i=1}^nf_i(x,y)$不是常数，则需要通过数值方式来求解$\Delta\lambda_i$，如牛顿法。</p>
+<h1 id="8、优缺点"><a href="#8、优缺点" class="headerlink" title="8、优缺点"></a>8、优缺点</h1><p>优点是：在建模时，只需要集中精力选取特征，不需要花费精力考虑如何使用这些特征，可以灵活使用不同类型的特征。</p>
+<p>缺点是计算量大。</p>
+<p>参考</p>
+<p>【1】 <a href="http://blog.csdn.net/itplus/article/details/26550273" target="_blank" rel="noopener">最大熵学习笔记</a></p>
+<p>【2】统计学习方法</p>
 
           
         
@@ -2331,7 +2145,7 @@ K_e=\begin{bmatrix}
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark-streaming笔记/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/kafka笔记/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -2351,7 +2165,7 @@ K_e=\begin{bmatrix}
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/hadoop-spark/spark/spark-streaming笔记/" class="post-title-link" itemprop="url">spark-streaming笔记</a>
+                <a href="/2017/07/12/hadoop-spark/kafka笔记/" class="post-title-link" itemprop="url">kafka笔记</a>
               
             
           </h1>
@@ -2391,7 +2205,7 @@ K_e=\begin{bmatrix}
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-01-30 15:47:26" itemprop="dateModified" datetime="2018-01-30T15:47:26+08:00">2018-01-30</time>
+                <time title="修改时间：2018-01-30 15:46:08" itemprop="dateModified" datetime="2018-01-30T15:46:08+08:00">2018-01-30</time>
               </span>
             
           
@@ -2423,8 +2237,8 @@ K_e=\begin{bmatrix}
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/hadoop-spark/spark/spark-streaming笔记/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/spark/spark-streaming笔记/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/hadoop-spark/kafka笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/kafka笔记/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -2457,18 +2271,225 @@ K_e=\begin{bmatrix}
       
         
           
-            <h1 id="spark-streaming的示例"><a href="#spark-streaming的示例" class="headerlink" title="spark streaming的示例"></a>spark streaming的示例</h1><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span>   <span class="title">main</span> </span>( args : <span class="type">Array</span>[ <span class="type">String</span> ]): <span class="type">Unit</span> = &#123;</span><br><span class="line">         <span class="comment">//关闭一些不必要的日志</span></span><br><span class="line">        <span class="type">Logger</span>. getLogger ( <span class="string">"org.apache.spark"</span> ). setLevel (<span class="type">Level</span>. <span class="type">WARN</span> )</span><br><span class="line">        <span class="type">Logger</span>. getLogger ( <span class="string">"org.eclipse.jetty.server"</span> ). setLevel (<span class="type">Level</span>. <span class="type">OFF</span> )</span><br><span class="line">      </span><br><span class="line">         <span class="keyword">val</span>   conf  =  <span class="keyword">new</span>  <span class="type">SparkConf</span>(). setAppName ( <span class="string">"wordStreaming"</span> ). setMaster ( <span class="string">"local[2]"</span> ).</span><br><span class="line">         set ( <span class="string">"spark.sql.shuffle.partitions"</span> , <span class="string">"10"</span> ). set ( <span class="string">"spark.network.timeout"</span> , <span class="string">"30s"</span> )</span><br><span class="line">        . set ( <span class="string">"spark.shuffle.compress"</span> , <span class="string">"true"</span> ). set ( <span class="string">"spark.shuffle.spill.compress"</span> , <span class="string">"true"</span> )</span><br><span class="line">        . set ( <span class="string">"spark.shuffle.manager"</span> , <span class="string">"sort"</span> )</span><br><span class="line">         <span class="keyword">val</span>   sc  =  <span class="keyword">new</span>  <span class="type">SparkContext</span>( conf )</span><br><span class="line">        </span><br><span class="line">         <span class="comment">// 创建 StreamingContext，1 秒一个批次。这里要用 sc ，而不是 conf ，因为 sc 已经创建了</span></span><br><span class="line">         <span class="keyword">val</span>   ssc  =  <span class="keyword">new</span>  <span class="type">StreamingContext</span>( sc ,  <span class="type">Seconds</span> ( <span class="number">1</span> ))</span><br><span class="line">         <span class="comment">// 获得一个 DStream 负责连接 监听端口:地址</span></span><br><span class="line">         <span class="keyword">val</span>   lines  =  ssc . socketTextStream ( <span class="string">"192.168.37.129"</span> ,  <span class="number">9999</span> )</span><br><span class="line">         <span class="comment">// 对每一行数据执行 Split 操作</span></span><br><span class="line">         <span class="keyword">val</span>   words  =  lines . flatMap ( _. split ( <span class="string">" "</span> ) )</span><br><span class="line">         <span class="comment">// 统计 word 的数量</span></span><br><span class="line">         <span class="keyword">val</span>   pairs  =  words . map ( word  =&gt; ( word ,  <span class="number">1</span> ))</span><br><span class="line">         <span class="keyword">val</span>   wordCounts  =  pairs . reduceByKey (_  +  _)</span><br><span class="line">         <span class="comment">// 输出结果</span></span><br><span class="line">         wordCounts . print ()</span><br><span class="line">        </span><br><span class="line">         ssc . start ()</span><br><span class="line">         ssc . awaitTermination () &#125;</span><br></pre></td></tr></table></figure>
-<p>一开始会报错：<br>Exception in thread “main”  org.apache.spark.SparkException : Only one SparkContext may be running in this JVM (see SPARK-2243). To ignore this error, set spark.driver.allowMultipleContexts = true. The currently running SparkContext was created at: org.apache.spark.SparkContext.<init>( SparkContext.scala:82 )</init></p>
-<p>错误是在<br>val   ssc  =  new  StreamingContext( conf ,  Seconds ( 1 ))   </p>
-<p>因为之前sc已经创建了，所以这里的conf要改成sc</p>
-<p>之后，在 192.168.37.129上启动netcat<br>nc -lk 9999<br>输入hello world</p>
-<p>再启动spark的程序，可以看出会输出<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Time: 1462790166000 ms</span><br><span class="line"></span><br><span class="line">(hello,1)</span><br><span class="line">(world,1)</span><br></pre></td></tr></table></figure></p>
-<h1 id="streaming读取本地文件"><a href="#streaming读取本地文件" class="headerlink" title="streaming读取本地文件"></a>streaming读取本地文件</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val lines = ssc.textFileStream(&quot;E:\\spark&quot;)</span><br></pre></td></tr></table></figure>
-<p>每当该文件夹内有新文件生成，就会自动读取</p>
-<blockquote>
-<p>Spark Streaming将会监控dataDirectory目录，并且处理目录下生成的任何文件（嵌套目录不被支持）。需要注意一下三点：<br>1 所有文件必须具有相同的数据格式<br>2 所有文件必须在<code>dataDirectory</code>目录下创建，文件是自动的移动和重命名到数据目录下<br>3 一旦移动，文件必须被修改。所以如果文件被持续的附加数据，新的数据不会被读取。<br>对于简单的文本文件，有一个更简单的方法streamingContext.textFileStream(dataDirectory)可以被调用。文件流不需要运行一个receiver，所以不需要分配核。</p>
-</blockquote>
-<h1 id="spark-streaming连接kafka"><a href="#spark-streaming连接kafka" class="headerlink" title="spark streaming连接kafka"></a>spark streaming连接kafka</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val topics = Set(&quot;test1&quot;)</span><br><span class="line">val kafkaParm = Map(&quot;metadata.broker.list&quot; -&gt; &quot;192.168.255.128:9092&quot;)</span><br></pre></td></tr></table></figure>
+            <h1 id="多个消费者读取一个topic，多次消费"><a href="#多个消费者读取一个topic，多次消费" class="headerlink" title="多个消费者读取一个topic，多次消费"></a>多个消费者读取一个topic，多次消费</h1><p>不同消费者设置不同的groupid</p>
+ <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> kafkaParm = <span class="type">Map</span>(<span class="string">"metadata.broker.list"</span> -&gt; <span class="string">"localhost:9092"</span>,</span><br><span class="line"><span class="string">"auto.offset.reset"</span> -&gt; <span class="string">"smallest"</span>, <span class="string">"group.id"</span> -&gt; <span class="string">"davidtopi1c1"</span>)</span><br></pre></td></tr></table></figure>
+<h1 id="每个消费者不会重复消费数据"><a href="#每个消费者不会重复消费数据" class="headerlink" title="每个消费者不会重复消费数据"></a>每个消费者不会重复消费数据</h1><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> kafkaStrem.foreachRDD&#123;</span><br><span class="line">      rdd=&gt;</span><br><span class="line">        km.updateZKOffsets(rdd)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>﻿</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/" class="post-title-link" itemprop="url">4-1 TensorBoard网络结构</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-03 09:31:14" itemprop="dateModified" datetime="2019-06-03T09:31:14+08:00">2019-06-03</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/深度学习/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-1-tensorboard1/" target="_blank" rel="noopener">https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-1-tensorboard1/</a></p>
+<h2 id="各种不同的优化器"><a href="#各种不同的优化器" class="headerlink" title="各种不同的优化器"></a>各种不同的优化器</h2><p>本次课程，我们会讲到<code>Tensorflow</code>里面的优化器。</p>
+<p>Tensorflow 中的优化器会有很多不同的种类。最基本, 也是最常用的一种就是<code>GradientDescentOptimizer</code>。</p>
+<p><code>Tensorflow</code>提供了7种优化器：</p>
+<h2 id="搭建图纸"><a href="#搭建图纸" class="headerlink" title="搭建图纸"></a>搭建图纸</h2><p>首先从 <code>Input</code> 开始：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># define placeholder for inputs to network</span></span><br><span class="line">xs = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>])</span><br><span class="line">ys = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>])</span><br></pre></td></tr></table></figure>
+<p>对于input我们进行如下修改： 首先，可以为<code>xs</code>指定名称为<code>x_in</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xs= tf.placeholder(tf.float32, [None, 1],name=&apos;x_in&apos;)</span><br></pre></td></tr></table></figure>
+<p>然后再次对<code>ys</code>指定名称<code>y_in</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ys= tf.placeholder(tf.loat32, [None, 1],name=&apos;y_in&apos;)</span><br></pre></td></tr></table></figure>
+<p>使用<code>with tf.name_scope(&#39;inputs&#39;)</code>可以将<code>xs</code>和<code>ys</code>包含进来，形成一个大的图层，图层的名字就是<code>with tf.name_scope()</code>方法里的参数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">with tf.name_scope(&apos;inputs&apos;):</span><br><span class="line">    # define placeholder for inputs to network</span><br><span class="line">    xs = tf.placeholder(tf.float32, [None, 1])</span><br><span class="line">    ys = tf.placeholder(tf.float32, [None, 1])</span><br></pre></td></tr></table></figure>
+<p>接下来开始编辑<code>layer</code> ， 请看编辑前的程序片段 ：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></span><br><span class="line">    <span class="comment"># add one more layer and return the output of this layer</span></span><br><span class="line">    Weights = tf.Variable(tf.random_normal([in_size, out_size]))</span><br><span class="line">    biases = tf.Variable(tf.zeros([<span class="number">1</span>, out_size]) + <span class="number">0.1</span>)</span><br><span class="line">    Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</span><br><span class="line">    <span class="keyword">if</span> activation_function <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">        outputs = Wx_plus_b</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        outputs = activation_function(Wx_plus_b, )</span><br><span class="line">    <span class="keyword">return</span> outputs</span><br></pre></td></tr></table></figure>
+<p>这里的名字应该叫layer, 下面是编辑后的:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</span><br><span class="line">    # add one more layer and return the output of this layer</span><br><span class="line">    with tf.name_scope(&apos;layer&apos;):</span><br><span class="line">        Weights= tf.Variable(tf.random_normal([in_size, out_size]))</span><br><span class="line">        # and so on...</span><br></pre></td></tr></table></figure>
+<hr>
+<p>在定义完大的框架<code>layer</code>之后，同时也需要定义每一个’框架‘里面的小部件：(Weights biases 和 activation function): 现在现对 <code>Weights</code> 定义： 定义的方法同上，可以使用<code>tf.name.scope()</code>方法，同时也可以在<code>Weights</code>中指定名称<code>W</code>。 即为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></span><br><span class="line">	<span class="comment">#define layer name</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'layer'</span>):</span><br><span class="line">        <span class="comment">#define weights name </span></span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'weights'</span>):</span><br><span class="line">            Weights= tf.Variable(tf.random_normal([in_size, out_size]),name=<span class="string">'W'</span>)</span><br><span class="line">        <span class="comment">#and so on......</span></span><br></pre></td></tr></table></figure>
+<p>接着继续定义<code>biases</code> ， 定义方式同上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</span><br><span class="line">    #define layer name</span><br><span class="line">    with tf.name_scope(&apos;layer&apos;):</span><br><span class="line">        #define weights name </span><br><span class="line">        with tf.name_scope(&apos;weights&apos;)</span><br><span class="line">            Weights= tf.Variable(tf.random_normal([in_size, out_size]),name=&apos;W&apos;)</span><br><span class="line">        # define biase</span><br><span class="line">        with tf.name_scope(&apos;Wx_plus_b&apos;):</span><br><span class="line">            Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</span><br><span class="line">        # and so on....</span><br></pre></td></tr></table></figure>
+<p><code>activation_function</code> 的话，可以暂时忽略。因为当你自己选择用 tensorflow 中的激励函数（activation function）的时候，tensorflow会默认添加名称。 最终，layer形式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</span><br><span class="line">    # add one more layer and return the output of this layer</span><br><span class="line">    with tf.name_scope(&apos;layer&apos;):</span><br><span class="line">        with tf.name_scope(&apos;weights&apos;):</span><br><span class="line">            Weights = tf.Variable(</span><br><span class="line">            tf.random_normal([in_size, out_size]), </span><br><span class="line">            name=&apos;W&apos;)</span><br><span class="line">        with tf.name_scope(&apos;biases&apos;):</span><br><span class="line">            biases = tf.Variable(</span><br><span class="line">            tf.zeros([1, out_size]) + 0.1, </span><br><span class="line">            name=&apos;b&apos;)</span><br><span class="line">        with tf.name_scope(&apos;Wx_plus_b&apos;):</span><br><span class="line">            Wx_plus_b = tf.add(</span><br><span class="line">            tf.matmul(inputs, Weights), </span><br><span class="line">            biases)</span><br><span class="line">        if activation_function is None:</span><br><span class="line">            outputs = Wx_plus_b</span><br><span class="line">        else:</span><br><span class="line">            outputs = activation_function(Wx_plus_b, )</span><br><span class="line">        return outputs</span><br></pre></td></tr></table></figure>
+<p>最后编辑<code>loss</code>部分：将<code>with tf.name_scope()</code>添加在<code>loss</code>上方，并为它起名为<code>loss</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># the error between prediciton and real data</span><br><span class="line">with tf.name_scope(&apos;loss&apos;):</span><br><span class="line">    loss = tf.reduce_mean(</span><br><span class="line">    tf.reduce_sum(</span><br><span class="line">    tf.square(ys - prediction),</span><br><span class="line">    eduction_indices=[1]</span><br><span class="line">    ))</span><br></pre></td></tr></table></figure>
+<p>使用<code>with tf.name_scope()</code>再次对<code>train_step</code>部分进行编辑,如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">with tf.name_scope(&apos;train&apos;):</span><br><span class="line">    train_step = tf.train.GradientDescentOptimizer(0.1).minimize(loss)</span><br></pre></td></tr></table></figure>
+<p>我们需要使用 <code>tf.summary.FileWriter()</code> (<code>tf.train.SummaryWriter()</code> 这种方式已经在 tf &gt;= 0.12 版本中摒弃) 将上面‘绘画’出的图保存到一个目录中，以方便后期在浏览器中可以浏览。 这个方法中的第二个参数需要使用<code>sess.graph</code> ， 因此我们需要把这句话放在获取<code>session</code>的后面。 这里的<code>graph</code>是将前面定义的框架信息收集起来，然后放在<code>logs/</code>目录下面。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sess = tf.Session() # get session</span><br><span class="line"># tf.train.SummaryWriter soon be deprecated, use following</span><br><span class="line">writer = tf.summary.FileWriter(&quot;logs/&quot;, sess.graph)</span><br></pre></td></tr></table></figure>
+<p>请确保你的 tensorboard 指令是在你的 logs 文件根目录执行的. 如果在其他目录下, 比如 <code>Desktop</code> 等, 可能不会成功看到图. 比如在下面这个目录, 你要 cd 到 <code>project</code> 这个地方执行 <code>/project &gt; tensorboard --logdir logs</code></p>
+<p>完整代码在</p>
+<p><a href="https://github.com/MorvanZhou/tutorials/blob/master/tensorflowTUT/tf14_tensorboard/full_code.py" target="_blank" rel="noopener">https://github.com/MorvanZhou/tutorials/blob/master/tensorflowTUT/tf14_tensorboard/full_code.py</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># View more python learning tutorial on my Youtube and Youku channel!!!</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Youtube video tutorial: https://www.youtube.com/channel/UCdyjiB5H8Pu7aDTNVXTTpcg</span></span><br><span class="line"><span class="comment"># Youku video tutorial: http://i.youku.com/pythontutorial</span></span><br><span class="line"></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">Please note, this code is only for python 3+. If you are using python 2+, please modify the code accordingly.</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span> print_function</span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></span><br><span class="line">    <span class="comment"># add one more layer and return the output of this layer</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'layer'</span>):</span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'weights'</span>):</span><br><span class="line">            Weights = tf.Variable(tf.random_normal([in_size, out_size]), name=<span class="string">'W'</span>)</span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'biases'</span>):</span><br><span class="line">            biases = tf.Variable(tf.zeros([<span class="number">1</span>, out_size]) + <span class="number">0.1</span>, name=<span class="string">'b'</span>)</span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'Wx_plus_b'</span>):</span><br><span class="line">            Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</span><br><span class="line">        <span class="keyword">if</span> activation_function <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">            outputs = Wx_plus_b</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            outputs = activation_function(Wx_plus_b, )</span><br><span class="line">        <span class="keyword">return</span> outputs</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># define placeholder for inputs to network</span></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'inputs'</span>):</span><br><span class="line">    xs = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>], name=<span class="string">'x_input'</span>)</span><br><span class="line">    ys = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>], name=<span class="string">'y_input'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># add hidden layer</span></span><br><span class="line">l1 = add_layer(xs, <span class="number">1</span>, <span class="number">10</span>, activation_function=tf.nn.relu)</span><br><span class="line"><span class="comment"># add output layer</span></span><br><span class="line">prediction = add_layer(l1, <span class="number">10</span>, <span class="number">1</span>, activation_function=<span class="keyword">None</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># the error between prediciton and real data</span></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'loss'</span>):</span><br><span class="line">    loss = tf.reduce_mean(tf.reduce_sum(tf.square(ys - prediction),</span><br><span class="line">                                        reduction_indices=[<span class="number">1</span>]))</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'train'</span>):</span><br><span class="line">    train_step = tf.train.GradientDescentOptimizer(<span class="number">0.1</span>).minimize(loss)</span><br><span class="line"></span><br><span class="line">sess = tf.Session()</span><br><span class="line"></span><br><span class="line"><span class="comment"># tf.train.SummaryWriter soon be deprecated, use following</span></span><br><span class="line"><span class="keyword">if</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">1</span>]) &lt; <span class="number">12</span> <span class="keyword">and</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">0</span>]) &lt; <span class="number">1</span>:  <span class="comment"># tensorflow version &lt; 0.12</span></span><br><span class="line">    writer = tf.train.SummaryWriter(<span class="string">'logs/'</span>, sess.graph)</span><br><span class="line"><span class="keyword">else</span>: <span class="comment"># tensorflow version &gt;= 0.12</span></span><br><span class="line">    writer = tf.summary.FileWriter(<span class="string">"logs/"</span>, sess.graph)</span><br><span class="line"></span><br><span class="line"><span class="comment"># tf.initialize_all_variables() no long valid from</span></span><br><span class="line"><span class="comment"># 2017-03-02 if using tensorflow &gt;= 0.12</span></span><br><span class="line"><span class="keyword">if</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">1</span>]) &lt; <span class="number">12</span> <span class="keyword">and</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">0</span>]) &lt; <span class="number">1</span>:</span><br><span class="line">    init = tf.initialize_all_variables()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    init = tf.global_variables_initializer()</span><br><span class="line">sess.run(init)</span><br><span class="line"></span><br><span class="line"><span class="comment"># direct to the local dir and run this in terminal:</span></span><br><span class="line"><span class="comment"># $ tensorboard --logdir=logs</span></span><br></pre></td></tr></table></figure>
 
           
         
