@@ -357,7 +357,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/模型评估与选择/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/简单聚类算法/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -377,7 +377,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/机器学习/模型评估与选择/" class="post-title-link" itemprop="url">模型评估与选择</a>
+                <a href="/2017/07/12/机器学习/简单聚类算法/" class="post-title-link" itemprop="url">简单聚类算法</a>
               
             
           </h1>
@@ -417,7 +417,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-01-29 21:43:42" itemprop="dateModified" datetime="2018-01-29T21:43:42+08:00">2018-01-29</time>
+                <time title="修改时间：2018-02-01 21:40:11" itemprop="dateModified" datetime="2018-02-01T21:40:11+08:00">2018-02-01</time>
               </span>
             
           
@@ -449,8 +449,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/机器学习/模型评估与选择/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/模型评估与选择/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/机器学习/简单聚类算法/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/简单聚类算法/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -483,30 +483,8 @@
       
         
           
-            <h1 id="1、模型评估方法"><a href="#1、模型评估方法" class="headerlink" title="1、模型评估方法"></a>1、模型评估方法</h1><blockquote>
-<p>可重复采样：<strong>在训练集小</strong>，难以划分训练/测试集是有用。此外，能产生多个不同训练集，对<strong>集成学习</strong>等方法有很大的好处。但是会改变初始数据集分布。</p>
-<p>在<strong>初始数据量足够</strong>时，用留出法或者交叉验证法。</p>
-</blockquote>
-<h2 id="1-1-留出法Hold-out"><a href="#1-1-留出法Hold-out" class="headerlink" title="1.1 留出法Hold-out"></a>1.1 留出法Hold-out</h2><p>将数据集D分成两个互斥的集合。</p>
-<p>训练/测试集尽量保证数据一致性，用分层采样，正负样本同比例。</p>
-<p>由于单次估计结果往往不可靠，使用留出法时，一般要采用若干次随机划分，重复进行实验后取平均值作为评估值。      ‘</p>
-<h2 id="1-2-交叉验证法"><a href="#1-2-交叉验证法" class="headerlink" title="1.2 交叉验证法"></a>1.2 交叉验证法</h2><p>将D分成k个大小相似的互斥子集，每个子集用分层采样得到。</p>
-<p>每次用k-1个子集的并集作为训练集，余下的子集作为测试集。这样获得k组训练/测试集。最终返回是k个测试结果的均值。</p>
-<p>常用10折交叉验证。</p>
-<h2 id="1-3-可重复采样"><a href="#1-3-可重复采样" class="headerlink" title="1.3 可重复采样"></a>1.3 可重复采样</h2><p>bootstrapping sampling：给定包含m个样本的数据集D，我们进行采样产生数据集$D’$，每次随机从D中挑选一个样本，将其拷贝放入$D’$，再将样本放回D。重复m次，得到包含m个样本的$D’$。</p>
-<p>样本在m次采样中始终不被采到的概率是$(1-\frac 1 m)^m$，取极限得到</p>
-<script type="math/tex; mode=display">
-{\lim_{m \mapsto \infty  }}(1-\frac 1 m)^m  \mapsto \frac 1 e\approx0.368</script><p>即通过bootstrapping，D中有36.8%的样本未出现在$D’$中，于是可以将$D’$作为训练集，$D-D’$作为测试集，这样可以有1/3个未出现在训练集的样本用于测试。测试结果称为“包外估计”（out-of-bag estimate）。</p>
-<h2 id="1-4-调参"><a href="#1-4-调参" class="headerlink" title="1.4 调参"></a>1.4 调参</h2><blockquote>
-<p>我们在模型评估时往往用来确定算法和参数。当这些确定后，要用所有的D再训练一次，才是最终的模型。</p>
-</blockquote>
-<h1 id="2、性能度量"><a href="#2、性能度量" class="headerlink" title="2、性能度量"></a>2、性能度量</h1><p>回归最常用的是“均方误差”（mean squared error）</p>
-<script type="math/tex; mode=display">
-E(f;D) = \frac 1 m \sum_{i=1}^m(f(x_i)-y_i )^2</script><p>更一般的，对于数据分布D和概率密度函数$p(\cdot )$，均方误差可描述为</p>
-<script type="math/tex; mode=display">
-E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复杂</p>
-<h2 id="2-1-错误率和精度"><a href="#2-1-错误率和精度" class="headerlink" title="2.1 错误率和精度"></a>2.1 错误率和精度</h2><p>错误率：分类错误的样本占总样本的比例</p>
-<p>精度：分类正确的样本占总样本的比例</p>
+            <h1 id="canopy"><a href="#canopy" class="headerlink" title="canopy"></a>canopy</h1><p><img src="http://img.blog.csdn.net/20140528112050187?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvamFtZXNoYWRvb3A=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">while D is not empty</span><br><span class="line">      select element d from D to initialize canopy c</span><br><span class="line">      remove d from D</span><br><span class="line">      Loop through remaining elements in D</span><br><span class="line">           if distance between d_i and c &lt; T1 : add element to the canopy c</span><br><span class="line">           if distance between d_i and c &lt; T2 : remove element from D</span><br><span class="line">      end</span><br><span class="line">      add canopy c to the list of canopies C</span><br></pre></td></tr></table></figure>
 
           
         
@@ -563,7 +541,7 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/模型集成/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/NLP/新词发现spark/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -583,7 +561,7 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/机器学习/模型集成/" class="post-title-link" itemprop="url">模型集成</a>
+                <a href="/2017/07/12/机器学习/NLP/新词发现spark/" class="post-title-link" itemprop="url">spark笔记-新词发现</a>
               
             
           </h1>
@@ -623,7 +601,7 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-02-11 09:26:22" itemprop="dateModified" datetime="2018-02-11T09:26:22+08:00">2018-02-11</time>
+                <time title="修改时间：2018-03-31 10:30:28" itemprop="dateModified" datetime="2018-03-31T10:30:28+08:00">2018-03-31</time>
               </span>
             
           
@@ -637,7 +615,7 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a></span>
 
                 
                 
@@ -655,8 +633,8 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/机器学习/模型集成/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/模型集成/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/机器学习/NLP/新词发现spark/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/NLP/新词发现spark/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -689,24 +667,230 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
       
         
           
-            <p><a href="https://www.jiqizhixin.com/articles/2018-01-14-8" target="_blank" rel="noopener">每个Kaggle冠军的获胜法门：揭秘Python中的模型集成</a></p>
-<p><img src="https://image.jiqizhixin.com/uploads/wangeditor/c897487a-bf02-4023-9355-24c747d7ef62/43133image%20(1" alt="">.png)</p>
-<p>Example Schematics of an ensemble.  An input array X is fed through two proprocessing pipelines and then to a set of base learners f(i). The ensemble combines all base learner predictions into a final prediction array P. </p>
-<p>By the end of the post, you will:</p>
-<ul>
-<li>understand the fundamentals of ensembles</li>
-<li>know how to code them</li>
-<li>understand the main pitfalls and drawbacks of ensembles</li>
-</ul>
-<h2 id="Predicting-Republican-and-Democratic-donations"><a href="#Predicting-Republican-and-Democratic-donations" class="headerlink" title="Predicting Republican and Democratic donations"></a>Predicting Republican and Democratic donations</h2><p>we’ll use a data set on U.S. political contributions. The <a href="https://github.com/fivethirtyeight/data/tree/master/science-giving" target="_blank" rel="noopener">original data set</a> was prepared by <a href="https://fivethirtyeight.com/contributors/ben-wieder/" target="_blank" rel="noopener">Ben Wieder</a> at <a href="https://fivethirtyeight.com/" target="_blank" rel="noopener">FiveThirtyEight</a>, who dug around the U.S. government’s political contribution registry and found that when <a href="https://fivethirtyeight.com/features/when-scientists-donate-to-politicians-its-usually-to-democrats/" target="_blank" rel="noopener">scientists donate to politician, it’s usually to Democrats</a>.</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">%matplotlib inline</span><br><span class="line"></span><br><span class="line"><span class="comment">### Import data</span></span><br><span class="line"><span class="comment"># Always good to set a seed for reproducibility</span></span><br><span class="line">SEED = <span class="number">222</span></span><br><span class="line">np.random.seed(SEED)</span><br><span class="line"></span><br><span class="line">df = pd.read_csv(<span class="string">'input.csv'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">### Training and test set</span></span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> roc_auc_score</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_train_test</span><span class="params">(test_size=<span class="number">0.95</span>)</span>:</span></span><br><span class="line">    <span class="string">"""Split Data into train and test sets."""</span></span><br><span class="line">    y = <span class="number">1</span> * (df.cand_pty_affiliation == <span class="string">"REP"</span>)</span><br><span class="line">    X = df.drop([<span class="string">"cand_pty_affiliation"</span>], axis=<span class="number">1</span>)</span><br><span class="line">    X = pd.get_dummies(X, sparse=<span class="keyword">True</span>)</span><br><span class="line">    X.drop(X.columns[X.std() == <span class="number">0</span>], axis=<span class="number">1</span>, inplace=<span class="keyword">True</span>)</span><br><span class="line">    <span class="keyword">return</span> train_test_split(X, y, test_size=test_size, random_state=SEED)</span><br><span class="line"></span><br><span class="line">xtrain, xtest, ytrain, ytest = get_train_test()</span><br><span class="line"></span><br><span class="line"><span class="comment"># A look at the data</span></span><br><span class="line">print(<span class="string">"\nExample data:"</span>)</span><br><span class="line">df.head()</span><br><span class="line"></span><br><span class="line">df.cand_pty_affiliation.value_counts(normalize=<span class="keyword">True</span>).plot(</span><br><span class="line">    kind=<span class="string">"bar"</span>, title=<span class="string">"Share of No. donations"</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
-<p>This claim is based on the observation on the share of donations being made to Republicans and Democrats. However, there’s plenty more that can be said: for instance, which scientific discipline is most likely to make a Republican donation, and which state is most likely to make Democratic donations? We will go one step further and <em>predict</em> whether a donation is most likely to be a to a Republican or Democrat.</p>
-<h2 id="What-is-an-ensemble"><a href="#What-is-an-ensemble" class="headerlink" title="What is an ensemble?"></a>What is an ensemble?</h2><p>Combining predictions from several models averages out idiosyncratic errors and yield better overall predictions.</p>
-<p>How to combine predictions?</p>
-<p>Machine learning is remarkably similar in classification problems: <strong>taking the most common class label prediction is equivalent to a majority voting rule</strong>. But there are many other ways to combine predictions, and more generally we can use a <strong>model to <em>learn</em></strong> how to best combine predictions.</p>
-<h3 id="Understanding-ensembles-by-combining-decision-trees"><a href="#Understanding-ensembles-by-combining-decision-trees" class="headerlink" title="Understanding ensembles by combining decision trees"></a>Understanding ensembles by combining decision trees</h3><p>The deeper the tree, the more complex the patterns it can capture, but the <strong>more prone</strong> to overfitting it will be. Because of this, we will need an alternative way of building complex models of decision trees, and an ensemble of different decision trees is one such way.</p>
-<p>We’ll use the below helper function to visualize our decision rules:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pydotplus  <span class="comment"># you can install pydotplus with: pip install pydotplus </span></span><br><span class="line"><span class="keyword">from</span> IPython.display <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> roc_auc_score</span><br><span class="line"><span class="keyword">from</span> sklearn.tree <span class="keyword">import</span> DecisionTreeClassifier, export_graphviz</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">print_graph</span><span class="params">(clf, feature_names)</span>:</span></span><br><span class="line">    <span class="string">"""Print decision tree."""</span></span><br><span class="line">    graph = export_graphviz(</span><br><span class="line">        clf,</span><br><span class="line">        label=<span class="string">"root"</span>,</span><br><span class="line">        proportion=<span class="keyword">True</span>,</span><br><span class="line">        impurity=<span class="keyword">False</span>, </span><br><span class="line">        out_file=<span class="keyword">None</span>, </span><br><span class="line">        feature_names=feature_names,</span><br><span class="line">        class_names=&#123;<span class="number">0</span>: <span class="string">"D"</span>, <span class="number">1</span>: <span class="string">"R"</span>&#125;,</span><br><span class="line">        filled=<span class="keyword">True</span>,</span><br><span class="line">        rounded=<span class="keyword">True</span></span><br><span class="line">    )</span><br><span class="line">    graph = pydotplus.graph_from_dot_data(graph)  </span><br><span class="line">    <span class="keyword">return</span> Image(graph.create_png())</span><br></pre></td></tr></table></figure>
+            <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> conf = <span class="keyword">new</span> <span class="type">SparkConf</span>().setAppName(<span class="string">"wordSegname"</span>).setMaster(<span class="string">"local[4]"</span>).</span><br><span class="line">set(<span class="string">"spark.sql.shuffle.partitions"</span>,<span class="string">"10"</span>).set(<span class="string">"spark.network.timeout"</span>,<span class="string">"30s"</span>)</span><br></pre></td></tr></table></figure>
+<p>local[4]是指在本地运行，用4核CPU。</p>
+<p>spark.sql.shuffle.partitions是指partition的数量。SparkSQL在运行时，将一个查询任务分解成多个task，一个task就是一个partition。默认是200个partition，而如果实际集群只能并行3个task，则跑完200个partition要200/3=67次。</p>
+<p>spark.network.timeout是指所有网络通信的超时时间，默认是120s</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> word1=sc.textFile(path).map&#123;x=&gt; </span><br><span class="line"></span><br><span class="line">      <span class="keyword">val</span> x_filter=x.replaceAll(<span class="string">"\p&#123;Punct&#125;"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"\pP"</span>, <span class="string">" "</span>)</span><br><span class="line"></span><br><span class="line">                .replaceAll(<span class="string">"　"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"["</span> + <span class="type">AtomsUitl</span>.stopwords + <span class="string">"]"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"\p&#123;Blank&#125;"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"\p&#123;Space&#125;"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"\p&#123;Cntrl&#125;"</span>, <span class="string">" "</span>)</span><br><span class="line"></span><br><span class="line">                        x_filter</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>replaceAll中是正则表达式。上文中，是将所有的特殊字符都用空格代替</p>
+<p>AtomsUitl.stopwords停用词是”的很了么呢是嘛个都也比还这于不与才上用就好在和对挺去后没说”</p>
+<p>sc.textFile读取文件后，生成一个RDD，以行为单位，所以后面的map是对每行的操作</p>
+<p>打印出所有的元素，用</p>
+<p><code>word1.foreach { x =&gt; println(x) }</code></p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> word_document = word1.zipWithIndex.filter &#123; x =&gt; !<span class="type">StringUtils</span>.isBlank(x._1) &#125;.flatMap &#123; x =&gt;</span><br><span class="line">      <span class="keyword">val</span> arr = <span class="type">ArrayBuffer</span>(<span class="type">String</span>, <span class="type">Int</span>)</span><br><span class="line">      <span class="keyword">val</span> line = x._1.split(<span class="string">" "</span>)    <span class="comment">//对于每一行，都用空格分割</span></span><br><span class="line">      <span class="keyword">for</span> (i &lt;- line) &#123;    </span><br><span class="line">        arr += ((i, x._2.toInt))    <span class="comment">//分割后，每一个tuple加到数组中</span></span><br><span class="line">      &#125;</span><br><span class="line">      arr</span><br><span class="line">    &#125;.map &#123; x =&gt; (x<span class="number">.1</span>.trim, x<span class="number">.2</span>) &#125;.filter(x =&gt; !<span class="type">StringUtils</span>.isBlank(x._1))</span><br></pre></td></tr></table></figure>
+<p>zipWithIndex用带有index的来压缩RDD，索引从0开始</p>
+<p>word1.zipWithIndex.foreach { x =&gt; println(x) }</p>
+<p>(ab ef,0)</p>
+<p>(cd,1)</p>
+<p>上述代码得到的结果是</p>
+<p>(ab,0)</p>
+<p>(ef,0)</p>
+<p>(cd,1)</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> wordleft = word.map(x =&gt; <span class="type">AtomsUitl</span>.reverse(x)).map &#123; x =&gt; <span class="string">""</span> + x + <span class="string">""</span> &#125;.flatMap &#123;</span><br><span class="line">  x =&gt;</span><br><span class="line">    <span class="keyword">var</span> arr = <span class="type">ArrayBufferString</span></span><br><span class="line">    <span class="keyword">for</span> (y &lt;- <span class="number">1</span> to <span class="type">AtomsUitl</span>.len(x) - <span class="number">2</span>) &#123;</span><br><span class="line">      arr += <span class="type">AtomsUitl</span>.substring(x, y, <span class="type">Math</span>.min(maxLen + y, <span class="type">AtomsUitl</span>.len(x)))</span><br><span class="line">    &#125;</span><br><span class="line">    arr</span><br><span class="line">&#125;.sortBy(x =&gt; x)</span><br></pre></td></tr></table></figure>
+<p>将每个句子倒序排列，提取每个子集</p>
+<p>今$</p>
+<p>四期星天今</p>
+<p>处言语然自</p>
+<p>天今$</p>
+<p>星天今$</p>
+<p>期星天今$</p>
+<p>然自$</p>
+<p>理处言语然</p>
+<p>自$</p>
+<p>言语然自</p>
+<p>语然自$</p>
+<p>$</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> wordleft_caculate = wordleft.map &#123;</span><br><span class="line">      s =&gt;</span><br><span class="line">        <span class="keyword">val</span> first = <span class="type">AtomsUitl</span>.substring(s, <span class="number">0</span>, <span class="number">1</span>).toString</span><br><span class="line">        (first, s)</span><br><span class="line">    &#125;.groupBy(f =&gt; f._1).map &#123;</span><br><span class="line">      x =&gt; x._2</span><br><span class="line">    &#125;</span><br><span class="line">wordleft_caculate.foreach&#123;x=&gt; println(x.iterator.next())&#125;</span><br></pre></td></tr></table></figure>
+<p>groupBy之后得到</p>
+<p>(期, CompactBuffer((期,期星天今$))等</p>
+<p>这个是Iterable，可迭代的。可以转换为一个迭代器x.iterator.next()。迭代出来就是</p>
+<p>(期,期星天今$) 等</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/hadoop笔记/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/07/12/hadoop-spark/hadoop笔记/" class="post-title-link" itemprop="url">hadoop笔记</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-03-17 20:50:31" itemprop="dateModified" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2017/07/12/hadoop-spark/hadoop笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/hadoop笔记/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="查看namenode"><a href="#查看namenode" class="headerlink" title="查看namenode"></a>查看namenode</h1><p>在集群的每个节点上都有配置文件，</p>
+<p>vim /etc/hadoop/conf/hdfs-site.xml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;property&gt;</span><br><span class="line"></span><br><span class="line">    &lt;name&gt;dfs.ha.namenodes.iclick&lt;/name&gt;</span><br><span class="line"></span><br><span class="line">    &lt;value&gt;srv-buzz-cloudpmnn1.buzz.com,srv-buzz-cloudpmnn2.buzz.com&lt;/value&gt;</span><br><span class="line"></span><br><span class="line">&lt;/property&gt;</span><br></pre></td></tr></table></figure>
+<h1 id="常用IO操作"><a href="#常用IO操作" class="headerlink" title="常用IO操作"></a>常用IO操作</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public static void testIOUtils() throws IOException &#123;</span><br><span class="line">Configuration conf = new Configuration();</span><br><span class="line">FileSystem fs = FileSystem.get(conf);</span><br><span class="line">Path p = new Path(&quot;/test/in/point&quot;);</span><br><span class="line">FSDataInputStream fdis = fs.open(p);</span><br><span class="line">IOUtils.copyBytes(fdis, System.out, conf,false);</span><br><span class="line">IOUtils.closeStream(fdis);</span><br><span class="line">fs.close();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
           
         
@@ -951,7 +1135,7 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark-sql笔记/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/计算广告/广告反作弊/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -971,7 +1155,7 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/hadoop-spark/spark/spark-sql笔记/" class="post-title-link" itemprop="url">spark-sql笔记</a>
+                <a href="/2017/07/12/机器学习/计算广告/广告反作弊/" class="post-title-link" itemprop="url">广告反作弊</a>
               
             
           </h1>
@@ -1011,7 +1195,7 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-01-30 15:49:02" itemprop="dateModified" datetime="2018-01-30T15:49:02+08:00">2018-01-30</time>
+                <time title="修改时间：2018-03-17 20:50:31" itemprop="dateModified" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
               </span>
             
           
@@ -1025,7 +1209,7 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/计算广告/" itemprop="url" rel="index"><span itemprop="name">计算广告</span></a></span>
 
                 
                 
@@ -1043,8 +1227,8 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/hadoop-spark/spark/spark-sql笔记/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/spark/spark-sql笔记/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/机器学习/计算广告/广告反作弊/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/计算广告/广告反作弊/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1077,22 +1261,88 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
       
         
           
-            <p>spark sql可以用基本的SQL语法，或者hiveQL。Spark SQL也能从hive中读数据。</p>
-<p>Data Frame的来源可以是：结构化数据、hive表、外部数据库或者RDD</p>
-<h2 id="Starting-Point-SQLContext"><a href="#Starting-Point-SQLContext" class="headerlink" title="Starting Point: SQLContext"></a>Starting Point: SQLContext</h2><p>The entry point into all functionality in Spark SQL is the <a href="http://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.sql.SQLContext" target="_blank" rel="noopener"><code>SQLContext</code></a> class, or one of its descendants. To create a basic <code>SQLContext</code>, all you need is a SparkContext.</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> sc: <span class="type">SparkContext</span> <span class="comment">// An existing SparkContext.</span></span><br><span class="line"><span class="keyword">val</span> sqlContext = <span class="keyword">new</span> org.apache.spark.sql.<span class="type">SQLContext</span>(sc)</span><br><span class="line"></span><br><span class="line"><span class="comment">// this is used to implicitly convert an RDD to a DataFrame.</span></span><br><span class="line"><span class="keyword">import</span> sqlContext.implicits._</span><br></pre></td></tr></table></figure>
-<p>在SQLContext的基础上，也要创建一个HiveContext，可以用Hive的udf，也能读hive表。<br>HiveContext是一个独立的包，不需要安装hive</p>
-<h2 id="Creating-DataFrames"><a href="#Creating-DataFrames" class="headerlink" title="Creating DataFrames"></a>Creating DataFrames</h2><p>With a <code>SQLContext</code>, applications can create <code>DataFrame</code>s from an <a href="http://spark.apache.org/docs/latest/sql-programming-guide.html#interoperating-with-rdds" target="_blank" rel="noopener">existing <code>RDD</code></a>, from a Hive table, or from <a href="http://spark.apache.org/docs/latest/sql-programming-guide.html#data-sources" target="_blank" rel="noopener">data sources</a>.</p>
-<p>As an example, the following creates a <code>DataFrame</code> based on the content of a JSON file:</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> sc: <span class="type">SparkContext</span> <span class="comment">// An existing SparkContext.</span></span><br><span class="line"><span class="keyword">val</span> sqlContext = <span class="keyword">new</span> org.apache.spark.sql.<span class="type">SQLContext</span>(sc)</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> df = sqlContext.read.json(<span class="string">"examples/src/main/resources/people.json"</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Displays the content of the DataFrame to stdout</span></span><br><span class="line">df.show()</span><br></pre></td></tr></table></figure>
-<h2 id="Creating-Datasets"><a href="#Creating-Datasets" class="headerlink" title="Creating Datasets"></a>Creating Datasets</h2><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.spark.sql.<span class="type">SQLContext</span></span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// Encoders for most common types are automatically provided by importing sqlContext.implicits._</span></span><br><span class="line"><span class="keyword">val</span> sqlContext = <span class="type">SQLContext</span>.getOrCreate(sc)</span><br><span class="line"><span class="keyword">import</span> sqlContext.implicits._</span><br><span class="line"><span class="keyword">val</span> ds = <span class="type">Seq</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>).toDS()</span><br><span class="line">ds.map(_ + <span class="number">1</span>).collect() <span class="comment">// Returns: Array(2, 3, 4)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Encoders are also created for case classes.</span></span><br><span class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span>(<span class="params">name: <span class="type">String</span>, age: <span class="type">Long</span></span>)</span></span><br><span class="line"><span class="class"><span class="title">val</span> <span class="title">ds</span> </span>= <span class="type">Seq</span>(<span class="type">Person</span>(<span class="string">"Andy"</span>, <span class="number">32</span>)).toDS()</span><br><span class="line"></span><br><span class="line"><span class="comment">// DataFrames can be converted to a Dataset by providing a class. Mapping will be done by name.</span></span><br><span class="line"><span class="keyword">val</span> path = <span class="string">"examples/src/main/resources/people.json"</span></span><br><span class="line"><span class="keyword">val</span> people = sqlContext.read.json(path).as[<span class="type">Person</span>]</span><br></pre></td></tr></table></figure>
-<h2 id="在DataFrame中创建表并查询"><a href="#在DataFrame中创建表并查询" class="headerlink" title="在DataFrame中创建表并查询"></a>在DataFrame中创建表并查询</h2><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> sqlContext = <span class="type">SQLContext</span>.getOrCreate(sc)</span><br><span class="line"><span class="keyword">import</span> sqlContext.implicits._</span><br><span class="line"></span><br><span class="line"><span class="comment">//把andy和32匹配到name和age列。</span></span><br><span class="line"><span class="comment">//先创建一个DataFrame，再注册为table</span></span><br><span class="line"><span class="keyword">val</span> ds = sc.parallelize(<span class="type">Seq</span>((<span class="string">"Andy"</span>, <span class="number">32</span>))).toDF(<span class="string">"name"</span>,<span class="string">"age"</span>)    </span><br><span class="line">ds.registerTempTable(<span class="string">"ds1"</span>)</span><br><span class="line">sqlContext.sql(<span class="string">"select * from ds1"</span>)</span><br></pre></td></tr></table></figure>
-<h2 id="sparkSQL链接GP"><a href="#sparkSQL链接GP" class="headerlink" title="sparkSQL链接GP"></a>sparkSQL链接GP</h2><p>1、maven中增加包<br>一开始试过8.2的包就不行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;postgresql&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;postgresql&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;8.3-606.jdbc3&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure></p>
-<p>2、连接jdbc<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> jdbcDF = sqlContext.read.format(<span class="string">"jdbc"</span>).options(</span><br><span class="line">      <span class="type">Map</span>(<span class="string">"url"</span> -&gt; <span class="string">"jdbc:postgresql://10.1.1.230:5432/xmo_dw"</span>,</span><br><span class="line">          <span class="string">"user"</span>-&gt;<span class="string">"david_xu"</span>,  </span><br><span class="line">          <span class="string">"password"</span>-&gt;<span class="string">"w7dtfxHD"</span>,</span><br><span class="line">        <span class="string">"dbtable"</span> -&gt; <span class="string">"(select * from xmo_dw.bshare_blacklist_tagid) as aa"</span>)).load().show()</span><br></pre></td></tr></table></figure></p>
-<h2 id="在spark-sql命令行中测试连接"><a href="#在spark-sql命令行中测试连接" class="headerlink" title="在spark sql命令行中测试连接"></a>在spark sql命令行中测试连接</h2><p>/usr/lib/spark/bin/spark-sql —jars /home/david/jars/postgresql-8.3-606.jdbc4.jar</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">CREATE</span> <span class="type">TEMPORARY</span> <span class="type">TABLE</span> temp_imageviews</span><br><span class="line"><span class="type">USING</span> org.apache.spark.sql.jdbc</span><br><span class="line"><span class="type">OPTIONS</span> (</span><br><span class="line">  driver <span class="string">"org.postgresql.Driver"</span>,</span><br><span class="line">  url <span class="string">"jdbc:postgresql://10.1.1.230:5432/xmo_dw"</span>,</span><br><span class="line">  user <span class="string">"david_xu"</span>,</span><br><span class="line">  password <span class="string">"w7dtfxHD"</span>,</span><br><span class="line">  dbtable <span class="string">"(select date_i,opxpid::text from xmo_dw.imageviews where date_i=20160512 limit 20000000) as aa"</span>,</span><br><span class="line">  numPartitions <span class="string">"6"</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/lib/spark/bin/</span><br><span class="line">/usr/lib/spark/bin/spark-sql <span class="comment">--executor-memory 100g</span></span><br><span class="line"></span><br><span class="line">add jar /home/wilson/sparksql/postgresql-8.3-606.jdbc3.jar;</span><br><span class="line"><span class="keyword">set</span>  spark.sql.shuffle.partitions=<span class="number">20</span>;</span><br><span class="line"> <span class="keyword">CREATE</span> <span class="keyword">TEMPORARY</span> <span class="keyword">TABLE</span> temp_imageviews</span><br><span class="line"><span class="keyword">USING</span> org.apache.spark.sql.jdbc</span><br><span class="line">OPTIONS (</span><br><span class="line">  driver <span class="string">"org.postgresql.Driver"</span>,</span><br><span class="line">  <span class="keyword">url</span> <span class="string">"jdbc:postgresql://10.1.1.230:5432/xmo_dw"</span>,</span><br><span class="line">  <span class="keyword">user</span> <span class="string">"david_xu"</span>,</span><br><span class="line">  <span class="keyword">password</span> <span class="string">"w7dtfxHD"</span>,</span><br><span class="line">  dbtable <span class="string">"(select  timeslot,record_server,referring_site ,opxsid  from  xmo_dw.imageviews   where  date_i=20160515 limit  5000000) as aa"</span>,</span><br><span class="line">  numPartitions <span class="string">"6"</span>);</span><br></pre></td></tr></table></figure>
-<h3 id="spark-sql读取HDFS建表"><a href="#spark-sql读取HDFS建表" class="headerlink" title="spark sql读取HDFS建表"></a>spark sql读取HDFS建表</h3><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">/usr/lib/spark/bin/spark-sql -e "<span class="keyword">CREATE</span> <span class="keyword">TEMPORARY</span> <span class="keyword">TABLE</span> rtbreq_hour</span><br><span class="line"><span class="keyword">USING</span> org.apache.spark.sql.bytes</span><br><span class="line">OPTIONS (</span><br><span class="line">  paths <span class="string">'$&#123;rtbreq_path&#125;'</span></span><br><span class="line">);</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">TEMPORARY</span> <span class="keyword">TABLE</span> rtbreq_tanx_hour</span><br><span class="line"><span class="keyword">USING</span> org.apache.spark.sql.bytes</span><br><span class="line">OPTIONS(</span><br><span class="line"> paths <span class="string">'$&#123;rtbreq_tanx_path&#125;'</span></span><br><span class="line">);</span><br><span class="line"><span class="keyword">select</span> ip,<span class="keyword">count</span>(<span class="number">1</span>) cnt <span class="keyword">from</span> (<span class="keyword">select</span> ip <span class="keyword">from</span> rtbreq_hour <span class="keyword">union</span> all <span class="keyword">select</span> ip <span class="keyword">from</span> rtbreq_tanx_hour) a <span class="keyword">group</span> <span class="keyword">by</span> ip <span class="keyword">having</span> cnt &gt; <span class="number">30</span> <span class="keyword">order</span> <span class="keyword">by</span> cnt <span class="keyword">desc</span>;</span><br><span class="line"><span class="keyword">select</span> bxid,<span class="keyword">count</span>(<span class="number">1</span>) cnt <span class="keyword">from</span> (<span class="keyword">select</span> bxid <span class="keyword">from</span> rtbreq_hour <span class="keyword">union</span> all <span class="keyword">select</span> bxid <span class="keyword">from</span> rtbreq_tanx_hour) a <span class="keyword">group</span> <span class="keyword">by</span> bxid <span class="keyword">having</span> cnt &gt; <span class="number">1000</span> <span class="keyword">order</span> <span class="keyword">by</span> cnt <span class="keyword">desc</span>;</span><br><span class="line">" &gt; rtbreq/$day/$hour.txt</span><br></pre></td></tr></table></figure>
+            <p>秒针发布过《互联网广告反作弊技术白皮书》</p>
+<p>腾讯灯塔联手秒针、AdMaster发布</p>
+<h1 id="腾讯《2017广告反欺诈白皮书》"><a href="#腾讯《2017广告反欺诈白皮书》" class="headerlink" title="腾讯《2017广告反欺诈白皮书》"></a>腾讯《2017广告反欺诈白皮书》</h1><p>日均校验40亿广告请求，识别的作弊比率在15%左右。部分行业和campaign中，作弊率有60%。</p>
+<h2 id="欺诈手段"><a href="#欺诈手段" class="headerlink" title="欺诈手段"></a>欺诈手段</h2><ul>
+<li>虚假流量。</li>
+</ul>
+<p>某APP在地推时，新增用户暴涨。95%的新增用户的共同特征：</p>
+<p><strong>ROM编译机名称一致；指令逃逸差异数与正常用户不一致；CPU结构为X86，为PC机模拟器；文件系统类型的差异度与正常用户不一致</strong>。</p>
+<p>某APP的新增用户中，工作室批量刷量的特征有：</p>
+<p><strong>安装时间具有明显的规律；手机APP安装数量一致；明显的地域集中性</strong>。</p>
+<p>2.2 黑产技术</p>
+<p>1、广告作弊类型分类</p>
+<p>1）模拟器刷量：电脑模拟器刷量、手机软件模拟刷量、脚本刷量（录制行为跑循环任务）。</p>
+<p>2）真假机用户：储备大量手机或者sim卡，利用数据线push命令到手机，手机执行命令。</p>
+<p>3）静默安装（真机真用户假行为）。人工方式或网络传播方式将木马/具有再分发能力的应用植入到用户手机，形成僵尸网络，在用户无感知的情况下，完成App的下载、激活和删除等一系列操作。</p>
+<p>4）羊毛党（真机真用户真行为假动机）：登录一次就删除应用、使用时长极短、留存率极低。在大部份的情况下，这种用户对业务的健康发展并无太大价值。</p>
+<p>5）广告素材、篇幅偷换（不可见）。“1 像素广告”指在用户的手机屏幕上只展示1个像素大小的广告。这种广告，用户看不见，但统计工具可以统计到，仍然会作为曝光广告与广告主结算，给广告主带来经济损失。</p>
+<p>6）以次充好（不匹配）。部分媒体会将广告主原本定向的一线城市用户偷偷换成二三线城市用户，达到以次充好的目的。</p>
+<h2 id="应对方法"><a href="#应对方法" class="headerlink" title="应对方法"></a>应对方法</h2><p>2.3 反作弊技术</p>
+<p>1）用户群体数据检测。低阶技术，常见方式有：</p>
+<p><strong>a.看留存率</strong>。真实的用户的留存曲线是一条平滑的指数衰减曲线，如果发现留存曲线存在陡升陡降的异常波动，则判断刷量者干预了数据。</p>
+<p><strong>b.看用户终端、网络信息</strong>。如根据经验分析渠道新增用户或者启动用户的设备排名;2G、3G、4G的使用比例分布是否正常等。</p>
+<p><strong>c.看用户注册信息</strong>。比如说注册昵称的分布和规律等。</p>
+<p>以上操作均效率低下。</p>
+<p>2）用户行为特征分析</p>
+<p><strong>a.单个指标</strong>。与黑IP库进行比对，是否为黑名单IP、是否为代理IP;与IMEI库进行对比，是否为为黑IMEI;</p>
+<p><strong>b.群体指标</strong>。用户的IP、IMEI、机型、OS、位置信息、运营商、接入方式的<strong>分布</strong>是否符合先验数据的分布</p>
+<p><strong>c.设备一致性验证</strong>。CPU、制造商、MAC地址、IMEI、机型、操作系统的一致性验证。</p>
+<p>简单粗暴，没有黑白转换机制，误判率高。</p>
+<p><strong>这些方法容易被刷量者利用</strong>。在某电商专业Android app游戏激活、注册、留存、付费、应用市场好评平台上，买主只需要很小的代价，即可刷出完全符合正常用户规律的留存率、IP分布机型分布使用时长等。</p>
+<p>3）终端特征分析+云端交叉验证</p>
+<p>“查”模型负责找寻黑产界的新型作弊方式，提升整体模型的覆盖率</p>
+<p>“杀”模型负责准确识别恶意份子</p>
+<p>“验”模型通过多业务交叉验证，负责保证“查”、“杀”模型的准确率</p>
+<p><strong>终端识别模块</strong>（灯塔SDK稽核模块）:该模块主要是采用机器学习算法选取系统中所有可用的信息作为特征，然后对这些特征进行运算得到该<strong>设备的指纹，</strong>可以有效识别手机模拟器、修改系统参数等行为。</p>
+<p><strong>基于规则的识别模块</strong>（业务自有模块）:该模块一般是通过业务经验及对历史可疑渠道的总结形成的<strong>反作弊规则</strong>，可以理解为多维组合规则，一般需根据业务成本、对渠道的容忍度<strong>设置关键变量的阈值</strong>。</p>
+<p><strong>基于数据挖掘的识别模块</strong>（灯塔云端模块）:该模块主要从硬件信息、用户活跃、用户行为进行多维度、多业务交叉验证，分别计算每个维度下面的不同特征值，结合决策树、LR、贝叶斯网络等多种算法进行精准的定位。<strong>分类</strong></p>
+<p>为了增强识别的准确性和稳定性，模块之间、模块内部均采用集成学习方法的思想，其核心思想是在模块内对同一个训练集训练不同的分类器，然后把这些分类器结合起来构成一个最终的分类器，而每一个模块可以针对不同的作弊手段进行识别，再把模块与模块结合，才能识别所有的作弊手段。    </p>
+<h1 id="admaster《广告反欺诈研究报告》2016"><a href="#admaster《广告反欺诈研究报告》2016" class="headerlink" title="admaster《广告反欺诈研究报告》2016"></a>admaster《广告反欺诈研究报告》2016</h1><p>今年 1 月 29 日和 3 月 2 日,宝洁公司首席品牌官 Marc Pritchard 分别在美国互动广告局(Interactive<br>Advertising Bureau, IAB)和美国广告主协会(Association of National Advertisers, ANA)两个年度<br>重要峰会上进行主题发言,针对数字广告透明度和可见性标准的言论引发了全球营销圈和数字行业的热议。<br>宝洁呼吁业界在四个方面采取行动:</p>
+<ol>
+<li>数字广告采纳一套统一的可见性测量标准;</li>
+<li>贯彻第三方测评机构</li>
+</ol>
+<p>的验证审核;</p>
+<ol>
+<li>提倡全面透明的代理公司合同机制;</li>
+<li>预防广告欺诈。</li>
+</ol>
+<p>AdMaster先后推出了 BlueAir、定投识别 (VOA)、监播实录 (SNAP) 等技术产品,逐步建立了“全方位、深层次、多角度”的广告反欺诈解决方案。尤其在程序化购买中,AdMaster 在投放前预判 (Pre-bid),即事前广告反欺诈技术。</p>
+<p><strong>BlueAir</strong>可以对智能电视IP、地域、频次以及User Agent等维度的异常流量进行甄别，将行为逻辑上不正常的设备加入黑名单，从而保障广告投放的安全。同时，与海信、康佳、创维、欢网等硬件厂家共同建立智能电视设备白名单，以便从设备维度进一步甄别流量真实性。</p>
+<p><strong>定投识别</strong></p>
+<p><strong>监播实录</strong></p>
+<p><strong>投放前预判</strong>。在流量请求、广告未展现时,根据历史流量质量进行排查,从而提前避免广告在无效流量上的投放。</p>
+<h2 id="无效流量类型"><a href="#无效流量类型" class="headerlink" title="无效流量类型"></a>无效流量类型</h2><p>1、广告可见性问题引发的低质量流量</p>
+<p>目前媒体的环境导致广告不易可见。AdMaster 在 AdServing 广告投放管理技术上能够实现广告可见性的预估判断。在多种广告形式的后测方面,通过独创的模型评估广告可见性表现。</p>
+<p>2、机器人无效流量（Non-Human Traffic）</p>
+<p>从最初的 cookie 和 IP不变的前提下,反复刷新页面和点击广告,造成广告曝光和点击的增加,到通过木马或者恶意程序控制海量人肉刷机、伪造大量 IP 与设备信息进行模拟访问、或将 IP 和 cookie、User Agent 一起进行轮替的流量造假方式,都属于机器人无效流量。</p>
+<p><strong>BlueAir</strong> 广告反欺诈技术能够结合历史异常数据,能够在流量请求、广告未展现时,即根据历史流量质量判断此流量的质量,在投放前通过 <strong>Pre-bid</strong> 判断出流量的异常,杜绝流量造假现象发生。</p>
+<p>3、视频类无效流量</p>
+<p>(1)针对剧目投偏现象,AdMaster <strong>定投识别</strong> (VOA) 功能通过 Referrer/ 剧目 ID 等方式解析 广告曝光时所<br><strong>播放剧目名称</strong>,并与广告主定投的剧目内容进行匹配。在移动端定投评估中,高诚信度的视频媒体也提供高度<br>配合。剧目投偏比例,一目了然。</p>
+<p>(2)针对时有发生的曝光代码调用,但是素材未正确展示的广告欺诈现象,AdMaster 利用<strong>监播实录</strong> (SNAP)<br>功能,采用类似于“神秘访客”概念的方法从海量抽样监测,将视频内容播放前的所有贴片内容录制下来,并<br>通过图像识别与适当的素材进行对比,判断素材是否被正确展示,以及是否按照要求展示。</p>
+<p>4、智能电视无效流量</p>
+<p>支持智能电视广告的监测模式一般有 3 种 : 分别是第三方 SDK 监测、C2S 和 S2S 两种 API。前两种相比 S2S 更为安全,也更容易监测流量异常情况,可以说 C2S API 是智能电视广告监测安全的起点和基础(S2S API 传输方式目前很难识别无效流量)。</p>
+<h1 id="inmobi《移动广告反作弊白皮书》"><a href="#inmobi《移动广告反作弊白皮书》" class="headerlink" title="inmobi《移动广告反作弊白皮书》"></a>inmobi《移动广告反作弊白皮书》</h1><p>没技术</p>
+<p>反作弊措施</p>
+<p>1）剔除自动流量。</p>
+<p>识别机器人脚本，分析展示和点击的质量。</p>
+<p>2）数据信号双重检测。</p>
+<p>将媒体共享的人群信息和从SDK收集的信息比对，对所有无效信息定位和删除。</p>
+<p>[部分有关 广告联盟作弊 与反作弊资料收集]（<a href="http://cwiki.apachecn.org/pages/viewpage.action?pageId=4882639）" target="_blank" rel="noopener">http://cwiki.apachecn.org/pages/viewpage.action?pageId=4882639）</a></p>
+<p>roadmap中，AD fraud的业界措施</p>
+<p>监控广告投放的效果；</p>
+<p>保存曝光设备的ip</p>
+<p>记录用户在landing页的行为</p>
+<p>网页分析</p>
+<p><strong>基于数据挖掘的识别模块</strong>（灯塔云端模块）:该模块主要从硬件信息、用户活跃、用户行为进行多维度、多业务交叉验证，分别计算每个维度下面的不同特征值，结合决策树、LR、贝叶斯网络等多种算法进行精准的定位。为了增强识别的准确性和稳定性，模块之间、模块内部均采用集成学习方法的思想，其核心思想是在模块内对同一个训练集训练不同的分类器，然后把这些分类器结合起来构成一个最终的分类器，而每一个模块可以针对不同的作弊手段进行识别，再把模块与模块结合，才能识别所有的作弊手段。</p>
+<p>这个方法未来肯定要实现的，大致是通过集成学习的方式，综合硬件信息，网页特征，用户行为</p>
+<p>最初我们只有url信息，提取url的特征判断投放的网页是否安全；</p>
+<p>后面对每条</p>
+<p>前期，通过分析url内容，判断网页是否安全，是否为虚假网页，网页内容与广告品牌是否有冲突。</p>
+<p>后面，分析曝光的详细信息，包括设备信息，用户特征，判断是否为作弊流量；分析网页元素和广告位置，判断广告可见性。</p>
+<p>再后面，在对url和黑名单有一定积累的基础上，在投放或竞价前检测投放环境，主动识别和屏蔽非安全流量</p>
 
           
         
@@ -1149,7 +1399,7 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/算法与数据结构/优先级队列/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/算法与数据结构/查找树/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -1169,7 +1419,7 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/算法与数据结构/优先级队列/" class="post-title-link" itemprop="url">优先级队列</a>
+                <a href="/2017/07/12/算法与数据结构/查找树/" class="post-title-link" itemprop="url">查找树</a>
               
             
           </h1>
@@ -1209,7 +1459,7 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-02-18 10:04:47" itemprop="dateModified" datetime="2018-02-18T10:04:47+08:00">2018-02-18</time>
+                <time title="修改时间：2017-07-16 12:44:24" itemprop="dateModified" datetime="2017-07-16T12:44:24+08:00">2017-07-16</time>
               </span>
             
           
@@ -1241,8 +1491,8 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/算法与数据结构/优先级队列/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/算法与数据结构/优先级队列/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/算法与数据结构/查找树/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/算法与数据结构/查找树/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1275,227 +1525,47 @@ E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复�
       
         
           
-            <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PriorityQueue</span>[<span class="type">E</span>](<span class="params">top: <span class="type">Int</span></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">import</span> <span class="type">PriorityQueue</span>.<span class="type">Entry</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">var</span> nsize = <span class="number">0</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">val</span> heap = <span class="type">Array</span>.ofDim[<span class="type">Entry</span>[<span class="type">E</span>]](top+<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Adds an Object to a PriorityQueue in log(size) time. It returns the</span></span><br><span class="line"><span class="comment">   * object (if any) that was dropped off the heap because it was full. This</span></span><br><span class="line"><span class="comment">   * can be the given parameter (in case it is smaller than the full heap's</span></span><br><span class="line"><span class="comment">   * minimum, and couldn't be added), or another object that was previously</span></span><br><span class="line"><span class="comment">   * the smallest value in the heap and now has been replaced by a larger one,</span></span><br><span class="line"><span class="comment">   * or null if the queue wasn't yet full with maxSize elements.</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">add</span></span>(key: <span class="type">Double</span>, value: <span class="type">E</span>): <span class="type">Option</span>[<span class="type">Entry</span>[<span class="type">E</span>]] = &#123;</span><br><span class="line">    <span class="keyword">if</span> (nsize &lt; top) &#123;</span><br><span class="line">      nsize += <span class="number">1</span></span><br><span class="line">      heap(nsize) = <span class="type">Entry</span>(key, value)</span><br><span class="line">      upHeap</span><br><span class="line">      <span class="type">None</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (nsize &gt; <span class="number">0</span> &amp;&amp; key &gt;= heap(<span class="number">1</span>).key) &#123;</span><br><span class="line">      <span class="keyword">val</span> old = heap(<span class="number">1</span>)</span><br><span class="line">      heap(<span class="number">1</span>) = <span class="type">Entry</span>(key, value)</span><br><span class="line">      updateTop</span><br><span class="line">      <span class="type">Some</span>(old)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="type">Some</span>(<span class="type">Entry</span>(key, value))</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">values</span></span>(): <span class="type">List</span>[<span class="type">E</span>] = &#123;</span><br><span class="line">    <span class="keyword">val</span> entries = <span class="type">Array</span>.ofDim[<span class="type">Entry</span>[<span class="type">E</span>]](nsize)</span><br><span class="line">    <span class="type">System</span>.arraycopy(heap, <span class="number">1</span>, entries, <span class="number">0</span>, nsize)</span><br><span class="line">    entries sortBy(-_.key) map(_.value) toList</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Removes and returns the least element of the PriorityQueue in log(size)</span></span><br><span class="line"><span class="comment">   * time.</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">pop</span></span>(): <span class="type">Option</span>[<span class="type">Entry</span>[<span class="type">E</span>]] = &#123;</span><br><span class="line">    <span class="keyword">if</span> (nsize &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="keyword">val</span> result = heap(<span class="number">1</span>)</span><br><span class="line">      heap(<span class="number">1</span>) = heap(nsize)</span><br><span class="line">      heap(nsize) = <span class="literal">null</span></span><br><span class="line">      nsize -= <span class="number">1</span></span><br><span class="line">      downHeap</span><br><span class="line">      <span class="type">Some</span>(result)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="type">None</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/** Returns the number of elements currently stored in the PriorityQueue. */</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">size</span></span>(): <span class="type">Int</span> = nsize</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Should be called when the Object at top changes values. Still log(n)</span></span><br><span class="line"><span class="comment">   * worst case, but it's at least twice as fast to</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * &lt;pre&gt;</span></span><br><span class="line"><span class="comment">   * pq.top().change();</span></span><br><span class="line"><span class="comment">   * pq.updateTop();</span></span><br><span class="line"><span class="comment">   * &lt;/pre&gt;</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * instead of</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * &lt;pre&gt;</span></span><br><span class="line"><span class="comment">   * o = pq.pop();</span></span><br><span class="line"><span class="comment">   * o.change();</span></span><br><span class="line"><span class="comment">   * pq.push(o);</span></span><br><span class="line"><span class="comment">   * &lt;/pre&gt;</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * @return the new 'top' element.</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">updateTop</span></span>(): <span class="type">Entry</span>[<span class="type">E</span>] = &#123;</span><br><span class="line">    downHeap</span><br><span class="line">    heap(<span class="number">1</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="function"><span class="keyword">def</span> <span class="title">upHeap</span></span>(): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">var</span> i = nsize</span><br><span class="line">    <span class="keyword">val</span> node = heap(i)</span><br><span class="line">    <span class="keyword">var</span> j = i &gt;&gt;&gt; <span class="number">1</span></span><br><span class="line">    <span class="keyword">while</span> (j &gt; <span class="number">0</span> &amp;&amp; node.key &lt; heap(j).key) &#123;</span><br><span class="line">      heap(i) = heap(j)</span><br><span class="line">      i = j</span><br><span class="line">      j = j &gt;&gt;&gt; <span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line">    heap(i) = node</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="function"><span class="keyword">def</span> <span class="title">downHeap</span></span>(): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">var</span> i = <span class="number">1</span></span><br><span class="line">    <span class="keyword">val</span> node = heap(i)</span><br><span class="line">    <span class="keyword">var</span> j = i &lt;&lt; <span class="number">1</span></span><br><span class="line">    <span class="keyword">var</span> k = j + <span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span> (k &lt;= nsize &amp;&amp; heap(k).key &lt; heap(j).key) &#123;</span><br><span class="line">      j = k</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span> (j &lt;= nsize &amp;&amp; heap(j).key &lt; node.key) &#123;</span><br><span class="line">      heap(i) = heap(j)</span><br><span class="line">      i = j</span><br><span class="line">      j = i &lt;&lt; <span class="number">1</span></span><br><span class="line">      k = j + <span class="number">1</span></span><br><span class="line">      <span class="keyword">if</span> (k &lt;= nsize &amp;&amp; heap(k).key &lt; heap(j).key) &#123;</span><br><span class="line">        j = k</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    heap(i) = node</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">PriorityQueue</span> </span>&#123;</span><br><span class="line">  <span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>[<span class="type">E</span>](<span class="params">key: <span class="type">Double</span>, value: <span class="type">E</span></span>)</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">  <span class="title">def</span> <span class="title">main</span>(<span class="params">args: <span class="type">Array</span>[<span class="type">String</span>]</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">val</span> pq = <span class="keyword">new</span> <span class="type">PriorityQueue</span>[(<span class="type">Int</span>, <span class="type">Double</span>)](<span class="number">4</span>)</span><br><span class="line">    <span class="keyword">val</span> ds = <span class="type">Array</span>[<span class="type">Double</span>](<span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.7</span>, <span class="number">0.2</span>, <span class="number">0.2</span>, <span class="number">0.3</span>, <span class="number">0.3</span>, <span class="number">0.5</span>, <span class="number">0.5</span>, <span class="number">0.5</span>)</span><br><span class="line">    <span class="keyword">for</span> (i &lt;- <span class="number">0</span> until ds.length) &#123;</span><br><span class="line">      <span class="keyword">val</span> e = pq.add(ds(i), (i, ds(i)))</span><br><span class="line">      println((i, ds(i)) + <span class="string">" =&gt; "</span> + e)</span><br><span class="line">    &#125;</span><br><span class="line">    println(pq.values)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/NLP/新词发现spark/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/12/机器学习/NLP/新词发现spark/" class="post-title-link" itemprop="url">spark笔记-新词发现</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-03-31 10:30:28" itemprop="dateModified" datetime="2018-03-31T10:30:28+08:00">2018-03-31</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/机器学习/NLP/新词发现spark/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/NLP/新词发现spark/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> conf = <span class="keyword">new</span> <span class="type">SparkConf</span>().setAppName(<span class="string">"wordSegname"</span>).setMaster(<span class="string">"local[4]"</span>).</span><br><span class="line">set(<span class="string">"spark.sql.shuffle.partitions"</span>,<span class="string">"10"</span>).set(<span class="string">"spark.network.timeout"</span>,<span class="string">"30s"</span>)</span><br></pre></td></tr></table></figure>
-<p>local[4]是指在本地运行，用4核CPU。</p>
-<p>spark.sql.shuffle.partitions是指partition的数量。SparkSQL在运行时，将一个查询任务分解成多个task，一个task就是一个partition。默认是200个partition，而如果实际集群只能并行3个task，则跑完200个partition要200/3=67次。</p>
-<p>spark.network.timeout是指所有网络通信的超时时间，默认是120s</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> word1=sc.textFile(path).map&#123;x=&gt; </span><br><span class="line"></span><br><span class="line">      <span class="keyword">val</span> x_filter=x.replaceAll(<span class="string">"\p&#123;Punct&#125;"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"\pP"</span>, <span class="string">" "</span>)</span><br><span class="line"></span><br><span class="line">                .replaceAll(<span class="string">"　"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"["</span> + <span class="type">AtomsUitl</span>.stopwords + <span class="string">"]"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"\p&#123;Blank&#125;"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"\p&#123;Space&#125;"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"\p&#123;Cntrl&#125;"</span>, <span class="string">" "</span>)</span><br><span class="line"></span><br><span class="line">                        x_filter</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>replaceAll中是正则表达式。上文中，是将所有的特殊字符都用空格代替</p>
-<p>AtomsUitl.stopwords停用词是”的很了么呢是嘛个都也比还这于不与才上用就好在和对挺去后没说”</p>
-<p>sc.textFile读取文件后，生成一个RDD，以行为单位，所以后面的map是对每行的操作</p>
-<p>打印出所有的元素，用</p>
-<p><code>word1.foreach { x =&gt; println(x) }</code></p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> word_document = word1.zipWithIndex.filter &#123; x =&gt; !<span class="type">StringUtils</span>.isBlank(x._1) &#125;.flatMap &#123; x =&gt;</span><br><span class="line">      <span class="keyword">val</span> arr = <span class="type">ArrayBuffer</span>(<span class="type">String</span>, <span class="type">Int</span>)</span><br><span class="line">      <span class="keyword">val</span> line = x._1.split(<span class="string">" "</span>)    <span class="comment">//对于每一行，都用空格分割</span></span><br><span class="line">      <span class="keyword">for</span> (i &lt;- line) &#123;    </span><br><span class="line">        arr += ((i, x._2.toInt))    <span class="comment">//分割后，每一个tuple加到数组中</span></span><br><span class="line">      &#125;</span><br><span class="line">      arr</span><br><span class="line">    &#125;.map &#123; x =&gt; (x<span class="number">.1</span>.trim, x<span class="number">.2</span>) &#125;.filter(x =&gt; !<span class="type">StringUtils</span>.isBlank(x._1))</span><br></pre></td></tr></table></figure>
-<p>zipWithIndex用带有index的来压缩RDD，索引从0开始</p>
-<p>word1.zipWithIndex.foreach { x =&gt; println(x) }</p>
-<p>(ab ef,0)</p>
-<p>(cd,1)</p>
-<p>上述代码得到的结果是</p>
-<p>(ab,0)</p>
-<p>(ef,0)</p>
-<p>(cd,1)</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> wordleft = word.map(x =&gt; <span class="type">AtomsUitl</span>.reverse(x)).map &#123; x =&gt; <span class="string">""</span> + x + <span class="string">""</span> &#125;.flatMap &#123;</span><br><span class="line">  x =&gt;</span><br><span class="line">    <span class="keyword">var</span> arr = <span class="type">ArrayBufferString</span></span><br><span class="line">    <span class="keyword">for</span> (y &lt;- <span class="number">1</span> to <span class="type">AtomsUitl</span>.len(x) - <span class="number">2</span>) &#123;</span><br><span class="line">      arr += <span class="type">AtomsUitl</span>.substring(x, y, <span class="type">Math</span>.min(maxLen + y, <span class="type">AtomsUitl</span>.len(x)))</span><br><span class="line">    &#125;</span><br><span class="line">    arr</span><br><span class="line">&#125;.sortBy(x =&gt; x)</span><br></pre></td></tr></table></figure>
-<p>将每个句子倒序排列，提取每个子集</p>
-<p>今$</p>
-<p>四期星天今</p>
-<p>处言语然自</p>
-<p>天今$</p>
-<p>星天今$</p>
-<p>期星天今$</p>
-<p>然自$</p>
-<p>理处言语然</p>
-<p>自$</p>
-<p>言语然自</p>
-<p>语然自$</p>
-<p>$</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> wordleft_caculate = wordleft.map &#123;</span><br><span class="line">      s =&gt;</span><br><span class="line">        <span class="keyword">val</span> first = <span class="type">AtomsUitl</span>.substring(s, <span class="number">0</span>, <span class="number">1</span>).toString</span><br><span class="line">        (first, s)</span><br><span class="line">    &#125;.groupBy(f =&gt; f._1).map &#123;</span><br><span class="line">      x =&gt; x._2</span><br><span class="line">    &#125;</span><br><span class="line">wordleft_caculate.foreach&#123;x=&gt; println(x.iterator.next())&#125;</span><br></pre></td></tr></table></figure>
-<p>groupBy之后得到</p>
-<p>(期, CompactBuffer((期,期星天今$))等</p>
-<p>这个是Iterable，可迭代的。可以转换为一个迭代器x.iterator.next()。迭代出来就是</p>
-<p>(期,期星天今$) 等</p>
+            <p><strong>动态查找树主要有：二叉查找树（Binary Search Tree），平衡二叉查找树（Balanced Binary Search Tree），红黑树 (Red-Black Tree )，B-tree/B+-tree/ B*-tree (B~Tree)。前三者是典型的二叉查找树结构，其查找的时间复杂度*</strong>O<em>(log2</em>N<em>)<em>*与树的深度相关，那么降低树的深度自然对查找效率是有所提高的；还有一个实际问题：就是大规模数据存储中，实现索引查询这样一个实际背景下，树节点存储的元素数量是有限的（如果元素数量非常多的话，查找就退化成节点内部的线性查找了），这样导致二叉查找树结构由于树的深度过大而造成磁盘I/O读写过于频繁，进而导致查询效率低下（为什么会出现这种情况，待会在外部存储器-磁盘中有所解释），那么如何减少树的深度（当然是不能减少查询的数据量），一个基本的想法就是：采用多叉树结构（由于树节点元素数量是有限的，自然该节点的子树数量也就是有限的）。</em></em></p>
+<p><strong>这样我们就提出了一个新的查找树结构——多路查找树。根据平衡二叉树的启发，自然就想到平衡多路查找树结构，也就是B树</strong></p>
+<h1 id="1、B树"><a href="#1、B树" class="headerlink" title="1、B树"></a>1、B树</h1><h2 id="1-1-原理"><a href="#1-1-原理" class="headerlink" title="1.1 原理"></a>1.1 原理</h2><p>二叉搜索树：</p>
+<ol>
+<li>所有非叶子结点至多拥有两个儿子（ Left 和 Right ）；</li>
+<li>所有结点存储一个关键字；</li>
+<li>非叶子结点的左指针指向小于其关键字的子树，右指针指向大于其关键字的子树；</li>
+</ol>
+<p><img src="http://static.oschina.net/uploads/img/201301/06112317_yHxY.jpg" alt=""></p>
+<h2 id="1-2-搜索方法"><a href="#1-2-搜索方法" class="headerlink" title="1.2 搜索方法"></a>1.2 搜索方法</h2><p> B 树的搜索，从根结点开始，如果查询的关键字与结点的关键字相等，那么就命中；否则，如果查询关键字比 结点关键字小，就进入左儿子；如果比结点关键字大，就进入右儿子；如果左儿子或右儿子的指针为空，则报告找不到相应的关键字；</p>
+<p> 如果 B 树的所有非叶子结点的左右子树的 结点数目均保持差不多（平衡），那么 B 树的搜索性能逼近二分查找；但它比连续内存空间的二分查找的优点是，改变 B 树结构（插入与删除结点）不需要移动大段的内存数据，甚至通常是常数开销；如</p>
+<p><img src="http://static.oschina.net/uploads/img/201301/06112317_ssDu.jpg" alt=""></p>
+<p>但 B 树在经过多次插入与删除后，有可能导致不同的结构：</p>
+<p><img src="http://static.oschina.net/uploads/img/201301/06112317_NTuh.jpg" alt=""></p>
+<p>右边也是一个 B 树，但 它的搜索性能已经是线性的了；同样的关键字集合有可能导致不同的树结构索引；所以，使用 B 树还 要考虑尽可能让 B 树保持左图的结构，和避免右图的结构，也就是所谓的“平衡”问题；       </p>
+<p>实际使用的 B 树都是在原 B 树的基 础上加上平衡算法，即“平衡二叉树”；如何保持 B 树结点分布均匀的平衡算法是平衡二叉树的 关键；<strong>平衡算法</strong>是一种在 B 树中插入和删除结点的策略；</p>
+<h1 id="2、B-树"><a href="#2、B-树" class="headerlink" title="2、B-树"></a>2、B-树</h1><h2 id="1-1-原理-1"><a href="#1-1-原理-1" class="headerlink" title="1.1 原理"></a>1.1 原理</h2><p>是一种多路搜索树（并不是二叉的）：</p>
+<p>​       1. 定义任意非叶子结点最多只有 M 个儿 子；且 M&gt;2 ；</p>
+<p>​       2. 根结点的儿子数为 [2, M] ；</p>
+<p>​       3. 除根结点以外的非叶子结点的儿子数为 [M/2, M] ；</p>
+<p>​       4. 每个结点存放至少 M/2-1 （取 上整）和至多 M-1 个关键字；（至少 2 个关键 字）</p>
+<p>​       5. 非叶子结点的关键字个数 = 指向儿 子的指针个数 -1 ；</p>
+<p>​       6. 非叶子结点的关键字： K[1], K[2], …, K[M-1] ；且 K[i] &lt; K[i+1] ；</p>
+<p>​       7. 非叶子结点的指针： P[1], P[2], …, P[M] ；其中 P[1] 指向关键字小于 K[1] 的子树， P[M] 指向关键字大于K[M-1] 的子树，其它 P[i] 指 向关键字属于 (K[i-1], K[i]) 的子树；</p>
+<p>​       8. 所有叶子结点位于同一层；</p>
+<p>如：（ M=3 ）</p>
+<p><img src="http://static.oschina.net/uploads/img/201301/06112317_djvw.jpg" alt=""></p>
+<p>B- 树的特性：</p>
+<p>​       1. 关键字集合分布在整颗树中；</p>
+<p>​       2. 任何一个关键字出现且只出现在一个结点中；</p>
+<p>​       3. 搜索有可能在非叶子结点结束；</p>
+<p>​       4. 其搜索性能等价于在关键字全集内做一次二分查找；</p>
+<p>​       5. 自动层次控制；</p>
+<p>​       由于限制了除根结点以外的非叶子结点，至少含有 M/2 个儿子，确保了结点的至少利用率，其最底搜索性能为：</p>
+<p><img src="http://static.oschina.net/uploads/img/201301/06112318_AOeO.jpg" alt=""></p>
+<p> 其中， M 为设定的非叶子结点最多子树个 数， N 为关键字总数；</p>
+<p>​       所以 B- 树的性能<strong>总是等价于二分查找 （与 M 值无关）</strong>，也就没有 B 树平衡 的问题；</p>
+<p>​       由于 M/2 的限制，在插入结点时，如果 结点已满，需要将结点分裂为两个各占 M/2 的结点；删除结点时，需将两个不足 M/2 的 兄弟结点合并；</p>
+<h2 id="1-2-方法"><a href="#1-2-方法" class="headerlink" title="1.2 方法"></a>1.2 方法</h2><p>参考</p>
+<p><a href="http://www.oschina.net/question/565065_86338" target="_blank" rel="noopener">BTree,B-Tree,B+Tree,B*Tree都是什么</a></p>
+<p><a href="http://blog.csdn.net/hbhhww/article/details/8206846" target="_blank" rel="noopener">B-tree/B+tree/B*tree</a></p>
 
           
         
