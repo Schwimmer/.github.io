@@ -357,7 +357,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/特征选择/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/知识点/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -377,7 +377,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/03/17/机器学习/特征选择/" class="post-title-link" itemprop="url">特征选择</a>
+                <a href="/2018/03/17/机器学习/知识点/" class="post-title-link" itemprop="url">知识点</a>
               
             
           </h1>
@@ -407,20 +407,6 @@
           
 
           
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-09-29 10:23:59" itemprop="dateModified" datetime="2018-09-29T10:23:59+08:00">2018-09-29</time>
-              </span>
-            
-          
 
           
             <span class="post-meta-item">
@@ -449,8 +435,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/17/机器学习/特征选择/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/特征选择/" itemprop="commentCount"></span>
+                <a href="/2018/03/17/机器学习/知识点/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/知识点/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -483,115 +469,178 @@
       
         
           
-            <h1 id="选择哪些指标"><a href="#选择哪些指标" class="headerlink" title="选择哪些指标"></a>选择哪些指标</h1><p><a href="https://blog.csdn.net/fisherming/article/details/79925574" target="_blank" rel="noopener">https://blog.csdn.net/fisherming/article/details/79925574</a></p>
-<p>历届的Kaggle/天池比赛，天猫/京东排序和推荐业务线里模型用到的特 </p>
-<p>1.<strong>加减平均</strong>：这个用户所买商品<strong>高于</strong>所有用户购买商品平均价格的多少（<strong>权衡一个人的消费能力</strong>），用户连续登录天数超过平均多少（<strong>表明这个用户对该产品的黏性</strong>）  </p>
-<p>2.<strong>分位线</strong>：商品属于售出商品价格的多少分位线处。（<strong>比如20%，说明20%的人买东西都不会低于这个价格</strong>）。  3.<strong>次序型</strong>：排在第几位。  </p>
-<p>4.<strong>比例型</strong>：电商中，某商品在某电商平台<strong>好/中/差评</strong>的比例 </p>
-<p>转自知乎：<a href="https://www.zhihu.com/question/29316149/answer/110159647" target="_blank" rel="noopener">特征工程到底是什么？</a></p>
-<p><a href="https://www.cnblogs.com/jasonfreak/p/5448385.html" target="_blank" rel="noopener">https://www.cnblogs.com/jasonfreak/p/5448385.html</a></p>
-<p>代码在<code>blogcodes/feature_selection.py</code></p>
-<p>目录</p>
-<p>1 特征工程是什么？<br>2 数据预处理<br>　　2.1 无量纲化<br>　　　　2.1.1 标准化<br>　　　　2.1.2 区间缩放法<br>　　　　2.1.3 标准化与归一化的区别<br>　　2.2 对定量特征二值化<br>　　2.3 对定性特征哑编码<br>　　2.4 缺失值计算<br>　　2.5 数据变换<br>3 特征选择<br>　　3.1 Filter<br>　　　　3.1.1 方差选择法<br>　　　　3.1.2 相关系数法<br>　　　　3.1.3 卡方检验<br>　　　　3.1.4 互信息法<br>　　3.2 Wrapper<br>　　　　3.2.1 递归特征消除法<br>　　3.3 Embedded<br>　　　　3.3.1 基于惩罚项的特征选择法<br>　　　　3.3.2 基于树模型的特征选择法<br>4 降维<br>　　4.1 主成分分析法（PCA）<br>　　4.2 线性判别分析法（LDA）<br>5 总结<br>6 参考资料</p>
-<p><img src="https://pic1.zhimg.com/80/20e4522e6104ad71fc543cc21f402b36_hd.jpg" alt=""></p>
-<p>本文中使用sklearn中的<a href="https://link.zhihu.com/?target=http%3A//scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html%23sklearn.datasets.load_iris" target="_blank" rel="noopener">IRIS（鸢尾花）数据集</a>来对特征处理功能进行说明。IRIS数据集由Fisher在1936年整理，包含4个特征（Sepal.Length（花萼长度）、Sepal.Width（花萼宽度）、Petal.Length（花瓣长度）、Petal.Width（花瓣宽度）），特征值都为正浮点数，单位为厘米。目标值为鸢尾花的分类（Iris Setosa（山鸢尾）、Iris Versicolour（杂色鸢尾），Iris Virginica（维吉尼亚鸢尾））。导入IRIS数据集的代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.datasets import load_iris</span><br><span class="line"># 返回的是一个Bunch，类似Dict，可以获取iris.data、iris.target等</span><br><span class="line">iris = load_iris()</span><br></pre></td></tr></table></figure>
-<h1 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h1><p>未处理的特征有如下问题，我们使用sklearn中的preproccessing库来进行数据预处理。</p>
-<h2 id="无量纲化"><a href="#无量纲化" class="headerlink" title="无量纲化"></a>无量纲化</h2><p>无量纲化使不同规格的数据转换到同一规格。常见的无量纲化方法有标准化和区间缩放法。</p>
-<p>标准化的前提是特征值<strong>服从正态分布</strong>，标准化后，其转换成标准正态分布。</p>
-<p>区间缩放法利用了边界值信息，将特征的取值区间缩放到某个特定的范围，例如[0, 1]等。</p>
-<h3 id="标准化"><a href="#标准化" class="headerlink" title="标准化"></a>标准化</h3><p>z-score。将原始数据归一化到均值为0，方差为1的数据集。</p>
-<p><img src="https://pic1.zhimg.com/80/c7e852db6bd05b7bb1017b5425ffeec1_hd.jpg" alt=""></p>
-<p>优点：当X的最大值和最小值未知，或孤立点左右了最大－最小规范化时，　该方法有用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.preprocessing import StandardScaler</span><br><span class="line"> </span><br><span class="line">#标准化，返回值为标准化后的数据</span><br><span class="line">StandardScaler().fit_transform(iris.data)</span><br></pre></td></tr></table></figure>
-<h3 id="区间缩放归一化"><a href="#区间缩放归一化" class="headerlink" title="区间缩放归一化"></a>区间缩放归一化</h3><p>最大最小归一化。线性转换。</p>
-<p><img src="https://pic1.zhimg.com/80/0f119a8e8f69509c5b95ef6a8a01a809_hd.jpg" alt=""></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.preprocessing import MinMaxScaler</span><br><span class="line"></span><br><span class="line">#区间缩放，返回值为缩放到[0, 1]区间的数据</span><br><span class="line">MinMaxScaler().fit_transform(iris.data)</span><br></pre></td></tr></table></figure>
-<h3 id="L2范数归一化"><a href="#L2范数归一化" class="headerlink" title="L2范数归一化"></a>L2范数归一化</h3><p><img src="http://img.blog.csdn.net/20160508111702785?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></p>
-<p>L2范数归一化就是向量中每个元素除以向量的L2范数</p>
-<p><img src="https://pic4.zhimg.com/80/fbb2fd0a163f2fa211829b735194baac_hd.jpg" alt=""></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.preprocessing import Normalizer</span><br><span class="line"></span><br><span class="line">#归一化，返回值为归一化后的数据</span><br><span class="line">Normalizer().fit_transform(iris.data)</span><br></pre></td></tr></table></figure>
-<h3 id="什么情况需要"><a href="#什么情况需要" class="headerlink" title="什么情况需要"></a>什么情况需要</h3><p>主要看模型是否具有<strong>伸缩不变性</strong>。</p>
-<p>有些模型在各个维度进行不均匀伸缩后，最优解与原来不等价，例如SVM。对于这样的模型，除非本来各维数据的分布范围就比较接近，否则必须进行标准化，<strong>以免模型参数被分布范围较大或较小的数据</strong>dominate。</p>
-<p>标准化是依照特征矩阵的<strong>列</strong>处理数据</p>
-<p>归一化是依照特征矩阵的<strong>行</strong>处理数据</p>
-<p>有些模型在各个维度进行不均匀伸缩后，最优解与原来等价，例如logistic regression。对于这样的模型，是否标准化理论上不会改变最优解。但是，由于实际求解往往使用迭代算法，如果目标函数的形状太“扁”，迭代算法可能收敛得很慢甚至不收敛。所以对于具有伸缩不变性的模型，最好也进行数据标准化。</p>
-<p>缩放的最主要<strong>优点是能够避免大数值区间的属性过分支配了小数值区间的属性</strong>。</p>
-<p>另一个优点能<strong>避免计算过程中数值复杂度</strong>。因为关键值通常依赖特征向量的内积（inner products），例如，线性核和多项式核，属性的大数值可能会导致数值问题。我们推荐将每个属性线性缩放到区间[-1,+1]或者[0, 1]。</p>
-<h2 id="对定量特征二值化"><a href="#对定量特征二值化" class="headerlink" title="对定量特征二值化"></a>对定量特征二值化</h2><p>定量特征二值化的核心在于设定一个阈值，大于阈值的赋值为1，小于等于阈值的赋值为0，公式表达如下</p>
-<p><img src="https://pic3.zhimg.com/80/11111244c5b69c1af6c034496a2591ad_hd.jpg" alt=""></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.preprocessing import Binarizer</span><br><span class="line"></span><br><span class="line">#二值化，阈值设置为3，返回值为二值化后的数据</span><br><span class="line">Binarizer(threshold=3).fit_transform(iris.data)</span><br></pre></td></tr></table></figure>
-<h2 id="对定性特征哑编码"><a href="#对定性特征哑编码" class="headerlink" title="对定性特征哑编码"></a>对定性特征哑编码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.preprocessing import OneHotEncoder</span><br><span class="line"></span><br><span class="line">#哑编码，对IRIS数据集的目标值，返回值为哑编码后的数据</span><br><span class="line">OneHotEncoder().fit_transform(iris.target.reshape((-1,1)))</span><br></pre></td></tr></table></figure>
-<h2 id="缺失值计算"><a href="#缺失值计算" class="headerlink" title="缺失值计算"></a>缺失值计算</h2><p>默认用均值填充</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">from numpy import vstack, array, nan</span><br><span class="line">from sklearn.preprocessing import Imputer</span><br><span class="line"></span><br><span class="line">#缺失值计算，返回值为计算缺失值后的数据</span><br><span class="line">#参数missing_value为缺失值的表示形式，默认为NaN</span><br><span class="line">#参数strategy为缺失值填充方式，默认为mean（均值）</span><br><span class="line">Imputer().fit_transform(vstack((array([nan, nan, nan, nan]), iris.data)))</span><br></pre></td></tr></table></figure>
-<h2 id="数据变换"><a href="#数据变换" class="headerlink" title="数据变换"></a>数据变换</h2><p>常见的数据变换有基于多项式的、基于指数函数的、基于对数函数的。4个特征，度为2的多项式转换公式如下：<br><img src="https://pic1.zhimg.com/80/d1c57a66fad39df90b87cea330efb3f3_hd.jpg" alt=""></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.preprocessing import PolynomialFeatures</span><br><span class="line"></span><br><span class="line">#多项式转换</span><br><span class="line">#参数degree为度，默认值为2</span><br><span class="line">PolynomialFeatures().fit_transform(iris.data)</span><br></pre></td></tr></table></figure>
-<p>基于单变元函数的数据变换可以使用一个统一的方式完成，使用preproccessing库的FunctionTransformer对数据进行对数函数转换的代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">from numpy import log1p</span><br><span class="line">from sklearn.preprocessing import FunctionTransformer</span><br><span class="line"></span><br><span class="line">#自定义转换函数为对数函数的数据变换</span><br><span class="line">#第一个参数是单变元函数</span><br><span class="line">FunctionTransformer(log1p).fit_transform(iris.data)</span><br></pre></td></tr></table></figure>
-<h1 id="特征选择"><a href="#特征选择" class="headerlink" title="特征选择"></a>特征选择</h1><p>选有效的特征，一般从两个方面看：</p>
-<p>1）特征是否发散。一个方差接近于0，也就是说样本在这个特征上基本没有差异，对于样本的区分就没什么用。</p>
-<p>2）特征与目标的相关性。</p>
-<p>根据特征选择的形式又可以将特征选择方法分为3种：</p>
-<ul>
-<li>Filter：过滤法，按照发散性或者相关性对各个特征进行评分，设定阈值或者待选择阈值的个数，选择特征。</li>
-<li>Wrapper：包装法，根据目标函数（通常是预测效果评分），每次选择若干特征，或者排除若干特征。</li>
-<li>Embedded：嵌入法，先使用某些机器学习的算法和模型进行训练，得到各个特征的权值系数，根据系数从大到小选择特征。类似于Filter方法，但是是通过训练来确定特征的优劣。</li>
-</ul>
-<p>　　我们使用sklearn中的feature_selection库来进行特征选择。</p>
-<h2 id="Filter"><a href="#Filter" class="headerlink" title="Filter"></a>Filter</h2><h3 id="方差选择法"><a href="#方差选择法" class="headerlink" title="方差选择法"></a>方差选择法</h3><p>选择方差大于阈值的特征。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.feature_selection import VarianceThreshold</span><br><span class="line"></span><br><span class="line">#方差选择法，返回值为特征选择后的数据</span><br><span class="line">#参数threshold为方差的阈值</span><br><span class="line">VarianceThreshold(threshold=3).fit_transform(iris.data)</span><br></pre></td></tr></table></figure>
-<h3 id="相关系数法"><a href="#相关系数法" class="headerlink" title="相关系数法"></a>相关系数法</h3><p>缺点是<strong>对非线性关系不敏感</strong>。</p>
-<p>计算各个特征对目标值的pearson相关系数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.feature_selection import SelectKBest</span><br><span class="line">from scipy.stats import pearsonr</span><br><span class="line"></span><br><span class="line">#选择K个最好的特征，返回选择特征后的数据</span><br><span class="line">#第一个参数为计算评估特征是否好的函数，该函数输入特征矩阵和目标向量，输出二元组（评分，P值）的数组，数组第i项为第i个特征的评分和P值。在此定义为计算相关系数</span><br><span class="line">#参数k为选择的特征个数</span><br><span class="line">SelectKBest(lambda X, Y: array(map(lambda x:pearsonr(x, Y), X.T)).T, k=2).fit_transform(iris.data, iris.target)</span><br></pre></td></tr></table></figure>
-<p>要理解Pearson相关系数，首先要理解<strong>协方差</strong>（Covariance），协方差是一个反映两个随机变量相关程度的指标，如果一个变量跟随着另一个变量同时变大或者变小，那么这两个变量的协方差就是正值，反之相反，公式如下：</p>
-<p><img src="https://pic3.zhimg.com/80/0dfac74fd0cc7e4670fc04e15a5d79e2_hd.jpg" alt=""></p>
-<p>Pearson相关系数公式如下：</p>
-<p><img src="https://pic2.zhimg.com/80/95c7b4484dc46f28390c4de96c83b915_hd.jpg" alt=""></p>
-<p>pearson是一个介于-1和1之间的值，当两个变量的线性关系增强时，相关系数趋于1或-1；当一个变量增大，另一个变量也增大时，表明它们之间是正相关的，相关系数大于0；如果一个变量增大，另一个变量却减小，表明它们之间是负相关的，相关系数小于0；如果相关系数等于0，表明它们之间不存在线性相关关系。</p>
-<h3 id="卡方检验"><a href="#卡方检验" class="headerlink" title="卡方检验"></a>卡方检验</h3><p>方检验是检验定性自变量对定性因变量的相关性。</p>
-<p><a href="https://blog.csdn.net/snowdroptulip/article/details/78770088" target="_blank" rel="noopener">https://blog.csdn.net/snowdroptulip/article/details/78770088</a></p>
-<p><a href="https://segmentfault.com/a/1190000003719712" target="_blank" rel="noopener">卡方检验原理及应用</a></p>
-<p>衡量实际值和理论值的差异程度。卡方值越大，相关程度越大。</p>
-<p>比如某个特征有3个取值，构建矩阵，看这3个特征对应的点击和不点击的值分别是多少，然后计算总的点击率，求出每个特征的理论点击和不点击的数量。然后计算卡方值，再查表。</p>
-<p>因此卡方就可以用来降维，比如找相关程度最大的特征。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.feature_selection import SelectKBest</span><br><span class="line">from sklearn.feature_selection import chi2</span><br><span class="line"></span><br><span class="line">#选择K个最好的特征，返回选择特征后的数据</span><br><span class="line">SelectKBest(chi2, k=2).fit_transform(iris.data, iris.target)</span><br></pre></td></tr></table></figure>
-<p>另一种方法</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">import numpy as np</span><br><span class="line">from scipy.stats import chi2_contingency</span><br><span class="line"></span><br><span class="line">d = np.array([[37, 49, 23], [150, 100, 57]])</span><br><span class="line">chi2_contingency(d)</span><br></pre></td></tr></table></figure>
-<p>数据如下：</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>杀虫效果</th>
-<th>甲</th>
-<th>乙</th>
-<th>丙</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>死亡数</td>
-<td>37</td>
-<td>49</td>
-<td>23</td>
-</tr>
-<tr>
-<td>未死亡数</td>
-<td>150</td>
-<td>100</td>
-<td>57</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>输出为：<br> <strong>(7.6919413561281065,</strong><br> <strong>0.021365652322337315,</strong><br> <strong>2,</strong><br> <strong>array([[  48.99759615,   39.04086538,   20.96153846],</strong><br>​         <strong>[ 138.00240385,  109.95913462,   59.03846154]]))</strong></p>
-<p>第一个值为<strong>卡方值</strong>，第二个值为<strong>P值</strong>，第三个值为<strong>自由度</strong>，第四个为与原数据数组同维度的对应<strong>理论值</strong></p>
-<p>[<a href="https://blog.csdn.net/QimaoRyan/article/details/72824766?utm_source=copy" target="_blank" rel="noopener">https://blog.csdn.net/QimaoRyan/article/details/72824766?utm_source=copy</a> ]</p>
-<h3 id="互信息法"><a href="#互信息法" class="headerlink" title="互信息法"></a>互信息法</h3><h1 id="图像标签hashtag的特征处理"><a href="#图像标签hashtag的特征处理" class="headerlink" title="图像标签hashtag的特征处理"></a>图像标签hashtag的特征处理</h1><p><a href="https://www.jiqizhixin.com/articles/050303" target="_blank" rel="noopener">https://www.jiqizhixin.com/articles/050303</a></p>
-<p>由于人们通常使用 hashtag 描述照片，所以 Facebook 研究人员认为它们可以作为模型训练数据的完美来源。这允许研究人员使用 hashtag 来完成一直以来的目标：基于人们自己标注的 hashtag 获取更多图像。</p>
-<p>但是 hashtag 通常指非视觉概念，如 #tbt 表示「throwback Thursday」。或者它们比较模糊，如 #party 可以描述活动、设置，或者 both。对于图像识别来说，tag 的作用是弱监督数据，而模糊和／或不相关的 hashtag 是标签噪声，可能会混淆深度学习模型。</p>
-<p>这些噪声标签是大规模训练工作的重点，因此研究人员开发了一种新方法，专为使用 hashtag 监督执行图像识别实验而准备。该方法包括处理每个图像的多个标签（加 hashtag 的用户通常会添加多个 hashtag）、<strong>整理 hashtag 同义词、平衡经常出现的 hashtag 和出现频率较低的 hashtag 的影响力</strong>。</p>
-<h1 id="特征选择和特征理解"><a href="#特征选择和特征理解" class="headerlink" title="特征选择和特征理解"></a>特征选择和特征理解</h1><p><a href="https://www.cnblogs.com/tonglin0325/p/6214978.html" target="_blank" rel="noopener">https://www.cnblogs.com/tonglin0325/p/6214978.html</a></p>
+            <h3 id="特征选择"><a href="#特征选择" class="headerlink" title="特征选择"></a>特征选择</h3><h1 id="经典算法"><a href="#经典算法" class="headerlink" title="经典算法"></a>经典算法</h1><h2 id="LR"><a href="#LR" class="headerlink" title="LR"></a>LR</h2><p>线性回归模型的映射函数是一个线性方程。逻辑回归要解决分类问题，用logistic function代替线性方程，通过y的取值判断类别，y的取值是一个概率。</p>
+<p>优点是，输出是0,1满足概率分布的要求。函数可微。</p>
+<p>LR的L2正则</p>
+<p>BFGS</p>
+<h2 id="贝叶斯"><a href="#贝叶斯" class="headerlink" title="贝叶斯"></a>贝叶斯</h2><p>在多项式模型中：</p>
+<blockquote>
+<p>在多项式模型中， 设某文档d=(t1,t2,…,tk)，tk是该文档中出现过的单词，允许重复，则</p>
+<p>先验概率P(c)= 类c下单词总数（包括重复的）/整个训练样本的单词总数</p>
+<p>类条件概率P(tk|c)=(类c下单词tk在各个文档中出现过的次数之和+1)/(类c下单词总数+|V|)</p>
+<p>V是训练样本的单词表（即抽取单词，单词出现多次，只算一个），|V|则表示训练样本包含多少种单词。 P(tk|c)可以看作是单词tk在证明d属于类c上提供了多大的证据，而P(c)则可以认为是类别c在整体上占多大比例(有多大可能性)。</p>
+</blockquote>
+<p>在伯努利模型中：</p>
+<blockquote>
+<p>P(c)= 类c下文件总数/整个训练样本的文件总数</p>
+<p>P(tk|c)=(类c下包含单词tk的文件数+1)/(类c下文件总数+2)</p>
+</blockquote>
+<p>平滑项是应对没有特征的情况。</p>
+<p><a href="http://blog.sina.com.cn/s/blog_15183f5750102vr62.html" target="_blank" rel="noopener">朴素贝叶斯算法的12条建议</a></p>
+<h2 id="SVM"><a href="#SVM" class="headerlink" title="SVM"></a>SVM</h2><p>SVM在哪个地方引入的核函数?如果用高斯核可以升到多少维?</p>
+<h2 id="BP的推导"><a href="#BP的推导" class="headerlink" title="BP的推导"></a>BP的推导</h2><p>反向传播的原理</p>
+<h2 id="随机森林"><a href="#随机森林" class="headerlink" title="随机森林"></a>随机森林</h2><p>解决决策树容易过拟合的缺点。采用多个决策树的投票机制来改善决策树。RF有多个决策树，不能用全样本去训练，要用到采样方法。</p>
+<p>1、每棵树选择样本时，通过重采样产生n个样本</p>
+<p>2、从m个特征中随机选择k个特征，构建决策树。</p>
+<p>3、多数投票制预测</p>
+<h2 id="决策树"><a href="#决策树" class="headerlink" title="决策树"></a>决策树</h2><p>IC3，用信息增益找分裂特征。</p>
+<p>C4.5，用信息增益比找特征。</p>
+<h2 id="GBDT"><a href="#GBDT" class="headerlink" title="GBDT"></a>GBDT</h2><p><a href="http://www.cnblogs.com/ModifyRong/p/7744987.html" target="_blank" rel="noopener">机器学习算法GBDT的面试要点总结-上篇</a></p>
+<p><a href="https://www.zhihu.com/question/41354392" target="_blank" rel="noopener">机器学习算法中GBDT和XGBOOST的区别有哪些？</a></p>
+<p>推荐系统稍微看看</p>
+<p>k折交叉验证中k取值多少有什么关系, 和bias和variance有关系吗?</p>
+<p>翻转二叉树</p>
+<p>平衡二叉树</p>
+<p>hadoop和spark的应用场景</p>
+<h3 id="样本倾斜的处理"><a href="#样本倾斜的处理" class="headerlink" title="样本倾斜的处理"></a>样本倾斜的处理</h3><p>样本不均衡的情况下，用AUC会偏高。</p>
+<h6 id="分类算法的比较"><a href="#分类算法的比较" class="headerlink" title="分类算法的比较"></a>分类算法的比较</h6><p><a href="https://www.zhihu.com/question/24169940#answer-6100729" target="_blank" rel="noopener">用于数据挖掘的分类算法有哪些，各有何优劣？</a></p>
+<h3 id="预测的评价指标"><a href="#预测的评价指标" class="headerlink" title="预测的评价指标"></a>预测的评价指标</h3><p><a href="https://www.zhihu.com/question/30643044" target="_blank" rel="noopener">精确率、召回率、F1 值、ROC、AUC 各自的优缺点是什么？</a></p>
+<h4 id="ROC和AUC"><a href="#ROC和AUC" class="headerlink" title="ROC和AUC"></a>ROC和AUC</h4><p>构建一个混淆矩阵</p>
+<p>TP FP</p>
+<p>FN TN</p>
+<p>精确率<code>(tp+tn)/(tp+fp+fn+tn)</code> 分类器对整个样本分类能力，正为正，负为负</p>
+<p>准确率 TP/TP+FP 分类器判定为正例中，真正的正例样本比重。</p>
+<p>召回率 tp/tp+fn 判定为正例在所有正例的比重</p>
+<p>word2vec的原理</p>
+<p>如何增量训练</p>
+<p>是一个词转向量的工具，语料是收集的百万篇的url。</p>
+<p>如何将词转成向量表达的？</p>
+<p>模型的目标函数是什么</p>
+<script type="math/tex; mode=display">
+L=\sum_{w \in C} \log p(w|Context(w))</script><p> 如何推导的？</p>
+<blockquote>
+<p>ngram模型+对数似然函数</p>
+</blockquote>
+<p>基于神经网络的模型是如何做的</p>
+<blockquote>
+<p>输入层是(Context(w),w)的训练样本。输入的时候是n-1个词向量首尾拼接。（词向量还没训练呢是怎么得到的？在[0,1]之间随机取值初始化）</p>
+<p>输入层到隐藏层用双曲正切函数作为激活函数。</p>
+<p>隐藏层到输出层再用一个线性函数。这样输出的y只是一个普通向量，需要用softmax再做一个归一化处理。</p>
+</blockquote>
+<p>有了目标函数后，如何构建CBOW网络结构？</p>
+<blockquote>
+<p>网络结构：</p>
+<p>输入层：前后各c个词，共2c个词的词向量。</p>
+<p>投影层：向量做sum再取平均。</p>
+<p>输出层：输出到Huffman树。每个叶子节点是一个词典中的词。</p>
+<p>与神经网络模型的区别：</p>
+<p>1）前者是拼接，后者是累加。2）后者没有隐藏层。3）前者是线性结构；后者是树形结构。</p>
+</blockquote>
+<p>如何利用Huffman树来定义目标函数？</p>
+<blockquote>
+<p>对于每个词，都存在一个路径，路径上存在分支，将每个分支看成一个二分类，每次分类产生一个概率。将这些概率连乘，就是目标函数。</p>
+<p>公式见《NLP/Word2Vec原理》</p>
+<p>权重初始化为0，词向量初始化为[0-1]的随机数。权重向量的长度就是所有词*词向量的长度。因为每层都有一个权重。</p>
+<p>用了多线程方法加速训练。</p>
+</blockquote>
+<p>为什么叫层次softmax？</p>
+<blockquote>
+<p>每层都是一个二分类问题</p>
+</blockquote>
+<p>为什么同义词的向量也相近</p>
+<blockquote>
+<p>我理解是上下文接近，对于CBOW，训练每个词后更新的是上下文，对于近义词往往有类似的上下文</p>
+</blockquote>
+<p>如何计算距一个词最近的向量？</p>
+<blockquote>
+<p>KD树搜索。（<a href="https://www.cnblogs.com/21207-iHome/p/6084670.html）" target="_blank" rel="noopener">https://www.cnblogs.com/21207-iHome/p/6084670.html）</a></p>
+<p>构建方法：任选一个特征（或者数据方差最大的特征，说明分散，越可能不属于同一个区间），以此为坐标轴划分，将最近的点落在坐标轴上。</p>
+<p><img src="https://images2015.cnblogs.com/blog/890966/201611/890966-20161123134503362-571302342.png" alt=""></p>
+<p>KD树搜索</p>
+<p>先从根节点往下找到叶子节点，再回溯，回溯到每层时要判断是否跟另一区间相交。</p>
+<p><img src="https://images2015.cnblogs.com/blog/890966/201611/890966-20161123150431143-1520224794.png" alt=""></p>
+<p>但是KD是递归查找，效率低。递归效率低是函数调用的开销导致的（函数调用需要准备资源），且有栈溢出的风险。</p>
+<p>idistance</p>
+<p><a href="https://en.m.wikipedia.org/wiki/IDistance" target="_blank" rel="noopener">https://en.m.wikipedia.org/wiki/IDistance</a></p>
+<p>目前线上怎么做的</p>
+</blockquote>
+<p>如何用word2vec计算句子相似度</p>
+<blockquote>
+<p>词向量按tfidf权重求mean</p>
+<p>也要分应用，需求是topic相关还是语义相关。比如我爱苹果，我不爱苹果，topic相似语义不相似。</p>
+<p>如果从词的粒度比较，还要结合上下文，避免一词多义。</p>
+</blockquote>
+<p>文本分类</p>
+<blockquote>
+<p>可以直接用fasttext，也可以tfidf+svm</p>
+</blockquote>
+<p>熵</p>
+<p>随机游走算法</p>
+<p>动态规划算法</p>
+<p>异常检测算法</p>
+<h1 id="CTR预测"><a href="#CTR预测" class="headerlink" title="CTR预测"></a>CTR预测</h1><h2 id="如何预测CTR线上的效果"><a href="#如何预测CTR线上的效果" class="headerlink" title="如何预测CTR线上的效果"></a>如何预测CTR线上的效果</h2><p>线下的可以用log loss和AUC</p>
+<p><strong>这里要特别强调一下用线上的其它业务指标如点击率、营收、利润、eCPC等等是不能给出CTR预估效果评价的</strong>。这些业务指标，受到整个广告系统其它模块如bid optimization,budget pacing等和外部竞价环境的综合影响，它的变化或者AB test中观察到的不同，不是简单地由于CTR预估变化带来的。换句话说，如果上了一个新的CTR预估模型的实验，发现业务指标变好了，这不等于说CTR预估更准了。一个简单的例子：如果一个CTR预估模型给出的预估总是比上帝视角的完美预估在低CTR区域低估，在高CTR区域高估，那么假设bid是base_bid*pCTR的话，相比完美预估，这个模型会赢得更多的高CTR区域的竞价，输掉更多在低CTR区域的竞价，最后会观察到实验组的CTR反而比完美预估的试验组更高。作者：Jian Xu链接：<a href="https://www.zhihu.com/question/54009615/answer/137820154来源：知乎著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。" target="_blank" rel="noopener">https://www.zhihu.com/question/54009615/answer/137820154来源：知乎著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</a></p>
+<h3 id="为什么AUC可以评价CTR"><a href="#为什么AUC可以评价CTR" class="headerlink" title="为什么AUC可以评价CTR"></a>为什么AUC可以评价CTR</h3><p>它和Wilcoxon-Mann-Witney Test是等价的[3]。而Wilcoxon-Mann-Witney Test就是测试任意给一个正类样本和一个负类样本，正类样本的score有多大的概率大于负类样本的score。</p>
+<p>如何平衡样本？平衡后的数据不是真实分布</p>
+<h6 id="CTR评价"><a href="#CTR评价" class="headerlink" title="CTR评价"></a>CTR评价</h6><p>CTR的评价用logloss和AUC。因为是概率输出，不方便用PR。</p>
+<h6 id="点击率各模型优缺点"><a href="#点击率各模型优缺点" class="headerlink" title="点击率各模型优缺点"></a>点击率各模型优缺点</h6><p><a href="https://www.zhihu.com/question/62109451?answer_deleted_redirect=true" target="_blank" rel="noopener">广告点击率模型中，LR, GBDT+LR, FM, DNN等模型的优点和缺点？实际效果如何?</a></p>
+<p><a href="http://blog.csdn.net/lilyth_lilyth/article/details/48032119" target="_blank" rel="noopener">CTR预估中GBDT与LR融合方案</a></p>
+<p><a href=""><a href="http://blog.csdn.net/bitcarmanlee/article/details/52138970" target="_blank" rel="noopener">CTR点击率预估干货分享</a></a></p>
+<p>Ad Click Prediction: a View from the Trenches</p>
+<p><img src="https://pic1.zhimg.com/80/v2-7a75ba913f11b4fb483228f70172003a_hd.jpg" alt=""></p>
+<p>LR</p>
+<p>优点：实现简单</p>
+<p>缺点：需要寻找特征。我们也使用了FTRL，但实践中它并不能非常有效的产生稀疏模型，如果模型非常大，会导致同步模型变慢，一样会严重影响效果。</p>
+<h6 id="点击率模型中特征如何选择"><a href="#点击率模型中特征如何选择" class="headerlink" title="点击率模型中特征如何选择"></a>点击率模型中特征如何选择</h6><p><a href="http://blog.csdn.net/ariessurfer/article/details/40380051" target="_blank" rel="noopener">广告点击率预估中的特征选择</a></p>
+<p>不是看它分布均不均衡，而是看它符不符合原来的分布。如果符合原来的分布，那么训练误差最小化也就意味着整体分布误差的最小化，也就没有必要进行均衡。</p>
+<p>如何降维，每个特征都对应的ctr，在构建模型时，根据ctr的区间将属于同一个区间的特征值作为一个特征；随着ctr区间越分越细来迭代。停止条件是不超过所有特征的一半或达到最小区间阈值。</p>
+<h6 id="投放中出现的问题"><a href="#投放中出现的问题" class="headerlink" title="投放中出现的问题"></a>投放中出现的问题</h6><h6 id="spark数据倾斜"><a href="#spark数据倾斜" class="headerlink" title="spark数据倾斜"></a>spark数据倾斜</h6><p><a href="https://www.cnblogs.com/hd-zg/p/6089220.html" target="_blank" rel="noopener">https://www.cnblogs.com/hd-zg/p/6089220.html</a></p>
+<h6 id="spark资源调优"><a href="#spark资源调优" class="headerlink" title="spark资源调优"></a>spark资源调优</h6><p><a href="http://blog.csdn.net/u012102306/article/details/51637366" target="_blank" rel="noopener">http://blog.csdn.net/u012102306/article/details/51637366</a></p>
+<p>我们使用yarn作为资源管理集群。yarn集群管理器根据spark参数，在各个工作节点上，启动一定数量的Executor进程，每个进程有一定的内存和CPU  Core。</p>
+<p>在申请到了作业执行所需的资源之后，Driver进程就会开始调度和执行我们编写的作业代码了。Driver将代码拆分为多个stage，为每个stage创建一批task。将这些task分配到各个Executor执行。</p>
+<p>SparkConf的一些参数：</p>
+<p>spark.sql.shuffle.partitions指partition的数量。SparkSQL在运行时，将一个查询任务分解成多个task，一个task就是一个partition。默认是200个partition，而如果实际集群只能并行3个task，则跑完200个partition要200/3=67次。</p>
+<p>spark.network.timeout所有网络通信的超时时间，默认是120s</p>
+<h6 id="mapreduce-shuffle过程"><a href="#mapreduce-shuffle过程" class="headerlink" title="mapreduce shuffle过程"></a>mapreduce shuffle过程</h6><p><a href="http://langyu.iteye.com/blog/992916" target="_blank" rel="noopener">http://langyu.iteye.com/blog/992916</a></p>
+<p>map过程，阶段，将输入文本做split，并转成<k,v>格式，V的初始值是1</k,v></p>
+<p>之后，partitioner可以根据key和value以及reduce的数量来决定map的输出放到那个reduce task。默认是key hash后对reduce取模。</p>
+<p>接下来将output写入缓冲区，减少磁盘IO的影响。key，value，partitioner的结果都写入缓冲区。</p>
+<p>当缓冲区内容达到一定比例，就调用单独线程溢写到磁盘。溢写前，如果设置了combiner，在这里就要做合并。当溢写启动后，需要对溢写内容的key做sort。</p>
+<p>Merge。每次溢写生成一个文件，map task完成后内存缓冲区所有的数据也全部溢写生成一个文件。用Merge合并溢写文件。</p>
+<p>reduce</p>
+<p>执行之前，拉取每个job中每个map task的最终结果。从不同地方拉过来的做merge。作为reducer的输入，然后执行reducer，结果写入hdfs。</p>
+<p>文本分类怎么优化特征</p>
+<h6 id="CTR预测怎么优化特征"><a href="#CTR预测怎么优化特征" class="headerlink" title="CTR预测怎么优化特征"></a>CTR预测怎么优化特征</h6><p>选特征，版位id，版位类型，地理位置，曝光时间，ua信息（操作系统，浏览器等），人群特征因为样本稀疏所有没有选</p>
+<p>根据直接观察CTR，卡方检验，单特征AUC。</p>
+<p>用互信息、卡方检验有没有用</p>
+<p>没有CTR的新版位</p>
+<p>word2vec新词</p>
+<p>es</p>
+<p>java api常见操作，从hive导入，从文件导入，中文分词</p>
+<p>user-gene，投放，tracking处理的流程图</p>
+<p>domain黑名单</p>
+<p>DFA算法过滤敏感词</p>
+<p>二分查找</p>
+<h6 id="特征稀疏怎么做"><a href="#特征稀疏怎么做" class="headerlink" title="特征稀疏怎么做"></a>特征稀疏怎么做</h6><p><a href="https://www.zhihu.com/question/48673581#answer-49246569" target="_blank" rel="noopener">传统的CTR或推荐系统拥有高维特征和稀疏数据，转向深度学习如何</a></p>
+<p>如果可用特征值太少，就丢弃；要么就设值为unknown；xgboost有稀疏感知算法</p>
+<p>怎么想到age预测算法的</p>
+<p>哪些媒体获取？电商，微信</p>
+<p>audience的重合度，距离代表相关度</p>
+<p>hive的存储，ORC格式，以前用SequenceFile</p>
+<p>pig，数据倾斜时的join用replicated，大表放左，其他放右。</p>
+<p>动态规划</p>
+<p>L1和L2有什么区别</p>
+<h2 id="乱序数组找中位数"><a href="#乱序数组找中位数" class="headerlink" title="乱序数组找中位数"></a>乱序数组找中位数</h2><p>快排+二分。取partition后，去掉一半的数字。</p>
+<p>直接拿一个素材的点击率当一个维度的特征？</p>
+<p>随机森林和GBDT的区别</p>
+<h6 id="如何提高召回率或精确率"><a href="#如何提高召回率或精确率" class="headerlink" title="如何提高召回率或精确率"></a>如何提高召回率或精确率</h6><p><a href="https://www.zhihu.com/question/39819838" target="_blank" rel="noopener">如何提高机器学习算法的召回率？（尤其在样本集不平衡时）</a></p>
+<h6 id="引擎流程"><a href="#引擎流程" class="headerlink" title="引擎流程"></a>引擎流程</h6><p>用timeslot监控campaign参数变化，预测下一个slot。第一个slot内不投放。</p>
+<p>1、计算的参数包括flowbiddingrate、利润区间。</p>
+<p>fbr衡量擦camp能投放的量占总量的百分比。比如根据预算，剩余每个slot的预算/每个slot的最大预算；曝光就是每个slot剩余曝光量/最大曝光量。</p>
+<p>2、然后预测ctr并计算松弛系数（实际-期望），判断是否可以投放。</p>
+<p>3、计算竞价，计算初始值，对于CPM，根据投放和曝光速度进行调整。对于CPC，如果实际CTR较高，通过提高一些小CTR的出价来平滑。</p>
+<p>4、通过版位历史价格计算预期利润，统计利润区间分布。根据fbr确定可投放的利润区间。</p>
+<p>5、通过投放平衡率计算camp打分。</p>
 
           
         
@@ -1178,174 +1227,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/文本分类/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/03/17/机器学习/文本分类/" class="post-title-link" itemprop="url">文本分类</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-03-17 20:50:31" itemprop="dateCreated datePublished" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
-            </span>
-          
-
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/17/机器学习/文本分类/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/文本分类/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/机器学习模型的比较/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1781,6 +1662,174 @@ KL(p || q) = H(p,q)-H(p) = \sum_{k=1}^N p_k log_2 \frac 1 {q_k} - \sum_{k=1}^N p
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/文本分类/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/03/17/机器学习/文本分类/" class="post-title-link" itemprop="url">文本分类</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-03-17 20:50:31" itemprop="dateCreated datePublished" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
+            </span>
+          
+
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/03/17/机器学习/文本分类/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/文本分类/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/sklearn的一些总结/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -2134,7 +2183,7 @@ KL(p || q) = H(p,q)-H(p) = \sum_{k=1}^N p_k log_2 \frac 1 {q_k} - \sum_{k=1}^N p
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/SVM/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/CTR预测专题/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -2154,7 +2203,7 @@ KL(p || q) = H(p,q)-H(p) = \sum_{k=1}^N p_k log_2 \frac 1 {q_k} - \sum_{k=1}^N p
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/03/17/机器学习/SVM/" class="post-title-link" itemprop="url">SVM</a>
+                <a href="/2018/03/17/机器学习/CTR预测专题/" class="post-title-link" itemprop="url">CTR预测专题</a>
               
             
           </h1>
@@ -2212,8 +2261,8 @@ KL(p || q) = H(p,q)-H(p) = \sum_{k=1}^N p_k log_2 \frac 1 {q_k} - \sum_{k=1}^N p
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/17/机器学习/SVM/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/SVM/" itemprop="commentCount"></span>
+                <a href="/2018/03/17/机器学习/CTR预测专题/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/CTR预测专题/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -2246,15 +2295,26 @@ KL(p || q) = H(p,q)-H(p) = \sum_{k=1}^N p_k log_2 \frac 1 {q_k} - \sum_{k=1}^N p
       
         
           
-            <p>线性可分的推导<a href="http://blog.sina.com.cn/s/blog_4298002e010144k8.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_4298002e010144k8.html</a></p>
-<p>线性不可分的时候<a href="http://blog.csdn.net/american199062/article/details/51322852" target="_blank" rel="noopener">http://blog.csdn.net/american199062/article/details/51322852</a></p>
-<p>松弛系数</p>
-<p><img src="https://pic4.zhimg.com/80/ca45458396bf807868674316793205b7_hd.jpg" alt=""></p>
-<p>允许错误的分类，但要付出代价。错分的苹果是大于1，在margin当中但分类正确的在0,1之间。</p>
-<p>对于整体的惩罚力度，要另外使用一个参数C来衡量惩罚的程度。</p>
-<p><img src="https://www.zhihu.com/equation?tex=%5Cmin+%5Cfrac%7B1%7D%7B2%7D%7C%7Cw%7C%7C%5E2+%2B+%5Cfrac%7B%5Cgamma%7D%7B2%7D%5Csum_%7Bn%3D1%7D%5E%7BN%7D%7B%5Cxi_n%5E2%7D+" alt=""></p>
-<p>通过核函数可以以低的计算复杂度构造更复杂的分类器，而不用在低维映射到高维。</p>
-<p>SMO优化 <a href="https://www.cnblogs.com/pinard/p/6111471.html" target="_blank" rel="noopener">https://www.cnblogs.com/pinard/p/6111471.html</a></p>
+            <p><a href="https://www.zhihu.com/question/54009615" target="_blank" rel="noopener">如何评价CTR预估效果？</a></p>
+<p><a href="https://www.zhihu.com/question/23652394" target="_blank" rel="noopener">为什么LR可以用来做CTR预估？</a></p>
+<p><a href="http://blog.csdn.net/gexyz/article/details/78432192" target="_blank" rel="noopener">关于CTR预测的一个总结</a></p>
+<p><a href="http://www.cnblogs.com/iloveyouforever/p/4353491.html" target="_blank" rel="noopener">为什么CTR预估使用AUC来评估模型？</a></p>
+<p><a href="http://blog.csdn.net/cserchen/article/details/7535182" target="_blank" rel="noopener">广告计算中的AUC和ROC曲线</a></p>
+<p><a href="http://www.cnblogs.com/qcloud1001/p/7513982.html" target="_blank" rel="noopener">常见计算广告点击率预估算法总结</a></p>
+<p>关于贝叶斯平滑</p>
+<p><a href="http://blog.csdn.net/z363115269/article/details/78637702" target="_blank" rel="noopener">http://blog.csdn.net/z363115269/article/details/78637702</a></p>
+<p><a href="http://blog.csdn.net/google19890102/article/details/50492787" target="_blank" rel="noopener">http://blog.csdn.net/google19890102/article/details/50492787</a></p>
+<p><a href="http://blog.csdn.net/jinping_shi/article/details/78334362" target="_blank" rel="noopener">http://blog.csdn.net/jinping_shi/article/details/78334362</a></p>
+<p><a href="http://blog.csdn.net/wwqwkg6e/article/details/55000216" target="_blank" rel="noopener">http://blog.csdn.net/wwqwkg6e/article/details/55000216</a></p>
+<p>贝叶斯平滑的思想是给CTR预设一个<strong>经验初始值</strong>，再通过当前的点击量和曝光量来修正这个初始值。如果某商品的点击量和曝光量都是0，那么该商品的CTR就是这个经验初始值；如果商品A和商品B的曝光量差别很大，那么可以通过这个经验初始值来修正，使得曝光量大的商品的权重增大。</p>
+<p>贝叶斯平滑就是确定这个经验值的过程。贝叶斯平滑是基于贝叶斯统计推断的，因此经验值计算的过程依赖于数据的分布情况。</p>
+<p>贝叶斯平滑的推导涉及贝叶斯参数估计</p>
+<p>ctr能不能加入id类特征？</p>
+<p>这里没看懂？为什么ctr越高的分段上权重越大？</p>
+<blockquote>
+<p>假设一个最简单的问题，预估广告的点击率CTR。为了便于讨论，假设你只有一个特征，就是每次展现广告在过去一个时间窗内的历史点击率ctr，现在目标是预测下一次点击的ctr。简单起见，不妨假设系统中只有两条候选广告。</p>
+<p>显而易见，预测分数是和ctr正相关的。如果你使用的是离散LR，那么在分段之后，显然ctr越高的分段上权重越大。这个模型实际跑起来就是最简单的“热门广告”的效果。</p>
+</blockquote>
 
           
         
