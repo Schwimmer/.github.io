@@ -357,7 +357,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/浅谈在线最优化求解算法-以CTR预测模型为例/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/用scikit-learn生成测试数据集/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -377,7 +377,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/机器学习/浅谈在线最优化求解算法-以CTR预测模型为例/" class="post-title-link" itemprop="url">浅谈在线最优化求解算法-以CTR预测模型为例</a>
+                <a href="/2017/07/12/机器学习/用scikit-learn生成测试数据集/" class="post-title-link" itemprop="url">用scikit-learn生成测试数据集</a>
               
             
           </h1>
@@ -417,7 +417,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-03-17 20:50:31" itemprop="dateModified" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
+                <time title="修改时间：2018-07-04 23:22:59" itemprop="dateModified" datetime="2018-07-04T23:22:59+08:00">2018-07-04</time>
               </span>
             
           
@@ -449,8 +449,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/机器学习/浅谈在线最优化求解算法-以CTR预测模型为例/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/浅谈在线最优化求解算法-以CTR预测模型为例/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/机器学习/用scikit-learn生成测试数据集/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/用scikit-learn生成测试数据集/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -483,403 +483,25 @@
       
         
           
-            <p>[TOC]</p>
-<h1 id="1、最优化求解问题"><a href="#1、最优化求解问题" class="headerlink" title="1、最优化求解问题"></a>1、最优化求解问题</h1><p>通常，我们需要求解的最优化问题有如下三类：</p>
-<p><strong>（1）无约束优化问题</strong>：</p>
-<script type="math/tex; mode=display">
-X=\arg \underset{X}{min}f(X)</script><p>含义是求解X，令目标函数$f(X)$最小。</p>
-<p>对于这类问题，在$f(X)$ 是凸函数的前提下，通常做法就是对$f(X)$ 求导，并令$\frac {\partial} {\partial X} f(X) =0$ ，求解可以得到最优值。</p>
-<blockquote>
-<p> <strong>凸函数</strong></p>
-<p> 如果$f(x)$是定义在N维向量空间上的实变量函数，对于在$f(x)$的定义域C上的任意两个点$x_1$和$x_2$，以及任意[0,1]之间的值t都有：</p>
-<script type="math/tex; mode=display">
- f(tX_1 + (1-t)X_2) \leq tf(X_1)+(1-t)f(X_2)\\
- \forall X_1,X_2 \in C,\ \ 0 \leq t \leq 1</script><p> 则称$f(x)$是凸函数。一个函数是凸函数是其存在最优解的充要条件。</p>
-<p> 此外，如果$f(x)$满足</p>
-<script type="math/tex; mode=display">
- f(tX_1 + (1-t)X_2)< tf(X_1)+(1-t)f(X_2)\\
- \forall X_1,X_2 \in C,\ \ 0 \leq t \leq 1</script><p> 则$f(x)$为严格凸函数。如下图所示，左边是严格凸函数，右边是凸函数</p>
-<p> <img src="/.io//凸函数.png" alt="凸函数"></p>
-</blockquote>
-<p><strong>（2）有等式约束的最优化问题</strong>：</p>
-<script type="math/tex; mode=display">
-X=\arg \underset{X}{min}f(X)\\
-s.t. h_k(X)=0;k=1,2,...,n</script><p>含义是在n个等式约束$h_k(X)$ 的条件下求解X，另目标函数$f(X)$最小。</p>
-<p>针对有等式的最优化问题，采用<strong>拉格朗日乘数法</strong>进行求解，通过拉格朗日系数$A=[a_1,a_2,…,a_n]^T$ 把等式约束和目标函数组合成一个式子</p>
-<script type="math/tex; mode=display">
-X=\arg \underset{X}{min}[f(X)+ A^TH(X)]</script><p>相当于转化成无约束最优化求解问题，解决方法是分别对X，A求偏导并令其等于0。</p>
-<p><strong>（3）不等式约束的优化问题求解</strong> ：</p>
-<script type="math/tex; mode=display">
-X=\arg \underset{X}{min}f(X)\\
-s.t. h_k(X)=0;k=1,2,...,n\\
-g_l(X)\leq 0;l=1,2,...,m</script><p>对于不等式约束，通过KKT条件求解。将所有的约束和目标函数写为一个式子</p>
-<script type="math/tex; mode=display">
-L(X,A,B)=f(X)+A^TH(X)+B^TG(X)</script><p>KKT条件是说最优值必须满足以下条件：</p>
-<script type="math/tex; mode=display">
-\frac \partial {\partial X} L(X,A,B)=0\\
-H(X)=0\\
-B^TG(X)=0</script><p>KKT条件是求解最优值的必要条件，要使其成为充要条件，还需要f(x)为凸函数。</p>
-<h1 id="2、批量最优化求解算法"><a href="#2、批量最优化求解算法" class="headerlink" title="2、批量最优化求解算法"></a>2、批量最优化求解算法</h1><p>一些定义：</p>
-<p>$i=1,2,…,N$表示向量维度</p>
-<p>$j=1,2,…,M$表示样本个数</p>
-<p>$t=1,2,…$表示迭代次数</p>
-<h2 id="2-1-批量和随机求解"><a href="#2-1-批量和随机求解" class="headerlink" title="2.1 批量和随机求解"></a>2.1 批量和随机求解</h2><p>我们面对的最优化问题都是无约束的最优化问题（有约束的也可以转成无约束的），因此通常可以将其描述为</p>
-<script type="math/tex; mode=display">
-W=\arg \underset{W}{min}\   l(W,Z)\\
-Z=\{ (X_j,y_j) | j=1,2,...,M  \}\\
-y_j=h(W,X_j)
-\tag {2-1-1}</script><p>就是<strong>在已知训练集的情况下，求使得目标函数最小的权重矩阵</strong>。其中，$Z$是训练集，$\mathbf{X}$是特征向量，$X_j$是其中一个样本，$Y$是预测值，$y_j$是其中一个样本对应的预测值。一共有M个样本。$h(W,X_j)$ 是特征向量到预测值的<strong>映射函数</strong>，$ l(W,Z)$ 最优化求解的目标函数，也称为<strong>损失函数</strong>，$W$ 为特征权重，也就是在损失函数中需要求解的参数。</p>
-<blockquote>
-<p> 损失函数一般包括损失项和正则项</p>
-</blockquote>
-<p>常用的损失函数有：</p>
-<p>（1）<strong>平方损失函数</strong>（线性回归）</p>
-<p>最小二乘法（Ordinary Least Squares）是常用的一种平方损失函数，最小二乘的基本原理是：最优拟合直线应该是使各点到回归直线的距离和最小的直线，即平方和最小。</p>
-<p>线性回归的映射函数为：</p>
-<script type="math/tex; mode=display">
-h(W,X_j)=W^TX_j</script><p>损失函数可以表示为</p>
-<script type="math/tex; mode=display">
-l(W,Z)=\sum_{j=1}^M (y_j-W^TX_j)^2</script><p>（2）<strong>Logistics损失函数</strong>（逻辑回归）</p>
-<p>逻辑回归的映射函数为：</p>
-<script type="math/tex; mode=display">
-h(W,X_j)=\frac 1 {1+e^{-W^TX_j}}</script><blockquote>
-<p>logistic函数的优点是：</p>
-<p>1、他的输入范围是$-\infty \rightarrow  + \infty $ ，<strong>输出范围是(0,1)，正好满足概率分布为（0，1）的要求</strong>。我们用概率去描述分类器，自然比单纯的某个阈值要方便很多； </p>
-<p>2、是一个单调上升的函数，具有良好的连续性，<strong>不存在不连续点</strong>。</p>
-</blockquote>
-<p>由于该函数服从伯努利分布（0-1分布），通过最大似然估计，对于每一维的权重W，损失函数可以表示为</p>
-<script type="math/tex; mode=display">
-l(W,Z)=(Y-h_W(\mathbf X))X</script><blockquote>
-<p><strong>推导过程</strong></p>
-<p>令</p>
-<script type="math/tex; mode=display">
-h_W(X) = \frac 1 {1+e^{-W^T\mathbf X}}</script><p>该函数服从伯努利分布（一次点击要么成功，要么失败，通过训练集可以知道不同特征组合下成功和失败的概率）</p>
-<script type="math/tex; mode=display">
-P(Y=1 | \mathbf X;W) = h_W(\mathbf X)\\
-P(Y=0 | \mathbf X;W) = 1-h_W(\mathbf X)</script><p>则概率分布函数为</p>
-<script type="math/tex; mode=display">
-P(Y|\mathbf X;W) = (h_W(\mathbf X))^Y*(1-h_W(\mathbf X))^{1-Y}</script><p>（<strong>也就是说，我们有样本，通过样本能知道概率分布，那么我们需要知道得到这个概率分布的最有可能的参数W。即我们通过样本知道一些特征组合下的点击率，现在需要求概率函数中的系数。</strong>）</p>
-<p>我们假设样本数据相互独立，所以它们的联合分布可以表示为各边际分布的乘积，用似然函数表示为：</p>
-<script type="math/tex; mode=display">
-\begin{aligned} 
-L(W)=P(Y|\mathbf X;W) &= (h_W(\mathbf X))^Y(1-h_W(\mathbf X))^{1-Y}\\
-&=\prod_{j=1}^M(h_W(X_j))^{y_j}(1-h_W(X_j))^{1-y_j}
-\end{aligned}
-\tag {2-1-2}</script><p>从而，损失函数的求解，可以转化为求最有可能导致这样概率分布的W，也就是求L(W)的最大值。最简单的方法就是对W求偏导，并令导数为零。</p>
-<p>在多数情况下，直接对变量进行求导反而会使得计算式子更加的复杂，此时可以借用对数函数。由于对数函数是单调增函数，因此与（2-1-2）具有相同的最大值，上式变为</p>
-<script type="math/tex; mode=display">
-\begin{aligned} 
-l(W) &= Log\ L(W)\\
-&=\sum_{j=1}^M(y_jln\ h(X_j)+(1-y_j)ln\ (1-h(X_j)))
-\end{aligned}</script><p>对其求关于W的偏导</p>
-<p>首先求logistic函数的导数，得（最后一个X是对$W^TX$的求导）</p>
-<script type="math/tex; mode=display">
-h_W^{'}(\mathbf X) = h_W(\mathbf X)(1-h_W(\mathbf X))</script><blockquote>
-<p><strong>推导过程如下</strong></p>
-<p><img src="/.io//求导的推导.jpg" alt="求导的推导"></p>
-</blockquote>
-<p>为了求解方便，将l(W)转为（其实1/M没用，完全可以去掉，不懂为何要加上）</p>
-<script type="math/tex; mode=display">
-J(W) = -\frac {1}{M} l(W)</script><p>则就变成求J(W)的最小值。求偏导的过程如下：</p>
-<p><img src="/.io//最大似然估计求偏导.png" alt="最大似然估计求偏导"></p>
-<p>最后得到目标函数（损失函数）为：</p>
-<script type="math/tex; mode=display">
-\frac {\partial }{\partial W}J(W) =-\frac{1}{M} (Y-h_W(\mathbf X))X</script></blockquote>
-<p>对于损失函数的求解，一个典型的方法就是梯度下降法，由于损失函数是凸函数，因此沿着梯度下降的方向找到最小点。</p>
-<p>假设样本总数为m，<strong>批量梯度下降</strong>是：</p>
-<script type="math/tex; mode=display">
-Repeat\ until\ convergence \{ \\
-W^{(t+1)} := W^t - \eta^t\triangledown  _{W}l(W^{t},Z) \\
-\}\\
- \tag{1-2}</script><p>而<strong>随机梯度下降（SGD）</strong>是：</p>
-<script type="math/tex; mode=display">
-Repeat\ until\ convergence \{ \\
-      for\ j=1\ to\ M, \{ \\
-          W^{(t+1)} := W^t - \eta^t\triangledown  _{W}l(W^{t},Z_j) \\
-\}</script><p>两者的区别是：</p>
-<p>前者每次更新$W$都需要遍历一次整个样本集合；而后者在遍历样本集合的时候，每个样本都能改变$W$ ，有更快的收敛速度 。由于SGD针对观测到的随机一条数据进行权重的更新，很适合进行增量计算，实现梯度下降的online模式。</p>
-<h2 id="2-2-正则化"><a href="#2-2-正则化" class="headerlink" title="2.2 正则化"></a>2.2 正则化</h2><p>正则化的主要目的是防止过拟合。对于损失函数构成的模型，可能会出现有些权重很大，有些权重很小的情况，导致过拟合，使得模型的复杂度提高，泛化能力较差（对未知数据的预测能力）。</p>
-<p> <img src="/.io//过拟合1.png" alt="过拟合1"></p>
-<p>而正则化就是对损失函数中权重的限制，限制其模不要太大：</p>
-<script type="math/tex; mode=display">
-W=\arg \underset{W}{min}\   l(W,Z)\\
-s.t. \Psi(W)<\delta</script><p>其中，$\Psi(W)$称为正则化因子，是一个关于W求模的函数，常用的正则化因子有L1和L2正则化。</p>
-<script type="math/tex; mode=display">
-L1\ Regularization \ \ \ \ \ \ \ \ \Psi(W)=||W||_1=\sum_{i=1}^N|w_i|\\
-L2 \ Regularization\ \ \ \ \ \ \ \Psi(W)=||W||_2^2=\sum_{i=1}^N(w_i)^2=W^TW</script><p>L1和L2的主要区别有两个：</p>
-<p>（1）L1在0处不可导，而L2可导。</p>
-<p>（2）L1通常能产生更稀疏的模型，也就是W的更多维度是0。这些为0的权重就代表了不是很重要的维度，所以能起到特征选择的目的。</p>
-<p>（3）L2能限制特征权重各个维度的模不要太大，解决过拟合。</p>
-<blockquote>
-<p><img src="/.io//正则化解空间.png" alt="正则化解空间"><br> 其中，左图的圆形区域是L2正则化的单位圆，右图的方形区域是L1正则化的单位圆。<br><strong>单位圆</strong></p>
-<p>使$||X||_p=1$的图形，当p=1和2时，单位圆分别为$|x|+|y|=1$和$x^2+y^2=1$。</p>
-</blockquote>
-<p>但是在SGD中，由于每次W的更新并不是沿着全局梯度进行下降，而是沿着某个样本产生的梯度方向进行下降，这样即使采用L1的方式也很难产生稀疏解。因此在接下来的在线最优化求解算法中，稀疏性是一个主要的追求目标。</p>
-<p>参考：</p>
-<p><a href="http://www.mamicode.com/info-detail-517504.html【正则化方法：L1和L2" target="_blank" rel="noopener">http://www.mamicode.com/info-detail-517504.html【正则化方法：L1和L2</a> regularization、数据集扩增、dropout】</p>
-<p><a href="http://blog.csdn.net/zouxy09/article/details/24971995/【机器学习中的范数规则化之（一）L0、L1与L2范数】" target="_blank" rel="noopener">http://blog.csdn.net/zouxy09/article/details/24971995/【机器学习中的范数规则化之（一）L0、L1与L2范数】</a></p>
-<h1 id="3、在线最优化求解算法"><a href="#3、在线最优化求解算法" class="headerlink" title="3、在线最优化求解算法"></a>3、在线最优化求解算法</h1><h2 id="3-1-截断梯度法TG"><a href="#3-1-截断梯度法TG" class="headerlink" title="3.1 截断梯度法TG"></a>3.1 截断梯度法TG</h2><p>为了使特征权重W有更多的0，最简单的方法就是设一个阈值，当W的某个维度值小于这个阈值的时候置为0，这个称为<strong>简单截断法</strong>。但实际中W的某个系数比较小可能是由于该维度训练不足引起，所以这么做会导致这部分特征的丢失。于是又改进为<strong>截断梯度法Truncated Gradient</strong>。</p>
-<h3 id="3-1-1-简单截断法"><a href="#3-1-1-简单截断法" class="headerlink" title="3.1.1 简单截断法"></a>3.1.1 简单截断法</h3><p>以$k$为窗口，当$t/k$不为整数时，采用标准的SGD；否则，采用如下的权重更新方式：</p>
-<script type="math/tex; mode=display">
-W^{t+1}=T_0(W^t - \eta^tG^t,\theta) \\
-T_0(v_i,\theta) = \begin{Bmatrix}
-0\ if\ |v_i|\leqslant \theta\\ 
-v_i\ otherwise
-\end{Bmatrix}</script><p>其中，$G^t=\triangledown  _{W}l(W^{t},Z^{t})$ 代表第t次迭代中损失函数的梯度，$\eta^{t}$ 是学习率，通常将其设置为 $1/\sqrt{t}$ 的函数。可以看出，简单截断法的思路是，如果某个维度的权重变化小于设定的$\theta$ ，则直接置为0。</p>
-<h3 id="3-1-2-截断梯度法"><a href="#3-1-2-截断梯度法" class="headerlink" title="3.1.2 截断梯度法"></a>3.1.2 截断梯度法</h3><p>在前一种方法上的改进。加入了L1正则化项$\eta^{t}\lambda sgn(W^{t})$ 。</p>
-<script type="math/tex; mode=display">
-W^{t+1}=W^t-\eta ^tG^t-\eta^t\lambda sgn(W^t)</script><p>其中$sgn(v)$是符号函数。由于每次仅根据一个样本进行更新，因此也不再使用区分样本的下表$j$。</p>
-<p>采用类似的方式表示为：</p>
-<script type="math/tex; mode=display">
-W^{t+1}=T_1(W^t - \eta^tG^t,\eta^t\lambda^t,\theta) \\
-T_1(v_i,\alpha,\theta) = \begin{Bmatrix}
-\begin{aligned}
-& max(0,v_i-\alpha)\ if\ v_i\in [0,\theta]\\ 
-& min(0,v_i+\alpha)\ if\ v_i\in [-\theta,0]\\
-& v_i\ otherwise
-\end{aligned}
-\end{Bmatrix}</script><p>其中，$\lambda^{t} \in \mathbb{R}$且$\lambda^{t}\geqslant0 $ 。同样以k为窗口，每k步进行一次截断。当t/k不为整数时，$\lambda^{t}=0$， 否则，$\lambda^{t}=k\lambda$。可以看出，$\lambda$和$\theta$决定了权重的稀疏程度，这两个值越大越稀疏。</p>
-<h2 id="3-2-前向后向切分FOBOS"><a href="#3-2-前向后向切分FOBOS" class="headerlink" title="3.2 前向后向切分FOBOS"></a>3.2 前向后向切分FOBOS</h2><h3 id="3-2-1-FOBOS算法原理"><a href="#3-2-1-FOBOS算法原理" class="headerlink" title="3.2.1 FOBOS算法原理"></a>3.2.1 FOBOS算法原理</h3><p>在FOBOS（Forward-backward Splitting）中，将权重的更新分为两个步骤：</p>
-<script type="math/tex; mode=display">
-W^{t+\frac{1}{2}} = W^t-\eta^tG^{t}\\
-W^{t+1}=\arg \underset{W}{min} \{\frac {1} {2} ||W- W^{t+\frac{1}{2}}||_2^2+\eta^{t+\frac {1}{2}}\Psi (W)\}
-\tag {3-2-1}</script><p>前一个步骤还是标准的梯度下降，后一个步骤可以理解为对梯度下降的结果进行微调，其中第一项是L2正则化，表示不能离损失迭代结果太远，第二项$\Psi (W)$是正则化项。</p>
-<p>将上面两个式子合并，有</p>
-<script type="math/tex; mode=display">
-W^{t+1}=\arg \underset{W}{min} \{\frac {1} {2} ||W- W^{t}-\eta^{t}G^{t}||_2^2+\eta^{t+\frac {1}{2}}\Psi (W)\}</script><p>令</p>
-<script type="math/tex; mode=display">
-F(W)=\frac {1} {2} ||W- W^{t}-\eta^{t}G^{t}||_2^2+\eta^{t+\frac {1}{2}}\Psi (W)</script><p>如果$W^{t+1}$存在一个最优解，<strong><em>那么可以推断0向量一定属于$F(W)$的一维次梯度集合</em>。</strong></p>
-<script type="math/tex; mode=display">
-0 \in \partial F(W)=W-W^{t}+\eta^{t}G^{t}+\eta^{t+\frac 1 2}\partial \Psi(W)</script><blockquote>
-<p><strong>次导数和次梯度</strong></p>
-<p>参考SubGradient.pdf</p>
-<p>次导数是一个区间，一维次梯度就是次导数</p>
-</blockquote>
-<p>由于$W^{t+1}=\arg \underset{x}{min} F(W)$，则有：</p>
-<script type="math/tex; mode=display">
-0=\left \{ W-W^{t} - \eta^{t}G^{t}+\eta^{t+\frac {1}{2}}\partial\Psi(W) \right \}|_{W=W^{t+1}}</script><p>便可以得到另一种更新权重的方式</p>
-<script type="math/tex; mode=display">
-W^{t+1}=W^{t}+ \eta^{t}G^{t}-\eta^{t+\frac {1}{2}}\partial\Psi(W^{t+1})</script><p>从上式可以看到权重的更新不仅与迭代前的状态有关，也与迭代后的$W^{t+1}$有关。</p>
-<h3 id="3-2-2-L1-FOBOS"><a href="#3-2-2-L1-FOBOS" class="headerlink" title="3.2.2 L1-FOBOS"></a>3.2.2 L1-FOBOS</h3><p>在L1正则化下，有$\Psi (W)=\lambda||w||_1$ 。对于（2-3-1），</p>
-<script type="math/tex; mode=display">
-W^{t+1}=\arg \underset{W}{min} \{\frac {1} {2} ||W- W^{t+\frac{1}{2}}||_2^2+\eta^{t+\frac {1}{2}}\Psi (W)\}</script><p>用向量V来表示$W^{t+\frac 1 2}$ ，用标量$\tilde{\lambda} \in \mathbb{R}$来表示$\eta^{t+\frac 1 2}\lambda$ ，将公式展开，并改写为</p>
-<script type="math/tex; mode=display">
-W^{t+1}=\arg \underset{W}{min}\sum_{i=1}^N (\frac {1} {2}(w_i-v_i)^2+ \tilde{\lambda}|w_i|)
-\tag {3-2-2}</script><p>可以看到，在求和公式中的每一项都是大于0的，所以公式（3-2-2）可以拆解成对特征权重W的每一维度单独求解</p>
-<script type="math/tex; mode=display">
-w_i^{t+1}=\arg \underset{w_i}{min}(\frac {1} {2}(w_i-v_i)^2+ \tilde{\lambda}|w_i|)
-\tag {3-2-3}</script><p>假设$w_i^<em>$是一个维度上的最优解，通过反证法证明$w_i^</em>v_i\geq0$（证明略）。再分$v_i\geq0$和$v_i&lt;0$来讨论。</p>
-<p><strong>（1）当$v_i\geq0$时</strong>，</p>
-<p>由于$w_i^<em>v_i\geq0$，所以$w_i^</em> \geq0$ 。相当于给（2-3-3）增加了一个不等式约束条件：</p>
-<script type="math/tex; mode=display">
-w_i^{t+1}=\arg \underset{w_i}{min}(\frac {1} {2}(w_i-v_i)^2+ \tilde{\lambda}|w_i|)\\
-s.t. -w_i\leq 0</script><p>通过拉格朗日乘子求解这个含不等式的约束问题。</p>
-<p>引入拉格朗日系数$\beta \geq 0$ ，由KKT条件，有</p>
-<script type="math/tex; mode=display">
-\frac \partial {\partial w_i}\left ( \frac {1} {2}(w_i-v_i)^2+ \tilde{\lambda}|w_i|-\beta w_i \right )|_{w_i=w_i^*}=0 \\
-\beta w_i^*=0</script><p>根据上面的求导可得</p>
-<script type="math/tex; mode=display">
-w_i^*=v_i-\tilde{\lambda}+\beta</script><p>再分为两种情况</p>
-<p>① 当$w_i^<em> &gt; 0$ 时，由于$\beta w_i^</em>=0$ 所以$\beta=0$，此时有$w_i^*=v_i-\tilde{\lambda}$ ，从而$v_i-\tilde{\lambda} &gt; 0$ 。</p>
-<p>② 当$w_i^* = 0$ 时，有$v_i-\tilde{\lambda}+\beta=0$ 。由于$\beta \geq 0$ ，所以$v_i-\tilde{\lambda} \leq 0$  。</p>
-<p>可以得出，当$v_i\geq0$ 时，</p>
-<script type="math/tex; mode=display">
-w_i^* = max(0, v_i-\tilde{\lambda})</script><p><strong>（2）当$v_i&lt;0$时</strong>，</p>
-<p>采用同样的分析方法，得到</p>
-<script type="math/tex; mode=display">
-w_i^* =- max(0, -v_i-\tilde{\lambda})</script><p>综上，可得FOBOS在L1正则化条件下，特征权重各个维度的更新方式为：</p>
-<script type="math/tex; mode=display">
-\begin{aligned} 
-w_i^{t+1} &= sgn(v_i)max(0,|v_i|-\tilde{\lambda})\\
-& = sgn(w_i^{t}-\eta^{t}g_i^{t})max \left \{ 0, |w_i^{t}-\eta^{t}g_i^{t}|-\eta^{t+ \frac {1} {2}} \lambda \right \}
- \end{aligned}
- \tag{3-2-4}</script><p>其中，$g_i^{t}$就是梯度在维度i上的取值。</p>
-<p><strong>从公式（3-2-4）可以看出，L1-FOBOS每次更新W的时候，对W的每个维度都会进行判定，当$|w_i^{t}-\eta^{t}g_i^{t}|-\eta^{t+ \frac {1} {2}} \lambda&lt;0$的时候对齐进行截断，即权重置为0。</strong></p>
-<p>换一种写法，</p>
-<script type="math/tex; mode=display">
-|w_i^{t}-\eta^{t}g_i^{t}|<\eta^{t+ \frac {1} {2}} \lambda
-\tag {3-2-5}</script><p>可以看出截断的意义是，<strong>当一条样本产生的梯度不足以令对应维度上的权重值发生足够大的变大（$\eta^{t+ \frac {1} {2}} \lambda$ ），则认为在本次更新过程中该维度不重要，令其权重为0</strong>。</p>
-<p>若对L1-FOBOS进行适当的变换，可以发现，L1-FOBOS就是TG在特定条件下的特殊形式。</p>
-<h2 id="3-3-RDA"><a href="#3-3-RDA" class="headerlink" title="3.3 RDA"></a>3.3 RDA</h2><h3 id="3-3-1-RDA算法原理"><a href="#3-3-1-RDA算法原理" class="headerlink" title="3.3.1 RDA算法原理"></a>3.3.1 RDA算法原理</h3><p>TG和FOBOS都是建立在SGD的基础之上，属于梯度下降类型的方法，这类型方法的优点就是精度比较高，并且 TG、 FOBOS 也都能在稀疏性上得到提升。 但是有些其它类型的算法，例如 RDA，是从另一个方面来求解 Online Optimization 并且更有效地提升了特征权重的稀疏性。 </p>
-<p>正则对偶平均（ RDA, Regularized Dual Averaging） 是微软十年的研究成果， RDA 是 Simple Dual Averaging Scheme 的一个扩展， 由 Lin Xiao 发表于 2010 年 。</p>
-<p>在 RDA 中， 特征权重的更新策略为： </p>
-<script type="math/tex; mode=display">
-W^{t+1} = \arg \underset{W}{min} \left \{ \frac 1 t \sum_{r=1}^t \left \langle G^r,W \right \rangle  +\Psi(W)+\frac {\beta^{t}}{t}h(W) \right \}
-\tag {3-3-1}</script><p>本质上，公式（3-3-1）包括了3个部分：</p>
-<p>（1）线性函数$\frac 1 t \sum_{r=1}^t \left \langle G^r,W \right \rangle$ 包含了之前所有梯度（或次梯度）的平均值（dual average），$G^r$ 是梯度；</p>
-<p>（2）$\Psi(W)$ 为正则项；</p>
-<p>（3）额外正则项$\frac {\beta^{t}}{t}h(W)$。其中$h(W)$是一个辅助的严格凸函数。${\beta^{t}|t\geq 1}$ 是一个非负且非自减序列。</p>
-<h3 id="3-3-2-L1-RDA"><a href="#3-3-2-L1-RDA" class="headerlink" title="3.3.2 L1-RDA"></a>3.3.2 L1-RDA</h3><p>在L1正则化下，有$\Psi (W)=\lambda||w||_1$，并且由于$h(W)$是一个关于W的严格凸函数，就令$h(W)=\frac {1} {2} ||W||_2^2 $ 。此外，将${\beta^{t}|t\geq 1}$定义为$\beta^{t}=\gamma \sqrt t $ 。再代入（2-4-1），有</p>
-<script type="math/tex; mode=display">
-W^{t+1} = \arg \underset{W}{min} \left \{ \frac 1 t \sum_{r=1}^t \left \langle G^r,W \right \rangle  +\lambda||w||_1+\frac {\gamma} {2\sqrt t}||W||_2^2 \right \}
-\tag {3-3-2}</script><p>分解到每一个权重的维度上</p>
-<script type="math/tex; mode=display">
-w_i^{t+1} = \arg \underset{w_i}{min} \left \{ \bar{g_i}^{t}w_i +\lambda|w_i|+\frac {\gamma} {2\sqrt t}w_i^2 \right \}
-\tag {3-3-3}</script><p>这里$\lambda &gt;0,\ \frac {\gamma} {\sqrt t}&gt;0,\  \bar{g<em>i}^{t} = \frac 1 t \sum</em>{r=1}^t g_i^{(r)}$ 。公式（2-4-3）就是一个无约束的非平滑最优化问题（因为第二项$\lambda|w_i|$ 在0处不可导）。所以用次导数求解。</p>
-<p>假设$w_i^<em>$ 是其最优解，并且定义$\xi \in \partial  |w_i|$为$|w_i|$ 在$w_i^</em>$ 的次导数，则有</p>
-<script type="math/tex; mode=display">
-\partial |w_i^*| =  \left\{\begin{matrix}
--1<\xi<1  & if w_i^*=0\\ 
-1 & if w_i^*>0\\ 
--1 & if w_i^*<0
-\end{matrix}\right.</script><p>对公式（3-3-3）求次导数，并令其为0，则有</p>
-<script type="math/tex; mode=display">
-\bar{g_i}^{t} + \lambda\xi + \frac {\gamma} {\sqrt t} w_i = 0</script><p>由于$\lambda &gt;0$，再分情况讨论（略），可以得到L1-RDA特征权重的各个维度更新的方式为：</p>
-<script type="math/tex; mode=display">
-w_i^{t+1}=\begin{Bmatrix}
-0 & if |\bar{g_i}^{t}|<\lambda\\ 
--\frac {\sqrt t}{\gamma}\left (\bar{g_i}^{t}-\lambda sgn(\bar{g_i}^{t})  \right ) & otherwise
-\end{Bmatrix}
-\tag {3-3-4}</script><p><strong>这里可以看出，当某个维度上累积梯度平均值的绝对值小于阈值$\lambda$ 时，产生截断</strong>。</p>
-<h3 id="3-3-3-L1-RDA和L1-FOBOS的比较"><a href="#3-3-3-L1-RDA和L1-FOBOS的比较" class="headerlink" title="3.3.3 L1-RDA和L1-FOBOS的比较"></a>3.3.3 L1-RDA和L1-FOBOS的比较</h3><p>在L1-FOBOS中，进行截断的条件是</p>
-<script type="math/tex; mode=display">
-|w_i^{t}-\eta^{t}g_i^{t}|<\eta^{t+ \frac {1} {2}} \lambda</script><p>通常会定义$\eta$为与$\frac 1 {\sqrt t}$ 正相关的函数$\eta=\Theta \left ( \frac {1} {\sqrt t} \right )$ 。因此L1-FOBOS的<strong>截断阈值为$\Theta \left ( \frac {1} {\sqrt t} \right )\lambda$  ，</strong>随着**t的增加，这个阈值会逐渐降低。</p>
-<p>相比较而言，L1-RDA的<strong>截断阈值是$\lambda$ </strong>。是一个常数，并不随着t变化，因此相对于L1-FOBOS更简单粗暴。这种性质使得L1-RDA更容易产生稀疏性。此外， RDA 中判定截断的对象是梯度的累加平均值$\bar{g_i}^{t} $ ， 不同于 TG或L1-FOBOS 中针对单次梯度计算的结果进行判定，避免了由于某些维度由于训练不足导致截断的问题。 并且通过调节一个参数$\lambda$，很容易在精度和稀疏性上进行权衡 。</p>
-<h2 id="3-4-FTRL"><a href="#3-4-FTRL" class="headerlink" title="3.4 FTRL"></a>3.4 FTRL</h2><p>有实验证明， <strong>L1-FOBOS 这一类基于梯度下降的方法有比较高的精度，但是 L1-RDA 却能在损失一定精度的情况下产生更好的稀疏性。 FTRL则是结合了两者的优点</strong>。</p>
-<h3 id="3-4-1-L1-FOBOS和L1-RDA在形式上的统一"><a href="#3-4-1-L1-FOBOS和L1-RDA在形式上的统一" class="headerlink" title="3.4.1 L1-FOBOS和L1-RDA在形式上的统一"></a>3.4.1 L1-FOBOS和L1-RDA在形式上的统一</h3><p>之前提到，L1-FOBOS可以表示为（这里令$\eta^{t+\frac 1 2}=\eta^t=\Theta(\frac 1 {\sqrt t})$  是一个随t变化的非增正序列） </p>
-<script type="math/tex; mode=display">
-W^{t+1}=\arg \underset{W}{min} \{\frac {1} {2} ||W- W^t-\eta^tG^t||^2+\eta^{t}\lambda||w||_1\}</script><p>将其按W的维度分解为N个独立的最优化步骤</p>
-<script type="math/tex; mode=display">
-\underset{w_i}{minimize} \left \{  \frac 1 2 (w_i-w_i^t+\eta^tg_i^t)^2+\eta^t\lambda|w_i| \right \}\\
-=\underset{w_i}{minimize}\left \{  \frac 1 2 (w_i-w_i^t)^2 + \frac 1 2(\eta^tg_i^t)^2+w_i\eta^tg_i^t- w_i^t\eta^tg_i^t+    \eta^t\lambda|w_i| \right \}\\</script><p>同时除以$\eta^t$ ，得到</p>
-<script type="math/tex; mode=display">
-\underset{w_i}{minimize}\left \{ w_ig_i^t+\lambda|w_i|+\frac 1 {2\eta^t}(w_i-w_i^t)^2 + [\frac {\eta^t}{2}(g_i^t)2+w_i^tg_i^t] \right \}</script><p>由于$\frac {\eta^t}{2}(g_i^t)2+w_i^tg_i^t$ 与变量$w_i$ 无关，因此上式可以等价于</p>
-<script type="math/tex; mode=display">
-\underset{w_i}{minimize}\left \{ w_ig_i^t+\lambda|w_i|+\frac 1 {2\eta^t}(w_i-w_i^t)^2 +  \right \}</script><p>再将这N个独立的合并，则L1-FOBOS可以写成</p>
-<script type="math/tex; mode=display">
-W^{t+1} = \arg \underset{W}{min} \left \{ G^t\cdot W+\lambda||W||_1+\frac 1 {2\eta^t}||W-W^t||_2^2 \right \}</script><p>而对于L1-RDA的公式（3-3-2）</p>
-<script type="math/tex; mode=display">
-W^{t+1} = \arg \underset{W}{min} \left \{ \frac 1 t \sum_{r=1}^t \left \langle G^r,W \right \rangle  +\lambda||w||_1+\frac {\gamma} {2\sqrt t}||W||_2^2 \right \} \\</script><p>同时乘以t，得到</p>
-<script type="math/tex; mode=display">
-\begin{aligned} 
-W^{t+1} & = \arg \underset{W}{min} \left \{ \sum_{r=1}^t  G^r \cdot W  +t\lambda||w||_1+\frac {1} {2\eta^t}||W-0||_2^2 \right \}\\
-& =\arg \underset{W}{min} \left \{  G^{1:t} \cdot W  +t\lambda||w||_1+\frac {1} {2\eta^t}||W-0||_2^2 \right \}
-\end{aligned}</script><p>如果令$\sigma ^s = \frac 1 {\eta^s}-\frac 1 {\eta^{s-1}}$  ，则$\sigma^{1:t} = \frac 1 {\eta^t}$ 。L1-FOBOS和L1-RDA的公式可以写成</p>
-<script type="math/tex; mode=display">
-W^{t+1} = \arg \underset{W}{min} \left \{ G^t\cdot W+\lambda||W||_1+\frac 1 2\sigma^{1:t}||W-W^t||_2^2 \right \}\\
-W^{t+1} =\arg \underset{W}{min} \left \{  G^{1:t} \cdot W  +t\lambda||W||_1+\frac 1 2\sigma^{1:t}||W-0||_2^2 \right \}
-\tag {3-4-1}</script><p>比较这两个公式，可以看出L1-FOBOS和L1-RDA的区别在于：</p>
-<p>（1）前者对梯度只考虑当前的状态，而后者的梯度是累加的形式；</p>
-<p>（2）前者的第三项限制了W的变化不能离已经迭代过的解太远，后者限制W不能离0太远。</p>
-<h3 id="3-4-2-FTRL算法原理"><a href="#3-4-2-FTRL算法原理" class="headerlink" title="3.4.2 FTRL算法原理"></a>3.4.2 FTRL算法原理</h3><p>FTRL综合考虑了L1-FOBOS和L1-RDA中对正则项和W限制的区别，其特征权重的更新公式为</p>
-<script type="math/tex; mode=display">
-W^{t+1} =\arg \underset{W}{min} \left \{  G^{1:t} \cdot W  +\lambda_1||W||_1+\lambda_2||W||_2^2+\frac 1 2\sum_{s=1}^t \sigma^s ||W-W^s||_2^2 \right \}
-\tag {3-4-2}</script><p>其中L2的正则项在论文中并没有出现，但是2013年的FTRL工程化实现的论文却使用。事实上该项的引入并不影响FRTL<br>的稀疏性， 后面的推导过程会显示这一点。 L2正则项的引入仅仅相当于对最优化过程多了一个约束，使得结果求解结果更加“平滑”。 </p>
-<p>对（3-4-2）进行变换，将其的最后一项展开</p>
-<script type="math/tex; mode=display">
-W^{t+1} =\arg \underset{W}{min} \left \{  (G^{1:t}-\sum_{s=1}^t\sigma^sW^s) \cdot W  +\lambda_1||W||_1+\frac 1 2 (\lambda_2+\sum_{s=1}^t\sigma^s)||W||_2^2+\frac 1 2\sum_{s=1}^t \sigma^s ||W^s||_2^2 \right \}</script><p>其中，由于$\frac 1 2\sum_{s=1}^t \sigma^s ||W^s||_2^2$ 相对于W是常数项，再令</p>
-<script type="math/tex; mode=display">
-Z^{t} =G^{1:t}-\sum_{s=1}^t\sigma^sW^s
-\tag {3-4-3}</script><p>上式等价于</p>
-<script type="math/tex; mode=display">
-W^{t+1} =\arg \underset{W}{min} \left \{  Z^t \cdot W  +\lambda_1||W||_1+\frac 1 2 (\lambda_2+\sum_{s=1}^t\sigma^s)||W||_2^2 \right \}</script><p>再针对每个维度将其拆解成N个独立的标量最小化问题</p>
-<script type="math/tex; mode=display">
- \underset{w_i}{minimize} \left \{  z_i^tw_i  +\lambda_1|w_i|+\frac 1 2 (\lambda_2+\sum_{s=1}^t\sigma^s)w_i^2 \right \}</script><p>到这里，遇到了与L1-RDA的（3-3-3）类似的优化问题，用相同的分析方法可以得到</p>
-<script type="math/tex; mode=display">
-w_i^{t+1}=\left\{\begin{matrix}
-0 & if\ |z_i^t|<\lambda_1\\ 
--\left ( \lambda_2+\sum_{s=1}^t\sigma^s \right )^{-1}\ \left ( z_i^t-\lambda_1 sgn(z_i^t) \right ) & otherwise
-\end{matrix} \right.
-\tag {3-4-4}</script><p>可以看出，引入L2并没有对FTRL结果的稀疏性产生影响。</p>
-<h3 id="3-4-3-学习率"><a href="#3-4-3-学习率" class="headerlink" title="3.4.3 学习率"></a>3.4.3 学习率</h3><p>前面的推导中，学习率的选择和计算没有被提及。事实上在FTRL中，每个维度的学习率都是单独考虑的。</p>
-<p>考虑特征维度的变化率：如果特征 1 比特征 2 的变化更快，那么在维度 1 上的学习率应该下降得更快。我们很容易就可以想到可以用某个维度上梯度分量来反映这种变化率。在FTRL 中，维度 i上的学习率是这样计算的<strong>（原作者没有推导过程）</strong>：</p>
-<script type="math/tex; mode=display">
-\eta_i^t=\frac {\alpha}{\beta + \sqrt {\sum_{s=1}^t (g_i^s)^2}}</script><p>由于$\sum_{s=1}^t\sigma^s=\frac 1 {\eta^t}$ ，因此（3-4-4）就变成</p>
-<script type="math/tex; mode=display">
-w_i^{t+1}=\left\{\begin{matrix}
-0 & if\ |z_i^t|<\lambda_1\\ 
--\left ( \lambda_2 + \frac {\beta + \sqrt {\sum_{s=1}^t (g_i^s)^2}}{\alpha}  \right )^{-1}\ \left ( z_i^t-\lambda_1 sgn(z_i^t) \right ) & otherwise
-\end{matrix} \right.
-\tag {3-4-5}</script><p>这里的$\alpha, \beta$ 都是要输入的参数。</p>
-<h3 id="2-5-4-伪代码解读"><a href="#2-5-4-伪代码解读" class="headerlink" title="2.5.4 伪代码解读"></a>2.5.4 伪代码解读</h3><p> <img src="/.io//FTRL伪代码.png" alt="FTRL伪代码"></p>
-<p>首先设置各个参数的初始值，包括</p>
+            <p>转自<a href="https://www.jiqizhixin.com/articles/2018-02-05-2" target="_blank" rel="noopener">https://www.jiqizhixin.com/articles/2018-02-05-2</a></p>
+<h1 id="分类测试问题"><a href="#分类测试问题" class="headerlink" title="分类测试问题"></a>分类测试问题</h1><p>将看三个分类问题：blobs、moons 和 circles。</p>
+<h2 id="线性分类"><a href="#线性分类" class="headerlink" title="线性分类"></a>线性分类</h2><p> make_blobs() 函数可被用于生成具有高斯分布的 blobs 点。你可以控制生成 blobs 的数量，生成样本的数量以及一系列其他属性。考虑到 blobs 的线性可分性质，该问题也适用于线性分类问题。</p>
+<p>下面的例子是一个多类分类预测问题，它生成了一个具有三个 blobs 的 2D 样本数据集。每个数据有两个输入和 0、1 或 2 个类的值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.datasets.samples_generator <span class="keyword">import</span> make_blobs</span><br><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</span><br><span class="line"><span class="keyword">from</span> pandas <span class="keyword">import</span> DataFrame</span><br><span class="line"><span class="comment"># generate 2d classification dataset</span></span><br><span class="line">X, y = make_blobs(n_samples=<span class="number">100</span>, centers=<span class="number">3</span>, n_features=<span class="number">2</span>)</span><br><span class="line"><span class="comment"># dict中定义三个key，分别是坐标和label，再通过dict创建DataFrame</span></span><br><span class="line">df = DataFrame(dict(x=X[:,<span class="number">0</span>], y=X[:,<span class="number">1</span>], label=y))</span><br><span class="line">colors = &#123;<span class="number">0</span>:<span class="string">'red'</span>, <span class="number">1</span>:<span class="string">'blue'</span>, <span class="number">2</span>:<span class="string">'green'</span>&#125;</span><br><span class="line">fig, ax = pyplot.subplots()</span><br><span class="line"><span class="comment">#groupby可以通过传入需要分组的参数实现对数据的分组</span></span><br><span class="line">grouped = df.groupby(<span class="string">'label'</span>)</span><br><span class="line"><span class="keyword">for</span> key, group <span class="keyword">in</span> grouped:</span><br><span class="line">   group.plot(ax=ax, kind=<span class="string">'scatter'</span>, x=<span class="string">'x'</span>, y=<span class="string">'y'</span>, label=key, color=colors[key])</span><br><span class="line">pyplot.show()</span><br></pre></td></tr></table></figure>
+<h2 id="非线性分类"><a href="#非线性分类" class="headerlink" title="非线性分类"></a>非线性分类</h2><p>make_moons() 函数用于二进制分类并且将生成一个漩涡模式，或者两个 moons。你可以控制 moon 形状中的噪声量，以及要生产的样本数量。</p>
+<p>这个测试问题适用于能够学习非线性类边界的算法。下面的例子生成了一个中等噪音的 moon 数据集。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> make_moons</span><br><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</span><br><span class="line"><span class="keyword">from</span> pandas <span class="keyword">import</span> DataFrame</span><br><span class="line"><span class="comment"># generate 2d classification dataset</span></span><br><span class="line">X, y = make_moons(n_samples=<span class="number">100</span>, noise=<span class="number">0.1</span>)</span><br><span class="line"><span class="comment"># scatter plot, dots colored by class value</span></span><br><span class="line">df = DataFrame(dict(x=X[:,<span class="number">0</span>], y=X[:,<span class="number">1</span>], label=y))</span><br><span class="line">colors = &#123;<span class="number">0</span>:<span class="string">'red'</span>, <span class="number">1</span>:<span class="string">'blue'</span>&#125;</span><br><span class="line">fig, ax = pyplot.subplots()</span><br><span class="line">grouped = df.groupby(<span class="string">'label'</span>)</span><br><span class="line"><span class="keyword">for</span> key, group <span class="keyword">in</span> grouped:</span><br><span class="line">   group.plot(ax=ax, kind=<span class="string">'scatter'</span>, x=<span class="string">'x'</span>, y=<span class="string">'y'</span>, label=key, color=colors[key])</span><br><span class="line">pyplot.show()</span><br></pre></td></tr></table></figure>
+<p>make_circles() 函数生成一个数据集落入同心圆的二进制分类问题。再一次地，与 moons 测试问题一样，你可以控制形状中的噪声量。该测试问题适用于可以学习复杂的非线性流行的算法。下面的例子中生成了一个具有一定噪音的 circles 数据集。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> make_circles</span><br><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</span><br><span class="line"><span class="keyword">from</span> pandas <span class="keyword">import</span> DataFrame</span><br><span class="line"><span class="comment"># generate 2d classification dataset</span></span><br><span class="line">X, y = make_circles(n_samples=<span class="number">100</span>, noise=<span class="number">0.05</span>)</span><br><span class="line"><span class="comment"># scatter plot, dots colored by class value</span></span><br><span class="line">df = DataFrame(dict(x=X[:,<span class="number">0</span>], y=X[:,<span class="number">1</span>], label=y))</span><br><span class="line">colors = &#123;<span class="number">0</span>:<span class="string">'red'</span>, <span class="number">1</span>:<span class="string">'blue'</span>&#125;</span><br><span class="line">fig, ax = pyplot.subplots()</span><br><span class="line">grouped = df.groupby(<span class="string">'label'</span>)</span><br><span class="line"><span class="keyword">for</span> key, group <span class="keyword">in</span> grouped:</span><br><span class="line">   group.plot(ax=ax, kind=<span class="string">'scatter'</span>, x=<span class="string">'x'</span>, y=<span class="string">'y'</span>, label=key, color=colors[key])</span><br><span class="line">pyplot.show()</span><br></pre></td></tr></table></figure>
+<h1 id="回归测试问题"><a href="#回归测试问题" class="headerlink" title="回归测试问题"></a>回归测试问题</h1><h2 id="线性回归"><a href="#线性回归" class="headerlink" title="线性回归"></a>线性回归</h2><p>make_regression() 函数将创建一个输入和输出具有线性关系的数据集。你可以配置样本数量，输入特征数量，噪声级别等等。该数据集适用于可以学习线性回归函数的算法。</p>
+<p>下面的例子将生成 100 个示例，他们具有适度的噪声，都有一个输入特征和一个输出特征。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> make_regression</span><br><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</span><br><span class="line"><span class="comment"># generate regression dataset</span></span><br><span class="line">X, y = make_regression(n_samples=<span class="number">100</span>, n_features=<span class="number">1</span>, noise=<span class="number">0.1</span>)</span><br><span class="line"><span class="comment"># plot regression dataset</span></span><br><span class="line">pyplot.scatter(X,y)</span><br><span class="line">pyplot.show()</span><br></pre></td></tr></table></figure>
+<p>通过这些测试集可以：</p>
 <ul>
-<li>更新学习率的$\alpha,\beta$。</li>
-<li>L1和L2正则化的参数$\lambda_1,\ \lambda_2$ </li>
-<li>更新权重时用到的$z_i$ 一维数组（数组的长度是特征项个数），初始值是0</li>
-<li>存放梯度累加的$n_i$ 一维数组（数组的长度是特征项个数），初始值是0</li>
+<li><strong>比较算法</strong>。选择一个测试问题，并比较该问题的一系列算法并汇报性能。</li>
+<li><strong>放大问题</strong>。选择一个测试问题并探索将其放大，用级数法来可视化结果，也可以探索一个特定算法模型技能和问题规模。</li>
 </ul>
-<p>算法步骤中：</p>
-<p>（1）第一阶段，计算第t次迭代的预测值</p>
-<p><strong>S1</strong>：用给定的初始值计算权重$w_{t,i}$，并计算出预测值$p_t$ 。见①</p>
-<p>（2）第二阶段，更新第t+1次的权重，对当前样本不为0的每个特征项都要进行一次更新。在第i个特征项中，</p>
-<p><strong>S1</strong>：采用logloss计算损失函数的梯度$g_{t+1}$，见②</p>
-<p><strong>S2</strong>：可以看出①里面还需要计算$n_i$  和$z_i$ 在第t+1次的值。</p>
-<p>对于$z_i$，根据公式（2-5-3）</p>
-<script type="math/tex; mode=display">
-Z^{t} =G^{1:t}-\sum_{s=1}^t\sigma^sW^s</script><p>可以看出z的更新可以通过下式计算</p>
-<script type="math/tex; mode=display">
-\begin {aligned}
-Z^{t+1}& =G^{1:t+1}-\sum_{s=1}^{t+1}\sigma^sW^s\\
-&=G^{1:t}-\sum_{s=1}^t\sigma^sW^s + G^{t+1} - \sigma^{t+1}W^{t+1}\\
-&=Z^t + G^{t+1} - \sigma^{t+1}W^{t+1}
- \end{aligned}
- \tag {3-4-6}</script><p>则需要计算$\sigma^{t+1}$ 的值。而根据上文的推导</p>
-<script type="math/tex; mode=display">
-\sigma ^s = \frac 1 {\eta^s}-\frac 1 {\eta^{s-1}}</script><p>又</p>
-<script type="math/tex; mode=display">
-\eta_i^t=\frac {\alpha}{\beta + \sqrt {\sum_{s=1}^t (g_i^s)^2}}</script><p>则</p>
-<script type="math/tex; mode=display">
-\begin {aligned}
-\sigma ^{t+1}& = \frac 1 {\eta^{t+1}}-\frac 1 {\eta^t}\\
-&=\frac {\beta + \sqrt {\sum_{s=1}^{t+1} (g_i^s)^2}}{\alpha}-\frac {\beta + \sqrt {\sum_{s=1}^t (g_i^s)^2}}{\alpha}\\
-&=\frac 1 \alpha \left ( \sqrt {\sum_{s=1}^{t+1} (g_i^s)^2}- \sqrt {\sum_{s=1}^t (g_i^s)^2}\right )
- \end{aligned}</script><p>由于用$n_i$ 记录$g_i$ 的累加和，上式可以变成</p>
-<script type="math/tex; mode=display">
-\sigma ^{t+1} = \sqrt {n^t+(g^{t+1})^2}-\sqrt {n^t}
-\tag {3-4-7}</script><p>见③。再根据公式（3-4-6），计算$z_i$ 的值，见④。</p>
-<p><strong>S3</strong>：对于$n_i$ ，根据公式（3-4-7），</p>
-<script type="math/tex; mode=display">
-n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
-<h3 id="2-5-5-实现代码"><a href="#2-5-5-实现代码" class="headerlink" title="2.5.5 实现代码"></a>2.5.5 实现代码</h3><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">predict</span></span>(x: <span class="type">Array</span>[<span class="type">Int</span>]): <span class="type">Double</span> = &#123;</span><br><span class="line">  <span class="keyword">var</span> wTx = <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line">  x foreach &#123; x =&gt;</span><br><span class="line">    <span class="keyword">val</span> sign = <span class="keyword">if</span> (z(x) &lt; <span class="number">0</span>) <span class="number">-1.0</span> <span class="keyword">else</span> <span class="number">1.0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (sign * z(x) &lt;= <span class="type">L1</span>)</span><br><span class="line">      w(x) = <span class="number">0.0</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">      w(x) = (sign * <span class="type">L1</span> - z(x)) / ((beta + math.sqrt(n(x))) / alpha + <span class="type">L2</span>)</span><br><span class="line"></span><br><span class="line">    wTx = wTx + w(x)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">1.0</span> / (<span class="number">1.0</span> + math.exp(-math.max(math.min(wTx, <span class="number">35.0</span>), <span class="number">-35.0</span>)))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">update</span></span>(x: <span class="type">Array</span>[<span class="type">Int</span>], p: <span class="type">Double</span>, y: <span class="type">Int</span>): <span class="type">Unit</span> = &#123;</span><br><span class="line">  <span class="keyword">val</span> g = p - y</span><br><span class="line"></span><br><span class="line">  x foreach &#123; x =&gt;</span><br><span class="line">    <span class="keyword">val</span> sigma = (math.sqrt(n(x) + g * g) - math.sqrt(n(x))) / alpha</span><br><span class="line">    z(x) = z(x) + g - sigma * w(x)</span><br><span class="line">    n(x) = n(x) + g * g</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>从代码可以看出，在更新权重时，SGD和FTRL的区别在于：</p>
-<p><del>SGD在遍历每个样本的时候，都会更新所有维度的权重，而FTRL在遍历每个样本的时候只会更新样本对应维度的权重。从而可以节省训练的时间</del></p>
-<p>并不是节省时间。SGD也可以用于在线学习，过拟合的限制上没有FTRL好。参数太多，会导致模型复杂度上升，容易过拟合。</p>
-<h3 id="3-4-6-实验及结论"><a href="#3-4-6-实验及结论" class="headerlink" title="3.4.6 实验及结论"></a>3.4.6 实验及结论</h3><p>1、</p>
-<p>训练：16-10-22的前7天数据</p>
-<p>预测：16-10-22当天数据</p>
-<p>维度：1048576</p>
-<p>参数：默认</p>
-<p> <img src="/.io//roc3.png" alt="roc3"></p>
-<p>logloss：</p>
-<p>线上方法：0.274321867859</p>
-<p>FRTL：0.0326626593411</p>
-<p>2、</p>
-<p>训练：16-10-22的前7天数据</p>
-<p>预测：16-10-22当天数据，其中每9条用于在线学习，预测第10条</p>
-<p>维度：1048576</p>
-<p>参数：默认</p>
-<p>训练时间：11:54-12:18</p>
-<p> <img src="/.io//roc1.png" alt="roc1"></p>
-<p>logloss：</p>
-<p>线上方法：0.275704770725</p>
-<p>FRTL：0.032281346379</p>
-<p>3、</p>
-<p>训练集：16-10-18的前10天数据</p>
-<p>预测：16-10-18当天数据，其中每9条用于在线学习，预测第10条</p>
-<p>维度：4194304</p>
-<p>参数：默认</p>
-<p>训练时间：13:50-14:19</p>
-<p> <img src="/.io//roc2.png" alt="roc2"></p>
-<p>logloss</p>
-<p>线上方法：0.073087783303</p>
-<p>FTRL：0.022967801811</p>
-<p>4、</p>
-<p>训练集：16-10-18的前10天数据</p>
-<p>预测：16-10-18当天数据，其中每9条用于在线学习，预测第10条</p>
-<p>维度：4194304</p>
-<p>参数：训练的特征项改为1-10</p>
-<p>训练时间：17:07-17:45</p>
-<p> <img src="/.io//roc4.png" alt="roc4"></p>
-<p>logloss</p>
-<p>线上方法：0.073087783303</p>
-<p>FTRL：0.0221369813697</p>
-<p>特征权重不为0的维度有11301个</p>
-<h2 id="观点"><a href="#观点" class="headerlink" title="观点"></a>观点</h2><p>FTRL在线训练时间长了效果往往会下降，因为学习率会逐渐降低，必须要offline结合online。</p>
-<h1 id="主要参考资料"><a href="#主要参考资料" class="headerlink" title="主要参考资料"></a>主要参考资料</h1><p>【在线最优化求解(Online Optimization)-冯扬】</p>
-<p>【逻辑回归从入门到精通-腾讯柳超】</p>
-<p>【FTRL的理论论文】Factorization machines with follow-the-regularized-leader for CTR prediction in display advertising  <a href="http://www0.cs.ucl.ac.uk/staff/w.zhang/rtb-papers/fm-ftrl.pdf" target="_blank" rel="noopener">http://www0.cs.ucl.ac.uk/staff/w.zhang/rtb-papers/fm-ftrl.pdf</a></p>
-<p>【FTRL的工程实现论文】<a href="https://www.eecs.tufts.edu/~dsculley/papers/ad-click-prediction.pdf" target="_blank" rel="noopener">https://www.eecs.tufts.edu/~dsculley/papers/ad-click-prediction.pdf</a> </p>
+<p>代码见<code>blogcodes\sclearn_testDataset.py</code></p>
 
           
         
@@ -936,7 +558,7 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/算法与数据结构/优先级队列/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/NLP/新词发现spark/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -956,7 +578,7 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/算法与数据结构/优先级队列/" class="post-title-link" itemprop="url">优先级队列</a>
+                <a href="/2017/07/12/机器学习/NLP/新词发现spark/" class="post-title-link" itemprop="url">spark笔记-新词发现</a>
               
             
           </h1>
@@ -996,7 +618,7 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-02-18 10:04:47" itemprop="dateModified" datetime="2018-02-18T10:04:47+08:00">2018-02-18</time>
+                <time title="修改时间：2018-03-31 10:30:28" itemprop="dateModified" datetime="2018-03-31T10:30:28+08:00">2018-03-31</time>
               </span>
             
           
@@ -1010,7 +632,7 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/算法与数据结构/" itemprop="url" rel="index"><span itemprop="name">算法与数据结构</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a></span>
 
                 
                 
@@ -1028,8 +650,8 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/算法与数据结构/优先级队列/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/算法与数据结构/优先级队列/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/机器学习/NLP/新词发现spark/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/NLP/新词发现spark/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1062,7 +684,44 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
       
         
           
-            <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PriorityQueue</span>[<span class="type">E</span>](<span class="params">top: <span class="type">Int</span></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">import</span> <span class="type">PriorityQueue</span>.<span class="type">Entry</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">var</span> nsize = <span class="number">0</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">val</span> heap = <span class="type">Array</span>.ofDim[<span class="type">Entry</span>[<span class="type">E</span>]](top+<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Adds an Object to a PriorityQueue in log(size) time. It returns the</span></span><br><span class="line"><span class="comment">   * object (if any) that was dropped off the heap because it was full. This</span></span><br><span class="line"><span class="comment">   * can be the given parameter (in case it is smaller than the full heap's</span></span><br><span class="line"><span class="comment">   * minimum, and couldn't be added), or another object that was previously</span></span><br><span class="line"><span class="comment">   * the smallest value in the heap and now has been replaced by a larger one,</span></span><br><span class="line"><span class="comment">   * or null if the queue wasn't yet full with maxSize elements.</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">add</span></span>(key: <span class="type">Double</span>, value: <span class="type">E</span>): <span class="type">Option</span>[<span class="type">Entry</span>[<span class="type">E</span>]] = &#123;</span><br><span class="line">    <span class="keyword">if</span> (nsize &lt; top) &#123;</span><br><span class="line">      nsize += <span class="number">1</span></span><br><span class="line">      heap(nsize) = <span class="type">Entry</span>(key, value)</span><br><span class="line">      upHeap</span><br><span class="line">      <span class="type">None</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (nsize &gt; <span class="number">0</span> &amp;&amp; key &gt;= heap(<span class="number">1</span>).key) &#123;</span><br><span class="line">      <span class="keyword">val</span> old = heap(<span class="number">1</span>)</span><br><span class="line">      heap(<span class="number">1</span>) = <span class="type">Entry</span>(key, value)</span><br><span class="line">      updateTop</span><br><span class="line">      <span class="type">Some</span>(old)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="type">Some</span>(<span class="type">Entry</span>(key, value))</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">values</span></span>(): <span class="type">List</span>[<span class="type">E</span>] = &#123;</span><br><span class="line">    <span class="keyword">val</span> entries = <span class="type">Array</span>.ofDim[<span class="type">Entry</span>[<span class="type">E</span>]](nsize)</span><br><span class="line">    <span class="type">System</span>.arraycopy(heap, <span class="number">1</span>, entries, <span class="number">0</span>, nsize)</span><br><span class="line">    entries sortBy(-_.key) map(_.value) toList</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Removes and returns the least element of the PriorityQueue in log(size)</span></span><br><span class="line"><span class="comment">   * time.</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">pop</span></span>(): <span class="type">Option</span>[<span class="type">Entry</span>[<span class="type">E</span>]] = &#123;</span><br><span class="line">    <span class="keyword">if</span> (nsize &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="keyword">val</span> result = heap(<span class="number">1</span>)</span><br><span class="line">      heap(<span class="number">1</span>) = heap(nsize)</span><br><span class="line">      heap(nsize) = <span class="literal">null</span></span><br><span class="line">      nsize -= <span class="number">1</span></span><br><span class="line">      downHeap</span><br><span class="line">      <span class="type">Some</span>(result)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="type">None</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/** Returns the number of elements currently stored in the PriorityQueue. */</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">size</span></span>(): <span class="type">Int</span> = nsize</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Should be called when the Object at top changes values. Still log(n)</span></span><br><span class="line"><span class="comment">   * worst case, but it's at least twice as fast to</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * &lt;pre&gt;</span></span><br><span class="line"><span class="comment">   * pq.top().change();</span></span><br><span class="line"><span class="comment">   * pq.updateTop();</span></span><br><span class="line"><span class="comment">   * &lt;/pre&gt;</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * instead of</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * &lt;pre&gt;</span></span><br><span class="line"><span class="comment">   * o = pq.pop();</span></span><br><span class="line"><span class="comment">   * o.change();</span></span><br><span class="line"><span class="comment">   * pq.push(o);</span></span><br><span class="line"><span class="comment">   * &lt;/pre&gt;</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * @return the new 'top' element.</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">updateTop</span></span>(): <span class="type">Entry</span>[<span class="type">E</span>] = &#123;</span><br><span class="line">    downHeap</span><br><span class="line">    heap(<span class="number">1</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="function"><span class="keyword">def</span> <span class="title">upHeap</span></span>(): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">var</span> i = nsize</span><br><span class="line">    <span class="keyword">val</span> node = heap(i)</span><br><span class="line">    <span class="keyword">var</span> j = i &gt;&gt;&gt; <span class="number">1</span></span><br><span class="line">    <span class="keyword">while</span> (j &gt; <span class="number">0</span> &amp;&amp; node.key &lt; heap(j).key) &#123;</span><br><span class="line">      heap(i) = heap(j)</span><br><span class="line">      i = j</span><br><span class="line">      j = j &gt;&gt;&gt; <span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line">    heap(i) = node</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="function"><span class="keyword">def</span> <span class="title">downHeap</span></span>(): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">var</span> i = <span class="number">1</span></span><br><span class="line">    <span class="keyword">val</span> node = heap(i)</span><br><span class="line">    <span class="keyword">var</span> j = i &lt;&lt; <span class="number">1</span></span><br><span class="line">    <span class="keyword">var</span> k = j + <span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span> (k &lt;= nsize &amp;&amp; heap(k).key &lt; heap(j).key) &#123;</span><br><span class="line">      j = k</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span> (j &lt;= nsize &amp;&amp; heap(j).key &lt; node.key) &#123;</span><br><span class="line">      heap(i) = heap(j)</span><br><span class="line">      i = j</span><br><span class="line">      j = i &lt;&lt; <span class="number">1</span></span><br><span class="line">      k = j + <span class="number">1</span></span><br><span class="line">      <span class="keyword">if</span> (k &lt;= nsize &amp;&amp; heap(k).key &lt; heap(j).key) &#123;</span><br><span class="line">        j = k</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    heap(i) = node</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">PriorityQueue</span> </span>&#123;</span><br><span class="line">  <span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>[<span class="type">E</span>](<span class="params">key: <span class="type">Double</span>, value: <span class="type">E</span></span>)</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">  <span class="title">def</span> <span class="title">main</span>(<span class="params">args: <span class="type">Array</span>[<span class="type">String</span>]</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">val</span> pq = <span class="keyword">new</span> <span class="type">PriorityQueue</span>[(<span class="type">Int</span>, <span class="type">Double</span>)](<span class="number">4</span>)</span><br><span class="line">    <span class="keyword">val</span> ds = <span class="type">Array</span>[<span class="type">Double</span>](<span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.7</span>, <span class="number">0.2</span>, <span class="number">0.2</span>, <span class="number">0.3</span>, <span class="number">0.3</span>, <span class="number">0.5</span>, <span class="number">0.5</span>, <span class="number">0.5</span>)</span><br><span class="line">    <span class="keyword">for</span> (i &lt;- <span class="number">0</span> until ds.length) &#123;</span><br><span class="line">      <span class="keyword">val</span> e = pq.add(ds(i), (i, ds(i)))</span><br><span class="line">      println((i, ds(i)) + <span class="string">" =&gt; "</span> + e)</span><br><span class="line">    &#125;</span><br><span class="line">    println(pq.values)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> conf = <span class="keyword">new</span> <span class="type">SparkConf</span>().setAppName(<span class="string">"wordSegname"</span>).setMaster(<span class="string">"local[4]"</span>).</span><br><span class="line">set(<span class="string">"spark.sql.shuffle.partitions"</span>,<span class="string">"10"</span>).set(<span class="string">"spark.network.timeout"</span>,<span class="string">"30s"</span>)</span><br></pre></td></tr></table></figure>
+<p>local[4]是指在本地运行，用4核CPU。</p>
+<p>spark.sql.shuffle.partitions是指partition的数量。SparkSQL在运行时，将一个查询任务分解成多个task，一个task就是一个partition。默认是200个partition，而如果实际集群只能并行3个task，则跑完200个partition要200/3=67次。</p>
+<p>spark.network.timeout是指所有网络通信的超时时间，默认是120s</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> word1=sc.textFile(path).map&#123;x=&gt; </span><br><span class="line"></span><br><span class="line">      <span class="keyword">val</span> x_filter=x.replaceAll(<span class="string">"\p&#123;Punct&#125;"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"\pP"</span>, <span class="string">" "</span>)</span><br><span class="line"></span><br><span class="line">                .replaceAll(<span class="string">"　"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"["</span> + <span class="type">AtomsUitl</span>.stopwords + <span class="string">"]"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"\p&#123;Blank&#125;"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"\p&#123;Space&#125;"</span>, <span class="string">" "</span>).replaceAll(<span class="string">"\p&#123;Cntrl&#125;"</span>, <span class="string">" "</span>)</span><br><span class="line"></span><br><span class="line">                        x_filter</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>replaceAll中是正则表达式。上文中，是将所有的特殊字符都用空格代替</p>
+<p>AtomsUitl.stopwords停用词是”的很了么呢是嘛个都也比还这于不与才上用就好在和对挺去后没说”</p>
+<p>sc.textFile读取文件后，生成一个RDD，以行为单位，所以后面的map是对每行的操作</p>
+<p>打印出所有的元素，用</p>
+<p><code>word1.foreach { x =&gt; println(x) }</code></p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> word_document = word1.zipWithIndex.filter &#123; x =&gt; !<span class="type">StringUtils</span>.isBlank(x._1) &#125;.flatMap &#123; x =&gt;</span><br><span class="line">      <span class="keyword">val</span> arr = <span class="type">ArrayBuffer</span>(<span class="type">String</span>, <span class="type">Int</span>)</span><br><span class="line">      <span class="keyword">val</span> line = x._1.split(<span class="string">" "</span>)    <span class="comment">//对于每一行，都用空格分割</span></span><br><span class="line">      <span class="keyword">for</span> (i &lt;- line) &#123;    </span><br><span class="line">        arr += ((i, x._2.toInt))    <span class="comment">//分割后，每一个tuple加到数组中</span></span><br><span class="line">      &#125;</span><br><span class="line">      arr</span><br><span class="line">    &#125;.map &#123; x =&gt; (x<span class="number">.1</span>.trim, x<span class="number">.2</span>) &#125;.filter(x =&gt; !<span class="type">StringUtils</span>.isBlank(x._1))</span><br></pre></td></tr></table></figure>
+<p>zipWithIndex用带有index的来压缩RDD，索引从0开始</p>
+<p>word1.zipWithIndex.foreach { x =&gt; println(x) }</p>
+<p>(ab ef,0)</p>
+<p>(cd,1)</p>
+<p>上述代码得到的结果是</p>
+<p>(ab,0)</p>
+<p>(ef,0)</p>
+<p>(cd,1)</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> wordleft = word.map(x =&gt; <span class="type">AtomsUitl</span>.reverse(x)).map &#123; x =&gt; <span class="string">""</span> + x + <span class="string">""</span> &#125;.flatMap &#123;</span><br><span class="line">  x =&gt;</span><br><span class="line">    <span class="keyword">var</span> arr = <span class="type">ArrayBufferString</span></span><br><span class="line">    <span class="keyword">for</span> (y &lt;- <span class="number">1</span> to <span class="type">AtomsUitl</span>.len(x) - <span class="number">2</span>) &#123;</span><br><span class="line">      arr += <span class="type">AtomsUitl</span>.substring(x, y, <span class="type">Math</span>.min(maxLen + y, <span class="type">AtomsUitl</span>.len(x)))</span><br><span class="line">    &#125;</span><br><span class="line">    arr</span><br><span class="line">&#125;.sortBy(x =&gt; x)</span><br></pre></td></tr></table></figure>
+<p>将每个句子倒序排列，提取每个子集</p>
+<p>今$</p>
+<p>四期星天今</p>
+<p>处言语然自</p>
+<p>天今$</p>
+<p>星天今$</p>
+<p>期星天今$</p>
+<p>然自$</p>
+<p>理处言语然</p>
+<p>自$</p>
+<p>言语然自</p>
+<p>语然自$</p>
+<p>$</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> wordleft_caculate = wordleft.map &#123;</span><br><span class="line">      s =&gt;</span><br><span class="line">        <span class="keyword">val</span> first = <span class="type">AtomsUitl</span>.substring(s, <span class="number">0</span>, <span class="number">1</span>).toString</span><br><span class="line">        (first, s)</span><br><span class="line">    &#125;.groupBy(f =&gt; f._1).map &#123;</span><br><span class="line">      x =&gt; x._2</span><br><span class="line">    &#125;</span><br><span class="line">wordleft_caculate.foreach&#123;x=&gt; println(x.iterator.next())&#125;</span><br></pre></td></tr></table></figure>
+<p>groupBy之后得到</p>
+<p>(期, CompactBuffer((期,期星天今$))等</p>
+<p>这个是Iterable，可迭代的。可以转换为一个迭代器x.iterator.next()。迭代出来就是</p>
+<p>(期,期星天今$) 等</p>
 
           
         
@@ -1119,7 +778,7 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/kafka笔记/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark-streaming笔记/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -1139,7 +798,7 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/hadoop-spark/kafka笔记/" class="post-title-link" itemprop="url">kafka笔记</a>
+                <a href="/2017/07/12/hadoop-spark/spark/spark-streaming笔记/" class="post-title-link" itemprop="url">spark-streaming笔记</a>
               
             
           </h1>
@@ -1179,7 +838,7 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-01-30 15:46:08" itemprop="dateModified" datetime="2018-01-30T15:46:08+08:00">2018-01-30</time>
+                <time title="修改时间：2018-01-30 15:47:26" itemprop="dateModified" datetime="2018-01-30T15:47:26+08:00">2018-01-30</time>
               </span>
             
           
@@ -1211,8 +870,8 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/hadoop-spark/kafka笔记/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/kafka笔记/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/hadoop-spark/spark/spark-streaming笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/spark/spark-streaming笔记/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1245,10 +904,18 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
       
         
           
-            <h1 id="多个消费者读取一个topic，多次消费"><a href="#多个消费者读取一个topic，多次消费" class="headerlink" title="多个消费者读取一个topic，多次消费"></a>多个消费者读取一个topic，多次消费</h1><p>不同消费者设置不同的groupid</p>
- <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> kafkaParm = <span class="type">Map</span>(<span class="string">"metadata.broker.list"</span> -&gt; <span class="string">"localhost:9092"</span>,</span><br><span class="line"><span class="string">"auto.offset.reset"</span> -&gt; <span class="string">"smallest"</span>, <span class="string">"group.id"</span> -&gt; <span class="string">"davidtopi1c1"</span>)</span><br></pre></td></tr></table></figure>
-<h1 id="每个消费者不会重复消费数据"><a href="#每个消费者不会重复消费数据" class="headerlink" title="每个消费者不会重复消费数据"></a>每个消费者不会重复消费数据</h1><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> kafkaStrem.foreachRDD&#123;</span><br><span class="line">      rdd=&gt;</span><br><span class="line">        km.updateZKOffsets(rdd)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>﻿</p>
+            <h1 id="spark-streaming的示例"><a href="#spark-streaming的示例" class="headerlink" title="spark streaming的示例"></a>spark streaming的示例</h1><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span>   <span class="title">main</span> </span>( args : <span class="type">Array</span>[ <span class="type">String</span> ]): <span class="type">Unit</span> = &#123;</span><br><span class="line">         <span class="comment">//关闭一些不必要的日志</span></span><br><span class="line">        <span class="type">Logger</span>. getLogger ( <span class="string">"org.apache.spark"</span> ). setLevel (<span class="type">Level</span>. <span class="type">WARN</span> )</span><br><span class="line">        <span class="type">Logger</span>. getLogger ( <span class="string">"org.eclipse.jetty.server"</span> ). setLevel (<span class="type">Level</span>. <span class="type">OFF</span> )</span><br><span class="line">      </span><br><span class="line">         <span class="keyword">val</span>   conf  =  <span class="keyword">new</span>  <span class="type">SparkConf</span>(). setAppName ( <span class="string">"wordStreaming"</span> ). setMaster ( <span class="string">"local[2]"</span> ).</span><br><span class="line">         set ( <span class="string">"spark.sql.shuffle.partitions"</span> , <span class="string">"10"</span> ). set ( <span class="string">"spark.network.timeout"</span> , <span class="string">"30s"</span> )</span><br><span class="line">        . set ( <span class="string">"spark.shuffle.compress"</span> , <span class="string">"true"</span> ). set ( <span class="string">"spark.shuffle.spill.compress"</span> , <span class="string">"true"</span> )</span><br><span class="line">        . set ( <span class="string">"spark.shuffle.manager"</span> , <span class="string">"sort"</span> )</span><br><span class="line">         <span class="keyword">val</span>   sc  =  <span class="keyword">new</span>  <span class="type">SparkContext</span>( conf )</span><br><span class="line">        </span><br><span class="line">         <span class="comment">// 创建 StreamingContext，1 秒一个批次。这里要用 sc ，而不是 conf ，因为 sc 已经创建了</span></span><br><span class="line">         <span class="keyword">val</span>   ssc  =  <span class="keyword">new</span>  <span class="type">StreamingContext</span>( sc ,  <span class="type">Seconds</span> ( <span class="number">1</span> ))</span><br><span class="line">         <span class="comment">// 获得一个 DStream 负责连接 监听端口:地址</span></span><br><span class="line">         <span class="keyword">val</span>   lines  =  ssc . socketTextStream ( <span class="string">"192.168.37.129"</span> ,  <span class="number">9999</span> )</span><br><span class="line">         <span class="comment">// 对每一行数据执行 Split 操作</span></span><br><span class="line">         <span class="keyword">val</span>   words  =  lines . flatMap ( _. split ( <span class="string">" "</span> ) )</span><br><span class="line">         <span class="comment">// 统计 word 的数量</span></span><br><span class="line">         <span class="keyword">val</span>   pairs  =  words . map ( word  =&gt; ( word ,  <span class="number">1</span> ))</span><br><span class="line">         <span class="keyword">val</span>   wordCounts  =  pairs . reduceByKey (_  +  _)</span><br><span class="line">         <span class="comment">// 输出结果</span></span><br><span class="line">         wordCounts . print ()</span><br><span class="line">        </span><br><span class="line">         ssc . start ()</span><br><span class="line">         ssc . awaitTermination () &#125;</span><br></pre></td></tr></table></figure>
+<p>一开始会报错：<br>Exception in thread “main”  org.apache.spark.SparkException : Only one SparkContext may be running in this JVM (see SPARK-2243). To ignore this error, set spark.driver.allowMultipleContexts = true. The currently running SparkContext was created at: org.apache.spark.SparkContext.<init>( SparkContext.scala:82 )</init></p>
+<p>错误是在<br>val   ssc  =  new  StreamingContext( conf ,  Seconds ( 1 ))   </p>
+<p>因为之前sc已经创建了，所以这里的conf要改成sc</p>
+<p>之后，在 192.168.37.129上启动netcat<br>nc -lk 9999<br>输入hello world</p>
+<p>再启动spark的程序，可以看出会输出<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Time: 1462790166000 ms</span><br><span class="line"></span><br><span class="line">(hello,1)</span><br><span class="line">(world,1)</span><br></pre></td></tr></table></figure></p>
+<h1 id="streaming读取本地文件"><a href="#streaming读取本地文件" class="headerlink" title="streaming读取本地文件"></a>streaming读取本地文件</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val lines = ssc.textFileStream(&quot;E:\\spark&quot;)</span><br></pre></td></tr></table></figure>
+<p>每当该文件夹内有新文件生成，就会自动读取</p>
+<blockquote>
+<p>Spark Streaming将会监控dataDirectory目录，并且处理目录下生成的任何文件（嵌套目录不被支持）。需要注意一下三点：<br>1 所有文件必须具有相同的数据格式<br>2 所有文件必须在<code>dataDirectory</code>目录下创建，文件是自动的移动和重命名到数据目录下<br>3 一旦移动，文件必须被修改。所以如果文件被持续的附加数据，新的数据不会被读取。<br>对于简单的文本文件，有一个更简单的方法streamingContext.textFileStream(dataDirectory)可以被调用。文件流不需要运行一个receiver，所以不需要分配核。</p>
+</blockquote>
+<h1 id="spark-streaming连接kafka"><a href="#spark-streaming连接kafka" class="headerlink" title="spark streaming连接kafka"></a>spark streaming连接kafka</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val topics = Set(&quot;test1&quot;)</span><br><span class="line">val kafkaParm = Map(&quot;metadata.broker.list&quot; -&gt; &quot;192.168.255.128:9092&quot;)</span><br></pre></td></tr></table></figure>
 
           
         
@@ -1501,7 +1168,7 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/pig笔记/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/算法与数据结构/路径规划算法/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -1521,7 +1188,7 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/hadoop-spark/pig笔记/" class="post-title-link" itemprop="url">pig笔记</a>
+                <a href="/2017/07/12/算法与数据结构/路径规划算法/" class="post-title-link" itemprop="url">路径规划算法</a>
               
             
           </h1>
@@ -1561,213 +1228,7 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-03-23 21:02:13" itemprop="dateModified" datetime="2018-03-23T21:02:13+08:00">2018-03-23</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/hadoop-spark/pig笔记/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/pig笔记/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="JOIN的优化"><a href="#JOIN的优化" class="headerlink" title="JOIN的优化"></a>JOIN的优化</h1><p>1、Replicated Join </p>
-<p>​      当进行Join的一个表比较大，而其他的表都很小(能够放入内存)时，replicated join会非常高效。 </p>
-<p>​      在Join时使用 Using ‘replicated’语句来触发Replicated Join，大表放置在最左端，其余小表(可以有多个)放置在右端。 </p>
-<p>​      为了防止replicated join应用于大表的连接关系，pig会在这个连接关系复制的字节大小比pig.join.replicated.max.bytes属性的值大会失败 (default = 1GB)。 </p>
-<p>2、Skewed Join </p>
-<p>​      当进行Join的两个表的内连接时，一个表数据记录针对key的分布极其不均衡的时候使用，如果多于两个连接，要自己拆分成多个双表的连接。 </p>
-<p>​       pig.skewedjoin.reduce.memusage属性的值指定了reduce可以占用堆内存的百分数，低的分数可以让pig执行更多的reducer，但是增加了复制的成本。性能好的范围值在0.1到0.4，但是这仅仅是一个范围。这个值取决于这个操作的可用的堆内存和这个输入的行数和倾斜。默认值是0.5。 </p>
-<p>​        Skewed Join并没有专注于解决或者说的平衡这种不均匀的数据分布在reducer，而是确保这个Join连接能够完成而不是失败，但是会慢。他会增加5%的时间用于计算这个连接操作。 </p>
-<p>3、Merge Join </p>
-<p>​      当进行Join的两个表都已经用Join的键进行了排序，可以使用Merge Join。       可以在Join时使用Using ‘merge’语句来触发Merge Join，需要创建索引的表放置在右端。 另外，在进行Join之前，首先过滤掉key为Null的数据记录可以减少Join的数据量。 </p>
-<p>读取HDFS文件</p>
-<p>比如下面加载某个模型到pig</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Map&lt;String, InfoPredictor&gt; cache = <span class="keyword">new</span> ConcurrentHashMap&lt;String, InfoPredictor&gt;();</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> AtomicBoolean isLoading = <span class="keyword">new</span> AtomicBoolean(<span class="keyword">false</span>);</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> InfoPredictor <span class="title">getInfoPredictor</span><span class="params">(String modelFile)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">		InfoPredictor model = cache.get(modelFile);</span><br><span class="line">		<span class="keyword">if</span> (model == <span class="keyword">null</span>) &#123;</span><br><span class="line">          <span class="comment">// 保证在多线程下只执行一次</span></span><br><span class="line">			<span class="keyword">if</span>(isLoading.compareAndSet(<span class="keyword">false</span>, <span class="keyword">true</span>)) &#123;</span><br><span class="line">				model = load(modelFile);<span class="comment">/* InfoPredict.loadDomainModel(modelFile);*/</span></span><br><span class="line">				cache.put(modelFile, model);</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				<span class="keyword">long</span> maxLoadingTimeSecs = <span class="number">120l</span>;</span><br><span class="line">				<span class="keyword">long</span> loadingTimeSecs = <span class="number">0l</span>;</span><br><span class="line">				<span class="keyword">while</span>(<span class="keyword">null</span> == cache.get(modelFile)) &#123;</span><br><span class="line">					Thread.currentThread().sleep(<span class="number">5000l</span>);</span><br><span class="line">					loadingTimeSecs += <span class="number">5</span>;</span><br><span class="line">					<span class="keyword">if</span>(loadingTimeSecs &gt; maxLoadingTimeSecs) &#123;</span><br><span class="line">						<span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"try loading KNNSearcher model out times"</span>);</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				model = cache.get(modelFile);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> model;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> InfoPredictor <span class="title">load</span><span class="params">(String modelFile)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">		FSDataInputStream fin = <span class="keyword">null</span>;</span><br><span class="line">      <span class="comment">// pig下加载hdfs配置</span></span><br><span class="line">		Configuration conf = UDFContext.getUDFContext().getJobConf();</span><br><span class="line">		String hdfsPath = conf.get(<span class="string">"fs.defaultFS"</span>) + modelFile;</span><br><span class="line">		FileSystem fs = FileSystem.get(URI.create(hdfsPath), conf);</span><br><span class="line">		fin = fs.open(<span class="keyword">new</span> Path(hdfsPath));</span><br><span class="line">		ScoreIndex sIndex = <span class="keyword">new</span> ScoreIndex();</span><br><span class="line">		BufferedReader in = <span class="keyword">null</span>;</span><br><span class="line">		in = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(fin));</span><br><span class="line">		String line = <span class="string">""</span>;</span><br><span class="line">		<span class="keyword">while</span>((line = in.readLine()) != <span class="keyword">null</span>)&#123;</span><br><span class="line">			String[] scoreArr = line.split(<span class="string">","</span>);</span><br><span class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; scoreArr.length; i++) &#123;</span><br><span class="line">				sIndex.putScore(i + <span class="number">1</span>, (<span class="keyword">float</span>)(Float.valueOf(scoreArr[i])<span class="comment">/* * CorrectValue[i]*/</span>));</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		sIndex.sortScore();</span><br><span class="line">		InfoPredict.setsIndex(sIndex);</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span> InfoPredictor();</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="UDF返回tuple"><a href="#UDF返回tuple" class="headerlink" title="UDF返回tuple"></a>UDF返回tuple</h1><h1 id="UDF返回DataBag"><a href="#UDF返回DataBag" class="headerlink" title="UDF返回DataBag"></a>UDF返回DataBag</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">searchPerKeywords</span> <span class="keyword">extends</span> <span class="title">EvalFunc</span>&lt;<span class="title">DataBag</span>&gt; </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> TupleFactory mTupleFactory = TupleFactory.getInstance();</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> BagFactory mBagFactory = BagFactory.getInstance();</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> DataBag <span class="title">exec</span><span class="params">(Tuple input)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">		String keywordsFile = input.get(<span class="number">0</span>).toString();</span><br><span class="line">		String modelFile = input.get(<span class="number">1</span>).toString();</span><br><span class="line">		Integer featureLength = Integer.valueOf(input.get(<span class="number">2</span>).toString());</span><br><span class="line">		Integer filtLevel = Integer.valueOf(input.get(<span class="number">3</span>).toString());</span><br><span class="line">		String compressedFloatVec = input.get(<span class="number">4</span>).toString();</span><br><span class="line">		<span class="keyword">if</span>(StringUtils.isEmpty(compressedFloatVec)) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		DataBag bag = mBagFactory.newDefaultBag();</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="keyword">float</span>[] vecs = WVUtils.String2floatArray(compressedFloatVec);</span><br><span class="line">			KeyWordSearcher searcher = KeyWordSearcher.getSearcher(keywordsFile, modelFile);</span><br><span class="line">			<span class="keyword">for</span>(String matchedWord : searcher.MatchedWords(WVUtils.splitFeature(vecs, featureLength), filtLevel)) &#123;</span><br><span class="line">				bag.add(mTupleFactory.newTuple(matchedWord));</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span>(bag.size() == <span class="number">0</span>) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> bag;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="UDF返回tuple-1"><a href="#UDF返回tuple-1" class="headerlink" title="UDF返回tuple"></a>UDF返回tuple</h1><p>UDF的写法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Tuple <span class="title">exec</span><span class="params">(Tuple input)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (input == <span class="keyword">null</span> || input.size() != <span class="number">1</span>) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		WebPageInfo nlp = <span class="keyword">null</span>;</span><br><span class="line">		String nlpPageInfo = (String) input.get(<span class="number">0</span>);</span><br><span class="line">		Tuple tup = mTupleFactory.newTuple(); 		</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">if</span> (StringUtils.isBlank(nlpPageInfo)) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			nlp = JSON.parseObject(nlpPageInfo, WebPageInfo.class);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		tup.append(nlp.content);</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">if</span> (filter.isContaintSensitiveWord(nlp.content, <span class="number">2</span>)) &#123;</span><br><span class="line">			tup.append(<span class="string">"-1"</span>); </span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			tup.append(<span class="string">"1"</span>);</span><br><span class="line">		&#125;</span><br><span class="line">				</span><br><span class="line">		<span class="keyword">return</span> tup;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-<p>pig的写法<code>DetectUnsafeUrl.pig</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">url_classify = FOREACH url_page_info GENERATE FLATTEN(DetectUnsafeUrl(info)) as (content, score);</span><br></pre></td></tr></table></figure>
-<h1 id="pig问题"><a href="#pig问题" class="headerlink" title="pig问题"></a>pig问题</h1><h2 id="filter为null的报错"><a href="#filter为null的报错" class="headerlink" title="filter为null的报错"></a>filter为null的报错</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Exception while executing (Name: url_safety: Filter[bag] - scope-10 Operator Key: scope-10): org.apache.pig.backend.executionengine.ExecException: ERROR 0: Exception while executing [POUserFunc (Name: POUserFunc(com.buzzinate.pig.udf.webdata.DetectUnsafeUrl)[chararray] - scope-7 Operator Key: scope-7) children: null at []]: java.lang.NullPointerException</span><br></pre></td></tr></table></figure>
-<p>因为在udf中加了一段抛出异常</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">			nlp = JSON.parseObject(nlpPageInfo, WebPageInfo.class);</span><br><span class="line">		&#125; catch (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br></pre></td></tr></table></figure>
-<p>当有返回异常的时候，pig的filter就不能对返回结果做过滤了</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">url_safety = FILTER url_classify BY score == &apos;-1&apos;;</span><br></pre></td></tr></table></figure>
-<p>这里就会报错。把抛出异常改为返回一个空字符串或者null就可以了</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/算法与数据结构/查找树/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/12/算法与数据结构/查找树/" class="post-title-link" itemprop="url">查找树</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2017-07-16 12:44:24" itemprop="dateModified" datetime="2017-07-16T12:44:24+08:00">2017-07-16</time>
+                <time title="修改时间：2019-06-03 09:22:59" itemprop="dateModified" datetime="2019-06-03T09:22:59+08:00">2019-06-03</time>
               </span>
             
           
@@ -1799,8 +1260,8 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/算法与数据结构/查找树/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/算法与数据结构/查找树/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/算法与数据结构/路径规划算法/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/算法与数据结构/路径规划算法/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1833,47 +1294,26 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
       
         
           
-            <p><strong>动态查找树主要有：二叉查找树（Binary Search Tree），平衡二叉查找树（Balanced Binary Search Tree），红黑树 (Red-Black Tree )，B-tree/B+-tree/ B*-tree (B~Tree)。前三者是典型的二叉查找树结构，其查找的时间复杂度*</strong>O<em>(log2</em>N<em>)<em>*与树的深度相关，那么降低树的深度自然对查找效率是有所提高的；还有一个实际问题：就是大规模数据存储中，实现索引查询这样一个实际背景下，树节点存储的元素数量是有限的（如果元素数量非常多的话，查找就退化成节点内部的线性查找了），这样导致二叉查找树结构由于树的深度过大而造成磁盘I/O读写过于频繁，进而导致查询效率低下（为什么会出现这种情况，待会在外部存储器-磁盘中有所解释），那么如何减少树的深度（当然是不能减少查询的数据量），一个基本的想法就是：采用多叉树结构（由于树节点元素数量是有限的，自然该节点的子树数量也就是有限的）。</em></em></p>
-<p><strong>这样我们就提出了一个新的查找树结构——多路查找树。根据平衡二叉树的启发，自然就想到平衡多路查找树结构，也就是B树</strong></p>
-<h1 id="1、B树"><a href="#1、B树" class="headerlink" title="1、B树"></a>1、B树</h1><h2 id="1-1-原理"><a href="#1-1-原理" class="headerlink" title="1.1 原理"></a>1.1 原理</h2><p>二叉搜索树：</p>
+            <p>TSP、VRP</p>
+<h2 id="VRP"><a href="#VRP" class="headerlink" title="VRP"></a>VRP</h2><p>Vehicle Routing Problem</p>
+<p>假设在一个供求关系系统中，车辆从货源取货，配送到对应的若干配送点。车辆存在最大载货量，且配送可能有时间限制。需要合理安排取货时间，组织适当的行车路线，使用户需求得到满足，同时使某个代价函数最小，比如总工作时间最少、路径最短等。</p>
+<p>可以看出TSP问题是VRP问题的一种简单特殊形式。因此，VRP也是一种NP hard 问题。</p>
+<p>目前解决此种问题的办法有多种，主要以启发式算法为主。包括退火算法、遗传算法、蚁群算法、禁忌算法等。</p>
+<p><a href="https://blog.csdn.net/ldotn/article/details/53366882" target="_blank" rel="noopener">https://blog.csdn.net/ldotn/article/details/53366882</a></p>
+<p>C-W节约算法和遗传算法</p>
+<p>C-W节约算法：<br>基本思想是把各点单独与货源相连，构成若干条仅含一个配送点的线路，总费用为两倍从原点到各点的距离费用；然后计算将点 i 和点 j 连接在一条线路上费用节约值： </p>
+<script type="math/tex; mode=display">
+S(i,j) = C_{oi}+C_{io}+C_{oj}+C_{jo}-(C_{oi}+C_{ij}+C_{jo}) \\= C_{oi}+C_{oj}+C_{ij}</script><p>具体步骤：<br>（1）计算节约值S(i,j)，按从大到小排序<br>（2）考虑表格中最大元素Smax（i,j）Smax（i,j），对应点i和j，按条件进行操作： </p>
 <ol>
-<li>所有非叶子结点至多拥有两个儿子（ Left 和 Right ）；</li>
-<li>所有结点存储一个关键字；</li>
-<li>非叶子结点的左指针指向小于其关键字的子树，右指针指向大于其关键字的子树；</li>
+<li>若i和j均不在构成线路上，则得到线路 o -&gt; i -&gt;j -&gt;o，转到（3） </li>
+<li>若i或j在已构成线路上，但不是内点 0 -&gt; i -&gt;o，则可连接，转到（3） </li>
+<li>若i和j位于已构成不同线路上，且均不是内点，则连接得到线路，转到（3） </li>
+<li>若i和j位于已构成的同一线路，则不连接，转到（3）<br>（3）划去第i行和第j列，即i点不能再到其他点，j点也不能由其他店到达<br>（4）若所有元素均被划去，则得到完整线路，算法终止；否则，在没有划去的元素中选最大元素，转至（2）。</li>
 </ol>
-<p><img src="http://static.oschina.net/uploads/img/201301/06112317_yHxY.jpg" alt=""></p>
-<h2 id="1-2-搜索方法"><a href="#1-2-搜索方法" class="headerlink" title="1.2 搜索方法"></a>1.2 搜索方法</h2><p> B 树的搜索，从根结点开始，如果查询的关键字与结点的关键字相等，那么就命中；否则，如果查询关键字比 结点关键字小，就进入左儿子；如果比结点关键字大，就进入右儿子；如果左儿子或右儿子的指针为空，则报告找不到相应的关键字；</p>
-<p> 如果 B 树的所有非叶子结点的左右子树的 结点数目均保持差不多（平衡），那么 B 树的搜索性能逼近二分查找；但它比连续内存空间的二分查找的优点是，改变 B 树结构（插入与删除结点）不需要移动大段的内存数据，甚至通常是常数开销；如</p>
-<p><img src="http://static.oschina.net/uploads/img/201301/06112317_ssDu.jpg" alt=""></p>
-<p>但 B 树在经过多次插入与删除后，有可能导致不同的结构：</p>
-<p><img src="http://static.oschina.net/uploads/img/201301/06112317_NTuh.jpg" alt=""></p>
-<p>右边也是一个 B 树，但 它的搜索性能已经是线性的了；同样的关键字集合有可能导致不同的树结构索引；所以，使用 B 树还 要考虑尽可能让 B 树保持左图的结构，和避免右图的结构，也就是所谓的“平衡”问题；       </p>
-<p>实际使用的 B 树都是在原 B 树的基 础上加上平衡算法，即“平衡二叉树”；如何保持 B 树结点分布均匀的平衡算法是平衡二叉树的 关键；<strong>平衡算法</strong>是一种在 B 树中插入和删除结点的策略；</p>
-<h1 id="2、B-树"><a href="#2、B-树" class="headerlink" title="2、B-树"></a>2、B-树</h1><h2 id="1-1-原理-1"><a href="#1-1-原理-1" class="headerlink" title="1.1 原理"></a>1.1 原理</h2><p>是一种多路搜索树（并不是二叉的）：</p>
-<p>​       1. 定义任意非叶子结点最多只有 M 个儿 子；且 M&gt;2 ；</p>
-<p>​       2. 根结点的儿子数为 [2, M] ；</p>
-<p>​       3. 除根结点以外的非叶子结点的儿子数为 [M/2, M] ；</p>
-<p>​       4. 每个结点存放至少 M/2-1 （取 上整）和至多 M-1 个关键字；（至少 2 个关键 字）</p>
-<p>​       5. 非叶子结点的关键字个数 = 指向儿 子的指针个数 -1 ；</p>
-<p>​       6. 非叶子结点的关键字： K[1], K[2], …, K[M-1] ；且 K[i] &lt; K[i+1] ；</p>
-<p>​       7. 非叶子结点的指针： P[1], P[2], …, P[M] ；其中 P[1] 指向关键字小于 K[1] 的子树， P[M] 指向关键字大于K[M-1] 的子树，其它 P[i] 指 向关键字属于 (K[i-1], K[i]) 的子树；</p>
-<p>​       8. 所有叶子结点位于同一层；</p>
-<p>如：（ M=3 ）</p>
-<p><img src="http://static.oschina.net/uploads/img/201301/06112317_djvw.jpg" alt=""></p>
-<p>B- 树的特性：</p>
-<p>​       1. 关键字集合分布在整颗树中；</p>
-<p>​       2. 任何一个关键字出现且只出现在一个结点中；</p>
-<p>​       3. 搜索有可能在非叶子结点结束；</p>
-<p>​       4. 其搜索性能等价于在关键字全集内做一次二分查找；</p>
-<p>​       5. 自动层次控制；</p>
-<p>​       由于限制了除根结点以外的非叶子结点，至少含有 M/2 个儿子，确保了结点的至少利用率，其最底搜索性能为：</p>
-<p><img src="http://static.oschina.net/uploads/img/201301/06112318_AOeO.jpg" alt=""></p>
-<p> 其中， M 为设定的非叶子结点最多子树个 数， N 为关键字总数；</p>
-<p>​       所以 B- 树的性能<strong>总是等价于二分查找 （与 M 值无关）</strong>，也就没有 B 树平衡 的问题；</p>
-<p>​       由于 M/2 的限制，在插入结点时，如果 结点已满，需要将结点分裂为两个各占 M/2 的结点；删除结点时，需将两个不足 M/2 的 兄弟结点合并；</p>
-<h2 id="1-2-方法"><a href="#1-2-方法" class="headerlink" title="1.2 方法"></a>1.2 方法</h2><p>参考</p>
-<p><a href="http://www.oschina.net/question/565065_86338" target="_blank" rel="noopener">BTree,B-Tree,B+Tree,B*Tree都是什么</a></p>
-<p><a href="http://blog.csdn.net/hbhhww/article/details/8206846" target="_blank" rel="noopener">B-tree/B+tree/B*tree</a></p>
+<hr>
+<p>作者：LDOTN<br>来源：CSDN<br>原文：<a href="https://blog.csdn.net/ldotn/article/details/53366882?utm_source=copy" target="_blank" rel="noopener">https://blog.csdn.net/ldotn/article/details/53366882?utm_source=copy</a><br>版权声明：本文为博主原创文章，转载请附上博文链接！</p>
+<h2 id="专栏-从架构到算法，详解美团外卖订单分配内部机制"><a href="#专栏-从架构到算法，详解美团外卖订单分配内部机制" class="headerlink" title="专栏 | 从架构到算法，详解美团外卖订单分配内部机制"></a>专栏 | 从架构到算法，详解美团外卖订单分配内部机制</h2><p><a href="https://mp.weixin.qq.com/s?src=11&amp;timestamp=1539566532&amp;ver=1183&amp;signature=9jq4HLmibsnw8OrowBhYA9CXJN79KssHyV0G4Kra2LrXD95V-RHwziumoBV1pwJEsK-4kEiHILRjucx7fM4kyp*s61FEF3tEYd40N3CFBEvakfY1Kj0-pWEjqIYTm4G-&amp;new=1" target="_blank" rel="noopener">https://mp.weixin.qq.com/s?src=11&amp;timestamp=1539566532&amp;ver=1183&amp;signature=9jq4HLmibsnw8OrowBhYA9CXJN79KssHyV0G4Kra2LrXD95V-RHwziumoBV1pwJEsK-4kEiHILRjucx7fM4kyp*s61FEF3tEYd40N3CFBEvakfY1Kj0-pWEjqIYTm4G-&amp;new=1</a></p>
+<p>外卖订单的分配问题一般可建模为带有若干复杂约束的 DVRP（Dynamic Vehicle Routing Problem）问题。这类问题一般可表述为：有一定数量的骑手，每名骑手身上有若干订单正在配送过程中，在过去一段时间（如 1 分钟）内产生了一批新订单，已知骑手的行驶速度、任意两点间的行驶距离、每个订单的出餐时间和交付时间（骑手到达用户所在地之后将订单交付至用户所需的时间），那么如何将这批新订单在正确的时间分配至正确的骑手，使得用户体验得到保证的同时，骑手的配送效率最高。</p>
 
           
         
@@ -1930,7 +1370,7 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/NLP/网页关键词提取/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/算法与数据结构/动态规划讲解/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -1950,7 +1390,7 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/机器学习/NLP/网页关键词提取/" class="post-title-link" itemprop="url">网页关键词提取</a>
+                <a href="/2017/07/12/算法与数据结构/动态规划讲解/" class="post-title-link" itemprop="url">动态规划理论</a>
               
             
           </h1>
@@ -1990,7 +1430,7 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-03-31 10:28:31" itemprop="dateModified" datetime="2018-03-31T10:28:31+08:00">2018-03-31</time>
+                <time title="修改时间：2019-06-03 09:22:50" itemprop="dateModified" datetime="2019-06-03T09:22:50+08:00">2019-06-03</time>
               </span>
             
           
@@ -2004,7 +1444,7 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/算法与数据结构/" itemprop="url" rel="index"><span itemprop="name">算法与数据结构</span></a></span>
 
                 
                 
@@ -2022,8 +1462,8 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/机器学习/NLP/网页关键词提取/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/NLP/网页关键词提取/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/算法与数据结构/动态规划讲解/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/算法与数据结构/动态规划讲解/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -2056,55 +1496,255 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
       
         
           
-            <p>代码位于<code>nlp</code> 项目</p>
-<h1 id="jsoup解析html的DOM"><a href="#jsoup解析html的DOM" class="headerlink" title="jsoup解析html的DOM"></a>jsoup解析html的DOM</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Document doc =Jsoup.connect(url).userAgent(&quot;Mozilla&quot;).get();</span><br></pre></td></tr></table></figure>
-<h1 id="提取网页"><a href="#提取网页" class="headerlink" title="提取网页"></a>提取网页</h1><p><code>getPageDetail</code>获取网页提取的结果，返回<code>WebPageInfo</code>类，该类包括</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> String domain;</span><br><span class="line"><span class="keyword">public</span> String url;</span><br><span class="line"><span class="keyword">public</span> String rawTitle;</span><br><span class="line"><span class="keyword">public</span> String title;</span><br><span class="line"><span class="keyword">public</span> String content;</span><br><span class="line"><span class="keyword">public</span> String summary;</span><br><span class="line"><span class="keyword">public</span> HashMap&lt;String, String&gt; meta;</span><br><span class="line"><span class="keyword">public</span> HashMap&lt;String, List&lt;String&gt;&gt; calculation;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">long</span> freq = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">public</span> String createTime;</span><br></pre></td></tr></table></figure>
-<p><code>meta_desc</code>，来自网页meta的<code>description</code>元素</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">meta.put(&quot;description&quot;, meta_desc);</span><br></pre></td></tr></table></figure>
-<p><code>meta_keywords</code>，来自网页meta的<code>keywords</code> </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">meta.put(&quot;keywords&quot;, meta_keywords);</span><br></pre></td></tr></table></figure>
-<h2 id="标题"><a href="#标题" class="headerlink" title="标题"></a>标题</h2><p><code>rawTitle=doc.title()</code></p>
-<p><code>title</code>，通过<code>ExtractUtil.extractTitle(doc.body(), rawTitle)</code>进一步抽取。目的是去掉标题中的无关信息，如网站信息等</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">extractTitle</span></span>(root: <span class="type">Element</span>, rawTitle:<span class="type">String</span>): <span class="type">String</span> = &#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="type">StringUtils</span>.isBlank(rawTitle)) </span><br><span class="line">      <span class="keyword">return</span> <span class="string">""</span>;</span><br><span class="line">    <span class="keyword">val</span> titleCnt = <span class="keyword">new</span> <span class="type">HashMap</span>[<span class="type">String</span>, <span class="type">Int</span>] <span class="keyword">with</span> <span class="type">HashMapUtil</span>.<span class="type">IntHashMap</span>[<span class="type">String</span>]</span><br><span class="line">    titleCnt.adjustOrPut(te.extract(rawTitle).trim, <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">    titleCnt.adjustOrPut(te.extractFirst(rawTitle).trim, <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">val</span> tq = <span class="keyword">new</span> <span class="type">PriorityQueue</span>[<span class="type">String</span>](<span class="number">2</span>)</span><br><span class="line">    extractTitle0(root, rawTitle, <span class="number">1</span>, tq)</span><br><span class="line">    <span class="keyword">for</span> (candidate &lt;- tq.values) titleCnt.adjustOrPut(candidate.trim, <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">var</span> maxCnt = <span class="number">0</span></span><br><span class="line">    <span class="keyword">var</span> title = rawTitle</span><br><span class="line">    titleCnt.foreach &#123; <span class="keyword">case</span> (candidate, cnt) =&gt;</span><br><span class="line">      <span class="keyword">if</span> (maxCnt &lt; cnt) &#123;</span><br><span class="line">        maxCnt = cnt</span><br><span class="line">        title = candidate</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (maxCnt == cnt &amp;&amp; candidate.length &gt; title.length) title = candidate</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    title</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<p><code>te.extract</code>，</p>
-<p>首先要<code>split</code>。通过判断unicode字符的类别（<a href="http://blog.csdn.net/weixin_36082485/article/details/53154065" target="_blank" rel="noopener">Unicode字符类</a>）来分割标题 </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; title.length(); i++) &#123;</span><br><span class="line">			<span class="keyword">char</span> ch = title.charAt(i);</span><br><span class="line">			<span class="keyword">int</span> type = Character.getType(ch);</span><br><span class="line">  			<span class="comment">// 标点，前引号</span></span><br><span class="line">			<span class="keyword">if</span> (type == Character.INITIAL_QUOTE_PUNCTUATION) quoteCnt++;</span><br><span class="line">  			<span class="comment">// 标点，开始</span></span><br><span class="line">			<span class="keyword">if</span> (type == Character.START_PUNCTUATION) quoteCnt++;</span><br><span class="line">			<span class="keyword">if</span> (quoteCnt == <span class="number">0</span> &amp;&amp; !lastLetter &amp;&amp; !lastDigit &amp;&amp; splitChars.contains(ch)) &#123;</span><br><span class="line">				parts.add(title.substring(last, i));</span><br><span class="line">				last = i + <span class="number">1</span>;</span><br><span class="line">			&#125;</span><br><span class="line">  			<span class="comment">// 标点，后引号</span></span><br><span class="line">			<span class="keyword">if</span> (type == Character.FINAL_QUOTE_PUNCTUATION) quoteCnt--;</span><br><span class="line">  			<span class="comment">// 标点，结束</span></span><br><span class="line">			<span class="keyword">if</span> (type == Character.END_PUNCTUATION) quoteCnt--;</span><br><span class="line">			<span class="keyword">if</span> (ch &gt;= <span class="string">'A'</span> &amp;&amp; ch &lt;= <span class="string">'Z'</span> || ch &gt;= <span class="string">'a'</span> &amp;&amp; ch &lt;= <span class="string">'z'</span>) lastLetter = <span class="keyword">true</span>;</span><br><span class="line">			<span class="keyword">else</span> lastLetter = <span class="keyword">false</span>;</span><br><span class="line">			<span class="keyword">if</span> (Character.isDigit(ch)) lastDigit = <span class="keyword">true</span>;</span><br><span class="line">			<span class="keyword">else</span> <span class="keyword">if</span> (!splitChars.contains(ch)) lastDigit = <span class="keyword">false</span>;</span><br><span class="line">		&#125;</span><br></pre></td></tr></table></figure>
-<p>然后提取最长的part。提取的原则是，</p>
-<p>1、如果出现不重要的字符前缀后缀<code>ignoreSuffixes</code>、<code>ignorePrefixes</code>，降低part的长度</p>
-<p>2、第一个part的长度翻倍，可能是考虑到真的标题往往出现在第一块，如</p>
-<p><code>清润饮食“熄灭”冬季之火 - 素食 - 大渡网-佛教资讯，生活，人文，心灵感悟，佛艺时尚杂志，佛教音乐，佛教常识，佛教视频</code></p>
-<p><code>从草根到精英——大陆网络民族主义流变-观点评论-时事评论-四月网-青年思想门户-M4.CN</code></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> List&lt;String&gt; ignoreSuffixes = Arrays.asList(<span class="string">"频道"</span>, <span class="string">"站"</span>, <span class="string">"网"</span>, <span class="string">"报"</span>, <span class="string">"集"</span>, <span class="string">"公司"</span>, <span class="string">".com"</span>, <span class="string">".cn"</span>, <span class="string">"平台"</span>, <span class="string">"门户"</span>, <span class="string">"博客"</span>, <span class="string">"精选"</span>, <span class="string">"博客精选"</span>);</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> List&lt;String&gt; ignorePrefixes = Arrays.asList(<span class="string">"Powered by"</span>);</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> HashSet&lt;Character&gt; splitChars = <span class="keyword">new</span> HashSet&lt;Character&gt;(Arrays.asList(<span class="string">'|'</span>, <span class="string">'_'</span>, <span class="string">'-'</span>, <span class="string">'—'</span>, <span class="string">'－'</span>, <span class="string">'&lt;'</span>, <span class="string">'&gt;'</span>, <span class="string">'«'</span>, <span class="string">'»'</span>));</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> String <span class="title">getLongestPart</span><span class="params">(List&lt;String&gt; parts)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">double</span> longestNumWords = <span class="number">0</span>;</span><br><span class="line">		String longestPart = <span class="string">""</span>;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; parts.size(); i++) &#123;</span><br><span class="line">			String p = parts.get(i).trim();</span><br><span class="line">			</span><br><span class="line">			<span class="keyword">int</span> ignoreCount = <span class="number">0</span>;</span><br><span class="line">			<span class="keyword">for</span> (String is: ignoreSuffixes) <span class="keyword">if</span> (p.toLowerCase().endsWith(is)) ignoreCount++;</span><br><span class="line">			<span class="keyword">for</span> (String ip: ignorePrefixes) <span class="keyword">if</span> (p.toLowerCase().startsWith(ip)) ignoreCount++;</span><br><span class="line">			<span class="keyword">int</span> colonCnt = StringUtils.countMatches(p, <span class="string">","</span>);</span><br><span class="line">			<span class="keyword">if</span> (colonCnt &gt; <span class="number">0</span>) ignoreCount += colonCnt - <span class="number">1</span>;</span><br><span class="line">			colonCnt = StringUtils.countMatches(p, <span class="string">"，"</span>);</span><br><span class="line">			<span class="keyword">if</span> (colonCnt &gt; <span class="number">0</span>) ignoreCount += colonCnt - <span class="number">1</span>;</span><br><span class="line">			<span class="keyword">double</span> numWords = TextUtil.countNumWords(p);</span><br><span class="line">			numWords = numWords / (<span class="number">1</span> + <span class="number">2</span> * ignoreCount);</span><br><span class="line">			<span class="keyword">if</span> (i == <span class="number">0</span>) numWords = numWords * <span class="number">2</span>;</span><br><span class="line">            <span class="keyword">if</span> (numWords &gt; longestNumWords) &#123;</span><br><span class="line">            	longestNumWords = numWords;</span><br><span class="line">            	longestPart = p;</span><br><span class="line">            &#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (longestPart.length() == <span class="number">0</span>) <span class="keyword">return</span> <span class="string">""</span>;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">return</span> longestPart.trim();</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-<p><code>extractTitle0(root, rawTitle, 1, tq)</code> </p>
-<p>传入root和刚才提取的rawTitle，递归遍历root的各个head元素，<code>h</code>，<code>title</code>，每种赋值不同权重。再寻找与rawTitle的最长公共子串。</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">def</span> <span class="title">extractTitle0</span></span>(node: <span class="type">Node</span>, title: <span class="type">String</span>, weight: <span class="type">Double</span>, tq: <span class="type">PriorityQueue</span>[<span class="type">String</span>], depth: <span class="type">Int</span> = <span class="number">0</span>): <span class="type">Unit</span> = &#123;</span><br><span class="line">    node <span class="keyword">match</span> &#123;</span><br><span class="line">      <span class="keyword">case</span> textNode: <span class="type">TextNode</span> =&gt; &#123;</span><br><span class="line">        <span class="keyword">val</span> text = textNode.text.trim</span><br><span class="line">        <span class="keyword">if</span> (text.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">          <span class="keyword">val</span> lcs = <span class="type">TextUtil</span>.findLcs(title, text)</span><br><span class="line">          <span class="keyword">val</span> nwords = <span class="type">TextUtil</span>.countNumWords(lcs)</span><br><span class="line">          <span class="keyword">val</span> pos = title.indexOf(lcs)</span><br><span class="line">          <span class="keyword">if</span> (pos != <span class="number">-1</span> &amp;&amp; nwords &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            tq.add(nwords * weight / (<span class="number">1</span> + math.log(<span class="number">2</span> + pos)), lcs)</span><br><span class="line">          &#125;</span><br><span class="line">        &#125; </span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">case</span> e: <span class="type">Element</span> =&gt; &#123;</span><br><span class="line">        <span class="keyword">var</span> w = weight</span><br><span class="line">        <span class="keyword">if</span> (e.tagName.startsWith(<span class="string">"h"</span>)) w = w * <span class="number">1.2</span></span><br><span class="line">        <span class="keyword">if</span> (e.tagName == <span class="string">"a"</span>) w = w / <span class="number">2</span></span><br><span class="line">        <span class="keyword">if</span> (e.className.contains(<span class="string">"title"</span>)) w = w * <span class="number">1.5</span></span><br><span class="line">        <span class="keyword">if</span> (e.tagName != <span class="string">"title"</span> &amp;&amp; !isNegativeBlock(e.className + <span class="string">" "</span> + e.id) &amp;&amp; depth &lt; <span class="type">Extract_STOP_DEPTH</span>) &#123;</span><br><span class="line">          <span class="keyword">for</span> (n &lt;- e.childNodes.asScala) extractTitle0(n, title, w, tq, depth + <span class="number">1</span>)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">case</span> _ =&gt; &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<p>通过以上方法提取出各种title后，选出出现频率最高的作为最终的title。</p>
-<h2 id="content"><a href="#content" class="headerlink" title="content"></a>content</h2><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">extractContent</span></span>(url: <span class="type">String</span>, doc: <span class="type">Document</span>): <span class="type">List</span>[<span class="type">String</span>] = &#123;</span><br><span class="line">    <span class="keyword">val</span> rawTitle = doc.title</span><br><span class="line">    <span class="keyword">if</span>(doc.body == <span class="literal">null</span>)</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">null</span></span><br><span class="line">    <span class="type">ExtractUtil</span>.cleanup(doc.body)</span><br><span class="line">    <span class="keyword">val</span> title = <span class="type">ExtractUtil</span>.extractTitle(doc.body, rawTitle)</span><br><span class="line">    <span class="keyword">val</span> metaKeywords = <span class="type">ExtractUtil</span>.extractMeta(doc, <span class="string">"keywords"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> blocks = <span class="type">ExtractUtil</span>.extractBlocks(doc, title) map &#123; block =&gt;</span><br><span class="line">      <span class="type">SnippetBlock</span>(block.snippets map &#123; snippet =&gt; <span class="type">TextProcess</span>.normalize(urlReg.matcher(snippet).replaceAll(<span class="string">""</span>)) &#125;, block.score, block.isArticle, block.imgs)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> normalTitle = <span class="type">TextUtil</span>.fillText(title)</span><br><span class="line">    <span class="keyword">val</span> normalRawTitle = <span class="type">TextUtil</span>.fillText(doc.title)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> allsnippets = blocks.filter(_.isArticle).flatMap &#123; b =&gt; b.snippets &#125;</span><br><span class="line">    <span class="keyword">return</span> allsnippets;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<h3 id="清洗doc"><a href="#清洗doc" class="headerlink" title="清洗doc"></a>清洗doc</h3><p><code>ExtractUtil.cleanup(doc.body)</code></p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cleanup</span></span>(root: <span class="type">Element</span>): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">val</span> cleanNodes = <span class="keyword">for</span> &#123;</span><br><span class="line">      e &lt;- root.getAllElements.asScala</span><br><span class="line">      <span class="keyword">if</span> <span class="type">INVALID_TAGS</span>.contains(e.tagName) || e.attr(<span class="string">"style"</span>).contains(<span class="string">"display:none"</span>)</span><br><span class="line">    &#125; <span class="keyword">yield</span> e</span><br><span class="line">    <span class="keyword">for</span> (cn &lt;- cleanNodes) cn.remove</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<h3 id="提取title、metakeywords"><a href="#提取title、metakeywords" class="headerlink" title="提取title、metakeywords"></a>提取title、metakeywords</h3><h3 id="提取blocks"><a href="#提取blocks" class="headerlink" title="提取blocks"></a>提取blocks</h3><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">extractBlocks</span></span>(doc: <span class="type">Document</span>, title: <span class="type">String</span>): <span class="type">List</span>[<span class="type">SnippetBlock</span>] = &#123;</span><br><span class="line">    <span class="keyword">val</span> blocks = <span class="keyword">new</span> <span class="type">ListBuffer</span>[<span class="type">BlockDetail</span>]</span><br><span class="line">    <span class="keyword">val</span> bd = <span class="keyword">new</span> <span class="type">BlockDetailBuffer</span></span><br><span class="line">    extractBlocks(doc.body, blocks, bd)</span><br><span class="line">    <span class="keyword">if</span> (bd.isDefined) blocks += bd.result</span><br><span class="line">    calcScore(title, blocks.result filterNot(b =&gt; hasICP(b))) ++ <span class="type">List</span>(<span class="type">SnippetBlock</span>(<span class="type">List</span>(extractMeta(doc, <span class="string">"keywords"</span>)), <span class="number">1</span>d, <span class="literal">true</span>, <span class="type">List</span>()), <span class="type">SnippetBlock</span>(<span class="type">List</span>(extractMeta(doc, <span class="string">"description"</span>)), <span class="number">0</span>d, <span class="literal">false</span>, <span class="type">List</span>()))</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">def</span> <span class="title">extractBlocks</span></span>(root: <span class="type">Node</span>, blocks: <span class="type">ListBuffer</span>[<span class="type">BlockDetail</span>], bd: <span class="type">BlockDetailBuffer</span>, inLink: <span class="type">Boolean</span> = <span class="literal">false</span>, depth: <span class="type">Int</span> = <span class="number">0</span>): <span class="type">Unit</span> = &#123;</span><br><span class="line">  root <span class="keyword">match</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> tn: <span class="type">TextNode</span> =&gt; &#123;</span><br><span class="line">      <span class="keyword">val</span> text = <span class="type">StringUtils</span>.replace(tn.text, <span class="string">"\u00a0"</span>, <span class="string">" "</span>).trim</span><br><span class="line">      <span class="keyword">if</span> (text.length &gt; <span class="number">0</span>) bd.add(text, inLink)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">case</span> e: <span class="type">Element</span> =&gt; &#123;</span><br><span class="line">      <span class="keyword">val</span> isLink = inLink || (e.tagName == <span class="string">"a"</span>) </span><br><span class="line">      <span class="keyword">if</span>(depth &lt; <span class="type">Extract_STOP_DEPTH</span>)&#123;</span><br><span class="line">      	e.childNodes.asScala foreach &#123; c =&gt; extractBlocks(c, blocks, bd, isLink, depth + <span class="number">1</span>) &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      </span><br><span class="line">      <span class="keyword">if</span> (e.tagName == <span class="string">"img"</span> || e.tagName == <span class="string">"embed"</span>) &#123;</span><br><span class="line">        bd.addImg(e)</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (e.isBlock) &#123;</span><br><span class="line">        <span class="keyword">if</span> (bd.isDefined) blocks += bd.result</span><br><span class="line">        bd.clear</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">case</span> _ =&gt; &#123;&#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>提取每个TextNode的文本，放到<code>BlockDetailBuffer</code>中。将每个<code>BlockDetailBuffer</code>的内容放到<code>BlockDetail</code>的list <code>blocks</code>中。</p>
-<p>过滤掉包含<code>icp备</code>或<code>icp证</code>的文本，再对所有的blocks计算打分<code>calcScore</code></p>
-<p>最后提取所有是文本的snippet，作为content</p>
-<h3 id="提取keywords"><a href="#提取keywords" class="headerlink" title="提取keywords"></a>提取keywords</h3><p>同样是先clean，提取title、metaKeyword，</p>
-<p>再提取blocks</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> blocks:<span class="type">List</span>[<span class="type">SnippetBlock</span>] =  <span class="type">ExtractUtil</span>.extractBlocks(doc, title).map &#123; block =&gt;</span><br><span class="line">      &#123;</span><br><span class="line">              <span class="type">SnippetBlock</span>(block.snippets map &#123; snippet =&gt; <span class="type">TextProcess</span>.normalize(urlReg.matcher(snippet).replaceAll(<span class="string">""</span>)) &#125;, block.score, block.isArticle, block.imgs)</span><br><span class="line"></span><br><span class="line">	      <span class="keyword">val</span> temp  = block.snippets map &#123; snippet =&gt; <span class="type">TextProcess</span>.normalize(urlReg.matcher(snippet).replaceAll(<span class="string">""</span>)) &#125;</span><br><span class="line">	      maxLen += temp.map(<span class="type">AtomSplit</span>.count(_)).sum	</span><br><span class="line">	      <span class="keyword">val</span> retVal:<span class="type">SnippetBlock</span> = <span class="keyword">if</span>(maxLen &lt; <span class="type">MAX_CONTENT_LENGTH</span> || maxflag)&#123;<span class="type">SnippetBlock</span>(temp, block.score, block.isArticle, block.imgs)&#125; <span class="keyword">else</span> <span class="literal">null</span></span><br><span class="line">	      <span class="keyword">if</span>(maxLen &gt; <span class="type">MAX_CONTENT_LENGTH</span>)&#123;</span><br><span class="line">	        maxflag = <span class="literal">false</span></span><br><span class="line">	      &#125;</span><br><span class="line">	      retVal</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;.filter( _ != <span class="literal">null</span>)</span><br></pre></td></tr></table></figure>
-<h4 id="dlg"><a href="#dlg" class="headerlink" title="dlg"></a>dlg</h4><p>再提取dlg</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val dlg = DlgExtractor.extract(normalTitle, TextUtil.fillText(doc.title), blocks, 6)/*.filter(_._2 &gt; 1.0)*/</span><br></pre></td></tr></table></figure>
-<p>分词后，计算每个词的权重，</p>
-<p>First of all, for any web page, we can use jsoup to  obtain the Document Object Model (DOM) , which can access all the HTML elements of it.</p>
-<p>After that，we clean up  HTML elements by drop some invalid or useless tags, such as the tags with “display:none” property. </p>
-<p>At last, We extract the Content and Keywords of HTML. </p>
-<p>For extracting Content, we iterate through the DOM tree to find all TextNode elements, extract the text and take them as the Snippets. Then we calculate the scores of all Snippets, and get the available Snippets as Content.</p>
-<p>For extracing Keywords, besides the Snippets from TextNode elements, we also collect the title, keywords and description from <meta> tag, store them as Blocks.   For every Block, we segment words to generate the corpus by ansj_seg, and calculate the weight of every word using TFIDF. Finally, we get the TOP 10 words as Keywords of web page.</p>
-<p>我们解析了10万左右的网页，根据解析的网页content打上safe和unsafe的label，后期我们会对safe和unsafe进一步细分。</p>
-<p>训练过程：我们载入所有含标签的训练样本，由于fasttext提供了适用于各种语言的Word2Vec预向量集，将网页内容转为词向量，通过fasttext训练出模型并保存到本地。</p>
-<p>预测过程：载入模型到内存，当输入一个网页的content后，转为词向量，根据模型给出safe或unsafe的分类结果。</p>
-<p>We have analyzed some 100 thousand web pages, classified text in categories, such as safe and unsafe by content of these web pages, and we will extent more categories in future.</p>
-<p>In order to train the text classifier model, we load all samples containing a training sentence per line along with the labels, and transfer all words to vectors using  pre-trained word vectors model published by fastText.  Then we use the code from Github to run the training program. Once the model was trained, we save it on disk as a file.</p>
-<p>When input a content of web page, we transfer it to word vectors and run the prediction program, as a result we get the category of this web page.</p>
+            <h1 id="动态规划理论讲解"><a href="#动态规划理论讲解" class="headerlink" title="动态规划理论讲解"></a>动态规划理论讲解</h1><p>[TOC]</p>
+<h1 id="基础理论"><a href="#基础理论" class="headerlink" title="基础理论"></a>基础理论</h1><p><strong>什么是动态规划？什么时候要用动态规划？怎么使用动态规划？</strong></p>
+<p><strong>1、什么是动态规划？</strong> </p>
+<p>求解决策过程<strong>最优化</strong>的数学方法。把<strong>多阶段过程转化为一系列单阶段</strong>问题，利用各阶段之间的关系，逐个求解，创立了解决这类过程优化问题的新方法——动态规划。</p>
+<p><strong>2、什么时候要用动态规划？</strong></p>
+<p>如果要求一个问题的<strong>最优解</strong>（通常是最大值或者最小值），而且该问题能够<strong>分解成若干个子问题，并且小问题之间也存在重叠的子问题</strong>，则考虑采用动态规划。</p>
+<p><strong>3、怎么使用动态规划？</strong> </p>
+<ol>
+<li>判题题意是否为找出一个问题的最优解 </li>
+<li>从上往下分析问题，大问题可以分解为子问题，子问题中还有更小的子问题 </li>
+<li>从下往上分析问题 ，找出这些问题之间的关联（状态转移方程） </li>
+<li>讨论边界的初始条件</li>
+<li>解决问题（通常使用数组进行迭代求出最优解）</li>
+</ol>
+<h1 id="代表算法-硬币问题"><a href="#代表算法-硬币问题" class="headerlink" title="代表算法-硬币问题"></a>代表算法-硬币问题</h1><h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>假设有 1 元，3 元，5 元的硬币若干（无限），现在需要凑出 11 元，问如何组合才能使硬币的数量最少？</p>
+<h2 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h2><p>乍看之下，我们简单的运用一下心算就能解出需要 2 个 5 元和 1 个 1 元的解。当然这里只是列出了这个问题比较简单的情况。当硬币的币制或者种类变化，并且需要凑出的总价值变大时，就很难靠简单的计算得出结论了。贪心算法可以在一定的程度上得出较优解，但不是每次都能得出最优解。</p>
+<p>这里运用动态规划的思路解决该问题。按照一般思路，我们先从最基本的情况来一步一步地推导。</p>
+<p>我们先假设一个函数 <em>d(i)</em> 来表示需要凑出 <em>i</em> 的总价值需要的最少硬币数量。</p>
+<ol>
+<li>当 <em>i = 0</em> 时，很显然我们可以知道 <em>d(0) = 0</em>。因为不要凑钱了嘛，当然也不需要任何硬币了。<strong>注意这是很重要的一步，其后所有的结果都从这一步延伸开来</strong>。</li>
+<li>当 <em>i = 1</em> 时，因为我们有 1 元的硬币，所以直接在第 1 步的基础上，加上 1 个 1 元硬币，得出 <em>d(1) = 1</em>。</li>
+<li>当 <em>i = 2</em> 时，因为我们并没有 2 元的硬币，所以只能拿 1 元的硬币来凑。在第 2 步的基础上，加上 1 个 1 元硬币，得出 <em>d(2) = 2</em>。</li>
+<li>当 <em>i = 3</em> 时，我们可以在第 3 步的基础上加上 1 个 1 元硬币，得到 <em>3</em> 这个结果。但其实我们有 3 元硬币，所以这一步的最优结果不是建立在第 3 步的结果上得来的，而是应该建立在第 1 步上，加上 1 个 3 元硬币，得到 <em>d(3) = 1</em>。</li>
+</ol>
+<p>接着就不再举例了，我们来分析一下。可以看出，除了第 1 步这个看似基本的公理外，其他往后的结果都是建立在它之前得到的某一步的最优解上，加上 1 个硬币得到。得出：</p>
+<p><em>d(i) = d(j) + 1</em></p>
+<p>这里 <em>j &lt; i</em>。通俗地讲，我们需要凑出 <em>i</em> 元，就在凑出 <em>j</em> 的结果上再加上某一个硬币就行了。</p>
+<p>那这里我们加上的是哪个硬币呢。嗯，其实很简单，把每个硬币试一下就行了：</p>
+<ol>
+<li>假设最后加上的是 1 元硬币，那 <em>d(i) = d(j) + 1 = d(i - 1) + 1</em>。</li>
+<li>假设最后加上的是 3 元硬币，那 <em>d(i) = d(j) + 1 = d(i - 3) + 1</em>。</li>
+<li>假设最后加上的是 5 元硬币，那 <em>d(i) = d(j) + 1 = d(i - 5) + 1</em>。</li>
+</ol>
+<p>我们分别计算出 <em>d(i - 1) + 1</em>，<em>d(i - 3) + 1</em>，<em>d(i - 5) + 1</em> 的值，取其中的最小值，即为最优解，也就是 <em>d(i)</em>。</p>
+<p>最后公式：</p>
+<p><img src="/.io//david/david/00projects/00markdown/pic/1046505-20161024143029437-524511140.png" alt="img"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MinCoins</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span>[] coins = &#123; <span class="number">1</span>, <span class="number">3</span>, <span class="number">5</span> &#125;;</span><br><span class="line">        <span class="keyword">int</span> value = <span class="number">11</span>;</span><br><span class="line">        CoinDp(value, coins);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">CoinDp</span><span class="params">(<span class="keyword">int</span> n, <span class="keyword">int</span>[] coinValue)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> count = <span class="number">0</span>;<span class="comment">// 记录执行次数</span></span><br><span class="line">        <span class="keyword">int</span>[] min = <span class="keyword">new</span> <span class="keyword">int</span>[n + <span class="number">1</span>]; <span class="comment">// 用来存储得到n块钱需要的硬币数的最小值</span></span><br><span class="line">        min[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; i++) &#123;</span><br><span class="line">            min[i] = Integer.MAX_VALUE;<span class="comment">// 初始化数组中的每个值都是最大的整数</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; coinValue.length; j++) &#123;</span><br><span class="line">                count++;</span><br><span class="line">                <span class="keyword">if</span> (i &gt;= coinValue[j] &amp;&amp; min[i] &gt; min[i - coinValue[j]] + <span class="number">1</span>) &#123;</span><br><span class="line">                    min[i] = min[i - coinValue[j]] + <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(<span class="string">"获取"</span> + i + <span class="string">"块钱，最少需要的硬币数："</span> + min[i] + <span class="string">",执行的次数："</span> + count);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(min[n]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>参考：</p>
+<p><a href="https://blog.csdn.net/weixin_38278878/article/details/80037455" target="_blank" rel="noopener">https://blog.csdn.net/weixin_38278878/article/details/80037455</a></p>
+<p><a href="https://www.cnblogs.com/snowInPluto/p/5992846.html" target="_blank" rel="noopener">https://www.cnblogs.com/snowInPluto/p/5992846.html</a></p>
+<p><a href="https://www.cnblogs.com/wuyuegb2312/p/3281264.html" target="_blank" rel="noopener">https://www.cnblogs.com/wuyuegb2312/p/3281264.html</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习和深度学习算法专题/CNN/CNN/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/07/12/机器学习和深度学习算法专题/CNN/CNN/" class="post-title-link" itemprop="url">CNN</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-16 09:28:37" itemprop="dateModified" datetime="2019-06-16T09:28:37+08:00">2019-06-16</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/深度学习/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2017/07/12/机器学习和深度学习算法专题/CNN/CNN/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习和深度学习算法专题/CNN/CNN/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="卷积核"><a href="#卷积核" class="headerlink" title="卷积核"></a>卷积核</h1><p>也称为滤波器。</p>
+<p>权重共享：卷积核的权重（矩阵的值）对于不同位置的所有输入都是相同的。</p>
+<h2 id="卷积操作的意义"><a href="#卷积操作的意义" class="headerlink" title="卷积操作的意义"></a>卷积操作的意义</h2><p>例如，有整体边缘滤波器Ke，横向边缘滤波器Kh，纵向边缘滤波器Kv。</p>
+<script type="math/tex; mode=display">
+K_e=\begin{bmatrix}
+0 & -4 & 0\\ 
+-4 & 16 & -4\\ 
+0 & -4 & 0
+\end{bmatrix}\ \ K_h=\begin{bmatrix}
+1 & 2 & 1\\ 
+0 & 0 & 0\\ 
+-1 & -2 & -1
+\end{bmatrix}\ \ K_v=\begin{bmatrix}
+1 & 0 & -1\\ 
+2 & 0 & -2\\ 
+1 & 0 & -1
+\end{bmatrix}</script><p>若某像素位于物体边缘，则周边像素与该像素会有明显差异，用Ke可以放大边缘和周边的差异，起到边缘检测的作用。同理，Kh、Kv可以保留横向、纵向的边缘信息。</p>
+<h1 id="池化层"><a href="#池化层" class="headerlink" title="池化层"></a>池化层</h1><p>也叫汇合层。通常操作有平均值池化（average-pooling）和最大值汇合（max-pooling）。与卷积核操作不同，池化层不包含需要学习的参数。仅指定汇合类型，核大小（kernel size）和步长（stride）。</p>
+<p>汇合的结果相对输入降小了，是一种降采样（down-sampling）操作。也可以看成是一个用p范数（p-norm）作为非线性映射的卷积操作。当p趋于正无穷时就是最大值汇合。</p>
+<p>汇合层的引入是仿照人的视觉系统对视觉输入对象进行降维和抽象。作用有：</p>
+<p>1）特征不变性（feature invariant）。使模型更关注是否存在某些特征而不是特征具体的位置。</p>
+<p>2）特征降维。</p>
+<p>3）一定程度上防止过拟合。</p>
+<h1 id="全连接层"><a href="#全连接层" class="headerlink" title="全连接层"></a>全连接层</h1><p>fully connected layers</p>
+<p>参考：</p>
+<p>【1】解析卷积神经网络.pdf</p>
 
           
         
@@ -2376,6 +2016,194 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/算法与数据结构/最长公共子串/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/07/12/算法与数据结构/最长公共子串/" class="post-title-link" itemprop="url">最长公共子串</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-03-17 20:50:31" itemprop="dateModified" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/算法与数据结构/" itemprop="url" rel="index"><span itemprop="name">算法与数据结构</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2017/07/12/算法与数据结构/最长公共子串/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/算法与数据结构/最长公共子串/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>找出最长子串，需要知道子串的<strong>起始位置</strong>和子串的<strong>长度</strong>。</p>
+<p>因此，维护一个二维数组，存放两个字符串的字符关系，再创建两个变量存放index和maxLen。</p>
+<p><img src="https://segmentfault.com/img/remote/1460000007963599?w=684&amp;h=644" alt=""></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">findLcsNew</span><span class="params">(String str1, String str2)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">int</span> len1, len2;</span><br><span class="line">		len1 = str1.length();</span><br><span class="line">		len2 = str2.length();</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">int</span> maxLen = <span class="number">0</span>, index = <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">int</span>[][] arr = <span class="keyword">new</span> <span class="keyword">int</span>[len1 + <span class="number">1</span>][len2 + <span class="number">1</span>];</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len1; i++) &#123;</span><br><span class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; len2; j++) &#123;</span><br><span class="line">				<span class="keyword">if</span> ( i == <span class="number">0</span> || j == <span class="number">0</span> ) &#123;</span><br><span class="line">                  <span class="comment">// 第一行和第一列都是0</span></span><br><span class="line">					arr[i][j] = <span class="number">0</span>;</span><br><span class="line">				&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                  <span class="comment">// 该字符和上一个字符均相等时</span></span><br><span class="line">					<span class="keyword">if</span> (str1.charAt(i) == str2.charAt(j) &amp;&amp; str1.charAt(i-<span class="number">1</span>) == str2.charAt(j-<span class="number">1</span>)) &#123;</span><br><span class="line">						arr[i][j] = arr[i-<span class="number">1</span>][j-<span class="number">1</span>] + <span class="number">1</span>;</span><br><span class="line">					&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">						arr[i][j] = <span class="number">0</span>;</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				</span><br><span class="line">				<span class="keyword">if</span> (arr[i][j] &gt; maxLen) &#123;</span><br><span class="line">					maxLen = arr[i][j];</span><br><span class="line">					index = i;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		String newStr = str1.substring(index - maxLen, index + <span class="number">1</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">return</span> newStr;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>也可以用一维数组实现，同时可以记录多个相同长度的最长子串</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">findLcs</span><span class="params">(String str1, String str2)</span> </span>&#123;</span><br><span class="line">	StringBuffer buff = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">	<span class="keyword">int</span> i, j;</span><br><span class="line">	<span class="keyword">int</span> len1, len2;</span><br><span class="line">	len1 = str1.length();</span><br><span class="line">	len2 = str2.length();</span><br><span class="line">	<span class="keyword">int</span> maxLen = len1 &gt; len2 ? len1 : len2;</span><br><span class="line">	<span class="keyword">int</span>[] max = <span class="keyword">new</span> <span class="keyword">int</span>[maxLen];</span><br><span class="line">	<span class="keyword">int</span>[] maxIndex = <span class="keyword">new</span> <span class="keyword">int</span>[maxLen];</span><br><span class="line">	<span class="keyword">int</span>[] c = <span class="keyword">new</span> <span class="keyword">int</span>[maxLen];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; len2; i++) &#123;</span><br><span class="line">		<span class="keyword">for</span> (j = len1 - <span class="number">1</span>; j &gt;= <span class="number">0</span>; j--) &#123;</span><br><span class="line">			<span class="keyword">if</span> (str2.charAt(i) == str1.charAt(j)) &#123;</span><br><span class="line">				<span class="keyword">if</span> ((i == <span class="number">0</span>) || (j == <span class="number">0</span>))</span><br><span class="line">					c[j] = <span class="number">1</span>;</span><br><span class="line">				<span class="keyword">else</span></span><br><span class="line">					c[j] = c[j - <span class="number">1</span>] + <span class="number">1</span>;</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				c[j] = <span class="number">0</span>;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> (c[j] &gt; max[<span class="number">0</span>]) &#123; <span class="comment">// 如果是大于那暂时只有一个是最长的,而且要把后面的清0;</span></span><br><span class="line">				max[<span class="number">0</span>] = c[j];</span><br><span class="line">				maxIndex[<span class="number">0</span>] = j;</span><br><span class="line"></span><br><span class="line">				<span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">1</span>; k &lt; maxLen; k++) &#123;</span><br><span class="line">					max[k] = <span class="number">0</span>;</span><br><span class="line">					maxIndex[k] = <span class="number">0</span>;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125; <span class="keyword">else</span> <span class="keyword">if</span> (c[j] == max[<span class="number">0</span>]) &#123; <span class="comment">// 有多个是相同长度的子串</span></span><br><span class="line">				<span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">1</span>; k &lt; maxLen; k++) &#123;</span><br><span class="line">					<span class="keyword">if</span> (max[k] == <span class="number">0</span>) &#123;</span><br><span class="line">						max[k] = c[j];</span><br><span class="line">						maxIndex[k] = j;</span><br><span class="line">						<span class="keyword">break</span>; <span class="comment">// 在后面加一个就要退出循环了</span></span><br><span class="line">					&#125;</span><br><span class="line"></span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; maxLen; j++) &#123;</span><br><span class="line">		<span class="keyword">if</span> (max[j] &gt; <span class="number">0</span>) &#123;</span><br><span class="line">			<span class="keyword">for</span> (i = maxIndex[j] - max[j] + <span class="number">1</span>; i &lt;= maxIndex[j]; i++)</span><br><span class="line">				buff.append(str1.charAt(i));			</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> buff.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/Elastic Search/elastic-search笔记/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -2508,191 +2336,6 @@ n^{t+1} = n^t +(g^{t+1})^2</script><p>见⑤。</p>
 <h1 id="python从文件插入到ES"><a href="#python从文件插入到ES" class="headerlink" title="python从文件插入到ES"></a>python从文件插入到ES</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">def set_pois_data(es, input_file, index_name=&quot;pois&quot;, doc_type_name=&quot;iclick&quot;):</span><br><span class="line">    #读入数据</span><br><span class="line">    fp = open(input_file)</span><br><span class="line"></span><br><span class="line">    #创建ACTIONS</span><br><span class="line">    ACTIONS = []</span><br><span class="line">    for line in fp:</span><br><span class="line">        fields = line.strip(&apos;\n&apos;).split(&quot;\t&quot;)</span><br><span class="line">        name = fields[0]</span><br><span class="line">        location = fields[2] + &quot;,&quot; + fields[3]</span><br><span class="line"></span><br><span class="line">        action = &#123;</span><br><span class="line">            &quot;_index&quot;: index_name,</span><br><span class="line">            &quot;_type&quot;: doc_type_name,</span><br><span class="line">            &quot;_source&quot;: &#123;</span><br><span class="line">                  &quot;name&quot; : name,</span><br><span class="line">                  &quot;pois&quot; : location,</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        #print action</span><br><span class="line">        ACTIONS.append(action)</span><br><span class="line"></span><br><span class="line">    # 批量处理</span><br><span class="line">    success, _ = bulk(es, ACTIONS, index=index_name, raise_on_error=True)</span><br><span class="line">    print(&apos;Performed %d actions&apos; % success)</span><br></pre></td></tr></table></figure>
 <h1 id="复制index的数据到另一个"><a href="#复制index的数据到另一个" class="headerlink" title="复制index的数据到另一个"></a>复制index的数据到另一个</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">import pyes</span><br><span class="line">conn = pyes.es.ES(&quot;http://10.xx.xx.xx:8305/&quot;)</span><br><span class="line">search = pyes.query.MatchAllQuery().search(bulk_read=1000)</span><br><span class="line">hits = conn.search(search, &apos;store_v1&apos;, &apos;client&apos;, scan=True, scroll=&quot;30m&quot;, model=lambda _,hit: hit)</span><br><span class="line">for hit in hits:</span><br><span class="line">     #print hit</span><br><span class="line">     conn.index(hit[&apos;_source&apos;], &apos;store_v2&apos;, &apos;client&apos;, hit[&apos;_id&apos;], bulk=True)</span><br><span class="line">conn.flush()</span><br></pre></td></tr></table></figure>
 <h1 id="统计数组的元素个数的sum、avg"><a href="#统计数组的元素个数的sum、avg" class="headerlink" title="统计数组的元素个数的sum、avg"></a>统计数组的元素个数的sum、avg</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">GET iclick_persona/iclick/_search?size=0</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;bool&quot;: &#123;</span><br><span class="line">      &quot;must&quot;: [</span><br><span class="line">        &#123;&quot;term&quot;: &#123;</span><br><span class="line">          &quot;device&quot;: &#123;</span><br><span class="line">            &quot;value&quot;: &quot;PC&quot;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;&#125;</span><br><span class="line">      ],</span><br><span class="line">      &quot;filter&quot;: [</span><br><span class="line">        &#123;&quot;script&quot;:&#123;&quot;script&quot;:&quot;doc[&apos;articles.domains&apos;].values.length&gt;1&quot;&#125;&#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;aggs&quot;: &#123;</span><br><span class="line">    &quot;NAME&quot;: &#123;</span><br><span class="line">      &quot;avg&quot;: &#123;</span><br><span class="line">        &quot;script&quot;: &#123;</span><br><span class="line">          &quot;inline&quot;: &quot;doc[&apos;articles.domains&apos;].values.length&quot;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/hive笔记-orc格式读写/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/12/hadoop-spark/hive笔记-orc格式读写/" class="post-title-link" itemprop="url">hive笔记-orc格式读写</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-01-30 15:52:38" itemprop="dateModified" datetime="2018-01-30T15:52:38+08:00">2018-01-30</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/hadoop-spark/hive笔记-orc格式读写/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/hive笔记-orc格式读写/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>需要引入的包：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">                        &lt;groupId&gt;org.apache.hadoop&lt;/groupId&gt;</span><br><span class="line">                        &lt;artifactId&gt;hadoop-core&lt;/artifactId&gt;</span><br><span class="line">                        &lt;version&gt;2.6.0-mr1-cdh5.9.1&lt;/version&gt;</span><br><span class="line">                &lt;/dependency&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">                        &lt;groupId&gt;org.apache.hive&lt;/groupId&gt;</span><br><span class="line">                        &lt;artifactId&gt;hive-common&lt;/artifactId&gt;</span><br><span class="line">                        &lt;version&gt;1.1.0-cdh5.9.1&lt;/version&gt;</span><br><span class="line">                &lt;/dependency&gt;</span><br><span class="line">                &lt;dependency&gt;</span><br><span class="line">                        &lt;groupId&gt;org.apache.hive&lt;/groupId&gt;</span><br><span class="line">                        &lt;artifactId&gt;hive-exec&lt;/artifactId&gt;</span><br><span class="line">                        &lt;version&gt;1.1.0-cdh5.9.1&lt;/version&gt;</span><br><span class="line">                &lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> fs = <span class="type">FileSystem</span>.get(conf);</span><br><span class="line"><span class="keyword">val</span> prop = <span class="type">Config</span>.getConfig(<span class="string">"config.properties"</span>)</span><br><span class="line">println(sdf.format(<span class="keyword">new</span> <span class="type">Date</span>))</span><br><span class="line"><span class="keyword">val</span> readerOpts = <span class="type">OrcFile</span>.readerOptions(conf)</span><br><span class="line"><span class="keyword">val</span> reader = <span class="type">OrcFile</span>.createReader(<span class="keyword">new</span> <span class="type">Path</span>(iaxReqPath+<span class="string">"/ds=17-08-21/20170821000000antispam_2529853576425433.orc"</span>), readerOpts)</span><br><span class="line"><span class="keyword">val</span> inspector = reader.getObjectInspector().asInstanceOf[<span class="type">StructObjectInspector</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> count = reader.getNumberOfRows</span><br><span class="line">info(<span class="string">"the count is: "</span> + count.toString())</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> fields = inspector.getAllStructFieldRefs()</span><br><span class="line"></span><br><span class="line">fields.foreach &#123; x =&gt; </span><br><span class="line">  println(x.getFieldObjectInspector.getCategory)  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> records = reader.rows()</span><br><span class="line"><span class="keyword">var</span> n=<span class="number">0</span></span><br><span class="line"><span class="keyword">val</span> loop = <span class="keyword">new</span> <span class="type">Breaks</span></span><br><span class="line">loop.breakable(&#123;</span><br><span class="line">  <span class="keyword">while</span>(records.hasNext)&#123;</span><br><span class="line">    <span class="keyword">if</span> (n&gt;<span class="number">5</span>) loop.<span class="keyword">break</span></span><br><span class="line">    <span class="keyword">val</span> row = records.next(<span class="literal">null</span>)</span><br><span class="line">    <span class="keyword">val</span> valueList = inspector.getStructFieldsDataAsList(row)</span><br><span class="line">    info(valueList.get(<span class="number">10</span>).toString)</span><br><span class="line">    info(row.toString())</span><br><span class="line">    n = n+<span class="number">1</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 
           
         
