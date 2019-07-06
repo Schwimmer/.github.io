@@ -936,7 +936,7 @@ y=\frac {1} {1+e^{-(w^Tx+b)}}</script><p>可以推导出</p>
                 
               
 
-              <time title="创建时间：2019-07-06 13:41:02 / 修改时间：15:54:59" itemprop="dateCreated datePublished" datetime="2019-07-06T13:41:02+08:00">2019-07-06</time>
+              <time title="创建时间：2019-07-06 13:41:02 / 修改时间：16:15:03" itemprop="dateCreated datePublished" datetime="2019-07-06T13:41:02+08:00">2019-07-06</time>
             </span>
           
 
@@ -1018,7 +1018,7 @@ y=\left\{\begin{matrix}
 ,z=h_{\theta}(x)</script><p>但是这样就太粗糙了，<strong>而且不连续不可微</strong>。我们希望有一个理想的阶跃函数，而且是单调可微的函数。于是找到了<strong>对数几率函数</strong>（Logistic Function）。因为曲线像S，又称<strong>Sigmoid</strong>。</p>
 <h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><p>Sigmoid函数的定义是：</p>
 <script type="math/tex; mode=display">
-y=\frac {1} {1+e^{-(w^Tx+b)}}</script><p>接下来就是根据给定的训练集，求出参数w。首先要找到目标函数（代价函数/损失函数）。</p>
+y=\frac {1} {1+e^{-(\theta^Tx+b)}}</script><p>接下来就是根据给定的训练集，求出参数w。首先要找到目标函数（代价函数/损失函数）。</p>
 <blockquote>
 <p>目标函数、代价函数、损失函数，一般而言，这三个概念是一回事。</p>
 <p>如果深究的话，有细微的差别。参考<a href="https://blog.csdn.net/qq_28448117/article/details/79199835" target="_blank" rel="noopener">深入理解机器学习中的：目标函数，损失函数和代价函数</a></p>
@@ -1028,11 +1028,27 @@ y=\frac {1} {1+e^{-(w^Tx+b)}}</script><p>接下来就是根据给定的训练集
 </blockquote>
 <p>首先想到的就是模仿线性回归的思路，用最小二乘当损失函数。</p>
 <script type="math/tex; mode=display">
-J(\theta)=\sum_{i} \frac 1 2 (h_{\theta}(x^i;\theta),\ y^i)^2</script><p>但是，把Sigmoid带入后，会发现这是一个<strong>非凸函数</strong>，这就意味着代价函数有着许多的局部最小值，不利于求解。</p>
+J(\theta)=\sum_{i} \frac 1 2 (h_{\theta}(x^i),\ y^i)^2</script><p>但是，把Sigmoid带入后，会发现这是一个<strong>非凸函数</strong>，这就意味着代价函数有着许多的局部最小值，不利于求解。</p>
 <p><img src="/.io//pic/SouthEast-20190616095710926.png" alt="2"></p>
 <p>后来人们想到，用极大似然函数作为损失函数，这样就是一个<strong>凸函数</strong>。</p>
 <p><img src="/.io//pic/SouthEast-20190616095728402.png" alt="1"></p>
-<h1 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h1><p>参考：</p>
+<h1 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h1><p>如果将$h_{\theta}(x)$看做是正类的<strong>后验概率</strong>，则有</p>
+<script type="math/tex; mode=display">
+h_{\theta}(x;\theta)=p(y=1|x;\theta)=\phi(x)=\frac {1} {1+e^{-(\theta^Tx+b)}}</script><p>那么，有</p>
+<script type="math/tex; mode=display">
+p(y=0|x;\theta) = 1-\phi(x)</script><p>将上面两式写成一般形式（<strong>概率分布函数</strong>）</p>
+<script type="math/tex; mode=display">
+p(y|x;\theta)=h_{\theta}(x;\theta)^y(1-h_{\theta}(x;\theta))^{1-y}</script><p>接下来用对数极大似然估计（加上对数是为了方便求导）根据训练集估计出参数$\theta$。</p>
+<script type="math/tex; mode=display">
+\begin{aligned} 
+l(\theta) &= Log\ L(\theta)\\
+&=\sum_{j=1}^M(y_jln\ h(x_j)+(1-y_j)ln\ (1-h(x_j)))
+\end{aligned}</script><p>其中M是样本个数。对其求关于$\theta$的偏导。</p>
+<p>1）首先求$h_{\theta}(x)$，即Sigmoid的偏导。</p>
+<script type="math/tex; mode=display">
+h_{\theta}^{'}(\mathbf X) = h_{\theta}(\mathbf X)(1-h_{\theta}(\mathbf X))</script><p>推导过程如下：</p>
+<p><img src="/.io//pic/求导的推导.jpg" alt="求导的推导"></p>
+<p>参考：</p>
 <p><a href="https://blog.csdn.net/tomxiaodai/article/details/81748795" target="_blank" rel="noopener">Logistic Regression——逻辑回归算法推导</a></p>
 <p><a href="https://blog.csdn.net/yinyu19950811/article/details/81321944" target="_blank" rel="noopener">逻辑回归与最大似然估计推导</a></p>
 
