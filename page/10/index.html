@@ -357,6 +357,168 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/07/深度学习笔记/tensorflow/最小二乘拟合/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/07/深度学习笔记/tensorflow/最小二乘拟合/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-07 11:07:25 / 修改时间：11:55:25" itemprop="dateCreated datePublished" datetime="2019-04-07T11:07:25+08:00">2019-04-07</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/04/07/深度学习笔记/tensorflow/最小二乘拟合/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/07/深度学习笔记/tensorflow/最小二乘拟合/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://blog.csdn.net/luoganttcc/article/details/56481549" target="_blank" rel="noopener">https://blog.csdn.net/luoganttcc/article/details/56481549</a></p>
+<blockquote>
+<p>/Users/david/david/code/deep_learning/tensorflow/Least_Square_sample.ipynb</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#程序 不是我写的，注释是我做的，转载请注明“lg土木设计”</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">#最小二乘法拟合，用y=ax+b  a=weight b=biases</span></span><br><span class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span> print_function</span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="comment"># create data 生成100个0-1之间的随机数   </span></span><br><span class="line"><span class="comment">#np.random.rand(100) 1*100的矩阵</span></span><br><span class="line"><span class="comment">#np.random.rand(3,3) 3*3的矩阵，其每个元素为0-1的随机数</span></span><br><span class="line">x_data = np.random.rand(<span class="number">100</span>).astype(np.float32)</span><br><span class="line">y_data = x_data*<span class="number">0.2</span> + <span class="number">0.5</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="comment">### create tensorflow structure start ###对权进行赋值 在-1到1之间随机数</span></span><br><span class="line"><span class="comment">#uniform([1]为1*1的矩阵，即一个数</span></span><br><span class="line">Weights = tf.Variable(tf.random_uniform([<span class="number">1</span>], <span class="number">-1.0</span>, <span class="number">1.0</span>), name=<span class="string">"weight"</span>)</span><br><span class="line"><span class="comment">#偏差为零，zeros([1]为一个1*1的零矩阵，即初始偏差为零</span></span><br><span class="line">biases = tf.Variable(tf.zeros([<span class="number">1</span>]))</span><br><span class="line"><span class="comment">#权值与x相乘并加偏差</span></span><br><span class="line">y = Weights*x_data + biases </span><br><span class="line"><span class="comment">#方差，(y-y_data)平方，求和，取均值</span></span><br><span class="line">loss = tf.reduce_mean(tf.square(y-y_data))</span><br><span class="line"><span class="comment">#定义梯度下降法优化函数，优化，步长为0.5</span></span><br><span class="line">optimizer = tf.train.GradientDescentOptimizer(<span class="number">0.2</span>)</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">train = optimizer.minimize(loss)</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">init = tf.initialize_all_variables()</span><br><span class="line"><span class="comment">### create tensorflow structure end ###</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">sess = tf.Session()</span><br><span class="line">sess.run(init)          <span class="comment"># Very important</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="keyword">for</span> step <span class="keyword">in</span> range(<span class="number">300</span>):</span><br><span class="line">  sess.run(train)</span><br><span class="line">  <span class="keyword">if</span> step % <span class="number">20</span> == <span class="number">0</span>:</span><br><span class="line">    print(step, sess.run(Weights), sess.run(biases))</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/07/深度学习笔记/tensorflow/tensorflow节点/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -2105,182 +2267,6 @@ G（V，E）</script><p>其中，G表示一个图，V是图G中顶点的集合�
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/23/算法与数据结构/LeeCode/Week3-1/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/03/23/算法与数据结构/LeeCode/Week3-1/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-03-23 10:08:39 / 修改时间：10:41:35" itemprop="dateCreated datePublished" datetime="2019-03-23T10:08:39+08:00">2019-03-23</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/03/23/算法与数据结构/LeeCode/Week3-1/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/23/算法与数据结构/LeeCode/Week3-1/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>有向无环图</strong>（Directed Acyclic Graph, DAG）</p>
-<blockquote>
-<p>如果一个有向图的任意顶点都无法通过一些有向边回到自身，那么称这个有向图为有向无环图(DAG)。</p>
-<p>常常被用来表示<strong>事件之间的驱动依赖关系，管理任务之间的调度</strong>。</p>
-</blockquote>
-<p><strong>拓扑排序</strong></p>
-<blockquote>
-<p>拓扑排序是将有向无环图G的所有顶点排成一个线性序列，使得对图G中的任意两个顶点u、v，</p>
-<p>如果存在边u-&gt;v，那么在序列中u一定在v前面。这个序列又被称为<strong>拓扑序列</strong>。</p>
-<p>也可理解为对某点v而言，只有当v的所有源点均出现了，v才能出现。</p>
-</blockquote>
-<p><img src="//schwimmer.github.io/2019/03/23/算法与数据结构/LeeCode/Week3-1/pic/399159-20151229144326901-1530781288.png" alt="img"></p>
-<p>下图给出的顶点排序不是拓扑排序，因为顶点<code>D</code>的邻接点<code>E</code>比其先出现：</p>
-<p><img src="//schwimmer.github.io/2019/03/23/算法与数据结构/LeeCode/Week3-1/pic/399159-20151229144340448-1796643731.png" alt="img"></p>
-<p>其实这道题的本质即给定一个图，让我们判断该图是否是拓扑有序。</p>
-<p>这里我们需要用到一个图里<strong>入度</strong>的概念，在初始的图中，<strong>入度为0的点，即是课程中最基础的课程</strong>（需要先修，比如数据结构、C语言基础），在找到图中所有入度为0的点以后，将它们依次放入一个队列中，每次循环从队列头提取一个点，然后将这个点放入图中查询，查出哪些点被这个点所指向，并依次将这些点的入度减1，直观上的看的话，即是一个删除一个入度为0的点的操作，每次减1时，检测其他节点的入度，若出现新的入度为0的点，将其加入队列，循环往复，直到队列为空为止。</p>
-<p>1、找入度为0的点。</p>
-<p>参考</p>
-<p>1、<a href="https://www.cnblogs.com/en-heng/p/5085690.html" target="_blank" rel="noopener">【图论】有向无环图的拓扑排序</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2327,7 +2313,7 @@ G（V，E）</script><p>其中，G表示一个图，V是图G中顶点的集合�
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">314</span>
+                    <span class="site-state-item-count">315</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

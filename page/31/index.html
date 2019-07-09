@@ -357,415 +357,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark-streaming笔记/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/12/hadoop-spark/spark/spark-streaming笔记/" class="post-title-link" itemprop="url">spark-streaming笔记</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-01-30 15:47:26" itemprop="dateModified" datetime="2018-01-30T15:47:26+08:00">2018-01-30</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/hadoop-spark/spark/spark-streaming笔记/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/spark/spark-streaming笔记/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="spark-streaming的示例"><a href="#spark-streaming的示例" class="headerlink" title="spark streaming的示例"></a>spark streaming的示例</h1><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span>   <span class="title">main</span> </span>( args : <span class="type">Array</span>[ <span class="type">String</span> ]): <span class="type">Unit</span> = &#123;</span><br><span class="line">         <span class="comment">//关闭一些不必要的日志</span></span><br><span class="line">        <span class="type">Logger</span>. getLogger ( <span class="string">"org.apache.spark"</span> ). setLevel (<span class="type">Level</span>. <span class="type">WARN</span> )</span><br><span class="line">        <span class="type">Logger</span>. getLogger ( <span class="string">"org.eclipse.jetty.server"</span> ). setLevel (<span class="type">Level</span>. <span class="type">OFF</span> )</span><br><span class="line">      </span><br><span class="line">         <span class="keyword">val</span>   conf  =  <span class="keyword">new</span>  <span class="type">SparkConf</span>(). setAppName ( <span class="string">"wordStreaming"</span> ). setMaster ( <span class="string">"local[2]"</span> ).</span><br><span class="line">         set ( <span class="string">"spark.sql.shuffle.partitions"</span> , <span class="string">"10"</span> ). set ( <span class="string">"spark.network.timeout"</span> , <span class="string">"30s"</span> )</span><br><span class="line">        . set ( <span class="string">"spark.shuffle.compress"</span> , <span class="string">"true"</span> ). set ( <span class="string">"spark.shuffle.spill.compress"</span> , <span class="string">"true"</span> )</span><br><span class="line">        . set ( <span class="string">"spark.shuffle.manager"</span> , <span class="string">"sort"</span> )</span><br><span class="line">         <span class="keyword">val</span>   sc  =  <span class="keyword">new</span>  <span class="type">SparkContext</span>( conf )</span><br><span class="line">        </span><br><span class="line">         <span class="comment">// 创建 StreamingContext，1 秒一个批次。这里要用 sc ，而不是 conf ，因为 sc 已经创建了</span></span><br><span class="line">         <span class="keyword">val</span>   ssc  =  <span class="keyword">new</span>  <span class="type">StreamingContext</span>( sc ,  <span class="type">Seconds</span> ( <span class="number">1</span> ))</span><br><span class="line">         <span class="comment">// 获得一个 DStream 负责连接 监听端口:地址</span></span><br><span class="line">         <span class="keyword">val</span>   lines  =  ssc . socketTextStream ( <span class="string">"192.168.37.129"</span> ,  <span class="number">9999</span> )</span><br><span class="line">         <span class="comment">// 对每一行数据执行 Split 操作</span></span><br><span class="line">         <span class="keyword">val</span>   words  =  lines . flatMap ( _. split ( <span class="string">" "</span> ) )</span><br><span class="line">         <span class="comment">// 统计 word 的数量</span></span><br><span class="line">         <span class="keyword">val</span>   pairs  =  words . map ( word  =&gt; ( word ,  <span class="number">1</span> ))</span><br><span class="line">         <span class="keyword">val</span>   wordCounts  =  pairs . reduceByKey (_  +  _)</span><br><span class="line">         <span class="comment">// 输出结果</span></span><br><span class="line">         wordCounts . print ()</span><br><span class="line">        </span><br><span class="line">         ssc . start ()</span><br><span class="line">         ssc . awaitTermination () &#125;</span><br></pre></td></tr></table></figure>
-<p>一开始会报错：<br>Exception in thread “main”  org.apache.spark.SparkException : Only one SparkContext may be running in this JVM (see SPARK-2243). To ignore this error, set spark.driver.allowMultipleContexts = true. The currently running SparkContext was created at: org.apache.spark.SparkContext.<init>( SparkContext.scala:82 )</init></p>
-<p>错误是在<br>val   ssc  =  new  StreamingContext( conf ,  Seconds ( 1 ))   </p>
-<p>因为之前sc已经创建了，所以这里的conf要改成sc</p>
-<p>之后，在 192.168.37.129上启动netcat<br>nc -lk 9999<br>输入hello world</p>
-<p>再启动spark的程序，可以看出会输出<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Time: 1462790166000 ms</span><br><span class="line"></span><br><span class="line">(hello,1)</span><br><span class="line">(world,1)</span><br></pre></td></tr></table></figure></p>
-<h1 id="streaming读取本地文件"><a href="#streaming读取本地文件" class="headerlink" title="streaming读取本地文件"></a>streaming读取本地文件</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val lines = ssc.textFileStream(&quot;E:\\spark&quot;)</span><br></pre></td></tr></table></figure>
-<p>每当该文件夹内有新文件生成，就会自动读取</p>
-<blockquote>
-<p>Spark Streaming将会监控dataDirectory目录，并且处理目录下生成的任何文件（嵌套目录不被支持）。需要注意一下三点：<br>1 所有文件必须具有相同的数据格式<br>2 所有文件必须在<code>dataDirectory</code>目录下创建，文件是自动的移动和重命名到数据目录下<br>3 一旦移动，文件必须被修改。所以如果文件被持续的附加数据，新的数据不会被读取。<br>对于简单的文本文件，有一个更简单的方法streamingContext.textFileStream(dataDirectory)可以被调用。文件流不需要运行一个receiver，所以不需要分配核。</p>
-</blockquote>
-<h1 id="spark-streaming连接kafka"><a href="#spark-streaming连接kafka" class="headerlink" title="spark streaming连接kafka"></a>spark streaming连接kafka</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val topics = Set(&quot;test1&quot;)</span><br><span class="line">val kafkaParm = Map(&quot;metadata.broker.list&quot; -&gt; &quot;192.168.255.128:9092&quot;)</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/" class="post-title-link" itemprop="url">4-1 TensorBoard网络结构</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-06-03 09:31:14" itemprop="dateModified" datetime="2019-06-03T09:31:14+08:00">2019-06-03</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/深度学习/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-1-tensorboard1/" target="_blank" rel="noopener">https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-1-tensorboard1/</a></p>
-<h2 id="各种不同的优化器"><a href="#各种不同的优化器" class="headerlink" title="各种不同的优化器"></a>各种不同的优化器</h2><p>本次课程，我们会讲到<code>Tensorflow</code>里面的优化器。</p>
-<p>Tensorflow 中的优化器会有很多不同的种类。最基本, 也是最常用的一种就是<code>GradientDescentOptimizer</code>。</p>
-<p><code>Tensorflow</code>提供了7种优化器：</p>
-<h2 id="搭建图纸"><a href="#搭建图纸" class="headerlink" title="搭建图纸"></a>搭建图纸</h2><p>首先从 <code>Input</code> 开始：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># define placeholder for inputs to network</span></span><br><span class="line">xs = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>])</span><br><span class="line">ys = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>])</span><br></pre></td></tr></table></figure>
-<p>对于input我们进行如下修改： 首先，可以为<code>xs</code>指定名称为<code>x_in</code>:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xs= tf.placeholder(tf.float32, [None, 1],name=&apos;x_in&apos;)</span><br></pre></td></tr></table></figure>
-<p>然后再次对<code>ys</code>指定名称<code>y_in</code>:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ys= tf.placeholder(tf.loat32, [None, 1],name=&apos;y_in&apos;)</span><br></pre></td></tr></table></figure>
-<p>使用<code>with tf.name_scope(&#39;inputs&#39;)</code>可以将<code>xs</code>和<code>ys</code>包含进来，形成一个大的图层，图层的名字就是<code>with tf.name_scope()</code>方法里的参数。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">with tf.name_scope(&apos;inputs&apos;):</span><br><span class="line">    # define placeholder for inputs to network</span><br><span class="line">    xs = tf.placeholder(tf.float32, [None, 1])</span><br><span class="line">    ys = tf.placeholder(tf.float32, [None, 1])</span><br></pre></td></tr></table></figure>
-<p>接下来开始编辑<code>layer</code> ， 请看编辑前的程序片段 ：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></span><br><span class="line">    <span class="comment"># add one more layer and return the output of this layer</span></span><br><span class="line">    Weights = tf.Variable(tf.random_normal([in_size, out_size]))</span><br><span class="line">    biases = tf.Variable(tf.zeros([<span class="number">1</span>, out_size]) + <span class="number">0.1</span>)</span><br><span class="line">    Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</span><br><span class="line">    <span class="keyword">if</span> activation_function <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">        outputs = Wx_plus_b</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        outputs = activation_function(Wx_plus_b, )</span><br><span class="line">    <span class="keyword">return</span> outputs</span><br></pre></td></tr></table></figure>
-<p>这里的名字应该叫layer, 下面是编辑后的:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</span><br><span class="line">    # add one more layer and return the output of this layer</span><br><span class="line">    with tf.name_scope(&apos;layer&apos;):</span><br><span class="line">        Weights= tf.Variable(tf.random_normal([in_size, out_size]))</span><br><span class="line">        # and so on...</span><br></pre></td></tr></table></figure>
-<hr>
-<p>在定义完大的框架<code>layer</code>之后，同时也需要定义每一个’框架‘里面的小部件：(Weights biases 和 activation function): 现在现对 <code>Weights</code> 定义： 定义的方法同上，可以使用<code>tf.name.scope()</code>方法，同时也可以在<code>Weights</code>中指定名称<code>W</code>。 即为：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></span><br><span class="line">	<span class="comment">#define layer name</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'layer'</span>):</span><br><span class="line">        <span class="comment">#define weights name </span></span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'weights'</span>):</span><br><span class="line">            Weights= tf.Variable(tf.random_normal([in_size, out_size]),name=<span class="string">'W'</span>)</span><br><span class="line">        <span class="comment">#and so on......</span></span><br></pre></td></tr></table></figure>
-<p>接着继续定义<code>biases</code> ， 定义方式同上。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</span><br><span class="line">    #define layer name</span><br><span class="line">    with tf.name_scope(&apos;layer&apos;):</span><br><span class="line">        #define weights name </span><br><span class="line">        with tf.name_scope(&apos;weights&apos;)</span><br><span class="line">            Weights= tf.Variable(tf.random_normal([in_size, out_size]),name=&apos;W&apos;)</span><br><span class="line">        # define biase</span><br><span class="line">        with tf.name_scope(&apos;Wx_plus_b&apos;):</span><br><span class="line">            Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</span><br><span class="line">        # and so on....</span><br></pre></td></tr></table></figure>
-<p><code>activation_function</code> 的话，可以暂时忽略。因为当你自己选择用 tensorflow 中的激励函数（activation function）的时候，tensorflow会默认添加名称。 最终，layer形式如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</span><br><span class="line">    # add one more layer and return the output of this layer</span><br><span class="line">    with tf.name_scope(&apos;layer&apos;):</span><br><span class="line">        with tf.name_scope(&apos;weights&apos;):</span><br><span class="line">            Weights = tf.Variable(</span><br><span class="line">            tf.random_normal([in_size, out_size]), </span><br><span class="line">            name=&apos;W&apos;)</span><br><span class="line">        with tf.name_scope(&apos;biases&apos;):</span><br><span class="line">            biases = tf.Variable(</span><br><span class="line">            tf.zeros([1, out_size]) + 0.1, </span><br><span class="line">            name=&apos;b&apos;)</span><br><span class="line">        with tf.name_scope(&apos;Wx_plus_b&apos;):</span><br><span class="line">            Wx_plus_b = tf.add(</span><br><span class="line">            tf.matmul(inputs, Weights), </span><br><span class="line">            biases)</span><br><span class="line">        if activation_function is None:</span><br><span class="line">            outputs = Wx_plus_b</span><br><span class="line">        else:</span><br><span class="line">            outputs = activation_function(Wx_plus_b, )</span><br><span class="line">        return outputs</span><br></pre></td></tr></table></figure>
-<p>最后编辑<code>loss</code>部分：将<code>with tf.name_scope()</code>添加在<code>loss</code>上方，并为它起名为<code>loss</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># the error between prediciton and real data</span><br><span class="line">with tf.name_scope(&apos;loss&apos;):</span><br><span class="line">    loss = tf.reduce_mean(</span><br><span class="line">    tf.reduce_sum(</span><br><span class="line">    tf.square(ys - prediction),</span><br><span class="line">    eduction_indices=[1]</span><br><span class="line">    ))</span><br></pre></td></tr></table></figure>
-<p>使用<code>with tf.name_scope()</code>再次对<code>train_step</code>部分进行编辑,如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">with tf.name_scope(&apos;train&apos;):</span><br><span class="line">    train_step = tf.train.GradientDescentOptimizer(0.1).minimize(loss)</span><br></pre></td></tr></table></figure>
-<p>我们需要使用 <code>tf.summary.FileWriter()</code> (<code>tf.train.SummaryWriter()</code> 这种方式已经在 tf &gt;= 0.12 版本中摒弃) 将上面‘绘画’出的图保存到一个目录中，以方便后期在浏览器中可以浏览。 这个方法中的第二个参数需要使用<code>sess.graph</code> ， 因此我们需要把这句话放在获取<code>session</code>的后面。 这里的<code>graph</code>是将前面定义的框架信息收集起来，然后放在<code>logs/</code>目录下面。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sess = tf.Session() # get session</span><br><span class="line"># tf.train.SummaryWriter soon be deprecated, use following</span><br><span class="line">writer = tf.summary.FileWriter(&quot;logs/&quot;, sess.graph)</span><br></pre></td></tr></table></figure>
-<p>请确保你的 tensorboard 指令是在你的 logs 文件根目录执行的. 如果在其他目录下, 比如 <code>Desktop</code> 等, 可能不会成功看到图. 比如在下面这个目录, 你要 cd 到 <code>project</code> 这个地方执行 <code>/project &gt; tensorboard --logdir logs</code></p>
-<p>完整代码在</p>
-<p><a href="https://github.com/MorvanZhou/tutorials/blob/master/tensorflowTUT/tf14_tensorboard/full_code.py" target="_blank" rel="noopener">https://github.com/MorvanZhou/tutorials/blob/master/tensorflowTUT/tf14_tensorboard/full_code.py</a></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># View more python learning tutorial on my Youtube and Youku channel!!!</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Youtube video tutorial: https://www.youtube.com/channel/UCdyjiB5H8Pu7aDTNVXTTpcg</span></span><br><span class="line"><span class="comment"># Youku video tutorial: http://i.youku.com/pythontutorial</span></span><br><span class="line"></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">Please note, this code is only for python 3+. If you are using python 2+, please modify the code accordingly.</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span> print_function</span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></span><br><span class="line">    <span class="comment"># add one more layer and return the output of this layer</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'layer'</span>):</span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'weights'</span>):</span><br><span class="line">            Weights = tf.Variable(tf.random_normal([in_size, out_size]), name=<span class="string">'W'</span>)</span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'biases'</span>):</span><br><span class="line">            biases = tf.Variable(tf.zeros([<span class="number">1</span>, out_size]) + <span class="number">0.1</span>, name=<span class="string">'b'</span>)</span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'Wx_plus_b'</span>):</span><br><span class="line">            Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</span><br><span class="line">        <span class="keyword">if</span> activation_function <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">            outputs = Wx_plus_b</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            outputs = activation_function(Wx_plus_b, )</span><br><span class="line">        <span class="keyword">return</span> outputs</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># define placeholder for inputs to network</span></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'inputs'</span>):</span><br><span class="line">    xs = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>], name=<span class="string">'x_input'</span>)</span><br><span class="line">    ys = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>], name=<span class="string">'y_input'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># add hidden layer</span></span><br><span class="line">l1 = add_layer(xs, <span class="number">1</span>, <span class="number">10</span>, activation_function=tf.nn.relu)</span><br><span class="line"><span class="comment"># add output layer</span></span><br><span class="line">prediction = add_layer(l1, <span class="number">10</span>, <span class="number">1</span>, activation_function=<span class="keyword">None</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># the error between prediciton and real data</span></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'loss'</span>):</span><br><span class="line">    loss = tf.reduce_mean(tf.reduce_sum(tf.square(ys - prediction),</span><br><span class="line">                                        reduction_indices=[<span class="number">1</span>]))</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'train'</span>):</span><br><span class="line">    train_step = tf.train.GradientDescentOptimizer(<span class="number">0.1</span>).minimize(loss)</span><br><span class="line"></span><br><span class="line">sess = tf.Session()</span><br><span class="line"></span><br><span class="line"><span class="comment"># tf.train.SummaryWriter soon be deprecated, use following</span></span><br><span class="line"><span class="keyword">if</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">1</span>]) &lt; <span class="number">12</span> <span class="keyword">and</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">0</span>]) &lt; <span class="number">1</span>:  <span class="comment"># tensorflow version &lt; 0.12</span></span><br><span class="line">    writer = tf.train.SummaryWriter(<span class="string">'logs/'</span>, sess.graph)</span><br><span class="line"><span class="keyword">else</span>: <span class="comment"># tensorflow version &gt;= 0.12</span></span><br><span class="line">    writer = tf.summary.FileWriter(<span class="string">"logs/"</span>, sess.graph)</span><br><span class="line"></span><br><span class="line"><span class="comment"># tf.initialize_all_variables() no long valid from</span></span><br><span class="line"><span class="comment"># 2017-03-02 if using tensorflow &gt;= 0.12</span></span><br><span class="line"><span class="keyword">if</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">1</span>]) &lt; <span class="number">12</span> <span class="keyword">and</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">0</span>]) &lt; <span class="number">1</span>:</span><br><span class="line">    init = tf.initialize_all_variables()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    init = tf.global_variables_initializer()</span><br><span class="line">sess.run(init)</span><br><span class="line"></span><br><span class="line"><span class="comment"># direct to the local dir and run this in terminal:</span></span><br><span class="line"><span class="comment"># $ tensorboard --logdir=logs</span></span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark笔记-操作elastic-search/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -903,6 +494,508 @@
 <p>测试通过</p>
 <h1 id="与spark-streaming结合"><a href="#与spark-streaming结合" class="headerlink" title="与spark streaming结合"></a>与spark streaming结合</h1><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建 StreamingContext，5秒一个批次</span></span><br><span class="line"><span class="keyword">val</span> ssc = <span class="keyword">new</span> <span class="type">StreamingContext</span>(sc, <span class="type">Seconds</span>(<span class="number">3</span>))</span><br><span class="line"><span class="keyword">val</span> lines = ssc.socketTextStream(<span class="string">"192.168.37.129"</span>, <span class="number">9999</span>)</span><br><span class="line"><span class="comment">// 对每一行数据执行 Split 操作</span></span><br><span class="line"><span class="keyword">val</span> words = lines.flatMap(_.split(<span class="string">" "</span>))</span><br><span class="line"><span class="comment">// 统计 word 的数量</span></span><br><span class="line"><span class="keyword">val</span> pairs = words.map(word =&gt; (word, <span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">pairs.foreachRDD&#123;</span><br><span class="line">x =&gt;</span><br><span class="line">x.saveToEs(<span class="string">"spark/words"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ssc.start()</span><br><span class="line">ssc.awaitTermination()</span><br></pre></td></tr></table></figure>
 <p>pairs是一个DSteamRDD，通过foreachRDD来遍历其中的每个RDD，对于每个RDD，可以saveToEs</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/算法与数据结构/动态规划讲解/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/07/12/算法与数据结构/动态规划讲解/" class="post-title-link" itemprop="url">动态规划理论</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-03 09:22:50" itemprop="dateModified" datetime="2019-06-03T09:22:50+08:00">2019-06-03</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/算法与数据结构/" itemprop="url" rel="index"><span itemprop="name">算法与数据结构</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2017/07/12/算法与数据结构/动态规划讲解/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/算法与数据结构/动态规划讲解/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="动态规划理论讲解"><a href="#动态规划理论讲解" class="headerlink" title="动态规划理论讲解"></a>动态规划理论讲解</h1><p>[TOC]</p>
+<h1 id="基础理论"><a href="#基础理论" class="headerlink" title="基础理论"></a>基础理论</h1><p><strong>什么是动态规划？什么时候要用动态规划？怎么使用动态规划？</strong></p>
+<p><strong>1、什么是动态规划？</strong> </p>
+<p>求解决策过程<strong>最优化</strong>的数学方法。把<strong>多阶段过程转化为一系列单阶段</strong>问题，利用各阶段之间的关系，逐个求解，创立了解决这类过程优化问题的新方法——动态规划。</p>
+<p><strong>2、什么时候要用动态规划？</strong></p>
+<p>如果要求一个问题的<strong>最优解</strong>（通常是最大值或者最小值），而且该问题能够<strong>分解成若干个子问题，并且小问题之间也存在重叠的子问题</strong>，则考虑采用动态规划。</p>
+<p><strong>3、怎么使用动态规划？</strong> </p>
+<ol>
+<li>判题题意是否为找出一个问题的最优解 </li>
+<li>从上往下分析问题，大问题可以分解为子问题，子问题中还有更小的子问题 </li>
+<li>从下往上分析问题 ，找出这些问题之间的关联（状态转移方程） </li>
+<li>讨论边界的初始条件</li>
+<li>解决问题（通常使用数组进行迭代求出最优解）</li>
+</ol>
+<h1 id="代表算法-硬币问题"><a href="#代表算法-硬币问题" class="headerlink" title="代表算法-硬币问题"></a>代表算法-硬币问题</h1><h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>假设有 1 元，3 元，5 元的硬币若干（无限），现在需要凑出 11 元，问如何组合才能使硬币的数量最少？</p>
+<h2 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h2><p>乍看之下，我们简单的运用一下心算就能解出需要 2 个 5 元和 1 个 1 元的解。当然这里只是列出了这个问题比较简单的情况。当硬币的币制或者种类变化，并且需要凑出的总价值变大时，就很难靠简单的计算得出结论了。贪心算法可以在一定的程度上得出较优解，但不是每次都能得出最优解。</p>
+<p>这里运用动态规划的思路解决该问题。按照一般思路，我们先从最基本的情况来一步一步地推导。</p>
+<p>我们先假设一个函数 <em>d(i)</em> 来表示需要凑出 <em>i</em> 的总价值需要的最少硬币数量。</p>
+<ol>
+<li>当 <em>i = 0</em> 时，很显然我们可以知道 <em>d(0) = 0</em>。因为不要凑钱了嘛，当然也不需要任何硬币了。<strong>注意这是很重要的一步，其后所有的结果都从这一步延伸开来</strong>。</li>
+<li>当 <em>i = 1</em> 时，因为我们有 1 元的硬币，所以直接在第 1 步的基础上，加上 1 个 1 元硬币，得出 <em>d(1) = 1</em>。</li>
+<li>当 <em>i = 2</em> 时，因为我们并没有 2 元的硬币，所以只能拿 1 元的硬币来凑。在第 2 步的基础上，加上 1 个 1 元硬币，得出 <em>d(2) = 2</em>。</li>
+<li>当 <em>i = 3</em> 时，我们可以在第 3 步的基础上加上 1 个 1 元硬币，得到 <em>3</em> 这个结果。但其实我们有 3 元硬币，所以这一步的最优结果不是建立在第 3 步的结果上得来的，而是应该建立在第 1 步上，加上 1 个 3 元硬币，得到 <em>d(3) = 1</em>。</li>
+</ol>
+<p>接着就不再举例了，我们来分析一下。可以看出，除了第 1 步这个看似基本的公理外，其他往后的结果都是建立在它之前得到的某一步的最优解上，加上 1 个硬币得到。得出：</p>
+<p><em>d(i) = d(j) + 1</em></p>
+<p>这里 <em>j &lt; i</em>。通俗地讲，我们需要凑出 <em>i</em> 元，就在凑出 <em>j</em> 的结果上再加上某一个硬币就行了。</p>
+<p>那这里我们加上的是哪个硬币呢。嗯，其实很简单，把每个硬币试一下就行了：</p>
+<ol>
+<li>假设最后加上的是 1 元硬币，那 <em>d(i) = d(j) + 1 = d(i - 1) + 1</em>。</li>
+<li>假设最后加上的是 3 元硬币，那 <em>d(i) = d(j) + 1 = d(i - 3) + 1</em>。</li>
+<li>假设最后加上的是 5 元硬币，那 <em>d(i) = d(j) + 1 = d(i - 5) + 1</em>。</li>
+</ol>
+<p>我们分别计算出 <em>d(i - 1) + 1</em>，<em>d(i - 3) + 1</em>，<em>d(i - 5) + 1</em> 的值，取其中的最小值，即为最优解，也就是 <em>d(i)</em>。</p>
+<p>最后公式：</p>
+<p><img src="/Users/david/david/00projects/00markdown/pic/1046505-20161024143029437-524511140.png" alt="img"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MinCoins</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span>[] coins = &#123; <span class="number">1</span>, <span class="number">3</span>, <span class="number">5</span> &#125;;</span><br><span class="line">        <span class="keyword">int</span> value = <span class="number">11</span>;</span><br><span class="line">        CoinDp(value, coins);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">CoinDp</span><span class="params">(<span class="keyword">int</span> n, <span class="keyword">int</span>[] coinValue)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> count = <span class="number">0</span>;<span class="comment">// 记录执行次数</span></span><br><span class="line">        <span class="keyword">int</span>[] min = <span class="keyword">new</span> <span class="keyword">int</span>[n + <span class="number">1</span>]; <span class="comment">// 用来存储得到n块钱需要的硬币数的最小值</span></span><br><span class="line">        min[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; i++) &#123;</span><br><span class="line">            min[i] = Integer.MAX_VALUE;<span class="comment">// 初始化数组中的每个值都是最大的整数</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; coinValue.length; j++) &#123;</span><br><span class="line">                count++;</span><br><span class="line">                <span class="keyword">if</span> (i &gt;= coinValue[j] &amp;&amp; min[i] &gt; min[i - coinValue[j]] + <span class="number">1</span>) &#123;</span><br><span class="line">                    min[i] = min[i - coinValue[j]] + <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(<span class="string">"获取"</span> + i + <span class="string">"块钱，最少需要的硬币数："</span> + min[i] + <span class="string">",执行的次数："</span> + count);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(min[n]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>参考：</p>
+<p><a href="https://blog.csdn.net/weixin_38278878/article/details/80037455" target="_blank" rel="noopener">https://blog.csdn.net/weixin_38278878/article/details/80037455</a></p>
+<p><a href="https://www.cnblogs.com/snowInPluto/p/5992846.html" target="_blank" rel="noopener">https://www.cnblogs.com/snowInPluto/p/5992846.html</a></p>
+<p><a href="https://www.cnblogs.com/wuyuegb2312/p/3281264.html" target="_blank" rel="noopener">https://www.cnblogs.com/wuyuegb2312/p/3281264.html</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/presto笔记/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/07/12/hadoop-spark/presto笔记/" class="post-title-link" itemprop="url">presto笔记</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-13 15:36:33" itemprop="dateModified" datetime="2019-06-13T15:36:33+08:00">2019-06-13</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2017/07/12/hadoop-spark/presto笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/presto笔记/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="增加kafka配置"><a href="#增加kafka配置" class="headerlink" title="增加kafka配置"></a>增加kafka配置</h1><p>1、在<code>/opt/presto-server-0.152/etc/catalog/</code>增加文件<code>kafka.properties</code>，内容是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">connector.name=kafka</span><br><span class="line">kafka.table-names=showup,click    </span><br><span class="line">kafka.nodes=10.11.10.33:9092</span><br><span class="line">#kafka.hide-internal-columns-hidden=false</span><br><span class="line">kafka.default-schema=rawdata</span><br></pre></td></tr></table></figure>
+<p>其中，</p>
+<blockquote>
+<p>kafka.table-names 跟topic名称相同，如果topic是带前缀的，比如rawdata.showup，那么schema就是rawdata。</p>
+<p>kafka.hide-internal-columns-hidden 建表后有一系列内置column，默认这些是隐藏的，设为false使其显示。</p>
+<p>kafka.default-schema 如果topic没有前缀，默认的schema是default，可以用该参数修改默认schema名称。</p>
+</blockquote>
+<p>2、在etc的config.propreties中的datasources增加kafka</p>
+<p>3、增加topic描述文件</p>
+<p>放在<code>etc/kafka</code>目录中，以<code>.json</code>结尾，文件名和表名最好一致。例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;tableName&quot;: &quot;click_dis&quot;,</span><br><span class="line">    &quot;schemaName&quot;: &quot;rawdata&quot;,</span><br><span class="line">    &quot;topicName&quot;: &quot;click_dis&quot;,</span><br><span class="line">    &quot;key&quot;: &#123;</span><br><span class="line">        &quot;dataFormat&quot;: &quot;raw&quot;,</span><br><span class="line">        &quot;fields&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;name&quot;: &quot;kafka_key&quot;,</span><br><span class="line">                &quot;type&quot;: &quot;VARCHAR&quot;,</span><br><span class="line">                &quot;hidden&quot;: &quot;false&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;message&quot;: &#123;</span><br><span class="line">        &quot;dataFormat&quot;: &quot;json&quot;,</span><br><span class="line">        &quot;fields&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;name&quot;: &quot;dt_i&quot;,</span><br><span class="line">                &quot;mapping&quot;: &quot;dt_i&quot;,</span><br><span class="line">                &quot;type&quot;: &quot;BIGINT&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>4、重启presto服务器</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/opt/presto-server-0.152/bin/launcher restart</span><br></pre></td></tr></table></figure>
+<p>5、连接服务器测试</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/opt/jdk1.8.0_102/bin/java -jar /opt/presto-server-0.152/presto-cli --server 10.11.10.33:8082 --catalog kafka --schema rawdata</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from click limit 10;</span><br></pre></td></tr></table></figure>
+<p>其中内置column的意思是：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Column name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>_partition_id</td>
+<td>BIGINT</td>
+<td>包含这行数据的kafka partition的id</td>
+</tr>
+<tr>
+<td>_partition_offset</td>
+<td>BIGINT</td>
+<td>kafka partition的offset</td>
+</tr>
+<tr>
+<td>_segment_start</td>
+<td>BIGINT</td>
+<td>在该segment中的最小offset</td>
+</tr>
+<tr>
+<td>_segment_end</td>
+<td>BIGINT</td>
+<td>在该segment中的最大offset</td>
+</tr>
+<tr>
+<td>_segment_count</td>
+<td>BIGINT</td>
+<td>对于一个未压缩的topic，_segment_start + _segment_count is equal to _partition_offset</td>
+</tr>
+<tr>
+<td>_message_corrupt</td>
+<td>BOOLEAN</td>
+<td>为TRUE就说明解码器不能解析message</td>
+</tr>
+<tr>
+<td>_message</td>
+<td>VARCHAR</td>
+<td>UTF-8编码的string，只对text的topic有效</td>
+</tr>
+<tr>
+<td>_message_length</td>
+<td>BIGINT</td>
+<td>message长度</td>
+</tr>
+<tr>
+<td>_key_corrupt</td>
+<td>BOOLEAN</td>
+<td>为TRUE就说明解码器不能解析key</td>
+</tr>
+<tr>
+<td>_key</td>
+<td>VARCHAR</td>
+<td>UTF-8编码的string</td>
+</tr>
+<tr>
+<td>_key_length</td>
+<td>BIGINT</td>
+<td>key的长度</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>查询key</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select count(1) from showup_dis where kafka_key like &apos;20161009%&apos;;</span><br></pre></td></tr></table></figure>
+<h1 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h1><h2 id="string转日期"><a href="#string转日期" class="headerlink" title="string转日期"></a>string转日期</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">date(b.data_date)</span><br></pre></td></tr></table></figure>
+<h2 id="日期转string"><a href="#日期转string" class="headerlink" title="日期转string"></a>日期转string</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cast(gpstime as varchar)</span><br></pre></td></tr></table></figure>
+<h2 id="时间的string转timestamp"><a href="#时间的string转timestamp" class="headerlink" title="时间的string转timestamp"></a>时间的string转timestamp</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cast(&apos;2019-03-01 12:00:00&apos; as timestamp)</span><br></pre></td></tr></table></figure>
+<h2 id="日期加减"><a href="#日期加减" class="headerlink" title="日期加减"></a>日期加减</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cast((date(b.data_date) - interval &apos;1&apos; day) as varchar)</span><br></pre></td></tr></table></figure>
+<h2 id="日期转时间戳"><a href="#日期转时间戳" class="headerlink" title="日期转时间戳"></a>日期转时间戳</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select to_unixtime(timestamp &apos;2018-12-27&apos;)*1000</span><br></pre></td></tr></table></figure>
+<h2 id="两个日期相差的天数"><a href="#两个日期相差的天数" class="headerlink" title="两个日期相差的天数"></a>两个日期相差的天数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">date_diff(&apos;day&apos;, date(last_date), date(&apos;2019-03-05&apos;))</span><br></pre></td></tr></table></figure>
+<h1 id="presto-ui实现总数的统计"><a href="#presto-ui实现总数的统计" class="headerlink" title="presto ui实现总数的统计"></a>presto ui实现总数的统计</h1><p>/Users/david/david/git/yanagishima/src/main/java/yanagishima/service/PrestoServiceImpl.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processData</span><span class="params">(StatementClient client, String datasource, String queryId, String query, PrestoQueryResult prestoQueryResult, List&lt;String&gt; columns, List&lt;List&lt;String&gt;&gt; rowDataList, <span class="keyword">long</span> start, <span class="keyword">int</span> limit, String userName)</span> </span>&#123;</span><br><span class="line">        Duration queryMaxRunTime = <span class="keyword">new</span> Duration(<span class="keyword">this</span>.yanagishimaConfig.getQueryMaxRunTimeSeconds(datasource), TimeUnit.SECONDS);</span><br><span class="line">        Path dst = getResultFilePath(datasource, queryId, <span class="keyword">false</span>);</span><br><span class="line">        <span class="keyword">int</span> lineNumber = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> maxResultFileByteSize = yanagishimaConfig.getMaxResultFileByteSize();</span><br><span class="line">        <span class="keyword">int</span> resultBytes = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">try</span> (BufferedWriter bw = Files.newBufferedWriter(dst, StandardCharsets.UTF_8);</span><br><span class="line">             CSVPrinter csvPrinter = <span class="keyword">new</span> CSVPrinter(bw, CSVFormat.EXCEL.withDelimiter(<span class="string">'\t'</span>).withNullString(<span class="string">"\\N"</span>).withRecordSeparator(System.getProperty(<span class="string">"line.separator"</span>)));) &#123;</span><br><span class="line">            csvPrinter.printRecord(columns);</span><br><span class="line">            lineNumber++;</span><br><span class="line">            <span class="keyword">while</span> (client.isRunning()) &#123;</span><br><span class="line">                Iterable&lt;List&lt;Object&gt;&gt; data = client.currentData().getData();</span><br><span class="line">                <span class="keyword">if</span> (data != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    <span class="keyword">for</span>(List&lt;Object&gt; row : data) &#123;</span><br><span class="line">                        List&lt;String&gt; columnDataList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">                        List&lt;Object&gt; tmpColumnDataList = row.stream().collect(Collectors.toList());</span><br><span class="line">                        <span class="keyword">for</span> (Object tmpColumnData : tmpColumnDataList) &#123;</span><br><span class="line">                            <span class="keyword">if</span> (tmpColumnData <span class="keyword">instanceof</span> Long) &#123;</span><br><span class="line">                                columnDataList.add(((Long) tmpColumnData).toString());</span><br><span class="line">                            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tmpColumnData <span class="keyword">instanceof</span> Double) &#123;</span><br><span class="line">                                <span class="keyword">if</span>(Double.isNaN((Double)tmpColumnData) || Double.isInfinite((Double) tmpColumnData)) &#123;</span><br><span class="line">                                    columnDataList.add(tmpColumnData.toString());</span><br><span class="line">                                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                    columnDataList.add(BigDecimal.valueOf((Double) tmpColumnData).toPlainString());</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                <span class="keyword">if</span> (tmpColumnData == <span class="keyword">null</span>) &#123;</span><br><span class="line">                                    columnDataList.add(<span class="keyword">null</span>);</span><br><span class="line">                                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                    columnDataList.add(tmpColumnData.toString());</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">try</span> &#123;</span><br><span class="line">                            csvPrinter.printRecord(columnDataList);</span><br><span class="line">                            lineNumber++;</span><br><span class="line">                            resultBytes += columnDataList.toString().getBytes(StandardCharsets.UTF_8).length;</span><br><span class="line">                            <span class="keyword">if</span>(resultBytes &gt; maxResultFileByteSize) &#123;</span><br><span class="line">                                String message = String.format(<span class="string">"Result file size exceeded %s bytes. queryId=%s, datasource=%s"</span>, maxResultFileByteSize, queryId, datasource);</span><br><span class="line">                                storeError(db, datasource, <span class="string">"presto"</span>, client.currentStatusInfo().getId(), query, userName, message);</span><br><span class="line">                                <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(message);</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">if</span> (client.getQuery().toLowerCase().startsWith(<span class="string">"show"</span>) || rowDataList.size() &lt; limit) &#123;</span><br><span class="line">                            rowDataList.add(columnDataList);</span><br><span class="line">                        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                            prestoQueryResult.setWarningMessage(String.format(<span class="string">"now fetch size is %d. This is more than %d. So, fetch operation stopped."</span>, rowDataList.size(), limit));</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                client.advance();</span><br><span class="line">                checkTimeout(db, queryMaxRunTime, start, datasource, <span class="string">"presto"</span>, queryId, query, userName);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        prestoQueryResult.setLineNumber(lineNumber);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">long</span> size = Files.size(dst);</span><br><span class="line">            DataSize rawDataSize = <span class="keyword">new</span> DataSize(size, DataSize.Unit.BYTE);</span><br><span class="line">            prestoQueryResult.setRawDataSize(rawDataSize.convertToMostSuccinctDataSize());</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h1 id="空值替换"><a href="#空值替换" class="headerlink" title="空值替换"></a>空值替换</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">coalesce</span><br></pre></td></tr></table></figure>
 
           
         
@@ -1165,7 +1258,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/hadoop-spark/spark/spark笔记-local开发/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/模型评估与选择/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -1185,7 +1278,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/07/12/hadoop-spark/spark/spark笔记-local开发/" class="post-title-link" itemprop="url">spark笔记-local开发</a>
+                <a href="/2017/07/12/机器学习/模型评估与选择/" class="post-title-link" itemprop="url">模型评估与选择</a>
               
             
           </h1>
@@ -1225,7 +1318,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-11-13 10:00:42" itemprop="dateModified" datetime="2018-11-13T10:00:42+08:00">2018-11-13</time>
+                <time title="修改时间：2018-01-29 21:43:42" itemprop="dateModified" datetime="2018-01-29T21:43:42+08:00">2018-01-29</time>
               </span>
             
           
@@ -1239,7 +1332,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/hadoop-spark/" itemprop="url" rel="index"><span itemprop="name">hadoop-spark</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
 
                 
                 
@@ -1257,8 +1350,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/hadoop-spark/spark/spark笔记-local开发/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/hadoop-spark/spark/spark笔记-local开发/" itemprop="commentCount"></span>
+                <a href="/2017/07/12/机器学习/模型评估与选择/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/模型评估与选择/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1291,47 +1384,31 @@
       
         
           
-            <h1 id="mac安装spark环境"><a href="#mac安装spark环境" class="headerlink" title="mac安装spark环境"></a>mac安装spark环境</h1><p><a href="https://blog.csdn.net/python_tty/article/details/72820469" target="_blank" rel="noopener">https://blog.csdn.net/python_tty/article/details/72820469</a></p>
-<h2 id="安装scala"><a href="#安装scala" class="headerlink" title="安装scala"></a>安装scala</h2><p><a href="https://downloads.lightbend.com/scala/2.10.7/scala-2.10.7.tgz" target="_blank" rel="noopener">2.10.7</a></p>
-<p>下载后放到<code>david/david/opt/scala</code></p>
-<p>修改<code>.bash_profile</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export SCALA_HOME=&quot;/Users/david/david/opt/scala-2.10.7&quot;</span><br><span class="line">export PATH=&quot;$SCALA_HOME/bin:$PATH&quot;</span><br></pre></td></tr></table></figure>
-<h2 id="下载spark"><a href="#下载spark" class="headerlink" title="下载spark"></a>下载spark</h2><p><a href="http://spark.apache.org/downloads.html" target="_blank" rel="noopener">http://spark.apache.org/downloads.html</a></p>
-<p>下载的是1.6.3的版本</p>
-<p>加到环境变量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export SPARK_HOME=&quot;/Users/david/david/opt/spark-1.6.3-bin-hadoop2.6&quot;</span><br><span class="line">export PATH=&quot;$SPARK_HOME/bin:$PATH&quot;</span><br></pre></td></tr></table></figure>
-<h2 id="允许ssh"><a href="#允许ssh" class="headerlink" title="允许ssh"></a>允许ssh</h2><h2 id="启动spark-shell"><a href="#启动spark-shell" class="headerlink" title="启动spark-shell"></a>启动spark-shell</h2><p>进入到spark安装目录的sbin/目录下，执行 ./start-all 启动spark </p>
-<p>进入到spark安装目录的bin/目录下，执行 ./spark-shell，看spark 是否安装成功</p>
-<h1 id="spark开发环境"><a href="#spark开发环境" class="headerlink" title="spark开发环境"></a>spark开发环境</h1><p>一、环境</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">			&lt;groupId&gt;org.apache.spark&lt;/groupId&gt;</span><br><span class="line">			&lt;artifactId&gt;spark-core_2.10&lt;/artifactId&gt;</span><br><span class="line">			&lt;version&gt;1.6.1&lt;/version&gt;</span><br><span class="line">		&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<p>二、编写local的spark程序<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">import org.apache.log4j.&#123; Level, Logger &#125;</span><br><span class="line">import org.apache.spark.&#123; SparkConf, SparkContext &#125;</span><br><span class="line"></span><br><span class="line">def main(args: Array[String]): Unit = &#123;</span><br><span class="line">    //关闭一些不必要的日志</span><br><span class="line">    Logger.getLogger(&quot;org.apache.spark&quot;).setLevel(Level.WARN)</span><br><span class="line">    Logger.getLogger(&quot;org.eclipse.jetty.server&quot;).setLevel(Level.OFF)</span><br><span class="line">    </span><br><span class="line">    val conf = new SparkConf().setAppName(&quot;wordSegname&quot;).setMaster(&quot;local[4]&quot;).</span><br><span class="line">    set(&quot;spark.sql.shuffle.partitions&quot;,&quot;10&quot;).set(&quot;spark.network.timeout&quot;,&quot;30s&quot;)</span><br><span class="line">    .set(&quot;spark.shuffle.compress&quot;,&quot;true&quot;).set(&quot;spark.shuffle.spill.compress&quot;,&quot;true&quot;)</span><br><span class="line">    .set(&quot;spark.shuffle.manager&quot;,&quot;sort&quot;)</span><br><span class="line">    val sc = new SparkContext(conf)</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
-<p>程序示例<code>[WordTest.scala](../../../../code/spark/spark-buzzads/src/main/scala/com/iclick/word_segmentation/WordTest.scala)</code></p>
-<h1 id="spark数据操作"><a href="#spark数据操作" class="headerlink" title="spark数据操作"></a>spark数据操作</h1><h2 id="sparkRDD"><a href="#sparkRDD" class="headerlink" title="sparkRDD"></a>sparkRDD</h2><h3 id="创建RDD"><a href="#创建RDD" class="headerlink" title="创建RDD"></a>创建RDD</h3><p>1、数据集合</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">    var data = Array(1,2,3,4,5,6,7,8,9)</span><br><span class="line">    var disData = sc.parallelize(data,3)</span><br></pre></td></tr></table></figure>
-<p>创建一个RDD，包括1-9，分在3个分区</p>
-<p>2、外部数据源</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">textFile(path:String, minPartitions:Int) //第一个指定路径，第二个指定分区</span><br></pre></td></tr></table></figure>
-<h3 id="RDD转换"><a href="#RDD转换" class="headerlink" title="RDD转换"></a>RDD转换</h3><p>1、map，对每个元素执行一个指定函数产生新的RDD<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val rdd1 = sc.parallelize(1 to 9, 3)</span><br><span class="line">val rdd2 = rdd1.map(x =&gt; x*2)</span><br></pre></td></tr></table></figure></p>
-<h1 id="spark-hive-local"><a href="#spark-hive-local" class="headerlink" title="spark hive local"></a>spark hive local</h1><p>local的spark连接测试服务器的hive</p>
-<p>1、复制hive环境上的<code>hdfs-site.xml</code>和<code>hive-site.xml</code>到项目的resource，如果有不识别的hostname则修改</p>
-<p>2、写法类似于</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.mljr.spark.gps.sample</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.spark.&#123;<span class="type">SparkConf</span>, <span class="type">SparkContext</span>&#125;</span><br><span class="line"><span class="keyword">import</span> org.apache.spark.sql.hive.<span class="type">HiveContext</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">HiveTest</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">val</span> conf = <span class="keyword">new</span> <span class="type">SparkConf</span>().setAppName(<span class="string">"test"</span>).setMaster(<span class="string">"local[2]"</span>)</span><br><span class="line">    <span class="keyword">val</span> sc = <span class="keyword">new</span> <span class="type">SparkContext</span>(conf)</span><br><span class="line">    <span class="keyword">val</span> sqlContext = <span class="keyword">new</span> <span class="type">HiveContext</span>(sc)</span><br><span class="line">    sqlContext.sql(<span class="string">"SELECT * FROM bdwh_tbl.tbl_s057_car_gps_position limit 1"</span>).collect.foreach(println)</span><br><span class="line">	sc.stop()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.lang.RuntimeException: Unable to instantiate org.apache.hadoop.hive.ql.metadata.Session</span><br></pre></td></tr></table></figure>
-<p>这是因为在创建<code>SQLContext</code>实例的时候，要求spark编译的Hive版本和HiveMetaStore里面记录的Hive版本一致，我们可以通过配置<code>hive.metastore.schema.verification</code>参数来取消这种验证，这个参数的默认值是true，我们可以取消验证，配置如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;property&gt;  </span><br><span class="line">   &lt;name&gt;hive.metastore.schema.verification&lt;/name&gt;  </span><br><span class="line">   &lt;value&gt;false&lt;/value&gt;  </span><br><span class="line">    &lt;description&gt;  </span><br><span class="line">    Enforce metastore schema version consistency.  </span><br><span class="line">    True: Verify that version information stored in metastore matches with one from Hive jars.  Also disable automatic  </span><br><span class="line">          schema migration attempt. Users are required to manully migrate schema after Hive upgrade which ensures  </span><br><span class="line">          proper metastore schema migration. (Default)  </span><br><span class="line">    False: Warn if the version information stored in metastore doesn&apos;t match with one from in Hive jars.  </span><br><span class="line">    &lt;/description&gt;  </span><br><span class="line"> &lt;/property&gt;</span><br></pre></td></tr></table></figure>
-<p>再报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Could not connect to meta store using any of the URIs provided. Most recent failure: org.apache.thrift.transport.TTransportException: java.net.UnknownHostException: slave1</span><br></pre></td></tr></table></figure>
-<h1 id="控制日志输出级别"><a href="#控制日志输出级别" class="headerlink" title="控制日志输出级别"></a>控制日志输出级别</h1><p>修改log4j.properties</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">log4j.rootCategory=WARN, console</span><br></pre></td></tr></table></figure>
-<p>默认是<code>INFO, console</code>，</p>
-<p>更丰富的可以是<code>STDOUT, DEBUG, INFO, console</code></p>
-<p>精简的是<code>WARN, console</code></p>
-<h1 id="no-snappyjava-in-java-library-path"><a href="#no-snappyjava-in-java-library-path" class="headerlink" title="no snappyjava in java.library.path"></a>no snappyjava in java.library.path</h1><p><a href="https://stackoverflow.com/questions/30039976/unsatisfiedlinkerror-no-snappyjava-in-java-library-path-when-running-spark-mlli" target="_blank" rel="noopener">https://stackoverflow.com/questions/30039976/unsatisfiedlinkerror-no-snappyjava-in-java-library-path-when-running-spark-mlli</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.apache.spark&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spark-core_2.10&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;$&#123;spark.version&#125;&lt;/version&gt;</span><br><span class="line">    &lt;exclusions&gt;</span><br><span class="line">        &lt;exclusion&gt;</span><br><span class="line">           &lt;groupId&gt;org.xerial.snappy&lt;/groupId&gt;</span><br><span class="line">           &lt;artifactId&gt;snappy-java&lt;/artifactId&gt;</span><br><span class="line">        &lt;/exclusion&gt;</span><br><span class="line">    &lt;/exclusions&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<p>and then adding</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.xerial.snappy&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;snappy-java&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;1.0.5&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<h2 id=""><a href="#" class="headerlink" title=" "></a> </h2>
+            <h1 id="1、模型评估方法"><a href="#1、模型评估方法" class="headerlink" title="1、模型评估方法"></a>1、模型评估方法</h1><blockquote>
+<p>可重复采样：<strong>在训练集小</strong>，难以划分训练/测试集是有用。此外，能产生多个不同训练集，对<strong>集成学习</strong>等方法有很大的好处。但是会改变初始数据集分布。</p>
+<p>在<strong>初始数据量足够</strong>时，用留出法或者交叉验证法。</p>
+</blockquote>
+<h2 id="1-1-留出法Hold-out"><a href="#1-1-留出法Hold-out" class="headerlink" title="1.1 留出法Hold-out"></a>1.1 留出法Hold-out</h2><p>将数据集D分成两个互斥的集合。</p>
+<p>训练/测试集尽量保证数据一致性，用分层采样，正负样本同比例。</p>
+<p>由于单次估计结果往往不可靠，使用留出法时，一般要采用若干次随机划分，重复进行实验后取平均值作为评估值。      ‘</p>
+<h2 id="1-2-交叉验证法"><a href="#1-2-交叉验证法" class="headerlink" title="1.2 交叉验证法"></a>1.2 交叉验证法</h2><p>将D分成k个大小相似的互斥子集，每个子集用分层采样得到。</p>
+<p>每次用k-1个子集的并集作为训练集，余下的子集作为测试集。这样获得k组训练/测试集。最终返回是k个测试结果的均值。</p>
+<p>常用10折交叉验证。</p>
+<h2 id="1-3-可重复采样"><a href="#1-3-可重复采样" class="headerlink" title="1.3 可重复采样"></a>1.3 可重复采样</h2><p>bootstrapping sampling：给定包含m个样本的数据集D，我们进行采样产生数据集$D’$，每次随机从D中挑选一个样本，将其拷贝放入$D’$，再将样本放回D。重复m次，得到包含m个样本的$D’$。</p>
+<p>样本在m次采样中始终不被采到的概率是$(1-\frac 1 m)^m$，取极限得到</p>
+<script type="math/tex; mode=display">
+{\lim_{m \mapsto \infty  }}(1-\frac 1 m)^m  \mapsto \frac 1 e\approx0.368</script><p>即通过bootstrapping，D中有36.8%的样本未出现在$D’$中，于是可以将$D’$作为训练集，$D-D’$作为测试集，这样可以有1/3个未出现在训练集的样本用于测试。测试结果称为“包外估计”（out-of-bag estimate）。</p>
+<h2 id="1-4-调参"><a href="#1-4-调参" class="headerlink" title="1.4 调参"></a>1.4 调参</h2><blockquote>
+<p>我们在模型评估时往往用来确定算法和参数。当这些确定后，要用所有的D再训练一次，才是最终的模型。</p>
+</blockquote>
+<h1 id="2、性能度量"><a href="#2、性能度量" class="headerlink" title="2、性能度量"></a>2、性能度量</h1><p>回归最常用的是“均方误差”（mean squared error）</p>
+<script type="math/tex; mode=display">
+E(f;D) = \frac 1 m \sum_{i=1}^m(f(x_i)-y_i )^2</script><p>更一般的，对于数据分布D和概率密度函数$p(\cdot )$，均方误差可描述为</p>
+<script type="math/tex; mode=display">
+E(f;D) = \int_{x \in D}(f(x)-y)^2p(x)dx</script><p>分类的性能度量更复杂</p>
+<h2 id="2-1-错误率和精度"><a href="#2-1-错误率和精度" class="headerlink" title="2.1 错误率和精度"></a>2.1 错误率和精度</h2><p>错误率：分类错误的样本占总样本的比例</p>
+<p>精度：分类正确的样本占总样本的比例</p>
+
           
         
       
@@ -1944,270 +2021,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/机器学习/计算广告/广告反作弊/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/12/机器学习/计算广告/广告反作弊/" class="post-title-link" itemprop="url">广告反作弊</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-03-17 20:50:31" itemprop="dateModified" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/计算广告/" itemprop="url" rel="index"><span itemprop="name">计算广告</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2017/07/12/机器学习/计算广告/广告反作弊/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/机器学习/计算广告/广告反作弊/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>秒针发布过《互联网广告反作弊技术白皮书》</p>
-<p>腾讯灯塔联手秒针、AdMaster发布</p>
-<h1 id="腾讯《2017广告反欺诈白皮书》"><a href="#腾讯《2017广告反欺诈白皮书》" class="headerlink" title="腾讯《2017广告反欺诈白皮书》"></a>腾讯《2017广告反欺诈白皮书》</h1><p>日均校验40亿广告请求，识别的作弊比率在15%左右。部分行业和campaign中，作弊率有60%。</p>
-<h2 id="欺诈手段"><a href="#欺诈手段" class="headerlink" title="欺诈手段"></a>欺诈手段</h2><ul>
-<li>虚假流量。</li>
-</ul>
-<p>某APP在地推时，新增用户暴涨。95%的新增用户的共同特征：</p>
-<p><strong>ROM编译机名称一致；指令逃逸差异数与正常用户不一致；CPU结构为X86，为PC机模拟器；文件系统类型的差异度与正常用户不一致</strong>。</p>
-<p>某APP的新增用户中，工作室批量刷量的特征有：</p>
-<p><strong>安装时间具有明显的规律；手机APP安装数量一致；明显的地域集中性</strong>。</p>
-<p>2.2 黑产技术</p>
-<p>1、广告作弊类型分类</p>
-<p>1）模拟器刷量：电脑模拟器刷量、手机软件模拟刷量、脚本刷量（录制行为跑循环任务）。</p>
-<p>2）真假机用户：储备大量手机或者sim卡，利用数据线push命令到手机，手机执行命令。</p>
-<p>3）静默安装（真机真用户假行为）。人工方式或网络传播方式将木马/具有再分发能力的应用植入到用户手机，形成僵尸网络，在用户无感知的情况下，完成App的下载、激活和删除等一系列操作。</p>
-<p>4）羊毛党（真机真用户真行为假动机）：登录一次就删除应用、使用时长极短、留存率极低。在大部份的情况下，这种用户对业务的健康发展并无太大价值。</p>
-<p>5）广告素材、篇幅偷换（不可见）。“1 像素广告”指在用户的手机屏幕上只展示1个像素大小的广告。这种广告，用户看不见，但统计工具可以统计到，仍然会作为曝光广告与广告主结算，给广告主带来经济损失。</p>
-<p>6）以次充好（不匹配）。部分媒体会将广告主原本定向的一线城市用户偷偷换成二三线城市用户，达到以次充好的目的。</p>
-<h2 id="应对方法"><a href="#应对方法" class="headerlink" title="应对方法"></a>应对方法</h2><p>2.3 反作弊技术</p>
-<p>1）用户群体数据检测。低阶技术，常见方式有：</p>
-<p><strong>a.看留存率</strong>。真实的用户的留存曲线是一条平滑的指数衰减曲线，如果发现留存曲线存在陡升陡降的异常波动，则判断刷量者干预了数据。</p>
-<p><strong>b.看用户终端、网络信息</strong>。如根据经验分析渠道新增用户或者启动用户的设备排名;2G、3G、4G的使用比例分布是否正常等。</p>
-<p><strong>c.看用户注册信息</strong>。比如说注册昵称的分布和规律等。</p>
-<p>以上操作均效率低下。</p>
-<p>2）用户行为特征分析</p>
-<p><strong>a.单个指标</strong>。与黑IP库进行比对，是否为黑名单IP、是否为代理IP;与IMEI库进行对比，是否为为黑IMEI;</p>
-<p><strong>b.群体指标</strong>。用户的IP、IMEI、机型、OS、位置信息、运营商、接入方式的<strong>分布</strong>是否符合先验数据的分布</p>
-<p><strong>c.设备一致性验证</strong>。CPU、制造商、MAC地址、IMEI、机型、操作系统的一致性验证。</p>
-<p>简单粗暴，没有黑白转换机制，误判率高。</p>
-<p><strong>这些方法容易被刷量者利用</strong>。在某电商专业Android app游戏激活、注册、留存、付费、应用市场好评平台上，买主只需要很小的代价，即可刷出完全符合正常用户规律的留存率、IP分布机型分布使用时长等。</p>
-<p>3）终端特征分析+云端交叉验证</p>
-<p>“查”模型负责找寻黑产界的新型作弊方式，提升整体模型的覆盖率</p>
-<p>“杀”模型负责准确识别恶意份子</p>
-<p>“验”模型通过多业务交叉验证，负责保证“查”、“杀”模型的准确率</p>
-<p><strong>终端识别模块</strong>（灯塔SDK稽核模块）:该模块主要是采用机器学习算法选取系统中所有可用的信息作为特征，然后对这些特征进行运算得到该<strong>设备的指纹，</strong>可以有效识别手机模拟器、修改系统参数等行为。</p>
-<p><strong>基于规则的识别模块</strong>（业务自有模块）:该模块一般是通过业务经验及对历史可疑渠道的总结形成的<strong>反作弊规则</strong>，可以理解为多维组合规则，一般需根据业务成本、对渠道的容忍度<strong>设置关键变量的阈值</strong>。</p>
-<p><strong>基于数据挖掘的识别模块</strong>（灯塔云端模块）:该模块主要从硬件信息、用户活跃、用户行为进行多维度、多业务交叉验证，分别计算每个维度下面的不同特征值，结合决策树、LR、贝叶斯网络等多种算法进行精准的定位。<strong>分类</strong></p>
-<p>为了增强识别的准确性和稳定性，模块之间、模块内部均采用集成学习方法的思想，其核心思想是在模块内对同一个训练集训练不同的分类器，然后把这些分类器结合起来构成一个最终的分类器，而每一个模块可以针对不同的作弊手段进行识别，再把模块与模块结合，才能识别所有的作弊手段。    </p>
-<h1 id="admaster《广告反欺诈研究报告》2016"><a href="#admaster《广告反欺诈研究报告》2016" class="headerlink" title="admaster《广告反欺诈研究报告》2016"></a>admaster《广告反欺诈研究报告》2016</h1><p>今年 1 月 29 日和 3 月 2 日,宝洁公司首席品牌官 Marc Pritchard 分别在美国互动广告局(Interactive<br>Advertising Bureau, IAB)和美国广告主协会(Association of National Advertisers, ANA)两个年度<br>重要峰会上进行主题发言,针对数字广告透明度和可见性标准的言论引发了全球营销圈和数字行业的热议。<br>宝洁呼吁业界在四个方面采取行动:</p>
-<ol>
-<li>数字广告采纳一套统一的可见性测量标准;</li>
-<li>贯彻第三方测评机构</li>
-</ol>
-<p>的验证审核;</p>
-<ol>
-<li>提倡全面透明的代理公司合同机制;</li>
-<li>预防广告欺诈。</li>
-</ol>
-<p>AdMaster先后推出了 BlueAir、定投识别 (VOA)、监播实录 (SNAP) 等技术产品,逐步建立了“全方位、深层次、多角度”的广告反欺诈解决方案。尤其在程序化购买中,AdMaster 在投放前预判 (Pre-bid),即事前广告反欺诈技术。</p>
-<p><strong>BlueAir</strong>可以对智能电视IP、地域、频次以及User Agent等维度的异常流量进行甄别，将行为逻辑上不正常的设备加入黑名单，从而保障广告投放的安全。同时，与海信、康佳、创维、欢网等硬件厂家共同建立智能电视设备白名单，以便从设备维度进一步甄别流量真实性。</p>
-<p><strong>定投识别</strong></p>
-<p><strong>监播实录</strong></p>
-<p><strong>投放前预判</strong>。在流量请求、广告未展现时,根据历史流量质量进行排查,从而提前避免广告在无效流量上的投放。</p>
-<h2 id="无效流量类型"><a href="#无效流量类型" class="headerlink" title="无效流量类型"></a>无效流量类型</h2><p>1、广告可见性问题引发的低质量流量</p>
-<p>目前媒体的环境导致广告不易可见。AdMaster 在 AdServing 广告投放管理技术上能够实现广告可见性的预估判断。在多种广告形式的后测方面,通过独创的模型评估广告可见性表现。</p>
-<p>2、机器人无效流量（Non-Human Traffic）</p>
-<p>从最初的 cookie 和 IP不变的前提下,反复刷新页面和点击广告,造成广告曝光和点击的增加,到通过木马或者恶意程序控制海量人肉刷机、伪造大量 IP 与设备信息进行模拟访问、或将 IP 和 cookie、User Agent 一起进行轮替的流量造假方式,都属于机器人无效流量。</p>
-<p><strong>BlueAir</strong> 广告反欺诈技术能够结合历史异常数据,能够在流量请求、广告未展现时,即根据历史流量质量判断此流量的质量,在投放前通过 <strong>Pre-bid</strong> 判断出流量的异常,杜绝流量造假现象发生。</p>
-<p>3、视频类无效流量</p>
-<p>(1)针对剧目投偏现象,AdMaster <strong>定投识别</strong> (VOA) 功能通过 Referrer/ 剧目 ID 等方式解析 广告曝光时所<br><strong>播放剧目名称</strong>,并与广告主定投的剧目内容进行匹配。在移动端定投评估中,高诚信度的视频媒体也提供高度<br>配合。剧目投偏比例,一目了然。</p>
-<p>(2)针对时有发生的曝光代码调用,但是素材未正确展示的广告欺诈现象,AdMaster 利用<strong>监播实录</strong> (SNAP)<br>功能,采用类似于“神秘访客”概念的方法从海量抽样监测,将视频内容播放前的所有贴片内容录制下来,并<br>通过图像识别与适当的素材进行对比,判断素材是否被正确展示,以及是否按照要求展示。</p>
-<p>4、智能电视无效流量</p>
-<p>支持智能电视广告的监测模式一般有 3 种 : 分别是第三方 SDK 监测、C2S 和 S2S 两种 API。前两种相比 S2S 更为安全,也更容易监测流量异常情况,可以说 C2S API 是智能电视广告监测安全的起点和基础(S2S API 传输方式目前很难识别无效流量)。</p>
-<h1 id="inmobi《移动广告反作弊白皮书》"><a href="#inmobi《移动广告反作弊白皮书》" class="headerlink" title="inmobi《移动广告反作弊白皮书》"></a>inmobi《移动广告反作弊白皮书》</h1><p>没技术</p>
-<p>反作弊措施</p>
-<p>1）剔除自动流量。</p>
-<p>识别机器人脚本，分析展示和点击的质量。</p>
-<p>2）数据信号双重检测。</p>
-<p>将媒体共享的人群信息和从SDK收集的信息比对，对所有无效信息定位和删除。</p>
-<p>[部分有关 广告联盟作弊 与反作弊资料收集]（<a href="http://cwiki.apachecn.org/pages/viewpage.action?pageId=4882639）" target="_blank" rel="noopener">http://cwiki.apachecn.org/pages/viewpage.action?pageId=4882639）</a></p>
-<p>roadmap中，AD fraud的业界措施</p>
-<p>监控广告投放的效果；</p>
-<p>保存曝光设备的ip</p>
-<p>记录用户在landing页的行为</p>
-<p>网页分析</p>
-<p><strong>基于数据挖掘的识别模块</strong>（灯塔云端模块）:该模块主要从硬件信息、用户活跃、用户行为进行多维度、多业务交叉验证，分别计算每个维度下面的不同特征值，结合决策树、LR、贝叶斯网络等多种算法进行精准的定位。为了增强识别的准确性和稳定性，模块之间、模块内部均采用集成学习方法的思想，其核心思想是在模块内对同一个训练集训练不同的分类器，然后把这些分类器结合起来构成一个最终的分类器，而每一个模块可以针对不同的作弊手段进行识别，再把模块与模块结合，才能识别所有的作弊手段。</p>
-<p>这个方法未来肯定要实现的，大致是通过集成学习的方式，综合硬件信息，网页特征，用户行为</p>
-<p>最初我们只有url信息，提取url的特征判断投放的网页是否安全；</p>
-<p>后面对每条</p>
-<p>前期，通过分析url内容，判断网页是否安全，是否为虚假网页，网页内容与广告品牌是否有冲突。</p>
-<p>后面，分析曝光的详细信息，包括设备信息，用户特征，判断是否为作弊流量；分析网页元素和广告位置，判断广告可见性。</p>
-<p>再后面，在对url和黑名单有一定积累的基础上，在投放或竞价前检测投放环境，主动识别和屏蔽非安全流量</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/Elastic Search/elastic-search笔记/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -2381,6 +2194,221 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/" class="post-title-link" itemprop="url">4-1 TensorBoard网络结构</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-07-12 11:49:53" itemprop="dateCreated datePublished" datetime="2017-07-12T11:49:53+08:00">2017-07-12</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-03 09:31:14" itemprop="dateModified" datetime="2019-06-03T09:31:14+08:00">2019-06-03</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/深度学习/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/12/深度学习笔记/tensorflow/基础-莫烦教程/4-1 TensorBoard网络结构/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-1-tensorboard1/" target="_blank" rel="noopener">https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-1-tensorboard1/</a></p>
+<h2 id="各种不同的优化器"><a href="#各种不同的优化器" class="headerlink" title="各种不同的优化器"></a>各种不同的优化器</h2><p>本次课程，我们会讲到<code>Tensorflow</code>里面的优化器。</p>
+<p>Tensorflow 中的优化器会有很多不同的种类。最基本, 也是最常用的一种就是<code>GradientDescentOptimizer</code>。</p>
+<p><code>Tensorflow</code>提供了7种优化器：</p>
+<h2 id="搭建图纸"><a href="#搭建图纸" class="headerlink" title="搭建图纸"></a>搭建图纸</h2><p>首先从 <code>Input</code> 开始：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># define placeholder for inputs to network</span></span><br><span class="line">xs = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>])</span><br><span class="line">ys = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>])</span><br></pre></td></tr></table></figure>
+<p>对于input我们进行如下修改： 首先，可以为<code>xs</code>指定名称为<code>x_in</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xs= tf.placeholder(tf.float32, [None, 1],name=&apos;x_in&apos;)</span><br></pre></td></tr></table></figure>
+<p>然后再次对<code>ys</code>指定名称<code>y_in</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ys= tf.placeholder(tf.loat32, [None, 1],name=&apos;y_in&apos;)</span><br></pre></td></tr></table></figure>
+<p>使用<code>with tf.name_scope(&#39;inputs&#39;)</code>可以将<code>xs</code>和<code>ys</code>包含进来，形成一个大的图层，图层的名字就是<code>with tf.name_scope()</code>方法里的参数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">with tf.name_scope(&apos;inputs&apos;):</span><br><span class="line">    # define placeholder for inputs to network</span><br><span class="line">    xs = tf.placeholder(tf.float32, [None, 1])</span><br><span class="line">    ys = tf.placeholder(tf.float32, [None, 1])</span><br></pre></td></tr></table></figure>
+<p>接下来开始编辑<code>layer</code> ， 请看编辑前的程序片段 ：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></span><br><span class="line">    <span class="comment"># add one more layer and return the output of this layer</span></span><br><span class="line">    Weights = tf.Variable(tf.random_normal([in_size, out_size]))</span><br><span class="line">    biases = tf.Variable(tf.zeros([<span class="number">1</span>, out_size]) + <span class="number">0.1</span>)</span><br><span class="line">    Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</span><br><span class="line">    <span class="keyword">if</span> activation_function <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">        outputs = Wx_plus_b</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        outputs = activation_function(Wx_plus_b, )</span><br><span class="line">    <span class="keyword">return</span> outputs</span><br></pre></td></tr></table></figure>
+<p>这里的名字应该叫layer, 下面是编辑后的:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</span><br><span class="line">    # add one more layer and return the output of this layer</span><br><span class="line">    with tf.name_scope(&apos;layer&apos;):</span><br><span class="line">        Weights= tf.Variable(tf.random_normal([in_size, out_size]))</span><br><span class="line">        # and so on...</span><br></pre></td></tr></table></figure>
+<hr>
+<p>在定义完大的框架<code>layer</code>之后，同时也需要定义每一个’框架‘里面的小部件：(Weights biases 和 activation function): 现在现对 <code>Weights</code> 定义： 定义的方法同上，可以使用<code>tf.name.scope()</code>方法，同时也可以在<code>Weights</code>中指定名称<code>W</code>。 即为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></span><br><span class="line">	<span class="comment">#define layer name</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'layer'</span>):</span><br><span class="line">        <span class="comment">#define weights name </span></span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'weights'</span>):</span><br><span class="line">            Weights= tf.Variable(tf.random_normal([in_size, out_size]),name=<span class="string">'W'</span>)</span><br><span class="line">        <span class="comment">#and so on......</span></span><br></pre></td></tr></table></figure>
+<p>接着继续定义<code>biases</code> ， 定义方式同上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</span><br><span class="line">    #define layer name</span><br><span class="line">    with tf.name_scope(&apos;layer&apos;):</span><br><span class="line">        #define weights name </span><br><span class="line">        with tf.name_scope(&apos;weights&apos;)</span><br><span class="line">            Weights= tf.Variable(tf.random_normal([in_size, out_size]),name=&apos;W&apos;)</span><br><span class="line">        # define biase</span><br><span class="line">        with tf.name_scope(&apos;Wx_plus_b&apos;):</span><br><span class="line">            Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</span><br><span class="line">        # and so on....</span><br></pre></td></tr></table></figure>
+<p><code>activation_function</code> 的话，可以暂时忽略。因为当你自己选择用 tensorflow 中的激励函数（activation function）的时候，tensorflow会默认添加名称。 最终，layer形式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</span><br><span class="line">    # add one more layer and return the output of this layer</span><br><span class="line">    with tf.name_scope(&apos;layer&apos;):</span><br><span class="line">        with tf.name_scope(&apos;weights&apos;):</span><br><span class="line">            Weights = tf.Variable(</span><br><span class="line">            tf.random_normal([in_size, out_size]), </span><br><span class="line">            name=&apos;W&apos;)</span><br><span class="line">        with tf.name_scope(&apos;biases&apos;):</span><br><span class="line">            biases = tf.Variable(</span><br><span class="line">            tf.zeros([1, out_size]) + 0.1, </span><br><span class="line">            name=&apos;b&apos;)</span><br><span class="line">        with tf.name_scope(&apos;Wx_plus_b&apos;):</span><br><span class="line">            Wx_plus_b = tf.add(</span><br><span class="line">            tf.matmul(inputs, Weights), </span><br><span class="line">            biases)</span><br><span class="line">        if activation_function is None:</span><br><span class="line">            outputs = Wx_plus_b</span><br><span class="line">        else:</span><br><span class="line">            outputs = activation_function(Wx_plus_b, )</span><br><span class="line">        return outputs</span><br></pre></td></tr></table></figure>
+<p>最后编辑<code>loss</code>部分：将<code>with tf.name_scope()</code>添加在<code>loss</code>上方，并为它起名为<code>loss</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># the error between prediciton and real data</span><br><span class="line">with tf.name_scope(&apos;loss&apos;):</span><br><span class="line">    loss = tf.reduce_mean(</span><br><span class="line">    tf.reduce_sum(</span><br><span class="line">    tf.square(ys - prediction),</span><br><span class="line">    eduction_indices=[1]</span><br><span class="line">    ))</span><br></pre></td></tr></table></figure>
+<p>使用<code>with tf.name_scope()</code>再次对<code>train_step</code>部分进行编辑,如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">with tf.name_scope(&apos;train&apos;):</span><br><span class="line">    train_step = tf.train.GradientDescentOptimizer(0.1).minimize(loss)</span><br></pre></td></tr></table></figure>
+<p>我们需要使用 <code>tf.summary.FileWriter()</code> (<code>tf.train.SummaryWriter()</code> 这种方式已经在 tf &gt;= 0.12 版本中摒弃) 将上面‘绘画’出的图保存到一个目录中，以方便后期在浏览器中可以浏览。 这个方法中的第二个参数需要使用<code>sess.graph</code> ， 因此我们需要把这句话放在获取<code>session</code>的后面。 这里的<code>graph</code>是将前面定义的框架信息收集起来，然后放在<code>logs/</code>目录下面。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sess = tf.Session() # get session</span><br><span class="line"># tf.train.SummaryWriter soon be deprecated, use following</span><br><span class="line">writer = tf.summary.FileWriter(&quot;logs/&quot;, sess.graph)</span><br></pre></td></tr></table></figure>
+<p>请确保你的 tensorboard 指令是在你的 logs 文件根目录执行的. 如果在其他目录下, 比如 <code>Desktop</code> 等, 可能不会成功看到图. 比如在下面这个目录, 你要 cd 到 <code>project</code> 这个地方执行 <code>/project &gt; tensorboard --logdir logs</code></p>
+<p>完整代码在</p>
+<p><a href="https://github.com/MorvanZhou/tutorials/blob/master/tensorflowTUT/tf14_tensorboard/full_code.py" target="_blank" rel="noopener">https://github.com/MorvanZhou/tutorials/blob/master/tensorflowTUT/tf14_tensorboard/full_code.py</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># View more python learning tutorial on my Youtube and Youku channel!!!</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Youtube video tutorial: https://www.youtube.com/channel/UCdyjiB5H8Pu7aDTNVXTTpcg</span></span><br><span class="line"><span class="comment"># Youku video tutorial: http://i.youku.com/pythontutorial</span></span><br><span class="line"></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">Please note, this code is only for python 3+. If you are using python 2+, please modify the code accordingly.</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span> print_function</span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs, in_size, out_size, activation_function=None)</span>:</span></span><br><span class="line">    <span class="comment"># add one more layer and return the output of this layer</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'layer'</span>):</span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'weights'</span>):</span><br><span class="line">            Weights = tf.Variable(tf.random_normal([in_size, out_size]), name=<span class="string">'W'</span>)</span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'biases'</span>):</span><br><span class="line">            biases = tf.Variable(tf.zeros([<span class="number">1</span>, out_size]) + <span class="number">0.1</span>, name=<span class="string">'b'</span>)</span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'Wx_plus_b'</span>):</span><br><span class="line">            Wx_plus_b = tf.add(tf.matmul(inputs, Weights), biases)</span><br><span class="line">        <span class="keyword">if</span> activation_function <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">            outputs = Wx_plus_b</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            outputs = activation_function(Wx_plus_b, )</span><br><span class="line">        <span class="keyword">return</span> outputs</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># define placeholder for inputs to network</span></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'inputs'</span>):</span><br><span class="line">    xs = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>], name=<span class="string">'x_input'</span>)</span><br><span class="line">    ys = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>], name=<span class="string">'y_input'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># add hidden layer</span></span><br><span class="line">l1 = add_layer(xs, <span class="number">1</span>, <span class="number">10</span>, activation_function=tf.nn.relu)</span><br><span class="line"><span class="comment"># add output layer</span></span><br><span class="line">prediction = add_layer(l1, <span class="number">10</span>, <span class="number">1</span>, activation_function=<span class="keyword">None</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># the error between prediciton and real data</span></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'loss'</span>):</span><br><span class="line">    loss = tf.reduce_mean(tf.reduce_sum(tf.square(ys - prediction),</span><br><span class="line">                                        reduction_indices=[<span class="number">1</span>]))</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'train'</span>):</span><br><span class="line">    train_step = tf.train.GradientDescentOptimizer(<span class="number">0.1</span>).minimize(loss)</span><br><span class="line"></span><br><span class="line">sess = tf.Session()</span><br><span class="line"></span><br><span class="line"><span class="comment"># tf.train.SummaryWriter soon be deprecated, use following</span></span><br><span class="line"><span class="keyword">if</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">1</span>]) &lt; <span class="number">12</span> <span class="keyword">and</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">0</span>]) &lt; <span class="number">1</span>:  <span class="comment"># tensorflow version &lt; 0.12</span></span><br><span class="line">    writer = tf.train.SummaryWriter(<span class="string">'logs/'</span>, sess.graph)</span><br><span class="line"><span class="keyword">else</span>: <span class="comment"># tensorflow version &gt;= 0.12</span></span><br><span class="line">    writer = tf.summary.FileWriter(<span class="string">"logs/"</span>, sess.graph)</span><br><span class="line"></span><br><span class="line"><span class="comment"># tf.initialize_all_variables() no long valid from</span></span><br><span class="line"><span class="comment"># 2017-03-02 if using tensorflow &gt;= 0.12</span></span><br><span class="line"><span class="keyword">if</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">1</span>]) &lt; <span class="number">12</span> <span class="keyword">and</span> int((tf.__version__).split(<span class="string">'.'</span>)[<span class="number">0</span>]) &lt; <span class="number">1</span>:</span><br><span class="line">    init = tf.initialize_all_variables()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    init = tf.global_variables_initializer()</span><br><span class="line">sess.run(init)</span><br><span class="line"></span><br><span class="line"><span class="comment"># direct to the local dir and run this in terminal:</span></span><br><span class="line"><span class="comment"># $ tensorboard --logdir=logs</span></span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -2427,7 +2455,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">314</span>
+                    <span class="site-state-item-count">315</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

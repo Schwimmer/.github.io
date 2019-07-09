@@ -528,6 +528,203 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/算法与数据结构/硬币问题/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/03/17/算法与数据结构/硬币问题/" class="post-title-link" itemprop="url">硬币问题</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-03-17 20:50:31" itemprop="dateCreated datePublished" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
+            </span>
+          
+
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/算法与数据结构/" itemprop="url" rel="index"><span itemprop="name">算法与数据结构</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/03/17/算法与数据结构/硬币问题/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/算法与数据结构/硬币问题/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>转自 <a href="http://www.cnblogs.com/z941030/p/4908115.html" target="_blank" rel="noopener">动态规划之硬币组合问题</a></p>
+<p>动态规划的本质是将原问题分解为同性质的若干相同子结构，在求解最优值的过程中将子结构的最优值记录到一个表中以避免有时会有大量的重复计算。</p>
+<p>例如硬币组合问题，若求凑够11元的最少硬币数，可以先从凑够0元、1元、2元……的子结构开始分析。</p>
+<p>假设d(i)为凑够i元所需最少硬币数，则</p>
+<p>d(0) = 0 　　　　　　　　理所当然</p>
+<p>d(1) = 1 　　　　　　　　要凑够1元，需要从面值小于等于1元的硬币中选择，目前只有面值为1元的硬币</p>
+<p>　　　　　　　　　　　　此时d(1) = d(0) + 1</p>
+<p>d(2) = d(2 - 1) + 1 = 2， 从面值小于等于2元的硬币中选择，符合要求的硬币面值为：1元。</p>
+<p>　　　　　　　　　　　　此时d(2) = d(2-1) + 1</p>
+<p>d(3) = d(3 - 3) + 1 = 1， 从面值小于等于3元的硬币中选择，符合要求的硬币面值为：1元，3元。</p>
+<p>　　　　　　　　　　　　此时有有两种选择：是否选择含有面值3元的硬币</p>
+<p>　　　　　　　　　　　　含有3元硬币：d(3) = d(3 - 3) + 1 = 1</p>
+<p>　　　　　　　　　　　　不含3元硬币：d(3) = d(3 - 1) + 1 = d(2) + 1 = 3</p>
+<p>　　　　　　　　　　　　自然是选择二者中较小值</p>
+<p>依次类推…</p>
+<p>就该问题总结一下，随着要凑够钱数的增加：</p>
+<p>1、首先要知道所有不大于该钱数的面值;</p>
+<p>2、对于每种面值的硬币，求出当选择一个该面值的硬币时所需的硬币数</p>
+<p>当选择一个硬币后，所需硬币数+1，所要凑够的钱数=原所要凑的钱数-该硬币面值，所要凑够的钱数减少，求减少后要凑钱数最少所需硬币数，属于原问题的子结构，已求出解</p>
+<p>3.在上述求出的结果集中，选择最小值，即为要凑够该钱数所需的最少硬币数</p>
+<p>由此可以看出，每个问题的最优值都是借其子结构的最优值得到的。</p>
+<p>而该算法的最小的子结构的最优解是已知的，即：当要凑钱数为0元时，最少需要0枚硬币。</p>
+<p>利用这个最小的子结构，通过递推式便可求出所指定值凑够钱数的最优值</p>
+<p>上面所提到的递推式，便是<strong>状态转移方程</strong>。利用已知状态，不断通过状态转移方程求解，便得到了最优值和最优解。</p>
+<p>下面看一下硬币组合问题的数学描述：</p>
+<p>d(i)=min{ d(i-vj)+1 }，其中i-vj &gt;=0，vj表示第j个硬币的面值，i表示要凑够i元，d(i)表示凑够i元最少需要的硬币数。即：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">                     　　　　0  　　　　 i == 0 时</span><br><span class="line">min_coin_num(i) = &#123;</span><br><span class="line">                  　　　　　min&#123; min_coin_num( i-coin_value(j) )+1 | i-coin_value(j)&gt;0&#125; coin_value(j)表示第j种硬币的面值 　　i &gt; 0 时</span><br></pre></td></tr></table></figure>
+<p>当总值total_value为i时， 对于所有的 coin_value(j) &lt; i的硬币j ,取min{ min_coin_num(i-coin_value(j)) }</p>
+<p>代码在 <code>dynamic_programming/coin.py</code></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/算法与数据结构/排序/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -2001,7 +2198,7 @@ L=\sum_{w \in C} \log p(w|Context(w))</script><p> 如何推导的？</p>
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/模型的假设条件/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/样本不平衡带来的问题及如何解决/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -2021,7 +2218,7 @@ L=\sum_{w \in C} \log p(w|Context(w))</script><p> 如何推导的？</p>
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/03/17/机器学习/模型的假设条件/" class="post-title-link" itemprop="url">模型的假设条件</a>
+                <a href="/2018/03/17/机器学习/样本不平衡带来的问题及如何解决/" class="post-title-link" itemprop="url">样本不平衡带来的问题及如何解决</a>
               
             
           </h1>
@@ -2079,8 +2276,8 @@ L=\sum_{w \in C} \log p(w|Context(w))</script><p> 如何推导的？</p>
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/17/机器学习/模型的假设条件/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/模型的假设条件/" itemprop="commentCount"></span>
+                <a href="/2018/03/17/机器学习/样本不平衡带来的问题及如何解决/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/样本不平衡带来的问题及如何解决/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -2113,13 +2310,12 @@ L=\sum_{w \in C} \log p(w|Context(w))</script><p> 如何推导的？</p>
       
         
           
-            <blockquote>
-<p>作者：李韶华链接：<a href="https://www.zhihu.com/question/46301335/answer/112354887来源：知乎著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。" target="_blank" rel="noopener">https://www.zhihu.com/question/46301335/answer/112354887来源：知乎著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</a></p>
-</blockquote>
-<p>理解模型的基本假设，看自己的数据是否符合这种假设。任何模型都是有某种假设的，如果数据不符合这种假设，就不太可能学出有意义的模型并用于预测。</p>
-<p>比如LDA（主题模型），假设是在同样一批文档中经常共现的词，语义上往往是相关的。这种特性不仅在自然语言中成立，在一些领域，比如每个人经常访问的网址集合，可能也是成立的，所以LDA也可以拿过去用。但如果数据不符合这个特性，套用LDA就是没有意义的，比如每个球队里的队员，可能并没有因为属于一个球队而具有什么相似性。</p>
-<p>再举个例子，CNN（卷积神经网络），它的基本假设是特征的不同维度之间有局部相关性，卷积操作可以抓住这只局部相关性，形成新的特征。比如自然语言里，有重复出现的bigram，或者图像里代表性的局部像素块。不满足这种局部相关性的数据，比如收到的邮件序列，这种局部相关性很弱，那用CNN就不能抓到有用的特征。</p>
-<p>最后，高斯copula，在量化金融里曾被广泛使用，把债券之间非高斯的相关性用copula转化成高斯然后拟合。然而这个模型隐含的假设是这种相关性符合瘦尾分布(thin tailed distribution)，即罕见事件发生的概率非常非常低。这个不合理假设导致对黑天鹅事件概率严重低估，曾被视为2008年金融危机的根源之一。</p>
+            <p><a href="https://www.jianshu.com/p/3e8b9f2764c8" target="_blank" rel="noopener">不平衡数据下的机器学习方法简介</a></p>
+<p><a href="https://wenku.baidu.com/view/535f51cc09a1284ac850ad02de80d4d8d15a01c2.html" target="_blank" rel="noopener">面向不平衡分类的逻辑回归算法</a></p>
+<p>在样本分布及其不均匀的情况下,建议用PRC。。。可以看下这个<a href="https://www.zhihu.com/question/30643044" target="_blank" rel="noopener">精确率、召回率、F1 值、ROC、AUC 各自的优缺点是什么？ - 机器学习</a>里面qian lv的回答</p>
+<p><a href="http://blog.csdn.net/heyongluoyao8/article/details/49408131" target="_blank" rel="noopener">在分类中如何处理训练集中不平衡问题</a></p>
+<p><a href="https://www.zhihu.com/question/27408423" target="_blank" rel="noopener">确切的知道正样本但负样本不确定，且训练数据正负样本分布极不平衡问题求教？</a></p>
+<p><a href="http://blog.csdn.net/heyongluoyao8/article/details/49408131" target="_blank" rel="noopener">在分类中如何处理训练集中不平衡问题</a></p>
 
           
         
@@ -2342,180 +2538,6 @@ L=\sum_{w \in C} \log p(w|Context(w))</script><p> 如何推导的？</p>
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习/样本不平衡带来的问题及如何解决/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/03/17/机器学习/样本不平衡带来的问题及如何解决/" class="post-title-link" itemprop="url">样本不平衡带来的问题及如何解决</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-03-17 20:50:31" itemprop="dateCreated datePublished" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
-            </span>
-          
-
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/17/机器学习/样本不平衡带来的问题及如何解决/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习/样本不平衡带来的问题及如何解决/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://www.jianshu.com/p/3e8b9f2764c8" target="_blank" rel="noopener">不平衡数据下的机器学习方法简介</a></p>
-<p><a href="https://wenku.baidu.com/view/535f51cc09a1284ac850ad02de80d4d8d15a01c2.html" target="_blank" rel="noopener">面向不平衡分类的逻辑回归算法</a></p>
-<p>在样本分布及其不均匀的情况下,建议用PRC。。。可以看下这个<a href="https://www.zhihu.com/question/30643044" target="_blank" rel="noopener">精确率、召回率、F1 值、ROC、AUC 各自的优缺点是什么？ - 机器学习</a>里面qian lv的回答</p>
-<p><a href="http://blog.csdn.net/heyongluoyao8/article/details/49408131" target="_blank" rel="noopener">在分类中如何处理训练集中不平衡问题</a></p>
-<p><a href="https://www.zhihu.com/question/27408423" target="_blank" rel="noopener">确切的知道正样本但负样本不确定，且训练数据正负样本分布极不平衡问题求教？</a></p>
-<p><a href="http://blog.csdn.net/heyongluoyao8/article/details/49408131" target="_blank" rel="noopener">在分类中如何处理训练集中不平衡问题</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2562,7 +2584,7 @@ L=\sum_{w \in C} \log p(w|Context(w))</script><p> 如何推导的？</p>
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">314</span>
+                    <span class="site-state-item-count">315</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
