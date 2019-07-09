@@ -357,6 +357,1333 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/07/06/机器学习和深度学习算法专题/00逻辑回归/机器学习算法推导（一）逻辑回归/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/07/06/机器学习和深度学习算法专题/00逻辑回归/机器学习算法推导（一）逻辑回归/" class="post-title-link" itemprop="url">机器学习算法推导（一）逻辑回归</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-06 13:41:02" itemprop="dateCreated datePublished" datetime="2019-07-06T13:41:02+08:00">2019-07-06</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-07 08:46:04" itemprop="dateModified" datetime="2019-07-07T08:46:04+08:00">2019-07-07</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习算法专题/" itemprop="url" rel="index"><span itemprop="name">机器学习算法专题</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/07/06/机器学习和深度学习算法专题/00逻辑回归/机器学习算法推导（一）逻辑回归/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/07/06/机器学习和深度学习算法专题/00逻辑回归/机器学习算法推导（一）逻辑回归/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>我们知道，线性回归的公式是</p>
+<script type="math/tex; mode=display">
+h_{\theta}(x)={\theta}^Tx</script><p>如果想实现分类功能，就需要把输出变成一个阶跃函数，比如</p>
+<script type="math/tex; mode=display">
+y=\left\{\begin{matrix}
+0; & z\leqslant 0 \\ 
+1; & z \geqslant 0
+\end{matrix}\right. 
+,z=h_{\theta}(x)</script><p>但是这样就太粗糙了，<strong>而且不连续不可微</strong>。我们希望有一个理想的阶跃函数，而且是单调可微的函数。于是找到了<strong>对数几率函数</strong>（Logistic Function）。因为曲线像S，又称<strong>Sigmoid</strong>。</p>
+<h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><p>Sigmoid函数的定义是：</p>
+<script type="math/tex; mode=display">
+y=\frac {1} {1+e^{-(\theta^Tx+b)}}</script><p>接下来就是根据给定的训练集，求出参数w。首先要找到目标函数（代价函数/损失函数）。</p>
+<blockquote>
+<p>目标函数、代价函数、损失函数，一般而言，这三个概念是一回事。</p>
+<p>如果深究的话，有细微的差别。参考<a href="https://blog.csdn.net/qq_28448117/article/details/79199835" target="_blank" rel="noopener">深入理解机器学习中的：目标函数，损失函数和代价函数</a></p>
+<p>损失函数：计算的是一个样本的误差</p>
+<p>代价函数：是整个训练集上所有样本误差的平均</p>
+<p>目标函数：代价函数 + 正则化项</p>
+</blockquote>
+<p>首先想到的就是模仿线性回归的思路，用最小二乘当损失函数。</p>
+<script type="math/tex; mode=display">
+J(\theta)=\sum_{i} \frac 1 2 (h_{\theta}(x^i),\ y^i)^2</script><p>但是，把Sigmoid带入后，会发现这是一个<strong>非凸函数</strong>，这就意味着代价函数有着许多的局部最小值，不利于求解。</p>
+<p><img src="//schwimmer.github.io/2019/07/06/机器学习和深度学习算法专题/00逻辑回归/机器学习算法推导（一）逻辑回归/SouthEast-20190616095710926.png" alt="2"></p>
+
+<p>后来人们想到，用极大似然函数作为损失函数，这样就是一个<strong>凸函数</strong>。</p>
+<p><img src="//schwimmer.github.io/2019/07/06/机器学习和深度学习算法专题/00逻辑回归/机器学习算法推导（一）逻辑回归/SouthEast-20190616095728402.png" alt="1"></p>
+<h1 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h1><p>如果将$h_{\theta}(x)$看做是正类的<strong>后验概率</strong>，则有</p>
+<script type="math/tex; mode=display">
+h_{\theta}(x;\theta)=p(y=1|x;\theta)=\phi(x)=\frac {1} {1+e^{-(\theta^Tx+b)}}</script><p>那么，有</p>
+<script type="math/tex; mode=display">
+p(y=0|x;\theta) = 1-\phi(x)</script><p>将上面两式写成一般形式（<strong>概率分布函数</strong>）</p>
+<script type="math/tex; mode=display">
+p(y|x;\theta)=h_{\theta}(x;\theta)^y(1-h_{\theta}(x;\theta))^{1-y}</script><p>接下来用对数极大似然估计（加上对数是为了方便求导）根据训练集估计出参数$\theta$。</p>
+<script type="math/tex; mode=display">
+\begin{aligned} 
+l(\theta) &= Log\ L(\theta)\\
+&=\sum_{j=1}^M(y_jln\ h(x_j)+(1-y_j)ln\ (1-h(x_j)))
+\end{aligned}</script><p>其中M是样本个数。对其求关于$\theta$的偏导。</p>
+<p>1）首先求$h_{\theta}(x)$，即Sigmoid的偏导。</p>
+<script type="math/tex; mode=display">
+h_{\theta}^{'}(\mathbf X) = h_{\theta}(\mathbf X)(1-h_{\theta}(\mathbf X))</script><p>推导过程如下：</p>
+<p><img src="//schwimmer.github.io/2019/07/06/机器学习和深度学习算法专题/00逻辑回归/机器学习算法推导（一）逻辑回归/求导的推导.jpg" alt="求导的推导"></p>
+<p>2）有了第一步得出的公式后，得到</p>
+<p><img src="//schwimmer.github.io/2019/07/06/机器学习和深度学习算法专题/00逻辑回归/机器学习算法推导（一）逻辑回归/最大似然估计求偏导.png" alt="最大似然估计求偏导"></p>
+<p>3）利用梯度下降法求解参数。由于损失函数是凸函数，沿着梯度下降方向找到最小点。</p>
+<p>① <strong>批量梯度下降</strong>是：</p>
+<script type="math/tex; mode=display">
+Repeat\ until\ convergence \{ \\
+\theta^{(t+1)} := \theta^t - \eta^t\triangledown  _{\theta}l(\theta^{t},Z) \\
+\}\\
+ \tag{1-2}</script><p>② <strong>随机梯度下降（SGD）</strong>：</p>
+<script type="math/tex; mode=display">
+Repeat\ until\ convergence \{ \\
+      for\ j=1\ to\ M, \{ \\
+          \theta^{(t+1)} := \theta^t - \eta^t\triangledown  _{\theta}l(\theta^{t},Z_j) \\
+\}</script><p>两者的区别是：</p>
+<p>前者每次更新$\theta$都需要遍历一次整个样本集合；而后者在遍历样本集合的时候，每个样本都能改变$\theta$ ，有更快的收敛速度 。由于SGD针对观测到的随机一条数据进行权重的更新，很适合进行增量计算，实现梯度下降的online模式。</p>
+<p>③ <strong>small batch梯度下降</strong></p>
+<p>结合了上述两点的优点，每次更新参数时仅使用一部分样本，减少了参数更新的次数，可以达到更加稳定的结果，一般在深度学习中采用这种方法。</p>
+<p>参考：</p>
+<p><a href="https://blog.csdn.net/tomxiaodai/article/details/81748795" target="_blank" rel="noopener">Logistic Regression——逻辑回归算法推导</a></p>
+<p><a href="https://blog.csdn.net/yinyu19950811/article/details/81321944" target="_blank" rel="noopener">逻辑回归与最大似然估计推导</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/07/06/算法学习资源/深度学习资源/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/07/06/算法学习资源/深度学习资源/" class="post-title-link" itemprop="url">深度学习资源</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-06 13:39:27 / 修改时间：13:56:33" itemprop="dateCreated datePublished" datetime="2019-07-06T13:39:27+08:00">2019-07-06</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/算法学习资源/" itemprop="url" rel="index"><span itemprop="name">算法学习资源</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/07/06/算法学习资源/深度学习资源/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/07/06/算法学习资源/深度学习资源/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="手写基于numpy的神经网络，全中文解析，重点：中文简单"><a href="#手写基于numpy的神经网络，全中文解析，重点：中文简单" class="headerlink" title="手写基于numpy的神经网络，全中文解析，重点：中文简单"></a>手写基于numpy的神经网络，全中文解析，重点：中文简单</h1><p><a href="https://github.com/yuanxiaosc/Theoretical-Proof-of-Neural-Network-Model-and-Implementation-Based-on-Numpy" target="_blank" rel="noopener">https://github.com/yuanxiaosc/Theoretical-Proof-of-Neural-Network-Model-and-Implementation-Based-on-Numpy</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/07/06/算法学习资源/机器学习资源/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/07/06/算法学习资源/机器学习资源/" class="post-title-link" itemprop="url">机器学习资源</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-06 13:35:22 / 修改时间：15:51:08" itemprop="dateCreated datePublished" datetime="2019-07-06T13:35:22+08:00">2019-07-06</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/算法学习资源/" itemprop="url" rel="index"><span itemprop="name">算法学习资源</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/07/06/算法学习资源/机器学习资源/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/07/06/算法学习资源/机器学习资源/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="NumPy手写全部主流机器学习模型"><a href="#NumPy手写全部主流机器学习模型" class="headerlink" title="NumPy手写全部主流机器学习模型"></a>NumPy手写全部主流机器学习模型</h2><p><a href="https://github.com/ddbourgin/numpy-ml" target="_blank" rel="noopener">https://github.com/ddbourgin/numpy-ml</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/07/06/机器学习和深度学习算法专题/00逻辑回归/逻辑回归的Python实现/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/07/06/机器学习和深度学习算法专题/00逻辑回归/逻辑回归的Python实现/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-06 13:32:08 / 修改时间：13:32:19" itemprop="dateCreated datePublished" datetime="2019-07-06T13:32:08+08:00">2019-07-06</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/07/06/机器学习和深度学习算法专题/00逻辑回归/逻辑回归的Python实现/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/07/06/机器学习和深度学习算法专题/00逻辑回归/逻辑回归的Python实现/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/07/05/算法学习资源/统计学习方法和西瓜书学习资源/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/07/05/算法学习资源/统计学习方法和西瓜书学习资源/" class="post-title-link" itemprop="url">统计学习方法和西瓜书学习资源</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-05 18:36:46 / 修改时间：18:37:27" itemprop="dateCreated datePublished" datetime="2019-07-05T18:36:46+08:00">2019-07-05</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/算法学习资源/" itemprop="url" rel="index"><span itemprop="name">算法学习资源</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/07/05/算法学习资源/统计学习方法和西瓜书学习资源/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/07/05/算法学习资源/统计学习方法和西瓜书学习资源/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/07/05/算法学习资源/NLP学习资源/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/07/05/算法学习资源/NLP学习资源/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-05 18:24:33" itemprop="dateCreated datePublished" datetime="2019-07-05T18:24:33+08:00">2019-07-05</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-07 17:41:25" itemprop="dateModified" datetime="2019-07-07T17:41:25+08:00">2019-07-07</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/07/05/算法学习资源/NLP学习资源/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/07/05/算法学习资源/NLP学习资源/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="用百行代码搞定各类NLP模型"><a href="#用百行代码搞定各类NLP模型" class="headerlink" title="用百行代码搞定各类NLP模型"></a>用百行代码搞定各类NLP模型</h1><p><a href="https://github.com/graykode/nlp-tutorial" target="_blank" rel="noopener">https://github.com/graykode/nlp-tutorial</a></p>
+<p>韩国人写的，没有中文</p>
+<p><strong>项目目录</strong></p>
+<p>下面为项目的基本框架以及每个模型的功能：</p>
+<p>1、基本嵌入模型</p>
+<ul>
+<li>NNLM - 预测下一个单词</li>
+<li>Word2Vec(Skip-gram) - 训练词嵌入并展示词的类推图</li>
+<li>FastText(Application Level) - 情感分类</li>
+</ul>
+<p>2、CNN</p>
+<ul>
+<li>TextCNN - 二元情感分类</li>
+<li>DCNN（进行中……）</li>
+</ul>
+<p>3、RNN</p>
+<ul>
+<li>TextRNN - 预测下一步</li>
+<li>TextLSTM - 自动完成</li>
+<li>Bi-LSTM - 在长句子中预测下一个单词</li>
+</ul>
+<p>4、注意力机制</p>
+<ul>
+<li>Seq2Seq - 同类词转换</li>
+<li>Seq2Seq with Attention - 翻译</li>
+<li>Bi-LSTM with Attention - 二元情感分类</li>
+</ul>
+<p>5、基于 Transformer 的模型</p>
+<ul>
+<li>Transformer - 翻译</li>
+<li>BERT - 分类是否是下一句和预测 Mask 掉的词</li>
+</ul>
+<p><strong>模型示例</strong></p>
+<p>在这一部分中，我们将以带注意力机制的 Bi-LSTM 与 Transformer 为例分别介绍 TensorFlow 和 PyTorch 的代码实现。当然我们也只会介绍模型部分的核心代码，其它训练迭代和可视化等过程可以查阅原项目。</p>
+<p><strong>基于注意力机制的双向 LSTM</strong></p>
+<p>作者用不到 90 行代码简单介绍了如何用双向 LSTM 与注意力机制构建情感分析模型，即使使用 TensorFlow 这种静态计算图，Tae Hwan Jung 借助高级 API 也能完成非常精简代码。总的而言，模型先利用双向 LSTM 抽取输入词嵌入序列的特征，再使用注意力机制选择不同时间步上比较重要的信息，最后用这些信息判断输入句子的情感倾向。</p>
+<p>首先对于构建双向 LSTM，我们只需要定义前向和后向 LSTM 单元（lstm_fw_cell 与 lstm_bw_cell），并传入高级 API tf.nn.bidirectional_dynamic_rnn() 就行了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># LSTM Model</span><br><span class="line">X = tf.placeholder(tf.int32, [None, n_step])</span><br><span class="line">Y = tf.placeholder(tf.int32, [None, n_class])</span><br><span class="line">out = tf.Variable(tf.random_normal([n_hidden * 2, n_class]))</span><br><span class="line"></span><br><span class="line">embedding = tf.Variable(tf.random_uniform([vocab_size, embedding_dim]))</span><br><span class="line">input = tf.nn.embedding_lookup(embedding, X) # [batch_size, len_seq, embedding_dim]</span><br><span class="line"></span><br><span class="line">lstm_fw_cell = tf.nn.rnn_cell.LSTMCell(n_hidden)</span><br><span class="line">lstm_bw_cell = tf.nn.rnn_cell.LSTMCell(n_hidden)</span><br><span class="line"></span><br><span class="line"># output : [batch_size, len_seq, n_hidden], states : [batch_size, n_hidden]</span><br><span class="line">output, final_state = tf.nn.bidirectional_dynamic_rnn(lstm_fw_cell,lstm_bw_cell, input, dtype=tf.float32)</span><br></pre></td></tr></table></figure>
+<p>第二个比较重要的步骤是构建注意力模块，注意力机制其实就是衡量不同时间步（不同单词）对最终预测的重要性，它的过程也就计算重要性并根据重要性合成上下文语义特征两部分。下图展示了全局注意力的具体过程，它确定不同时间步的权重（alpha），并加权计算得出上下文向量（context vextor）。如果读者希望详细了解 Attention，查阅下图的来源论文就好了，当然也可以跳过原理直接进入实战部分～</p>
+<p><img src="//schwimmer.github.io/2019/07/05/算法学习资源/NLP学习资源/v2-16c7fda3d74766cacbef1b0209239b6e_hd.jpg" alt="img"></p>
+<p>如下所示，模型主要根据前面双向 LSTM 输出的结果（output）与最终隐藏状态之间的余弦相似性计算怎样为输出结果 output 加权，加权得到的上下文向量 context 可进一步用于计算最终的预测结果。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># Attention</span><br><span class="line">output = tf.concat([output[0], output[1]], 2)                             # output[0] : lstm_fw, output[1] : lstm_bw</span><br><span class="line">final_hidden_state = tf.concat([final_state[1][0], final_state[1][1]], 1) # final_hidden_state : [batch_size, n_hidden * num_directions(=2)]</span><br><span class="line">final_hidden_state = tf.expand_dims(final_hidden_state, 2)                # final_hidden_state : [batch_size, n_hidden * num_directions(=2), 1]</span><br><span class="line"></span><br><span class="line">attn_weights = tf.squeeze(tf.matmul(output, final_hidden_state), 2) # attn_weights : [batch_size, n_step]</span><br><span class="line">soft_attn_weights = tf.nn.softmax(attn_weights, 1)</span><br><span class="line">context = tf.matmul(tf.transpose(output, [0, 2, 1]), tf.expand_dims(soft_attn_weights, 2)) # context : [batch_size, n_hidden * num_directions(=2), 1]</span><br><span class="line">context = tf.squeeze(context, 2) # [batch_size, n_hidden * num_directions(=2)]</span><br><span class="line"></span><br><span class="line">model = tf.matmul(context, out)</span><br></pre></td></tr></table></figure>
+<p>当然，实际上这个模型还有更多关于损失函数、最优化器和训练过程等模块的定义，感兴趣的读者可以在 Colab 上跑一跑。</p>
+<p><strong>Transformer</strong></p>
+<p>机器之心曾解读过基于 TensorFlow 的 Transformer 代码，总体而言代码量还是比较大的，其中包括了各模块的可视化与预处理过程。对 Transformer 原理及实现代码感兴趣的读者可查阅以下文章：</p>
+<ul>
+<li><a href="https://link.zhihu.com/?target=https%3A//mp.weixin.qq.com/s%3F__biz%3DMzA3MzI4MjgzMw%3D%3D%26mid%3D2650742155%26idx%3D1%26sn%3D137825a13a4c31fffb6b2347c0304366%26scene%3D21%23wechat_redirect" target="_blank" rel="noopener">基于注意力机制，机器之心带你理解与训练神经机器翻译系统</a></li>
+</ul>
+<p>Transformer 比较重要的结构主要是经过缩放的点乘注意力和 Multi-head 注意力，其它前馈网络、位置编码等结构主要起到协助作用，它们共同可以构建 Transformer。在 Tae Hwan Jung 的实现中，他只使用了两百行代码就完成了核心过程，而且大量使用类和实例的结构更能理清整体架构。这一部分主要介绍点乘注意力和 Multi-head 注意力两个类。</p>
+<p>首先对于点乘注意力，它率先形式化地定义了整个注意力过程，过程和上面双向 LSTM 案例使用的注意力机制基本差不多，只不过 Transformer 会有一个缩放过程。如下所示，scores 即表示模型对输入（Value/V）所加的权重，最后算出来的为上下文信息 context。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class ScaledDotProductAttention(nn.Module):</span><br><span class="line">    def __init__(self):</span><br><span class="line">        super(ScaledDotProductAttention, self).__init__()</span><br><span class="line"></span><br><span class="line">    def forward(self, Q, K, V, attn_mask=None):</span><br><span class="line">        scores = torch.matmul(Q, K.transpose(-1, -2)) / np.sqrt(d_k) # scores : [batch_size x n_heads x len_q(=len_k) x len_k(=len_q)]</span><br><span class="line">        if attn_mask is not None:</span><br><span class="line">            scores.masked_fill_(attn_mask, -1e9)</span><br><span class="line">        attn = nn.Softmax(dim=-1)(scores)</span><br><span class="line">        context = torch.matmul(attn, V)</span><br><span class="line">        return context, attn</span><br></pre></td></tr></table></figure>
+<p>最后，下图展示了 Transformer 中所采用的 Multi-head Attention 结构，它其实就是多个点乘注意力并行地处理并最后将结果拼接在一起。一般而言，我们可以对三个输入矩阵 Q、V、K 分别进行 h 个不同的线性变换，然后分别将它们投入 h 个点乘注意力函数并拼接所有的输出结果。</p>
+<p><img src="//schwimmer.github.io/2019/07/05/算法学习资源/NLP学习资源/v2-36709cc6ce72c37f7ef802aeda7fc39b_hd.jpg" alt="img"></p>
+<p>最后核心的 MultiHeadAttention 同样很精简，读者可以感受一下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">class MultiHeadAttention(nn.Module):</span><br><span class="line">    def __init__(self):</span><br><span class="line">        super(MultiHeadAttention, self).__init__()</span><br><span class="line">        self.W_Q = nn.Linear(d_model, d_k * n_heads)</span><br><span class="line">        self.W_K = nn.Linear(d_model, d_k * n_heads)</span><br><span class="line">        self.W_V = nn.Linear(d_model, d_v * n_heads)</span><br><span class="line">    def forward(self, Q, K, V, attn_mask=None):</span><br><span class="line">        # q: [batch_size x len_q x d_model], k: [batch_size x len_k x d_model], v: [batch_size x len_k x d_model]</span><br><span class="line">        residual, batch_size = Q, Q.size(0)</span><br><span class="line">        # (B, S, D) -proj-&gt; (B, S, D) -split-&gt; (B, S, H, W) -trans-&gt; (B, H, S, W)</span><br><span class="line">        q_s = self.W_Q(Q).view(batch_size, -1, n_heads, d_k).transpose(1,2)  # q_s: [batch_size x n_heads x len_q x d_k]</span><br><span class="line">        k_s = self.W_K(K).view(batch_size, -1, n_heads, d_k).transpose(1,2)  # k_s: [batch_size x n_heads x len_k x d_k]</span><br><span class="line">        v_s = self.W_V(V).view(batch_size, -1, n_heads, d_v).transpose(1,2)  # v_s: [batch_size x n_heads x len_k x d_v]</span><br><span class="line"></span><br><span class="line">        if attn_mask is not None: # attn_mask : [batch_size x len_q x len_k]</span><br><span class="line">            attn_mask = attn_mask.unsqueeze(1).repeat(1, n_heads, 1, 1) # attn_mask : [batch_size x n_heads x len_q x len_k]</span><br><span class="line">        # context: [batch_size x n_heads x len_q x d_v], attn: [batch_size x n_heads x len_q(=len_k) x len_k(=len_q)]</span><br><span class="line">        context, attn = ScaledDotProductAttention()(q_s, k_s, v_s, attn_mask=attn_mask)</span><br><span class="line">        context = context.transpose(1, 2).contiguous().view(batch_size, -1, n_heads * d_v) # context: [batch_size x len_q x n_heads * d_v]</span><br><span class="line">        output = nn.Linear(n_heads * d_v, d_model)(context)</span><br><span class="line">        return nn.LayerNorm(d_model)(output + residual), attn # output: [batch_size x len_q x d_model]</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/07/05/算法学习资源/Tensorflow资源/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/07/05/算法学习资源/Tensorflow资源/" class="post-title-link" itemprop="url">TensorFlow学习资源</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-05 18:24:20 / 修改时间：18:25:14" itemprop="dateCreated datePublished" datetime="2019-07-05T18:24:20+08:00">2019-07-05</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/算法学习资源/" itemprop="url" rel="index"><span itemprop="name">算法学习资源</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/07/05/算法学习资源/Tensorflow资源/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/07/05/算法学习资源/Tensorflow资源/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Tensorflow"><a href="#Tensorflow" class="headerlink" title="Tensorflow"></a>Tensorflow</h1><p><a href="https://github.com/osforscience/TensorFlow-Course" target="_blank" rel="noopener">https://github.com/osforscience/TensorFlow-Course</a></p>
+<p>tensorflow清晰教程</p>
+<p><a href="https://zhuanlan.zhihu.com/p/47136826" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/47136826</a></p>
+<p><strong>TensorFlow-Examples</strong></p>
+<p>对初学者友好</p>
+<p><a href="http://link.zhihu.com/?target=https%3A//github.com/aymericdamien/TensorFlow-Examples" target="_blank" rel="noopener">https://github.com/aymericdamien/TensorFlow-Examples</a></p>
+<p><strong>Tensorflow-101</strong></p>
+<p>用Jupyter Notebook编写</p>
+<p><a href="http://link.zhihu.com/?target=https%3A//github.com/sjchoi86/Tensorflow-101" target="_blank" rel="noopener">https://github.com/sjchoi86/Tensorflow-101</a></p>
+<p><strong>TensorFlow_Exercises</strong></p>
+<p>从其他TensorFlow示例重新创建代码</p>
+<p><a href="http://link.zhihu.com/?target=https%3A//github.com/terryum/TensorFlow_Exercises" target="_blank" rel="noopener">https://github.com/terryum/TensorFlow_Exercises</a></p>
+<p><strong>LSTM-Human-Activity-Recognition</strong></p>
+<p>基于LSTM的TensorFlow在手机传感器数据上的递归神经网络分类</p>
+<p>[<a href="https://github.com/guillaume-chevalier/LSTM-Human-Activity-Recognition](" target="_blank" rel="noopener">https://github.com/guillaume-chevalier/LSTM-Human-Activity-Recognition](</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/07/04/hadoop-spark/spark/Spark flatmap/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -876,1225 +2203,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/07/04/机器学习和深度学习算法专题/活体检测/活体检测解决方案-简版/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/07/04/机器学习和深度学习算法专题/活体检测/活体检测解决方案-简版/" class="post-title-link" itemprop="url">【转】活体检测解决方案-简版</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-04 15:14:19 / 修改时间：15:34:07" itemprop="dateCreated datePublished" datetime="2019-07-04T15:14:19+08:00">2019-07-04</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习和深度学习算法理论/" itemprop="url" rel="index"><span itemprop="name">机器学习和深度学习算法理论</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/07/04/机器学习和深度学习算法专题/活体检测/活体检测解决方案-简版/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/07/04/机器学习和深度学习算法专题/活体检测/活体检测解决方案-简版/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://www.pyimagesearch.com/2019/03/11/liveness-detection-with-opencv/" target="_blank" rel="noopener">Liveness Detection with OpenCV</a></p>
-<p>除了代码，还有一份计算机视觉方面的PDF文档，良心的。</p>
-<p>代码下载后，在<code>/Users/david/david/code/deep_learning/image/liveness/liveness-detection-opencv.zip</code></p>
-<p>PDF讲义在<code>/Users/david/david/code/deep_learning/image/liveness/cv_dl_resource_guide.pdf</code></p>
-<p>www.pyimagesearch.com</p>
-<p>这个网站也是专门用python深度学习实现各种人脸识别等图像算法的，推荐。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/07/03/机器学习/知识图谱/Neo4j备份方式/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/07/03/机器学习/知识图谱/Neo4j备份方式/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-03 09:22:01 / 修改时间：09:22:21" itemprop="dateCreated datePublished" datetime="2019-07-03T09:22:01+08:00">2019-07-03</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/07/03/机器学习/知识图谱/Neo4j备份方式/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/07/03/机器学习/知识图谱/Neo4j备份方式/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ul>
-<li>Neo4j 企业版提供了一个在线备份（完整备份和增量备份）功能。</li>
-</ul>
-<p>社区版不知道</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/07/03/机器学习/知识图谱/Neo4j单向和双向关系/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/07/03/机器学习/知识图谱/Neo4j单向和双向关系/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-03 09:18:02 / 修改时间：09:18:45" itemprop="dateCreated datePublished" datetime="2019-07-03T09:18:02+08:00">2019-07-03</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/07/03/机器学习/知识图谱/Neo4j单向和双向关系/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/07/03/机器学习/知识图谱/Neo4j单向和双向关系/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://www.jianshu.com/p/a25a1907b926" target="_blank" rel="noopener">https://www.jianshu.com/p/a25a1907b926</a></p>
-<p>Neo4j的API允许开发人员在查询的时候<strong>完全忽略关系的方向</strong></p>
-<p>比如，在Neo4j的查询语言Cypher中，查询Neo Technology的全部合作公司的语句可以大致如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MATCH (neo)-[:PARTNER]-(partner)</span><br></pre></td></tr></table></figure>
-<p>查询结果会和下面两条语句执行并合并后的结果完全一致：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MATCH (neo)-[:PARTNER]-&gt;(partner)</span><br><span class="line">and MATCH (neo)&lt;-[:PARTNER]-(partner)</span><br></pre></td></tr></table></figure>
-<p>因此，构建合作关系<strong>正确</strong>（至少是最有效）的方式就是用一个<strong>单向的关系</strong>，而且<strong>方向可以任意</strong>。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/07/02/机器学习/知识图谱/图数据库Neo4j实现人脉推荐——二度人脉/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/07/02/机器学习/知识图谱/图数据库Neo4j实现人脉推荐——二度人脉/" class="post-title-link" itemprop="url">【转】图数据库Neo4j实现人脉推荐——二度人脉</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-02 18:14:31" itemprop="dateCreated datePublished" datetime="2019-07-02T18:14:31+08:00">2019-07-02</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-04 15:14:02" itemprop="dateModified" datetime="2019-07-04T15:14:02+08:00">2019-07-04</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/知识图谱/" itemprop="url" rel="index"><span itemprop="name">知识图谱</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/07/02/机器学习/知识图谱/图数据库Neo4j实现人脉推荐——二度人脉/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/07/02/机器学习/知识图谱/图数据库Neo4j实现人脉推荐——二度人脉/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://blog.csdn.net/LoveJavaYDJ/article/details/53491346" target="_blank" rel="noopener">https://blog.csdn.net/LoveJavaYDJ/article/details/53491346</a></p>
-<p>业务需求：<br>通过现有系统“好友关系”和“用户通讯录”数据，实现人脉推荐——二度人脉….六度人脉</p>
-<p>技术实现分析：<br>关系数据库（深度关联表,算死人）<br>图数据库（天然图关系，选择Neo4j）<br>业务实体模型及规模 ：<br>实体——顶点：用户（数百万）、手机号码（数亿）<br>关系——边：好友双向关系（数亿）、手机属于某个注册用户（数百万）、用户拥有手机号码（数亿）</p>
-<p>事例(Neo4j中只存储关系相关数据)：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">CREATE (p1:Person &#123;uid:122622,identityType:1,personIUCode:&apos;0101&apos;&#125;)</span><br><span class="line">CREATE (p2:Person &#123;uid:122623,identityType:1,personIUCode:&apos;0201&apos;&#125;)</span><br><span class="line">CREATE (p3:Person &#123;uid:122624,identityType:2,personIUCode:&apos;0301&apos;&#125;)</span><br><span class="line"></span><br><span class="line">CREATE (m1:Mobile &#123;num:&apos;1580084xxxx&apos;&#125;)</span><br><span class="line">CREATE (m2:Mobile &#123;num:&apos;1680084xxxx&apos;&#125;)</span><br><span class="line">CREATE (m3:Mobile &#123;num:&apos;1780084xxxx&apos;&#125;)</span><br><span class="line"></span><br><span class="line">CREATE</span><br><span class="line">  /*p1分别和p2、p3互为双向好友/ </span><br><span class="line">  (p1)-[:Fellow]-&gt;(p2),</span><br><span class="line">  (p2)-[:Fellow]-&gt;(p1),</span><br><span class="line"></span><br><span class="line">  (p1)-[:Fellow]-&gt;(p3),</span><br><span class="line">  (p3)-[:Fellow]-&gt;(p1),</span><br><span class="line"></span><br><span class="line">  /*用户p1通讯录中有m1、m2、m3三个联系人/</span><br><span class="line">  (p1)-[:Has]-&gt;(m1),</span><br><span class="line">  (p1)-[:Has]-&gt;(m2),</span><br><span class="line">  (p1)-[:Has]-&gt;(m3),</span><br><span class="line"></span><br><span class="line">  (p2)-[:Has]-&gt;(m3),</span><br><span class="line"></span><br><span class="line">  /*用户p1使用手机m1注册/</span><br><span class="line">  (m1)-[:Belong]-&gt;(p1)</span><br></pre></td></tr></table></figure>
-<h2 id="实施方案-amp-计划："><a href="#实施方案-amp-计划：" class="headerlink" title="实施方案&amp;计划："></a>实施方案&amp;计划：</h2><p>第一数据：</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/07/02/hadoop-spark/spark/Spark SQL中Join常用的几种实现/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/07/02/hadoop-spark/spark/Spark SQL中Join常用的几种实现/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-02 09:41:56 / 修改时间：09:49:35" itemprop="dateCreated datePublished" datetime="2019-07-02T09:41:56+08:00">2019-07-02</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/07/02/hadoop-spark/spark/Spark SQL中Join常用的几种实现/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/07/02/hadoop-spark/spark/Spark SQL中Join常用的几种实现/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://www.iteblog.com/archives/2086.html" target="_blank" rel="noopener">https://www.iteblog.com/archives/2086.html</a></p>
-<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>Join是SQL语句中的常用操作，良好的表结构能够将数据分散在不同的表中，使其符合某种范式，减少表冗余、更新容错等。而建立表和表之间关系的最佳方式就是Join操作。</p>
-<p><a href="https://www.iteblog.com/archives/tag/spark/" target="_blank" rel="noopener">Spark</a>SQL作为大数据领域的SQL实现，自然也对Join操作做了不少优化，今天主要看一下在<a href="https://www.iteblog.com/archives/tag/spark/" target="_blank" rel="noopener">Spark</a>SQL中对于Join，常见的3种实现。</p>
-<h2 id="Spark-SQL中Join常用的实现"><a href="#Spark-SQL中Join常用的实现" class="headerlink" title="Spark SQL中Join常用的实现"></a><a href="https://www.iteblog.com/archives/tag/spark/" target="_blank" rel="noopener">Spark</a> SQL中Join常用的实现</h2><h3 id="Broadcast-Join"><a href="#Broadcast-Join" class="headerlink" title="Broadcast Join"></a>Broadcast Join</h3><p>大家知道，在数据库的常见模型中（比如星型模型或者雪花模型），表一般分为两种：事实表和维度表。维度表一般指固定的、变动较少的表，例如联系人、物品种类等，一般数据有限。而事实表一般记录流水，比如销售清单等，通常随着时间的增长不断膨胀。</p>
-<p>因为Join操作是对两个表中key值相同的记录进行连接，在SparkSQL中，对两个表做Join最直接的方式是先根据key分区，再在每个分区中把key值相同的记录拿出来做连接操作。但这样就不可避免地涉及到shuffle，而shuffle在Spark中是比较耗时的操作，我们应该尽可能的设计Spark应用使其避免大量的shuffle。</p>
-<p>当维度表和事实表进行Join操作时，为了避免shuffle，我们可以将大小有限的维度表的全部数据分发到每个节点上，供事实表使用。executor存储维度表的全部数据，一定程度上牺牲了空间，换取shuffle操作大量的耗时，这在SparkSQL中称作Broadcast Join，如下图所示：</p>
-<p><a href="https://s.iteblog.com/pic/Spark_sql_broadcast_Join_iteblog.png" target="_blank" rel="noopener"><img src="//schwimmer.github.io/2019/07/02/hadoop-spark/spark/Spark SQL中Join常用的几种实现/pic/Spark_sql_broadcast_Join_iteblog.png" alt="Broadcast Join in Apache Spark sql"></a><br>如果想及时了解Spark、Hadoop或者Hbase相关的文章，欢迎关注微信公共帐号：<strong>iteblog_hadoop</strong></p>
-<p>Table B是较小的表，黑色表示将其广播到每个executor节点上，Table A的每个partition会通过block manager取到Table A的数据。根据每条记录的Join Key取到Table B中相对应的记录，根据Join Type进行操作。这个过程比较简单，不做赘述。</p>
-<p>Broadcast Join的条件有以下几个：</p>
-<ul>
-<li>被广播的表需要小于 <code>spark.sql.autoBroadcastJoinThreshold</code> 所配置的值，默认是10M （或者加了broadcast join的hint）</li>
-<li>基表不能被广播，比如 left outer join 时，只能广播左表</li>
-</ul>
-<p>看起来广播是一个比较理想的方案，但它有没有缺点呢？也很明显。这个方案只能用于广播较小的表，否则数据的冗余传输就远大于shuffle的开销；另外，广播时需要将被广播的表现collect到driver端，当频繁有广播出现时，对driver的内存也是一个考验。</p>
-<h3 id="Shuffle-Hash-Join"><a href="#Shuffle-Hash-Join" class="headerlink" title="Shuffle Hash Join"></a>Shuffle Hash Join</h3><p>当一侧的表比较小时，我们选择将其广播出去以避免shuffle，提高性能。但因为被广播的表首先被collect到driver段，然后被冗余分发到每个executor上，所以当表比较大时，采用broadcast join会对driver端和executor端造成较大的压力。</p>
-<p>但由于Spark是一个分布式的计算引擎，可以通过分区的形式将大批量的数据划分成n份较小的数据集进行并行计算。这种思想应用到Join上便是Shuffle Hash Join了。利用key相同必然分区相同的这个原理，SparkSQL将较大表的join分而治之，先将表划分成n个分区，再对两个表中相对应分区的数据分别进行Hash Join，这样即在一定程度上减少了driver广播一侧表的压力，也减少了executor端取整张被广播表的内存消耗。其原理如下图：</p>
-<p><a href="https://s.iteblog.com/pic/Spark_sql_Shuffle_Hash_Join_iteblog.png" target="_blank" rel="noopener"><img src="//schwimmer.github.io/2019/07/02/hadoop-spark/spark/Spark SQL中Join常用的几种实现/pic/Spark_sql_Shuffle_Hash_Join_iteblog.png" alt="Shuffle Hash Join in Apache Spark sql"></a><br>如果想及时了解Spark、Hadoop或者Hbase相关的文章，欢迎关注微信公共帐号：<strong>iteblog_hadoop</strong></p>
-<p>Shuffle Hash Join分为两步：</p>
-<ul>
-<li>对两张表分别按照join keys进行重分区，即shuffle，目的是为了让有相同join keys值的记录分到对应的分区中</li>
-<li>对对应分区中的数据进行join，此处先将小表分区构造为一张hash表，然后根据大表分区中记录的join keys值拿出来进行匹配</li>
-</ul>
-<p>Shuffle Hash Join的条件有以下几个：</p>
-<ul>
-<li>分区的平均大小不超过spark.sql.autoBroadcastJoinThreshold所配置的值，默认是10M</li>
-<li>基表不能被广播，比如left outer join时，只能广播右表</li>
-<li>一侧的表要明显小于另外一侧，小的一侧将被广播（明显小于的定义为3倍小，此处为经验值）</li>
-</ul>
-<p>我们可以看到，在一定大小的表中，SparkSQL从时空结合的角度来看，将两个表进行重新分区，并且对小表中的分区进行hash化，从而完成join。在保持一定复杂度的基础上，尽量减少driver和executor的内存压力，提升了计算时的稳定性。</p>
-<h3 id="Sort-Merge-Join"><a href="#Sort-Merge-Join" class="headerlink" title="Sort Merge Join"></a>Sort Merge Join</h3><p>上面介绍的两种实现对于一定大小的表比较适用，但当两个表都非常大时，显然无论适用哪种都会对计算内存造成很大压力。这是因为join时两者采取的都是hash join，是将一侧的数据完全加载到内存中，使用hash code取join keys值相等的记录进行连接。</p>
-<p>当两个表都非常大时，SparkSQL采用了一种全新的方案来对表进行Join，即Sort Merge Join。这种实现方式不用将一侧数据全部加载后再进星hash join，但需要在join前将数据排序，如下图所示：</p>
-<p><a href="https://s.iteblog.com/pic/Spark_sql_Sort_Merge_Join_iteblog.png" target="_blank" rel="noopener"><img src="//schwimmer.github.io/2019/07/02/hadoop-spark/spark/Spark SQL中Join常用的几种实现/pic/Spark_sql_Sort_Merge_Join_iteblog.png" alt="Sort Merge Join in Apache Spark sql"></a><br>如果想及时了解Spark、Hadoop或者Hbase相关的文章，欢迎关注微信公共帐号：<strong>iteblog_hadoop</strong></p>
-<p>可以看到，首先将两张表按照join keys进行了重新shuffle，保证join keys值相同的记录会被分在相应的分区。分区后对每个分区内的数据进行排序，排序后再对相应的分区内的记录进行连接，如下图示：</p>
-<p><a href="https://s.iteblog.com/pic/Spark_sql_Sort_Merge_Join_example_iteblog.png" target="_blank" rel="noopener"><img src="//schwimmer.github.io/2019/07/02/hadoop-spark/spark/Spark SQL中Join常用的几种实现/pic/Spark_sql_Sort_Merge_Join_example_iteblog.png" alt="Sort Merge Join in Apache Spark sql"></a><br>如果想及时了解Spark、Hadoop或者Hbase相关的文章，欢迎关注微信公共帐号：<strong>iteblog_hadoop</strong></p>
-<p>看着很眼熟吧？也很简单，因为两个序列都是有序的，从头遍历，碰到key相同的就输出；如果不同，左边小就继续取左边，反之取右边。</p>
-<p>可以看出，无论分区有多大，Sort Merge Join都不用把某一侧的数据全部加载到内存中，而是即用即取即丢，从而大大提升了大数据量下sql join的稳定性。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文介绍了SparkSQL中的3中Join实现，其实这也不是什么新鲜玩意儿。传统DB也有这也的玩法儿，SparkSQL只是将其做成分布式的实现。</p>
-<p>本文仅仅从大的理论方面介绍了这几种实现，具体到每个join type是怎么遍历、没有join keys时应该怎么做、这些实现对join keys有什么具体的需求，这些细节都没有展现出来。感兴趣的话，可以去翻翻源码。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/07/01/总结与思考/面试问题-BI工程师/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/07/01/总结与思考/面试问题-BI工程师/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-01 13:59:19 / 修改时间：14:25:04" itemprop="dateCreated datePublished" datetime="2019-07-01T13:59:19+08:00">2019-07-01</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/07/01/总结与思考/面试问题-BI工程师/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/07/01/总结与思考/面试问题-BI工程师/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>数仓<br>1.请简单说一下过往做过的数据仓库项目，在仓库内部数据分层是如何做的，每层的目的都是什么，为何要按这种逻辑做分层。<br>2.星型模型和雪花模型的优劣各是什么？你日常是如何使用这两种模型的？<br>3.聊聊你对于数据监控的认知和实践经验？监控的目的？监控的逻辑？监控的手段？<br>4.任务调度工具使用过哪些，你觉得里面有没有什么不顺手的地方？如果需要改进，怎么改进？如何避免环状调度依赖？<br>9.说说你过往在做数据仓库过程中碰到的最大困难，你最终是是如何应对的？</p>
-<p>hive<br>10、decimal做group by<br>11、锁表问题，如何解决<br>6、如果对任务资源做限制，用哪些参数？这些参数值调高调低的依据是什么<br>13、hive的数据倾斜问题。数据倾斜在任务执行时的表现是什么，你一般会从什么角度来排查数据倾斜的原因？</p>
-<p>spark<br>12、spark常用的配置参数有哪些，设置某个参数值的依据是什么，如何验证你的设置<br>7.spark里，聊聊你常用的算子，哪些是Transformation类型，哪些是Action类型。<br>8.spark里，如果有一些变量要做全局告知或重复使用，该怎么做</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/07/01/机器学习/知识图谱/安装配置/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/07/01/机器学习/知识图谱/安装配置/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-01 12:02:12 / 修改时间：12:02:57" itemprop="dateCreated datePublished" datetime="2019-07-01T12:02:12+08:00">2019-07-01</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/07/01/机器学习/知识图谱/安装配置/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/07/01/机器学习/知识图谱/安装配置/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Neo4j安装"><a href="#Neo4j安装" class="headerlink" title="Neo4j安装"></a>Neo4j安装</h1><p>下载地址<a href="https://neo4j.com/download-center/#releases" target="_blank" rel="noopener">https://neo4j.com/download-center/#releases</a></p>
-<p>解压后，放在<code>/Users/david/david/neo4j-community-3.5.6</code></p>
-<p>1、配置环境变量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export NEO4J_HOME=&quot;/Users/david/david/neo4j-community-3.5.6&quot;</span><br><span class="line">export PATH=&quot;$NEO4J_HOME/bin:$PATH&quot;</span><br></pre></td></tr></table></figure>
-<p>2、启动服务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">neo4j start</span><br></pre></td></tr></table></figure>
-<p>3、浏览器访问</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:7474/browser/</span><br></pre></td></tr></table></figure>
-<p>首次进入时用户名密码都是neo4j，然后会提示输入新密码，新密码是<code>123456</code></p>
-<p>重启服务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">neo4j restart</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/31/">31</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/32/">32</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2136,7 +2249,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">308</span>
+                    <span class="site-state-item-count">314</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2342,7 +2455,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">61</span>
+                      
+                    
+                    <span class="site-state-item-count">62</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

@@ -101,7 +101,7 @@
 <meta property="og:site_name" content="Schwimmer&#39;s Blog">
 <meta property="og:description" content="官方文档：https://neo4j.com/docs/cypher-refcard/3.0/ 快捷技巧结合表达式：  match(n)-[r] -(b)   如果查询节点n                            就    return n    如果查询关系r                             就    return r    如果查询节点b">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-07-03T09:27:04.998Z">
+<meta property="og:updated_time" content="2019-07-08T10:01:17.476Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="cypher基本概念和语法">
 <meta name="twitter:description" content="官方文档：https://neo4j.com/docs/cypher-refcard/3.0/ 快捷技巧结合表达式：  match(n)-[r] -(b)   如果查询节点n                            就    return n    如果查询关系r                             就    return r    如果查询节点b">
@@ -415,7 +415,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-03 17:27:04" itemprop="dateModified" datetime="2019-07-03T17:27:04+08:00">2019-07-03</time>
+                <time title="修改时间：2019-07-08 18:01:17" itemprop="dateModified" datetime="2019-07-08T18:01:17+08:00">2019-07-08</time>
               </span>
             
           
@@ -583,6 +583,11 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CREATE (actor:Actor &#123; name:&quot;Tom Hanks&quot; &#125;),(movie:Movie &#123; title:‘Sleepless IN Seattle‘ &#125;),</span><br><span class="line">(actor)-[:ACTED_IN]-&gt;(movie);</span><br></pre></td></tr></table></figure>
 <p>使用索引查询:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MATCH (actor:Actor &#123; name: &quot;Tom Hanks&quot; &#125;) RETURN actor;</span><br></pre></td></tr></table></figure>
+<h1 id="地理信息"><a href="#地理信息" class="headerlink" title="地理信息"></a>地理信息</h1><p>转自：<a href="http://neo4j.com.cn/topic/5b0be3179662eee704f31db6" target="_blank" rel="noopener">neo4j 3.4根据经纬度计算两点之间的距离</a></p>
+<p><a href="https://neo4j.com/docs/developer-manual/current/cypher/functions/spatial/" target="_blank" rel="noopener">https://neo4j.com/docs/developer-manual/current/cypher/functions/spatial/</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">create(l:Location) set l.latitude=toFloat(&apos;55.612151&apos;),l.longitude=toFloat(&apos;12.995090&apos;) return l</span><br><span class="line"></span><br><span class="line">with point(&#123;latitude:55.612,longitude:12.995&#125;) as poi</span><br><span class="line">match (l:Location) where l.latitude=55.612151</span><br><span class="line">return distance(point(&#123;latitude:l.latitude,longitude: l.longitude&#125;),poi) as distince</span><br><span class="line"></span><br><span class="line">with point(&#123;latitude:55.612,longitude:12.995&#125;) as poi</span><br><span class="line">match (l:Location) where l.latitude=55.612151 and distance(point(&#123;latitude:l.latitude,longitude: l.longitude&#125;),poi)&lt;20</span><br><span class="line">return distance(point(&#123;latitude:l.latitude,longitude: l.longitude&#125;),poi) as distince</span><br></pre></td></tr></table></figure>
+<p>cypher 实现， 节点上存lat，lng属性，我用cypher重写了 谷歌的 地理位置距离算法，你可以在cypher的where语句里，用下面方法来找 500米以内的 节点</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// cypher有自带的，目前应该用不到下面的</span><br><span class="line">round( </span><br><span class="line"> 6378.137 *1000*2*</span><br><span class="line">  asin(sqrt(</span><br><span class="line">       sin((radians(start.lat)-radians(&#123;start_lat&#125;))/2)^2+cos(radians(start.lat))*cos(radians(&#123;start_lat&#125;))* </span><br><span class="line">      sin((radians(start.lng)-radians(&#123;start_lng&#125;))/2)^2</span><br><span class="line">    ))</span><br><span class="line">   )&lt;500</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -613,8 +618,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/06/29/机器学习/知识图谱/教程-电影数据/" rel="next" title="">
-                <i class="fa fa-chevron-left"></i> 
+              <a href="/2019/06/29/机器学习/知识图谱/教程-电影数据/" rel="next" title="【转】Neo4j以电影数据为例的教程">
+                <i class="fa fa-chevron-left"></i> 【转】Neo4j以电影数据为例的教程
               </a>
             
           </div>
@@ -623,8 +628,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/07/01/机器学习/知识图谱/如何将大规模数据导入Neo4j/" rel="prev" title="">
-                 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/07/01/机器学习/知识图谱/如何将大规模数据导入Neo4j/" rel="prev" title="【转】如何将大规模数据导入Neo4j">
+                【转】如何将大规模数据导入Neo4j <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -701,7 +706,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">308</span>
+                    <span class="site-state-item-count">314</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -907,7 +912,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">61</span>
+                      
+                    
+                    <span class="site-state-item-count">62</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -945,7 +952,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#快捷技巧"><span class="nav-number">1.</span> <span class="nav-text">快捷技巧</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#检索节点"><span class="nav-number">2.</span> <span class="nav-text">检索节点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#创建节点"><span class="nav-number">3.</span> <span class="nav-text">创建节点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#建立连接"><span class="nav-number">4.</span> <span class="nav-text">建立连接</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#删除所有节点和关系"><span class="nav-number">5.</span> <span class="nav-text">删除所有节点和关系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Node语法"><span class="nav-number">6.</span> <span class="nav-text">Node语法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关系语法"><span class="nav-number">7.</span> <span class="nav-text">关系语法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#带属性的关系"><span class="nav-number">7.1.</span> <span class="nav-text">带属性的关系</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#模式语法"><span class="nav-number">8.</span> <span class="nav-text">模式语法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#模式变量"><span class="nav-number">9.</span> <span class="nav-text">模式变量</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#条件"><span class="nav-number">10.</span> <span class="nav-text">条件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#创建"><span class="nav-number">11.</span> <span class="nav-text">创建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#查询"><span class="nav-number">12.</span> <span class="nav-text">查询</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#用ID查询"><span class="nav-number">12.1.</span> <span class="nav-text">用ID查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模糊查询"><span class="nav-number">12.2.</span> <span class="nav-text">模糊查询</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#更新"><span class="nav-number">13.</span> <span class="nav-text">更新</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#更新属性"><span class="nav-number">13.1.</span> <span class="nav-text">更新属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改关系属性"><span class="nav-number">13.2.</span> <span class="nav-text">修改关系属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除属性"><span class="nav-number">13.3.</span> <span class="nav-text">删除属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除节点"><span class="nav-number">13.4.</span> <span class="nav-text">删除节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除关系"><span class="nav-number">13.5.</span> <span class="nav-text">删除关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#现有节点创建关系"><span class="nav-number">13.6.</span> <span class="nav-text">现有节点创建关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多个关系的创建"><span class="nav-number">13.7.</span> <span class="nav-text">多个关系的创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#筛选过滤"><span class="nav-number">13.8.</span> <span class="nav-text">筛选过滤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结果集返回"><span class="nav-number">13.9.</span> <span class="nav-text">结果集返回</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#聚合函数"><span class="nav-number">13.10.</span> <span class="nav-text">聚合函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#排序和分页"><span class="nav-number">13.11.</span> <span class="nav-text">排序和分页</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#收集聚合结果"><span class="nav-number">13.12.</span> <span class="nav-text">收集聚合结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#union-联合"><span class="nav-number">13.13.</span> <span class="nav-text">union 联合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#with"><span class="nav-number">13.14.</span> <span class="nav-text">with</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加约束或者索引"><span class="nav-number">13.15.</span> <span class="nav-text">添加约束或者索引</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#快捷技巧"><span class="nav-number">1.</span> <span class="nav-text">快捷技巧</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#检索节点"><span class="nav-number">2.</span> <span class="nav-text">检索节点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#创建节点"><span class="nav-number">3.</span> <span class="nav-text">创建节点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#建立连接"><span class="nav-number">4.</span> <span class="nav-text">建立连接</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#删除所有节点和关系"><span class="nav-number">5.</span> <span class="nav-text">删除所有节点和关系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Node语法"><span class="nav-number">6.</span> <span class="nav-text">Node语法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关系语法"><span class="nav-number">7.</span> <span class="nav-text">关系语法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#带属性的关系"><span class="nav-number">7.1.</span> <span class="nav-text">带属性的关系</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#模式语法"><span class="nav-number">8.</span> <span class="nav-text">模式语法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#模式变量"><span class="nav-number">9.</span> <span class="nav-text">模式变量</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#条件"><span class="nav-number">10.</span> <span class="nav-text">条件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#创建"><span class="nav-number">11.</span> <span class="nav-text">创建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#查询"><span class="nav-number">12.</span> <span class="nav-text">查询</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#用ID查询"><span class="nav-number">12.1.</span> <span class="nav-text">用ID查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模糊查询"><span class="nav-number">12.2.</span> <span class="nav-text">模糊查询</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#更新"><span class="nav-number">13.</span> <span class="nav-text">更新</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#更新属性"><span class="nav-number">13.1.</span> <span class="nav-text">更新属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改关系属性"><span class="nav-number">13.2.</span> <span class="nav-text">修改关系属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除属性"><span class="nav-number">13.3.</span> <span class="nav-text">删除属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除节点"><span class="nav-number">13.4.</span> <span class="nav-text">删除节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除关系"><span class="nav-number">13.5.</span> <span class="nav-text">删除关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#现有节点创建关系"><span class="nav-number">13.6.</span> <span class="nav-text">现有节点创建关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多个关系的创建"><span class="nav-number">13.7.</span> <span class="nav-text">多个关系的创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#筛选过滤"><span class="nav-number">13.8.</span> <span class="nav-text">筛选过滤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结果集返回"><span class="nav-number">13.9.</span> <span class="nav-text">结果集返回</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#聚合函数"><span class="nav-number">13.10.</span> <span class="nav-text">聚合函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#排序和分页"><span class="nav-number">13.11.</span> <span class="nav-text">排序和分页</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#收集聚合结果"><span class="nav-number">13.12.</span> <span class="nav-text">收集聚合结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#union-联合"><span class="nav-number">13.13.</span> <span class="nav-text">union 联合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#with"><span class="nav-number">13.14.</span> <span class="nav-text">with</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加约束或者索引"><span class="nav-number">13.15.</span> <span class="nav-text">添加约束或者索引</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#地理信息"><span class="nav-number">14.</span> <span class="nav-text">地理信息</span></a></li></ol></div>
             
 
           </div>

@@ -357,6 +357,1097 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/07/深度学习笔记/tensorflow/tensorflow节点/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/07/深度学习笔记/tensorflow/tensorflow节点/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-07 10:49:56 / 修改时间：11:06:26" itemprop="dateCreated datePublished" datetime="2019-04-07T10:49:56+08:00">2019-04-07</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/04/07/深度学习笔记/tensorflow/tensorflow节点/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/07/深度学习笔记/tensorflow/tensorflow节点/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://www.cnblogs.com/Vulpers/p/7809276.html" target="_blank" rel="noopener">https://www.cnblogs.com/Vulpers/p/7809276.html</a></p>
+<h1 id="一、-constant（常量）"><a href="#一、-constant（常量）" class="headerlink" title="一、 constant（常量）"></a><strong>一、 constant（常量）</strong></h1><p>　　constant是TensorFlow的常量节点，通过constant方法创建，其是计算图（Computational Graph）中的起始节点，是传入数据。</p>
+<p><strong>创建方式</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cons = tf.constant(value=[1,2],dtype=tf.float32,shape=(1,2),name=&apos;testconst&apos;, verify_shape=False)</span><br></pre></td></tr></table></figure>
+<p><strong>参数说明</strong></p>
+<p><strong>value</strong>：初始值，必填，必须是一个张量（1或[1,2,3]或[[1,2,3],[2,2,3]]或……）</p>
+<p><strong>dtype</strong>：数据类型，选填，默认为value的数据类型，传入参数为tensorflow下的枚举值（float32，float64…….）</p>
+<p><strong>shape</strong>：数据形状，选填，默认为value的shape，设置时不得比value小，可以比value阶数、维度更高，超过部分按value提供最后一个数字填充，示例代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"></span><br><span class="line">sess = tf.InteractiveSession()</span><br><span class="line">cons1 = tf.constant([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>], shape=[<span class="number">2</span>, <span class="number">3</span>])</span><br><span class="line">print(sess.run(cons1))</span><br><span class="line"><span class="comment"># [[1 2 3]</span></span><br><span class="line"><span class="comment">#  [3 3 3]]</span></span><br></pre></td></tr></table></figure>
+<p><strong>name</strong>：常量名，选填，默认值不重复，根据创建顺序为（Const，Const_1，Const_2…….）</p>
+<p><strong>verify_shape</strong>:是否验证value的shape和指定shape相符，若设为True则进行验证，不相符时会抛出异常</p>
+<h1 id="二、placeholder（占位符）"><a href="#二、placeholder（占位符）" class="headerlink" title="二、placeholder（占位符）"></a><strong>二、placeholder（占位符）</strong></h1><p> 　　placeholder是TensorFlow的占位符节点，由placeholder方法创建，其也是一种常量，但是由用户在调用run方法时传递的，也可以将placeholder理解为一种形参。即其不像constant那样直接可以使用，需要用户传递常数值。</p>
+<p><strong>创建方式</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">X = tf.placeholder(dtype=tf.float32, shape=[144, 10], name=&apos;X&apos;)</span><br></pre></td></tr></table></figure>
+<p><strong>参数说明</strong></p>
+<p><strong>dtype</strong>：数据类型，必填，默认为value的数据类型，传入参数为tensorflow下的枚举值（float32，float64…….）</p>
+<p><strong>shape</strong>：数据形状，选填，不填则随传入数据的形状自行变动，可以在多次调用中传入不同形状的数据</p>
+<p><strong>name</strong>：常量名，选填，默认值不重复，根据创建顺序为（Placeholder，Placeholder_1，Placeholder_2…….）</p>
+<p><strong>示例代码</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">import</span> numpy.random <span class="keyword">as</span> random</span><br><span class="line"></span><br><span class="line"><span class="comment">#占位符shape不设时会按传入参数自行匹配</span></span><br><span class="line">node1 = tf.placeholder(tf.float32)  <span class="comment"># , shape=[4, 5])</span></span><br><span class="line"><span class="comment">#也可以写成</span></span><br><span class="line"><span class="comment"># node1 = tf.placeholder("float")</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">node2 = tf.placeholder(tf.float32)  <span class="comment"># , shape=[4, 5])</span></span><br><span class="line">op = tf.multiply(node1, node2)</span><br><span class="line">session = tf.Session()</span><br><span class="line">const1 = tf.constant(random.rand(<span class="number">4</span>, <span class="number">5</span>))</span><br><span class="line">const2 = tf.constant(random.rand(<span class="number">4</span>, <span class="number">5</span>))</span><br><span class="line"><span class="comment">#可以传入初始化后的常量</span></span><br><span class="line">print(session.run(op, &#123;node1: session.run(const1), node2: session.run(const2)&#125;))</span><br><span class="line"><span class="comment">#也可以直接传入张量，其实同初始化后的常量一致</span></span><br><span class="line">print(session.run(op, &#123;node1: random.rand(<span class="number">2</span>, <span class="number">3</span>), node2: random.rand(<span class="number">2</span>, <span class="number">3</span>)&#125;))</span><br></pre></td></tr></table></figure>
+<h1 id="三、Variable（变量）"><a href="#三、Variable（变量）" class="headerlink" title="三、Variable（变量）"></a><strong>三、Variable（变量）</strong></h1><p>　　Vatiable是tensorflow的变量节点，通过Variable（注：V大写）方法创建，并且需要传递初始值。在使用前需要通过tensorflow的初始化方法进行初始化。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">W = tf.Variable(initial_value=tf.zeros([<span class="number">9</span>, <span class="number">5</span>]),  <span class="comment"># 初始值，必填，张量或可以转换为张量的Python对象。初始值必须有指定一个形状，除非`validate_shape`设置为False。</span></span><br><span class="line">trainable=<span class="keyword">True</span>,  <span class="comment"># 如果`True`，则默认值也将变量添加到图形中集合`GraphKeys.TRAINABLE_VARIABLES`。这个集合用作“Optimizer”类使用的默认变量列表</span></span><br><span class="line">collections=<span class="keyword">None</span>,  <span class="comment"># 图表集合键的列表。新的变量被添加到这些集合。默认为`[GraphKeys.GLOBAL_VARIABLES]`。</span></span><br><span class="line">validate_shape=<span class="keyword">True</span>,  <span class="comment"># 如果`False`，允许变量用初始化未知形状的值。如果“True”，默认的形状`initial_value`必须是已知的。</span></span><br><span class="line">caching_device=<span class="keyword">None</span>,  <span class="comment"># 可选设备字符串，描述变量的位置应该被缓存以供阅读。默认为变量的设备。如果不是“None”，则缓存在另一个设备上。典型的用途是缓存在使用变量的Ops所在的设备上进行重复数据删除复制`Switch`和其他条件语句。</span></span><br><span class="line">name=<span class="string">'W'</span>,  <span class="comment"># 变量的可选名称。默认为“Variable”并获取自动去重（Variable_1,Variable_2....）。</span></span><br><span class="line">variable_def=<span class="keyword">None</span>, <span class="comment"># `VariableDef`协议缓冲区。如果不是“无”，则重新创建变量对象及其内容，引用变量的节点在图中，必须已经存在。图形没有改变。`variable_def`和其他参数是互斥的。</span></span><br><span class="line">dtype=tf.float32, <span class="comment"># 如果设置，initial_value将被转换为给定的类型。如果`None'，数据类型将被保存（如果`initial_value`是一个张量），或者“convert_to_tensor”来决定。</span></span><br><span class="line">expected_shape=<span class="keyword">None</span>,  <span class="comment"># 张量的Shape。如果设置，initial_value需要符合这个形状。</span></span><br><span class="line">import_scope=<span class="keyword">None</span>)  <span class="comment"># 可选的字符串。名称范围添加到`Variable.`仅在从协议缓冲区初始化时使用。</span></span><br></pre></td></tr></table></figure>
+<p>创建类似于</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">W = tf.Variable(tf.zeros([3, 10]), dtype=tf.float64, name=&apos;W&apos;)</span><br></pre></td></tr></table></figure>
+<p>例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 0.0就是初始值</span><br><span class="line">w = tf.Variable(0.0, name=&quot;weight&quot;)</span><br><span class="line">b = tf.Variable(0.0, name=&quot;bias&quot;)</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/07/深度学习笔记/tensorflow/优化器Optimizier/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/07/深度学习笔记/tensorflow/优化器Optimizier/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-07 10:07:44 / 修改时间：12:10:46" itemprop="dateCreated datePublished" datetime="2019-04-07T10:07:44+08:00">2019-04-07</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/04/07/深度学习笔记/tensorflow/优化器Optimizier/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/07/深度学习笔记/tensorflow/优化器Optimizier/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://blog.csdn.net/xierhacker/article/details/53174558" target="_blank" rel="noopener">https://blog.csdn.net/xierhacker/article/details/53174558</a></p>
+<h2 id="二-常用的optimizer类"><a href="#二-常用的optimizer类" class="headerlink" title="二.常用的optimizer类"></a>二.常用的optimizer类</h2><h2 id="Ⅰ-class-tf-train-Optimizer"><a href="#Ⅰ-class-tf-train-Optimizer" class="headerlink" title="Ⅰ.class tf.train.Optimizer"></a>Ⅰ.class tf.train.Optimizer</h2><p>优化器（optimizers）类的基类。这个类定义了在训练模型的时候添加一个操作的API。你基本上不会直接使用这个类，但是你会用到他的子类比如GradientDescentOptimizer, AdagradOptimizer, MomentumOptimizer.等等这些。 </p>
+<p>后面讲的时候会详细讲一下GradientDescentOptimizer 这个类的一些函数，然后其他的类只会讲构造函数，因为类中剩下的函数都是大同小异的</p>
+<h2 id="Ⅱ-class-tf-train-GradientDescentOptimizer"><a href="#Ⅱ-class-tf-train-GradientDescentOptimizer" class="headerlink" title="Ⅱ.class tf.train.GradientDescentOptimizer"></a>Ⅱ.class tf.train.GradientDescentOptimizer</h2><p>这个类是实现梯度下降算法的优化器。(结合理论可以看到，这个构造函数需要的一个学习率就行了)</p>
+<p><strong>init</strong>(learning_rate, use_locking=False,name=’GradientDescent’)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">learning_rate: A Tensor or a floating point value. 要使用的学习率 </span><br><span class="line">use_locking: 要是True的话，就对于更新操作（update operations.）使用锁 </span><br><span class="line">name: 名字，可选，默认是”GradientDescent”.</span><br></pre></td></tr></table></figure>
+<p><strong>compute_gradients(loss,var_list=None,gate_gradients=GATE_OP,aggregation_method=None,colocate_gradients_with_ops=False,grad_loss=None)</strong></p>
+<blockquote>
+<p>作用：对于在变量列表（var_list）中的变量计算对于损失函数的梯度,这个函数返回一个（梯度，变量）对的列表，其中梯度就是相对应变量的梯度了。这是minimize()函数的第一个部分，<br>参数：<br>loss: 待减小的值<br>var_list: 默认是在GraphKey.TRAINABLE_VARIABLES.<br>gate_gradients: How to gate the computation of gradients. Can be GATE_NONE, GATE_OP, or GATE_GRAPH.<br>aggregation_method: Specifies the method used to combine gradient terms. Valid values are defined in the class AggregationMethod.<br>colocate_gradients_with_ops: If True, try colocating gradients with the corresponding op. </p>
+<p>grad_loss: Optional. A Tensor holding the gradient computed for loss.</p>
+</blockquote>
+<p><strong>apply_gradients(grads_and_vars,global_step=None,name=None)</strong></p>
+<blockquote>
+<p>作用：把梯度“应用”（Apply）到变量上面去。其实就是按照梯度下降的方式加到上面去。这是minimize（）函数的第二个步骤。 返回一个应用的操作。<br>参数:<br>grads_and_vars: compute_gradients()函数返回的(gradient, variable)对的列表<br>global_step: Optional Variable to increment by one after the variables have been updated.<br>name: 可选，名字</p>
+<p>get_name()</p>
+</blockquote>
+<p><strong>minimize(loss,global_step=None,var_list=None,gate_gradients=GATE_OP,aggregation_method=None,colocate_gradients_with_ops=False,name=None,grad_loss=None)</strong></p>
+<blockquote>
+<p>作用：非常常用的一个函数<br>通过更新var_list来减小loss，这个函数就是前面compute_gradients() 和apply_gradients().的结合</p>
+</blockquote>
+<h2 id="Ⅲ-class-tf-train-AdadeltaOptimizer"><a href="#Ⅲ-class-tf-train-AdadeltaOptimizer" class="headerlink" title="Ⅲ.class tf.train.AdadeltaOptimizer"></a>Ⅲ.class tf.train.AdadeltaOptimizer</h2><p>实现了 Adadelta算法的优化器，可以算是下面的Adagrad算法改进版本</p>
+<p>构造函数：<br><strong>tf.train.AdadeltaOptimizer.init(learning_rate=0.001, rho=0.95, epsilon=1e-08, use_locking=False, name=’Adadelta’)</strong></p>
+<blockquote>
+<p>作用：构造一个使用Adadelta算法的优化器<br>参数：<br>learning_rate: tensor或者浮点数，学习率<br>rho: tensor或者浮点数. The decay rate.<br>epsilon: A Tensor or a floating point value. A constant epsilon used to better conditioning the grad update.<br>use_locking: If True use locks for update operations.<br>name: 【可选】这个操作的名字，默认是”Adadelta”</p>
+</blockquote>
+<h2 id="IV-class-tf-train-AdagradOptimizer"><a href="#IV-class-tf-train-AdagradOptimizer" class="headerlink" title="IV.class tf.train.AdagradOptimizer"></a>IV.class tf.train.AdagradOptimizer</h2><p>Optimizer that implements the Adagrad algorithm.</p>
+<p>See this paper.<br><strong>tf.train.AdagradOptimizer.init(learning_rate, initial_accumulator_value=0.1, use_locking=False, name=’Adagrad’)</strong></p>
+<blockquote>
+<p>Construct a new Adagrad optimizer.<br>Args:</p>
+<p>learning_rate: A Tensor or a floating point value. The learning rate.<br>initial_accumulator_value: A floating point value. Starting value for the accumulators, must be positive.<br>use_locking: If True use locks for update operations.<br>name: Optional name prefix for the operations created when applying gradients. Defaults to “Adagrad”.</p>
+<p>Raises:</p>
+<p>ValueError: If the initial_accumulator_value is invalid.</p>
+</blockquote>
+<p>The Optimizer base class provides methods to compute gradients for a loss and apply gradients to variables. A collection of subclasses implement classic optimization algorithms such as GradientDescent and Adagrad.</p>
+<p>You never instantiate the Optimizer class itself, but instead instantiate one of the subclasses.</p>
+<h2 id="Ⅴ-class-tf-train-MomentumOptimizer"><a href="#Ⅴ-class-tf-train-MomentumOptimizer" class="headerlink" title="Ⅴ.class tf.train.MomentumOptimizer"></a>Ⅴ.class tf.train.MomentumOptimizer</h2><p>Optimizer that implements the Momentum algorithm.</p>
+<p><strong>tf.train.MomentumOptimizer.init(learning_rate, momentum, use_locking=False, name=’Momentum’, use_nesterov=False)</strong></p>
+<p>Construct a new Momentum optimizer.</p>
+<blockquote>
+<p>Args:</p>
+<p>learning_rate: A Tensor or a floating point value. The learning rate.<br>momentum: A Tensor or a floating point value. The momentum.<br>use_locking: If True use locks for update operations.<br>name: Optional name prefix for the operations created when applying gradients. Defaults to “Momentum”.</p>
+</blockquote>
+<h2 id="Ⅵ-class-tf-train-AdamOptimizer"><a href="#Ⅵ-class-tf-train-AdamOptimizer" class="headerlink" title="Ⅵ.class tf.train.AdamOptimizer"></a>Ⅵ.class tf.train.AdamOptimizer</h2><p>实现了Adam算法的优化器<br>构造函数：<br><strong>tf.train.AdamOptimizer.init(learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False, name=’Adam’)</strong></p>
+<p>Construct a new Adam optimizer.</p>
+<p>Initialization:</p>
+<p>m_0 &lt;- 0 (Initialize initial 1st moment vector)<br>v_0 &lt;- 0 (Initialize initial 2nd moment vector)<br>t &lt;- 0 (Initialize timestep)<br>The update rule for variable with gradient g uses an optimization described at the end of section2 of the paper:</p>
+<p>t &lt;- t + 1<br>lr_t &lt;- learning_rate * sqrt(1 - beta2^t) / (1 - beta1^t)</p>
+<p>m<em>t &lt;- beta1 * m</em>{t-1} + (1 - beta1) <em> g<br>v_t &lt;- beta2 </em> v_{t-1} + (1 - beta2) <em> g </em> g<br>variable &lt;- variable - lr_t * m_t / (sqrt(v_t) + epsilon)<br>The default value of 1e-8 for epsilon might not be a good default in general. For example, when training an Inception network on ImageNet a current good choice is 1.0 or 0.1.</p>
+<p>Note that in dense implement of this algorithm, m_t, v_t and variable will update even if g is zero, but in sparse implement, m_t, v_t and variable will not update in iterations g is zero.</p>
+<p>Args:</p>
+<p>learning_rate: A Tensor or a floating point value. The learning rate.<br>beta1: A float value or a constant float tensor. The exponential decay rate for the 1st moment estimates.<br>beta2: A float value or a constant float tensor. The exponential decay rate for the 2nd moment estimates.<br>epsilon: A small constant for numerical stability.<br>use_locking: If True use locks for update operations.<br>name: Optional name for the operations created when applying gradients. Defaults to “Adam”.</p>
+<h1 id="三-例子"><a href="#三-例子" class="headerlink" title="三.例子"></a>三.例子</h1><h2 id="I-线性回归"><a href="#I-线性回归" class="headerlink" title="I.线性回归"></a>I.线性回归</h2><p>要是有不知道线性回归的理论知识的，请到<br><a href="http://blog.csdn.net/xierhacker/article/details/53257748" target="_blank" rel="noopener">http://blog.csdn.net/xierhacker/article/details/53257748</a><br><a href="http://blog.csdn.net/xierhacker/article/details/53261008" target="_blank" rel="noopener">http://blog.csdn.net/xierhacker/article/details/53261008</a><br>熟悉的直接跳过。<br>直接上代码:</p>
+<blockquote>
+<p>/Users/david/david/code/deep_learning/tensorflow/Optimizer_sample1.ipynb</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"><span class="comment"># Prepare train data</span></span><br><span class="line">train_X = np.linspace(<span class="number">-1</span>, <span class="number">1</span>, <span class="number">100</span>)</span><br><span class="line">train_Y = <span class="number">2</span> * train_X + np.random.randn(*train_X.shape) * <span class="number">0.33</span> + <span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Define the model</span></span><br><span class="line">X = tf.placeholder(<span class="string">"float"</span>)</span><br><span class="line">Y = tf.placeholder(<span class="string">"float"</span>)</span><br><span class="line">w = tf.Variable(<span class="number">0.0</span>, name=<span class="string">"weight"</span>)</span><br><span class="line">b = tf.Variable(<span class="number">0.0</span>, name=<span class="string">"bias"</span>)</span><br><span class="line">loss = tf.square(Y - X*w - b)</span><br><span class="line">train_op = tf.train.GradientDescentOptimizer(<span class="number">0.01</span>).minimize(loss)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Create session to run</span></span><br><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">    sess.run(tf.initialize_all_variables())</span><br><span class="line"></span><br><span class="line">    epoch = <span class="number">1</span></span><br><span class="line">    <span class="comment"># 让X和Y成对出现</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>):</span><br><span class="line">        <span class="keyword">for</span> (x, y) <span class="keyword">in</span> zip(train_X, train_Y):</span><br><span class="line">            _, w_value, b_value = sess.run([train_op, w, b],feed_dict=&#123;X: x,Y: y&#125;)</span><br><span class="line">        print(<span class="string">"Epoch: &#123;&#125;, w: &#123;&#125;, b: &#123;&#125;"</span>.format(epoch, w_value, b_value))</span><br><span class="line">        epoch += <span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#draw</span></span><br><span class="line">plt.plot(train_X,train_Y,<span class="string">"+"</span>)</span><br><span class="line">plt.plot(train_X,train_X.dot(w_value)+b_value)</span><br><span class="line"><span class="comment"># 若替换成w = tf.Variable(tf.zeros([1]), name="weight")会报错</span></span><br><span class="line"><span class="comment"># ValueError: shapes (100,) and (1,) not aligned: 100 (dim 0) != 1 (dim 0)</span></span><br><span class="line"><span class="comment"># 改成plt.plot(train_X,train_X.dot(w_value[0])+b_value)即可</span></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p>结果</p>
+<p><img src="//schwimmer.github.io/2019/04/07/深度学习笔记/tensorflow/优化器Optimizier/pic/image-20190407103826874.png" alt="image-20190407103826874"></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/07/深度学习笔记/tensorflow/tensorflow函数/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/07/深度学习笔记/tensorflow/tensorflow函数/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-07 09:50:09" itemprop="dateCreated datePublished" datetime="2019-04-07T09:50:09+08:00">2019-04-07</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-04-10 21:58:56" itemprop="dateModified" datetime="2019-04-10T21:58:56+08:00">2019-04-10</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/04/07/深度学习笔记/tensorflow/tensorflow函数/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/07/深度学习笔记/tensorflow/tensorflow函数/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="random-uniform"><a href="#random-uniform" class="headerlink" title="random_uniform"></a>random_uniform</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tf.random_uniform((6, 6), minval=low,maxval=high,dtype=tf.float32)))</span><br></pre></td></tr></table></figure>
+<p>返回6*6的矩阵，产生于low和high之间，产生的值是均匀分布的。</p>
+<h1 id="zeros"><a href="#zeros" class="headerlink" title="zeros"></a>zeros</h1><p><a href="https://blog.csdn.net/yexudengzhidao/article/details/80981494" target="_blank" rel="noopener">https://blog.csdn.net/yexudengzhidao/article/details/80981494</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">tf.zeros(</span><br><span class="line">    shape,</span><br><span class="line">    dtype=tf.float32,</span><br><span class="line">    name=None</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h4 id="1-一维数组里放一个值"><a href="#1-一维数组里放一个值" class="headerlink" title="1. 一维数组里放一个值"></a>1. 一维数组里放一个值</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">import tensorflow as tf</span><br><span class="line">res = tf.random_uniform((4, 4), -1, 1)</span><br><span class="line">res2 = tf.zeros([1])</span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">    print(sess.run(res2))</span><br><span class="line">#结果为：</span><br><span class="line">[0.]</span><br></pre></td></tr></table></figure>
+<h4 id="2-一维数组里放两个值"><a href="#2-一维数组里放两个值" class="headerlink" title="2. 一维数组里放两个值"></a>2. 一维数组里放两个值</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">import tensorflow as tf</span><br><span class="line">res = tf.random_uniform((4, 4), -1, 1)</span><br><span class="line">res2 = tf.zeros([2])</span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">    print(sess.run(res2))</span><br><span class="line">#结果为：</span><br><span class="line">[0. 0.]</span><br></pre></td></tr></table></figure>
+<h4 id="3-二维数组"><a href="#3-二维数组" class="headerlink" title="3. 二维数组"></a>3. 二维数组</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">import tensorflow as tf</span><br><span class="line">res = tf.random_uniform((4, 4), -1, 1)</span><br><span class="line">res2 = tf.zeros([2, 4])</span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">    print(sess.run(res2))</span><br><span class="line">#结果为：</span><br><span class="line">[[0. 0. 0. 0.]</span><br><span class="line"> [0. 0. 0. 0.]]</span><br></pre></td></tr></table></figure>
+<h1 id="reduce-mean"><a href="#reduce-mean" class="headerlink" title="reduce_mean"></a>reduce_mean</h1><p><a href="https://blog.csdn.net/dcrmg/article/details/79797826" target="_blank" rel="noopener">https://blog.csdn.net/dcrmg/article/details/79797826</a></p>
+<p>计算张量tensor沿着指定的数轴（tensor的某一维度）上的的平均值，主要用作降维或者计算tensor（图像）的平均值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">reduce_mean(input_tensor,</span><br><span class="line">                axis=None,</span><br><span class="line">                keep_dims=False,</span><br><span class="line">                name=None,</span><br><span class="line">                reduction_indices=None)</span><br></pre></td></tr></table></figure>
+<p>第一个参数input_tensor： 输入的待降维的tensor;<br>第二个参数axis： 指定的轴，如果不指定，则计算所有元素的均值;<br>第三个参数keep_dims：是否降维度，设置为True，输出的结果保持输入tensor的形状，设置为False，输出结果会降低维度;<br>第四个参数name： 操作的名称;</p>
+<p>第五个参数 reduction_indices：在以前版本中用来指定轴，已弃用;</p>
+<h1 id="matmul"><a href="#matmul" class="headerlink" title="matmul"></a>matmul</h1><p>矩阵乘法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">import tensorflow as tf</span><br><span class="line"></span><br><span class="line"># create two matrixes</span><br><span class="line">matrix1 = tf.constant([[3,3]])</span><br><span class="line">matrix2 = tf.constant([[2],</span><br><span class="line">                       [2]])</span><br><span class="line">product = tf.matmul(matrix1,matrix2)</span><br></pre></td></tr></table></figure>
+<h1 id="assign"><a href="#assign" class="headerlink" title="assign"></a>assign</h1><p>tf.assign(A, new_number): 这个函数的功能主要是把A的值变为new_number</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">import tensorflow as tf;</span><br><span class="line"> </span><br><span class="line">A = tf.Variable(tf.constant(0.0), dtype=tf.float32)</span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">	sess.run(tf.initialize_all_variables())</span><br><span class="line">	print sess.run(A)</span><br><span class="line">	sess.run(tf.assign(A, 10))</span><br><span class="line">	print sess.run(A)</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/07/深度学习笔记/tensorflow2.0/环境/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/07/深度学习笔记/tensorflow2.0/环境/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-07 00:09:34 / 修改时间：00:11:09" itemprop="dateCreated datePublished" datetime="2019-04-07T00:09:34+08:00">2019-04-07</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/04/07/深度学习笔记/tensorflow2.0/环境/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/07/深度学习笔记/tensorflow2.0/环境/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="TensorFlow-2-0-preview-的安装方法如下"><a href="#TensorFlow-2-0-preview-的安装方法如下" class="headerlink" title="TensorFlow 2.0 preview 的安装方法如下"></a><strong>TensorFlow 2.0 preview 的安装方法如下</strong></h3><p><a href="https://blog.csdn.net/aliceyangxi1987/article/details/86478283" target="_blank" rel="noopener">https://blog.csdn.net/aliceyangxi1987/article/details/86478283</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># 创建一个名为 python36 的 Python3.6 环境</span><br><span class="line">conda create -n python36tensor2 python=3.6</span><br><span class="line"># 进入环境</span><br><span class="line">source activate python36tensor2</span><br><span class="line"># 使用 pip 安装 TensorFlow 2.0 Preview：</span><br><span class="line">pip install tf-nightly-2.0-preview</span><br><span class="line"># 安装 GPU 版本</span><br><span class="line">pip install tf-nightly-gpu-2.0-preview</span><br><span class="line">--------------------- </span><br><span class="line">作者：Alice熹爱学习 </span><br><span class="line">来源：CSDN </span><br><span class="line">原文：https://blog.csdn.net/aliceyangxi1987/article/details/86478283 </span><br><span class="line">版权声明：本文为博主原创文章，转载请附上博文链接！</span><br></pre></td></tr></table></figure>
+<h3 id="3-在-Github-上有一个-TensorFlow-2-0-的教程-repo："><a href="#3-在-Github-上有一个-TensorFlow-2-0-的教程-repo：" class="headerlink" title="3. 在 Github 上有一个 TensorFlow 2.0 的教程 repo："></a>3. <strong>在 Github 上有一个 TensorFlow 2.0 的教程 repo：</strong></h3>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/07/深度学习笔记/tensorflow2.0/教程1/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/07/深度学习笔记/tensorflow2.0/教程1/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-07 00:05:56 / 修改时间：00:07:33" itemprop="dateCreated datePublished" datetime="2019-04-07T00:05:56+08:00">2019-04-07</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/04/07/深度学习笔记/tensorflow2.0/教程1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/07/深度学习笔记/tensorflow2.0/教程1/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>知乎专栏<a href="https://zhuanlan.zhihu.com/p/59507137" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/59507137</a></p>
+<p>git <a href="https://github.com/czy36mengfei/tensorflow2_tutorials_chinese" target="_blank" rel="noopener">https://github.com/czy36mengfei/tensorflow2_tutorials_chinese</a></p>
+<h1 id="TensorFlow2-0教程-Keras-快速入门"><a href="#TensorFlow2-0教程-Keras-快速入门" class="headerlink" title="TensorFlow2.0教程-Keras 快速入门"></a>TensorFlow2.0教程-Keras 快速入门</h1>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/04/编程语言学习/JAVA/Swagger升级到振民版本/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/04/编程语言学习/JAVA/Swagger升级到振民版本/" class="post-title-link" itemprop="url">Swagger升级到自定义版本</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-04 16:24:52" itemprop="dateCreated datePublished" datetime="2019-04-04T16:24:52+08:00">2019-04-04</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-03 22:54:23" itemprop="dateModified" datetime="2019-07-03T22:54:23+08:00">2019-07-03</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/JAVA/" itemprop="url" rel="index"><span itemprop="name">JAVA</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/04/04/编程语言学习/JAVA/Swagger升级到振民版本/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/04/编程语言学习/JAVA/Swagger升级到振民版本/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>1、本地安装jar包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn install:install-file -DgroupId=com.mljr.swagger -DartifactId=swagger-mljr-ui -Dversion=1.9.4 -Dpackaging=jar -Dfile=swagger-mljr-ui-1.9.4.jar</span><br></pre></td></tr></table></figure>
+<p>2、修改POM</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.springfox<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>springfox-swagger2<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.springfox<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>springfox-swagger-ui<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.mljr.swagger<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>swagger-mljr-ui<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.9.4<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>3、实现WebMvcConfigurer</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@ComponentScan</span>(basePackages = &#123; <span class="string">"com.mljr.carthage.controller"</span> &#125;, useDefaultFilters = <span class="keyword">false</span>,</span><br><span class="line">        includeFilters = &#123;<span class="meta">@ComponentScan</span>.Filter(type = FilterType.ANNOTATION, value = &#123; Controller.class &#125;) &#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WebMvcConfig</span> <span class="keyword">implements</span> <span class="title">WebMvcConfigurer</span> </span>&#123;</span><br><span class="line">		<span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 此方法是用来添加静态资源映射的</span></span><br><span class="line"><span class="comment">     * 发现如果继承了WebMvcConfigurationSupport，则在yml中配置的相关内容会失效。 需要重新指定静态资源</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addResourceHandlers</span><span class="params">(ResourceHandlerRegistry registry)</span> </span>&#123;</span><br><span class="line">        registry.addResourceHandler(<span class="string">"/**"</span>).addResourceLocations(</span><br><span class="line">                <span class="string">"classpath:/static/"</span>);</span><br><span class="line">        registry.addResourceHandler(<span class="string">"swagger-ui.html"</span>).addResourceLocations(</span><br><span class="line">                <span class="string">"classpath:/META-INF/resources/"</span>);</span><br><span class="line">        registry.addResourceHandler(<span class="string">"/webjars/**"</span>).addResourceLocations(</span><br><span class="line">                <span class="string">"classpath:/META-INF/resources/webjars/"</span>);</span><br><span class="line">        registry.addResourceHandler(<span class="string">"doc.html"</span>).addResourceLocations(</span><br><span class="line">                <span class="string">"classpath:/META-INF/resources/"</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>4、访问用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:5135/doc.html</span><br></pre></td></tr></table></figure>
+<p>原生的swagger-ui也可以访问</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:5135/swagger-ui.html#/</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/02/工具和环境/git开发上线流程/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1190,1055 +2281,11 @@ G（V，E）</script><p>其中，G表示一个图，V是图G中顶点的集合�
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/21/算法与数据结构/PyOD/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/03/21/算法与数据结构/PyOD/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-03-21 11:58:25 / 修改时间：11:58:37" itemprop="dateCreated datePublished" datetime="2019-03-21T11:58:25+08:00">2019-03-21</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/03/21/算法与数据结构/PyOD/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/21/算法与数据结构/PyOD/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://zhuanlan.zhihu.com/p/58313521" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/58313521</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/18/Elastic Search/地理信息处理/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/03/18/Elastic Search/地理信息处理/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-03-18 22:56:18 / 修改时间：22:56:34" itemprop="dateCreated datePublished" datetime="2019-03-18T22:56:18+08:00">2019-03-18</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/03/18/Elastic Search/地理信息处理/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/18/Elastic Search/地理信息处理/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://blog.csdn.net/ctwy291314/article/details/82686954" target="_blank" rel="noopener">https://blog.csdn.net/ctwy291314/article/details/82686954</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/17/算法与数据结构/图算法/BFS和DFS/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/03/17/算法与数据结构/图算法/BFS和DFS/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-03-17 11:29:35" itemprop="dateCreated datePublished" datetime="2019-03-17T11:29:35+08:00">2019-03-17</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-03-20 22:34:34" itemprop="dateModified" datetime="2019-03-20T22:34:34+08:00">2019-03-20</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/03/17/算法与数据结构/图算法/BFS和DFS/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/17/算法与数据结构/图算法/BFS和DFS/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="广度优先BFS"><a href="#广度优先BFS" class="headerlink" title="广度优先BFS"></a>广度优先BFS</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 图的广度优先遍历</span></span><br><span class="line"><span class="comment"># 1.利用队列实现</span></span><br><span class="line"><span class="comment"># 2.从源节点开始依次按照宽度进队列，然后弹出</span></span><br><span class="line"><span class="comment"># 3.每弹出一个节点，就把该节点所有没有进过队列的邻接点放入队列</span></span><br><span class="line"><span class="comment"># 4.直到队列变空</span></span><br><span class="line"><span class="keyword">from</span> queue <span class="keyword">import</span> Queue</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bfs</span><span class="params">(node)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> node <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    queue = Queue()</span><br><span class="line">    nodeSet = set()</span><br><span class="line">    queue.put(node)</span><br><span class="line">    nodeSet.add(node)</span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">not</span> queue.empty():</span><br><span class="line">        cur = queue.get()               <span class="comment"># 弹出元素</span></span><br><span class="line">        print(cur.value)                <span class="comment"># 打印元素值</span></span><br><span class="line">        <span class="keyword">for</span> next <span class="keyword">in</span> cur.nexts:          <span class="comment"># 遍历元素的邻接节点</span></span><br><span class="line">            <span class="keyword">if</span> next <span class="keyword">not</span> <span class="keyword">in</span> nodeSet:     <span class="comment"># 若邻接节点没有入过队，加入队列并登记</span></span><br><span class="line">                nodeSet.add(next)</span><br><span class="line">                queue.put(next)</span><br></pre></td></tr></table></figure>
-<h1 id="深度优先DFS"><a href="#深度优先DFS" class="headerlink" title="深度优先DFS"></a>深度优先DFS</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 图的深度优先遍历</span></span><br><span class="line"><span class="comment"># 1.利用栈实现</span></span><br><span class="line"><span class="comment"># 2.从源节点开始把节点按照深度放入栈，然后弹出</span></span><br><span class="line"><span class="comment"># 3.每弹出一个点，把该节点下一个没有进过栈的邻接点放入栈</span></span><br><span class="line"><span class="comment"># 4.直到栈变空</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dfs</span><span class="params">(node)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> node <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    nodeSet = set()</span><br><span class="line">    stack = []</span><br><span class="line">    print(node.value)</span><br><span class="line">    nodeSet.add(node)</span><br><span class="line">    stack.append(node)</span><br><span class="line">    <span class="keyword">while</span> len(stack) &gt; <span class="number">0</span>:</span><br><span class="line">        cur = stack.pop()               <span class="comment"># 弹出最近入栈的节点</span></span><br><span class="line">        <span class="keyword">for</span> next <span class="keyword">in</span> cur.nexts:         <span class="comment"># 遍历该节点的邻接节点</span></span><br><span class="line">            <span class="keyword">if</span> next <span class="keyword">not</span> <span class="keyword">in</span> nodeSet:    <span class="comment"># 如果邻接节点不重复</span></span><br><span class="line">                stack.append(cur)       <span class="comment"># 把节点压入</span></span><br><span class="line">                stack.append(next)      <span class="comment"># 把邻接节点压入</span></span><br><span class="line">                set.add(next)           <span class="comment"># 登记节点</span></span><br><span class="line">                print(next.value)       <span class="comment"># 打印节点值</span></span><br><span class="line">                <span class="keyword">break</span>                   <span class="comment"># 退出，保持深度优先</span></span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/17/算法与数据结构/图算法/图算法领域10大经典算法/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/03/17/算法与数据结构/图算法/图算法领域10大经典算法/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-03-17 11:26:09 / 修改时间：11:29:32" itemprop="dateCreated datePublished" datetime="2019-03-17T11:26:09+08:00">2019-03-17</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/03/17/算法与数据结构/图算法/图算法领域10大经典算法/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/17/算法与数据结构/图算法/图算法领域10大经典算法/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>第一章、基本遍历 一、深度优先搜索二、广度优先搜索</strong></p>
-<p>此图遍历中最基本的俩种算法，BFS，DFS，入选本图算法十大算法，自是无可争议。<br>因为，这俩种搜索算法，应用实为广泛而重要。</p>
-<p>关于此BFS、DFS算法，更多，请参考：<br>经典算法研究系列：四、教你通透彻底理解：BFS和DFS优先搜索算法<br><a href="http://blog.csdn.net/v_JULY_v/archive/2011/01/01/6111353.aspx" target="_blank" rel="noopener">http://blog.csdn.net/v_JULY_v/archive/2011/01/01/6111353.aspx</a></p>
-<p><strong>三、A*搜索算法</strong>DFS和BFS在展开子结点时均属于盲目型搜索，也就是说，<br>它不会选择哪个结点在下一次搜索中更优而去跳转到该结点进行下一步的搜索。<br>在运气不好的情形中，均需要试探完整个解集空间, 显然，只能适用于问题规模不大的搜索问题中。</p>
-<p>A<em>算法，作为启发式算法中很重要的一种，被广泛应用在最优路径求解和一些策略设计的问题中。<br>而A</em>算法最为核心的部分，就在于它的一个估值函数的设计上：<br>    f(n)=g(n)+h(n)<br>其中f(n)是每个可能试探点的估值，它有两部分组成：<br>一部分，为g(n)，它表示从起始搜索点到当前点的代价（通常用某结点在搜索树中的深度来表示）。<br>一部分，即h(n)，它表示启发式搜索中最为重要的一部分，即当前结点到目标结点的估值。</p>
-<p>更多，请参考：<br>经典算法研究系列：一、A*搜索算法<br><a href="http://blog.csdn.net/v_JULY_v/archive/2010/12/23/6093380.aspx" target="_blank" rel="noopener">http://blog.csdn.net/v_JULY_v/archive/2010/12/23/6093380.aspx</a></p>
-<p><strong>附：</strong>Flood Fill<br>LeeMaRS、wtzyb4446：<br>图形学中Flood Fill是满水法填充，是用来填充区域的。<br>就好比在一个地方一直到水，水会往四周满延开，直到高地阻挡。</p>
-<p>Flood Fill就是从一个点开始往四周寻找相同的点填充，直到有不同的点为止。<br>我们用的Flood Fill和这个差不多原理,就是BFS的一种形式.</p>
-<p>假设在(i,j)滴好大一滴红墨水,然后水开始漫开,向它的上下左右染色,也就是(i-1,j),(i+1,j),(i,j-1),(i,j+1)这四个点.然后在分别再从这四个点开始向周围染色…直到碰到某种边界为止.</p>
-<p>把这个转化为BFS的思想,就是队列中初始元素是(i,j),然后把(i,j)扩展状态,得到(i-1,j),(i+1,j),(i,j-1),(i,j+1)这四个状态,加入队列.把(i,j)出列,继续扩展下一个结点…如此</p>
-<p><strong>第二章、最短路径算法四、Dijkstra</strong>Dijkstra 算法，又叫迪科斯彻算法（Dijkstra），<br>算法解决的是有向图中单个源点到其他顶点的最短路径问题。</p>
-<p>此Dijkstra 算法已在本BLOG内俩篇文章中，有所具体阐述，请参见：<br>I、经典算法研究系列：二、Dijkstra 算法初探<br><a href="http://blog.csdn.net/v_JULY_v/archive/2010/12/24/6096981.aspx" target="_blank" rel="noopener">http://blog.csdn.net/v_JULY_v/archive/2010/12/24/6096981.aspx</a><br>II、经典算法研究系列：二之续、彻底理解Dijkstra算法<br><a href="http://blog.csdn.net/v_JULY_v/archive/2011/02/13/6182419.aspx" target="_blank" rel="noopener">http://blog.csdn.net/v_JULY_v/archive/2011/02/13/6182419.aspx</a></p>
-<p><strong>五、Bellman-Ford</strong>Bellman-Ford：<br>求单源最短路，可以判断有无负权回路（若有，则不存在最短路），<br>时效性较好，时间复杂度O（VE）。</p>
-<p><strong>附：</strong>SPFA：<br>是Bellman-Ford的队列优化，时效性相对好，时间复杂度O（kE）。（k&lt;&lt;V）。</p>
-<p><strong>六、Floyd-Warshall</strong>Floyd-Warshall：求多源、无负权边的最短路。用矩阵记录图。时效性较差，时间复杂度O(V^3)。此算法是解决任意两点间的最短路径的一种算法，可以正确处理有向图或负权的最短路径问题。</p>
-<p>更多，请参考：<br>几个最短路径算法比较：<br><a href="http://blog.csdn.net/v_JULY_v/archive/2011/02/12/6181485.aspx" target="_blank" rel="noopener">http://blog.csdn.net/v_JULY_v/archive/2011/02/12/6181485.aspx</a></p>
-<p><strong>附：</strong>Kneser图<br>Kneser图是与图的分数染色有关的算法。<br>给定正整数a，b，a≥2b，Kneser图Ka:b是以如下方式定义的一个图：<br>其顶点是从给定的a个元素的集合中选出的b个元素构成的子集，两顶点间有边当且仅当这两个顶点为不交的集合。</p>
-<p><strong>第三章、最小生成树 七、Prim八、Kruskal</strong> 此最小(权值)生成树的俩种算法，日后，会在本BLOG内 具体而深入阐述。</p>
-<p><strong>第四章、图匹配九、匈牙利算法</strong>  匈牙利算法是众多用于解决线性任务分配问题的算法之一，是用来解决二分图最大匹配问题的经典算法，可以在多项式时间内解决问题，由匈牙利数学家Jack Edmonds于1965年提出。<br>这个算法，比较生疏，下面，稍微阐述下：</p>
-<p>I、匈牙利算法应用问题的描述：<br>设G=(V,E)是一个无向图。如顶点集V可分区为两个互不相交的子集V1,V2之并，并且图中每条边依附的两个顶点都分属于这两个不同的子集。则称图G为二分图。二分图也可记为G=(V1,V2,E)。</p>
-<p>给定一个二分图G，在G的一个子图M中，M的边集{E}中的任意两条边都不依附于同一个顶点，则称M是一个匹配。 选择这样的子集中边数最大的子集称为图的最大匹配问题(maximal matching problem)</p>
-<p>如果一个匹配中，图中的每个顶点都和图中某条边相关联，则称此匹配为完全匹配，也称作完备，完美匹配。</p>
-<p>II、算法描述<br>求最大匹配的一种<a href="https://www.baidu.com/s?wd=%E6%98%BE%E8%80%8C%E6%98%93%E8%A7%81&amp;tn=24004469_oem_dg&amp;rsv_dl=gh_pl_sl_csd" target="_blank" rel="noopener">显而易见</a>的算法是：先找出全部匹配，然后保留匹配数最多的。但是这个算法的时间复杂度为边数的指数级函数。因此，需要寻求一种更加高效的算法。</p>
-<p>下面介绍用<a href="https://www.baidu.com/s?wd=%E5%A2%9E%E5%B9%BF%E8%B7%AF&amp;tn=24004469_oem_dg&amp;rsv_dl=gh_pl_sl_csd" target="_blank" rel="noopener">增广路</a>求最大匹配的方法(称作匈牙利算法，匈牙利数学家Edmonds于1965年提出)。<br>增广路的定义(也称增广轨或交错轨)：<br>若P是图G中一条连通两个未匹配顶点的路径，并且属于M的边和不属于M的边(即已匹配和待匹配的边)在P上交替出现，则称P为相对于M的一条增广路径。</p>
-<p>由增广路的定义可以推出下述三个结论：<br>1－P的路径长度必定为奇数，第一条边和最后一条边都不属于M。<br>2－将M和P进行异或操作(去同存异)可以得到一个更大的匹配M’。<br>3－M为G的最大匹配当且仅当不存在M的增广路径。</p>
-<p>算法轮廓：<br>(1)置M为空<br>(2)找出一条增广路径P，通过异或操作获得更大的匹配M’代替M<br>(3)重复(2)操作直到找不出增广路径为止</p>
-<p>III、时间复杂度与空间复杂度<br>时间复杂度<br>邻接矩阵：最坏为O(n^3)      邻接表：O(mn) 　　<br>空间复杂度：<br>邻接矩阵：O(n^2)            邻接表：O(m+n)</p>
-<p><strong>附：</strong>Edmonds’s matching</p>
-<p><strong>第五章、强连通分支算法与网络流十、Ford-Fulkerson</strong>最大流量算法(Ford-Fulkerson Algorithm)，<br>也叫做贝尔曼-福特算法，被用于作为一个距离向量路由协议例如RIP, BGP, ISO IDRP, NOVELL IPX的算法。</p>
-<p><strong>附：</strong>Edmonds-Karp、Dinic、Push-relabel、maximum flow</p>
-<p><strong>强连通分支算法</strong>：<br>Kosaraju、 Gabow、 Tarjan。<br>此类算法，日后阐述。<br>完。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/13/工具和环境/Graphviz/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/03/13/工具和环境/Graphviz/" class="post-title-link" itemprop="url">【转】Graphviz使用方法</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-03-13 15:20:39" itemprop="dateCreated datePublished" datetime="2019-03-13T15:20:39+08:00">2019-03-13</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-05 18:27:41" itemprop="dateModified" datetime="2019-07-05T18:27:41+08:00">2019-07-05</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/工具和环境/" itemprop="url" rel="index"><span itemprop="name">工具和环境</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/03/13/工具和环境/Graphviz/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/13/工具和环境/Graphviz/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="http://www.graphviz.org/download/" target="_blank" rel="noopener">http://www.graphviz.org/download/</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install graphviz</span><br></pre></td></tr></table></figure>
-<p>教程</p>
-<p><a href="https://program-think.blogspot.com/2016/02/opensource-review-graphviz.html" target="_blank" rel="noopener">https://program-think.blogspot.com/2016/02/opensource-review-graphviz.html</a></p>
-<p><a href="https://www.jianshu.com/p/6d9bbbbf38b1" target="_blank" rel="noopener">https://www.jianshu.com/p/6d9bbbbf38b1</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//定义a节点为长方形, 节点显示的文本为&quot;Hello world&quot;样式为填充, 填充颜色为#ABACBA</span><br><span class="line">a[shape=box,label=&quot;Hello world&quot;,style=filled,fillcolor=&quot;#ABACBA&quot;];</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/09/算法与数据结构/递归讲解/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/03/09/算法与数据结构/递归讲解/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-03-09 23:01:16" itemprop="dateCreated datePublished" datetime="2019-03-09T23:01:16+08:00">2019-03-09</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-03-31 08:57:11" itemprop="dateModified" datetime="2019-03-31T08:57:11+08:00">2019-03-31</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/03/09/算法与数据结构/递归讲解/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/09/算法与数据结构/递归讲解/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="递归讲解"><a href="#递归讲解" class="headerlink" title="递归讲解"></a>递归讲解</h1><p>[TOC]</p>
-<h1 id="递归概念"><a href="#递归概念" class="headerlink" title="递归概念"></a>递归概念</h1><ol>
-<li>递归就是方法里调用自身。   </li>
-<li>在使用递增归策略时，必须有一个明确的递归结束条件，称为递归出口。                 </li>
-</ol>
-<p>递归一般用于解决三类问题：</p>
-<p>　  <strong>(1)数据的定义是按递归定义的。（Fibonacci函数，n的阶乘）</strong></p>
-<p>　  <strong>(2)问题解法按递归实现。（回溯）</strong></p>
-<p>　  <strong>(3)数据的结构形式是按递归定义的。（二叉树的遍历，图的搜索）</strong></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">FibonacciRecursive</span><span class="params">(<span class="keyword">int</span> n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>( n &lt; <span class="number">2</span>)</span><br><span class="line">        <span class="keyword">return</span> n;</span><br><span class="line">    <span class="keyword">return</span> (FibonacciRecursive(n<span class="number">-1</span>)+FibonacciRecursive(n<span class="number">-2</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><img src="/Users/david/david/00projects/00markdown/pic/04214621-bde3e339931444a1a56ce66dd73d1f9b.png" alt="img"></p>
-<h1 id="尾递归"><a href="#尾递归" class="headerlink" title="尾递归"></a>尾递归</h1><p>顾名思义，尾递归就是<strong>从最后开始计算, 每递归一次就算出相应的结果</strong>, 也就是说, 函数调用出现在调用者函数的尾部, 因为是尾部, 所以根本没有必要去保存任何局部变量. 直接让被调用的函数返回时越过调用者, 返回到调用者的调用者去。</p>
-<p>尾递归是极其重要的，不用尾递归，函数的堆栈耗用难以估量，需要保存很多中间函数的堆栈。比如f(n, sum) = f(n-1) + value(n) + sum; 会保存n个函数调用堆栈，而使用尾递归f(n, sum) = f(n-1, sum+value(n)); 这样则只保留后一个函数堆栈即可，之前的可优化删去。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">FibonacciTailRecursive</span><span class="params">(<span class="keyword">int</span> n,<span class="keyword">int</span> ret1,<span class="keyword">int</span> ret2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">if</span>(n==<span class="number">0</span>)</span><br><span class="line">      <span class="keyword">return</span> ret1; </span><br><span class="line">    <span class="keyword">return</span> FibonacciTailRecursive(n<span class="number">-1</span>,ret2,ret1+ret2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>可以看出，<strong>尾递归就是把当前的运算结果（或路径）放在参数里传给下层函数</strong>，深层函数所面对的不是越来越简单的问题，而是越来越复杂的问题，因为参数里带有前面若干步的运算路径。</p>
-<p><img src="/Users/david/david/00projects/00markdown/pic/04221026-166e3bca62d14ea7bb37eee0e6390d2d.png" alt="img"></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/9/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/31/">31</a><a class="extend next" rel="next" href="/page/11/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/9/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/32/">32</a><a class="extend next" rel="next" href="/page/11/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2280,7 +2327,7 @@ G（V，E）</script><p>其中，G表示一个图，V是图G中顶点的集合�
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">308</span>
+                    <span class="site-state-item-count">314</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2486,7 +2533,9 @@ G（V，E）</script><p>其中，G表示一个图，V是图G中顶点的集合�
                     
                       
                     
-                    <span class="site-state-item-count">61</span>
+                      
+                    
+                    <span class="site-state-item-count">62</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
