@@ -94,17 +94,17 @@
 
 
 
-  <meta name="description" content="https://blog.csdn.net/silviakafka/article/details/54574653">
+  <meta name="description" content="转自：https://blog.csdn.net/silviakafka/article/details/54574653 RDD依赖关系RDD依赖关系，也就是有依赖的RDD之间的关系，比如RDD1———-&amp;gt;RDD2（RDD1生成RDD2），RDD2依赖于RDD1。这里的生成也就是RDDtransformation操作 窄依赖（也叫narrow依赖） 从父RDD角度看：一个父RDD只被一个子">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Schwimmer&#39;s Blog">
+<meta property="og:title" content="【转】DAG与RDD依赖">
 <meta property="og:url" content="https://schwimmer.github.io/2019/07/08/hadoop-spark/spark/宽依赖窄依赖讲的比较好的文章/index.html">
 <meta property="og:site_name" content="Schwimmer&#39;s Blog">
-<meta property="og:description" content="https://blog.csdn.net/silviakafka/article/details/54574653">
+<meta property="og:description" content="转自：https://blog.csdn.net/silviakafka/article/details/54574653 RDD依赖关系RDD依赖关系，也就是有依赖的RDD之间的关系，比如RDD1———-&amp;gt;RDD2（RDD1生成RDD2），RDD2依赖于RDD1。这里的生成也就是RDDtransformation操作 窄依赖（也叫narrow依赖） 从父RDD角度看：一个父RDD只被一个子">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-07-08T07:08:09.151Z">
+<meta property="og:updated_time" content="2019-07-11T03:04:22.256Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Schwimmer&#39;s Blog">
-<meta name="twitter:description" content="https://blog.csdn.net/silviakafka/article/details/54574653">
+<meta name="twitter:title" content="【转】DAG与RDD依赖">
+<meta name="twitter:description" content="转自：https://blog.csdn.net/silviakafka/article/details/54574653 RDD依赖关系RDD依赖关系，也就是有依赖的RDD之间的关系，比如RDD1———-&amp;gt;RDD2（RDD1生成RDD2），RDD2依赖于RDD1。这里的生成也就是RDDtransformation操作 窄依赖（也叫narrow依赖） 从父RDD角度看：一个父RDD只被一个子">
 
 
 
@@ -122,7 +122,7 @@
   };
 </script>
 
-  <title> | Schwimmer's Blog</title>
+  <title>【转】DAG与RDD依赖 | Schwimmer's Blog</title>
   
 
 
@@ -374,7 +374,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h1 class="post-title" itemprop="name headline">【转】DAG与RDD依赖
 
               
             
@@ -400,7 +400,7 @@
                 
               
 
-              <time title="创建时间：2019-07-08 15:07:47 / 修改时间：15:08:09" itemprop="dateCreated datePublished" datetime="2019-07-08T15:07:47+08:00">2019-07-08</time>
+              <time title="创建时间：2019-07-08 15:07:47" itemprop="dateCreated datePublished" datetime="2019-07-08T15:07:47+08:00">2019-07-08</time>
             </span>
           
 
@@ -408,8 +408,33 @@
             
 
             
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-11 11:04:22" itemprop="dateModified" datetime="2019-07-11T11:04:22+08:00">2019-07-11</time>
+              </span>
+            
           
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Spark/" itemprop="url" rel="index"><span itemprop="name">Spark</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -462,7 +487,14 @@
       
 
       
-        <p><a href="https://blog.csdn.net/silviakafka/article/details/54574653" target="_blank" rel="noopener">https://blog.csdn.net/silviakafka/article/details/54574653</a></p>
+        <p>转自：<a href="https://blog.csdn.net/silviakafka/article/details/54574653" target="_blank" rel="noopener">https://blog.csdn.net/silviakafka/article/details/54574653</a></p>
+<p>RDD依赖关系<br>RDD依赖关系，也就是有依赖的RDD之间的关系，比如RDD1———-&gt;RDD2（RDD1生成RDD2），RDD2依赖于RDD1。这里的生成也就是RDDtransformation操作</p>
+<p>窄依赖（也叫narrow依赖）</p>
+<p>从父RDD角度看：一个父RDD只被一个子RDD分区使用。父RDD的每个分区最多只能被一个Child RDD的一个分区使用</p>
+<p>从子RDD角度看:依赖上级RDD的部分分区     精确知道依赖的上级RDD分区，会选择和自己在同一节点的上级RDD分区，没有网络IO开销，高效。如map，flatmap，filter</p>
+<p>宽依赖（也叫shuffle依赖/wide依赖）</p>
+<p>从父RDD角度看：一个父RDD被多个子RDD分区使用。父RDD的每个分区可以被多个Child RDD分区依赖</p>
+<p>从子RDD角度看:依赖上级RDD的所有分区     无法精确定位依赖的上级RDD分区，相当于依赖所有分区（例如reduceByKey）  计算就涉及到节点间网络传输 </p>
 
       
     </div>
@@ -572,7 +604,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">315</span>
+                    <span class="site-state-item-count">313</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -780,7 +812,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">62</span>
+                      
+                    
+                    <span class="site-state-item-count">63</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -1026,7 +1060,7 @@
   var disqus_config = function() {
     this.page.url = "https://schwimmer.github.io/2019/07/08/hadoop-spark/spark/宽依赖窄依赖讲的比较好的文章/";
     this.page.identifier = "2019/07/08/hadoop-spark/spark/宽依赖窄依赖讲的比较好的文章/";
-    this.page.title = '';
+    this.page.title = '【转】DAG与RDD依赖';
     };
   function loadComments() {
     var d = document, s = d.createElement('script');

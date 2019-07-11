@@ -357,527 +357,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/07/11/机器学习/基于ChiMerge的数据分箱/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/07/11/机器学习/基于ChiMerge的数据分箱/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-07-11 15:29:05 / 修改时间：15:29:25" itemprop="dateCreated datePublished" datetime="2018-07-11T15:29:05+08:00">2018-07-11</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/07/11/机器学习/基于ChiMerge的数据分箱/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/07/11/机器学习/基于ChiMerge的数据分箱/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="1、卡方检验"><a href="#1、卡方检验" class="headerlink" title="1、卡方检验"></a>1、卡方检验</h1><h2 id="1-1-简介"><a href="#1-1-简介" class="headerlink" title="1.1 简介"></a>1.1 简介</h2><p><strong>假设检验</strong>就是在样本分布完全未知或只知形式、不知其参数的情况，对样本所提出的假设做出接收还是拒绝的决策。</p>
-<p>卡方（$\chi^2$）检验是一种独立性检验（假设检验）工具，被称为20世纪科学技术所有分支的20大发明之一。</p>
-<h2 id="1-2-卡方检验基本思想"><a href="#1-2-卡方检验基本思想" class="headerlink" title="1.2 卡方检验基本思想"></a>1.2 卡方检验基本思想</h2><div class="table-container">
-<table>
-<thead>
-<tr>
-<th>组别</th>
-<th>逾期</th>
-<th>不逾期</th>
-<th>合计</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>新车</td>
-<td>19</td>
-<td>24</td>
-<td>43</td>
-</tr>
-<tr>
-<td>二手车</td>
-<td>34</td>
-<td>10</td>
-<td>44</td>
-</tr>
-<tr>
-<td>合计</td>
-<td>53</td>
-<td>34</td>
-<td>87</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>H0：假设特征与类别无关</p>
-<p>H1：假设特征与类别有关</p>
-<p>$\alpha=0.05$</p>
-<p>首先假设<em>H</em>0成立，基于此前提计算出卡方值，它表示观察值与理论值之间的<strong>偏离程度</strong>。根据卡方及自由度可以确定在<em>H</em>0假设成立的情况下的概率。这个概率很小，说明观察值与理论值偏离程度太大，应当拒绝无效假设，也就是说特征与类别有关；否则尚不能说明样本所代表的实际情况和理论假设有差别。</p>
-<h2 id="1-3-计算公式"><a href="#1-3-计算公式" class="headerlink" title="1.3 计算公式"></a>1.3 计算公式</h2><script type="math/tex; mode=display">
-\chi^2 = \sum_{i=1}^m \sum_{j=1}^k= \frac {(A_{ij}-E_{ij})^2} {E_{ij}}</script><p>其中，</p>
-<p>m是要计算的特征值个数</p>
-<p>k是标签类别数</p>
-<p>$A_{ij}$ 是第i个特征在第j个标签内的样本数量</p>
-<p>$R<em>i=\sum</em>{j=1}^k A_{ij}$ 第i个特征的样本数量</p>
-<p>$C<em>j=\sum</em>{i=1}^m A_{ij}$ 第j个类别的样本数量</p>
-<p>$N=\sum_{j=1}^k C_j$ 样本数量</p>
-<p>$E<em>{ij}=\frac {R_i * C_j} {N}$  理论值，$A</em>{ij}$的期望频率</p>
-<h2 id="1-4-示例"><a href="#1-4-示例" class="headerlink" title="1.4 示例"></a>1.4 示例</h2><p>示例</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>组别</th>
-<th>逾期</th>
-<th>不逾期</th>
-<th>合计</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>新车</td>
-<td>19</td>
-<td>24</td>
-<td>43</td>
-</tr>
-<tr>
-<td>二手车</td>
-<td>34</td>
-<td>10</td>
-<td>44</td>
-</tr>
-<tr>
-<td>合计</td>
-<td>53</td>
-<td>34</td>
-<td>87</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>$m=2,k=2,i=0,j=0$</p>
-<p>$A_{ij}=19, R_i=43, C_j=53,N=78$</p>
-<p>$E_{ij}=43*53/87=26.2$</p>
-<p>换种方式看，我们假设汽车的类别与是否逾期是无关的，随机抽取一条样本，逾期的概率就是$53/87=0.609$，那么新车的样本数是43，则新车逾期的样本数就是$43*0.609=26.2$</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>组别</th>
-<th>逾期</th>
-<th>不逾期</th>
-<th>合计</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>新车</td>
-<td>43 * 0.609 = 26.2</td>
-<td>43 * 0.391 = 16.8</td>
-<td>43</td>
-</tr>
-<tr>
-<td>二手车</td>
-<td>44 * 0.609 = 26.8</td>
-<td>44 * 0.391 = 17.2</td>
-<td>44</td>
-</tr>
-<tr>
-<td>合计</td>
-<td>53</td>
-<td>34</td>
-<td>87</td>
-</tr>
-</tbody>
-</table>
-</div>
-<script type="math/tex; mode=display">
-\chi^2= \frac {(19-26.2)^2}{26.2}+ \frac {(34-26.8)^2}{26.8}+ \frac {(24-16.8)^2}{16.8}+ \frac {(10-17.2)^2}{17.2}=10.01</script><p>我们已经得到了卡方值，但是这并不够直接明了的说明问题。因此，我们还需要将卡方值转化为 p-value。p-value是一种给定原假设为真时样本结果出现的概率，我们可以通过简单查表来进行转化。</p>
-<p><img src="/Users/david/david/myblog/source/_posts/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/pic/%E5%8D%A1%E6%96%B9%E5%88%86%E5%B8%83%E8%A1%A8.png" alt=""></p>
-<p>这里需要用到一个<code>自由度</code>的概念，自由度等于<code>V = (行数 - 1) * (列数 - 1)</code>，对四格表，自由度<code>V = 1</code>。</p>
-<p>查表得，$10.01&gt;9.55$，对应的p-value是0.002，也就是说在假设无关的前提下，只有0.2%的样本符合这种假设，自然就说明特征与类别是相关度很高的。</p>
-<h2 id="1-5-基于卡方的特征选择"><a href="#1-5-基于卡方的特征选择" class="headerlink" title="1.5 基于卡方的特征选择"></a>1.5 基于卡方的特征选择</h2><p>卡方值可以反映特征的独立程度，卡方越小越独立。如果独立性高，那么表示两者没太大关系，特征可以舍弃；如果独立性小，两者相关性高，则说明该特征会对应变量产生比较大的影响，应当选择。</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> selector = <span class="keyword">new</span> <span class="type">ChiSqSelector</span>().</span><br><span class="line">      setNumTopFeatures(<span class="number">1</span>).  <span class="comment">//选择TOP N个最重要的特征</span></span><br><span class="line">      setFeaturesCol(<span class="string">"features"</span>).</span><br><span class="line">      setLabelCol(<span class="string">"label"</span>).</span><br><span class="line">      setOutputCol(<span class="string">"selected-feature"</span>)</span><br></pre></td></tr></table></figure>
-<h1 id="2、分箱算法"><a href="#2、分箱算法" class="headerlink" title="2、分箱算法"></a>2、分箱算法</h1><p>也称数据离散化。在建模中，需要对连续变量离散化，特征离散化后，模型会更稳定，降低模型过拟合的风险；并且离散化后的特征可以通过编码的方式更容易搭建模型。</p>
-<h2 id="2-1-等宽和等频分箱"><a href="#2-1-等宽和等频分箱" class="headerlink" title="2.1 等宽和等频分箱"></a>2.1 等宽和等频分箱</h2><p>属于无监督分箱。此外还有基于K-Means聚类的分箱等。</p>
-<p>等宽：从最小到最大值之间，均分成N等份。这样，每个区间的长度为$w=(max-min)/N$</p>
-<p>等频：每个区间包含大致相等的样本数量，比如，若$N=10$，则每个区间应该包含约10%的样本。</p>
-<h2 id="2-2-ChiMerge分箱"><a href="#2-2-ChiMerge分箱" class="headerlink" title="2.2 ChiMerge分箱"></a>2.2 ChiMerge分箱</h2><p>属于有监督分箱，即在分箱时考虑因变量的取值，使得分箱后达到某个期望的结果。此外还有基于信息增益，基尼指数的分箱方法。</p>
-<p><strong>基本思想</strong>：ChiMerge算法用卡方统计量来决定相邻区间是否与类别有相关性。如果两个区间的卡方值很小，说明特征值和类别是相互独立的，就需要合并。否则可以保留分隔状态</p>
-<p><img src="/Users/david/david/myblog/source/_posts/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/pic/ChiMerge1.png" alt=""></p>
-<p>ChiMerge算法包括两部分：1、初始化，2、自底向上合并，当满足停止条件的时候，区间合并停止。</p>
-<p><strong>第一步：初始化</strong></p>
-<p>根据要离散的属性对实例进行排序：每个实例属于一个区间</p>
-<p><strong>第二步：合并区间</strong>，又包括两步骤</p>
-<p>(1) 计算每一对相邻区间的卡方值</p>
-<p>(2) 将卡方值最小的一对区间合并</p>
-<p>论文中的停止条件是最小的卡方值达到一定的阈值，但是比较难确定。目前采用的停止条件是设置一个最小区间数和最大迭代次数。</p>
-<p>ChiMerge的优势：</p>
-<ul>
-<li>连续型转离散型</li>
-<li>降低了离群点的影响</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/07/10/机器学习/lightGBM/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/07/10/机器学习/lightGBM/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-07-10 11:51:05" itemprop="dateCreated datePublished" datetime="2018-07-10T11:51:05+08:00">2018-07-10</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-09-14 12:59:15" itemprop="dateModified" datetime="2018-09-14T12:59:15+08:00">2018-09-14</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/07/10/机器学习/lightGBM/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/07/10/机器学习/lightGBM/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>LightGBM 中文文档: <a href="http://lightgbm.apachecn.org/cn/latest/" target="_blank" rel="noopener">http://lightgbm.apachecn.org/cn/latest/</a></p>
-<p> LightGBM 英文文档: <a href="http://lightgbm.apachecn.org/en/latest/" target="_blank" rel="noopener">http://lightgbm.apachecn.org/en/latest/</a></p>
-<p>LightGBM 官方文档: <a href="https://lightgbm.readthedocs.io/en/latest/" target="_blank" rel="noopener">https://lightgbm.readthedocs.io/en/latest/</a></p>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>LightGBM 依赖于 <strong>OpenMP</strong> 进行编译, 然而 Apple Clang 不支持它.</p>
-<p>请使用以下命令来安装 <strong>gcc/g++</strong> :</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">brew install cmake</span><br><span class="line">brew install gcc --without-multilib</span><br></pre></td></tr></table></figure>
-<p>然后安装 LightGBM:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git clone --recursive https://github.com/Microsoft/LightGBM ; cd LightGBM</span><br><span class="line">export CXX=g++-8 CC=gcc-8</span><br><span class="line">mkdir build ; cd build</span><br><span class="line">cmake ..</span><br><span class="line">make -j4</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p><code>cmake ..</code> 这一步之后报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&gt; CMake Error at /usr/local/Cellar/cmake/3.11.4/share/cmake/Modules/CMakeDetermineCCompiler.cmake:48 (message):</span><br><span class="line">&gt;   Could not find compiler set in environment variable CC:</span><br><span class="line">&gt; </span><br><span class="line">&gt;   gcc-7.</span><br><span class="line">&gt; Call Stack (most recent call first):</span><br><span class="line">&gt;   CMakeLists.txt:9 (PROJECT)</span><br><span class="line">&gt; </span><br><span class="line">&gt; </span><br><span class="line">&gt; CMake Error: CMAKE_C_COMPILER not set, after EnableLanguage</span><br><span class="line">&gt; CMake Error: CMAKE_CXX_COMPILER not set, after EnableLanguage</span><br><span class="line">&gt; -- Configuring incomplete, errors occurred!</span><br><span class="line">&gt; See also &quot;/Users/david/david/git/LightGBM/build/CMakeFiles/CMakeOutput.log&quot;.</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
-</blockquote>
-<p>&gt;</p>
-<blockquote>
-<p><a href="https://github.com/Microsoft/LightGBM/issues/118官方的解答并不适用，看了下发现gcc的版本已经自动装到8了，所以将export这里改成了" target="_blank" rel="noopener">https://github.com/Microsoft/LightGBM/issues/118官方的解答并不适用，看了下发现gcc的版本已经自动装到8了，所以将export这里改成了</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; export CXX=g++-8 CC=gcc-8</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
-</blockquote>
-<p>&gt;</p>
-<blockquote>
-<p>然后通过</p>
-</blockquote>
-<p>或者直接用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install lightgbm</span><br></pre></td></tr></table></figure>
-<p>安装</p>
-<h2 id="训练数据格式"><a href="#训练数据格式" class="headerlink" title="训练数据格式"></a>训练数据格式</h2><p>LightGBM 支持 <a href="https://en.wikipedia.org/wiki/Comma-separated_values" target="_blank" rel="noopener">CSV</a>, <a href="https://en.wikipedia.org/wiki/Tab-separated_values" target="_blank" rel="noopener">TSV</a> 和 <a href="https://www.csie.ntu.edu.tw/~cjlin/libsvm/" target="_blank" rel="noopener">LibSVM</a> 格式的输入数据文件。</p>
-<p>Label 是第一列的数据，文件中是不包含 header（标题） 的。</p>
-<p>LightGBM 可以直接使用 categorical feature（类别特征）（不需要单独编码）。 <a href="http://stat-computing.org/dataexpo/2009/" target="_blank" rel="noopener">Expo data</a> 实验显示，与 one-hot 编码相比，其速度提高了 8 倍。</p>
-<h3 id="权重和-Query-Group-数据"><a href="#权重和-Query-Group-数据" class="headerlink" title="权重和 Query/Group 数据"></a>权重和 Query/Group 数据</h3><p>LightGBM 也支持加权训练，它需要一个额外的 <a href="http://lightgbm.apachecn.org/cn/latest/Parameters.html#io-parameters" target="_blank" rel="noopener">加权数据</a> 。 它需要额外的 <a href="http://lightgbm.apachecn.org/cn/latest/Parameters.html#io-parameters" target="_blank" rel="noopener">query 数据</a> 用于排名任务。</p>
-<p>11/3/2016 更新:</p>
-<ol>
-<li>现在支持 header（标题）输入</li>
-<li>可以指定 label 列，权重列和 query/group id 列。 索引和列都支持</li>
-<li>可以指定一个被忽略的列的列表</li>
-</ol>
-<h2 id="参数快速查看"><a href="#参数快速查看" class="headerlink" title="参数快速查看"></a>参数快速查看</h2><p>参数格式是 <code>key1=value1 key2=value2 ...</code> 。 参数可以在配置文件和命令行中。</p>
-<p>想要了解全部的参数， 请参阅 <a href="http://lightgbm.apachecn.org/cn/latest/Parameters.html" target="_blank" rel="noopener">Parameters（参数）</a>.</p>
-<h2 id="运行-LightGBM"><a href="#运行-LightGBM" class="headerlink" title="运行 LightGBM"></a>运行 LightGBM</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./lightgbm config=your_config_file other_args ...</span><br></pre></td></tr></table></figure>
-<p><a href="https://blog.csdn.net/m0_37477175/article/details/80567010" target="_blank" rel="noopener">使用lightgbm画并保存Feature Importance</a></p>
-<p><a href="https://blog.csdn.net/m0_37922734/article/details/80677736" target="_blank" rel="noopener">【lightgbm 使用经验总结教训】</a></p>
-<h1 id=""><a href="#" class="headerlink" title=" "></a> </h1><p><a href="https://cloud.tencent.com/info/user/necther" target="_blank" rel="noopener">对xgboost和lightgbm的理解及其调参应该关注的点</a></p>
-<h1 id="调参"><a href="#调参" class="headerlink" title="调参"></a>调参</h1><h2 id="官方文档的调参"><a href="#官方文档的调参" class="headerlink" title="官方文档的调参"></a>官方文档的调参</h2><p><a href="http://lightgbm.apachecn.org/cn/latest/Parameters-Tuning.html" target="_blank" rel="noopener">http://lightgbm.apachecn.org/cn/latest/Parameters-Tuning.html</a></p>
-<h3 id="针对-Leaf-wise-最佳优先-树的参数优化"><a href="#针对-Leaf-wise-最佳优先-树的参数优化" class="headerlink" title="针对 Leaf-wise (最佳优先) 树的参数优化"></a>针对 Leaf-wise (最佳优先) 树的参数优化</h3><p><code>num_leaves</code>. 这是控制树模型复杂度的主要参数</p>
-<h2 id="CV调参"><a href="#CV调参" class="headerlink" title="CV调参"></a>CV调参</h2><p><a href="https://github.com/wanglei5205/Machine_learning/blob/master/Boosting--LightGBM/lgb-python/2.lightgbm%E8%B0%83%E5%8F%82%E6%A1%88%E4%BE%8B.py" target="_blank" rel="noopener">https://github.com/wanglei5205/Machine_learning/blob/master/Boosting--LightGBM/lgb-python/2.lightgbm%E8%B0%83%E5%8F%82%E6%A1%88%E4%BE%8B.py</a></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string"># 作者：wanglei5205</span></span><br><span class="line"><span class="string"># 邮箱：wanglei5205@126.com</span></span><br><span class="line"><span class="string"># 博客：http://cnblogs.com/wanglei5205</span></span><br><span class="line"><span class="string"># github：http://github.com/wanglei5205</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="comment">### 导入模块</span></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> lightgbm <span class="keyword">as</span> lgb</span><br><span class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> metrics</span><br><span class="line"></span><br><span class="line"><span class="comment">### 载入数据</span></span><br><span class="line">print(<span class="string">'载入数据'</span>)</span><br><span class="line">dataset1 = pd.read_csv(<span class="string">'G:/ML/ML_match/IJCAI/data3.22/3.22ICJAI/data/7_train_data1.csv'</span>)</span><br><span class="line">dataset2 = pd.read_csv(<span class="string">'G:/ML/ML_match/IJCAI/data3.22/3.22ICJAI/data/7_train_data2.csv'</span>)</span><br><span class="line">dataset3 = pd.read_csv(<span class="string">'G:/ML/ML_match/IJCAI/data3.22/3.22ICJAI/data/7_train_data3.csv'</span>)</span><br><span class="line">dataset4 = pd.read_csv(<span class="string">'G:/ML/ML_match/IJCAI/data3.22/3.22ICJAI/data/7_train_data4.csv'</span>)</span><br><span class="line">dataset5 = pd.read_csv(<span class="string">'G:/ML/ML_match/IJCAI/data3.22/3.22ICJAI/data/7_train_data5.csv'</span>)</span><br><span class="line"></span><br><span class="line">print(<span class="string">'数据去重'</span>)</span><br><span class="line">dataset1.drop_duplicates(inplace=<span class="keyword">True</span>)</span><br><span class="line">dataset2.drop_duplicates(inplace=<span class="keyword">True</span>)</span><br><span class="line">dataset3.drop_duplicates(inplace=<span class="keyword">True</span>)</span><br><span class="line">dataset4.drop_duplicates(inplace=<span class="keyword">True</span>)</span><br><span class="line">dataset5.drop_duplicates(inplace=<span class="keyword">True</span>)</span><br><span class="line"></span><br><span class="line">print(<span class="string">'数据合并'</span>)</span><br><span class="line">trains = pd.concat([dataset1,dataset2],axis=<span class="number">0</span>)</span><br><span class="line">trains = pd.concat([trains,dataset3],axis=<span class="number">0</span>)</span><br><span class="line">trains = pd.concat([trains,dataset4],axis=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">online_test = dataset5</span><br><span class="line"></span><br><span class="line"><span class="comment">### 数据拆分(训练集+验证集+测试集)</span></span><br><span class="line">print(<span class="string">'数据拆分'</span>)</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line">train_xy,offline_test = train_test_split(trains,test_size = <span class="number">0.2</span>,random_state=<span class="number">21</span>)</span><br><span class="line">train,val = train_test_split(train_xy,test_size = <span class="number">0.2</span>,random_state=<span class="number">21</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练集</span></span><br><span class="line">y_train = train.is_trade                                               <span class="comment"># 训练集标签</span></span><br><span class="line">X_train = train.drop([<span class="string">'instance_id'</span>,<span class="string">'is_trade'</span>],axis=<span class="number">1</span>)                <span class="comment"># 训练集特征矩阵</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 验证集</span></span><br><span class="line">y_val = val.is_trade                                                   <span class="comment"># 验证集标签</span></span><br><span class="line">X_val = val.drop([<span class="string">'instance_id'</span>,<span class="string">'is_trade'</span>],axis=<span class="number">1</span>)                    <span class="comment"># 验证集特征矩阵</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试集</span></span><br><span class="line">offline_test_X = offline_test.drop([<span class="string">'instance_id'</span>,<span class="string">'is_trade'</span>],axis=<span class="number">1</span>)  <span class="comment"># 线下测试特征矩阵</span></span><br><span class="line">online_test_X  = online_test.drop([<span class="string">'instance_id'</span>],axis=<span class="number">1</span>)              <span class="comment"># 线上测试特征矩阵</span></span><br><span class="line"></span><br><span class="line"><span class="comment">### 数据转换</span></span><br><span class="line">print(<span class="string">'数据转换'</span>)</span><br><span class="line">lgb_train = lgb.Dataset(X_train, y_train, free_raw_data=<span class="keyword">False</span>)</span><br><span class="line">lgb_eval = lgb.Dataset(X_val, y_val, reference=lgb_train,free_raw_data=<span class="keyword">False</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">### 设置初始参数--不含交叉验证参数</span></span><br><span class="line">print(<span class="string">'设置参数'</span>)</span><br><span class="line">params = &#123;</span><br><span class="line">          <span class="string">'boosting_type'</span>: <span class="string">'gbdt'</span>,</span><br><span class="line">          <span class="string">'objective'</span>: <span class="string">'binary'</span>,</span><br><span class="line">          <span class="string">'metric'</span>: <span class="string">'binary_logloss'</span>,</span><br><span class="line">          &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">### 交叉验证(调参)</span></span><br><span class="line">print(<span class="string">'交叉验证'</span>)</span><br><span class="line">min_merror = float(<span class="string">'Inf'</span>)</span><br><span class="line">best_params = &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 准确率</span></span><br><span class="line">print(<span class="string">"调参1：提高准确率"</span>)</span><br><span class="line"><span class="keyword">for</span> num_leaves <span class="keyword">in</span> range(<span class="number">20</span>,<span class="number">200</span>,<span class="number">5</span>):</span><br><span class="line">    <span class="keyword">for</span> max_depth <span class="keyword">in</span> range(<span class="number">3</span>,<span class="number">8</span>,<span class="number">1</span>):</span><br><span class="line">        params[<span class="string">'num_leaves'</span>] = num_leaves</span><br><span class="line">        params[<span class="string">'max_depth'</span>] = max_depth</span><br><span class="line"></span><br><span class="line">        cv_results = lgb.cv(</span><br><span class="line">                            params,</span><br><span class="line">                            lgb_train,</span><br><span class="line">                            seed=<span class="number">2018</span>,</span><br><span class="line">                            nfold=<span class="number">3</span>,</span><br><span class="line">                            metrics=[<span class="string">'binary_error'</span>],</span><br><span class="line">                            early_stopping_rounds=<span class="number">10</span>,</span><br><span class="line">                            verbose_eval=<span class="keyword">True</span></span><br><span class="line">                            )</span><br><span class="line"></span><br><span class="line">        mean_merror = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).min()</span><br><span class="line">        boost_rounds = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).argmin()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> mean_merror &lt; min_merror:</span><br><span class="line">            min_merror = mean_merror</span><br><span class="line">            best_params[<span class="string">'num_leaves'</span>] = num_leaves</span><br><span class="line">            best_params[<span class="string">'max_depth'</span>] = max_depth</span><br><span class="line"></span><br><span class="line">params[<span class="string">'num_leaves'</span>] = best_params[<span class="string">'num_leaves'</span>]</span><br><span class="line">params[<span class="string">'max_depth'</span>] = best_params[<span class="string">'max_depth'</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 过拟合</span></span><br><span class="line">print(<span class="string">"调参2：降低过拟合"</span>)</span><br><span class="line"><span class="keyword">for</span> max_bin <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">255</span>,<span class="number">5</span>):</span><br><span class="line">    <span class="keyword">for</span> min_data_in_leaf <span class="keyword">in</span> range(<span class="number">10</span>,<span class="number">200</span>,<span class="number">5</span>):</span><br><span class="line">            params[<span class="string">'max_bin'</span>] = max_bin</span><br><span class="line">            params[<span class="string">'min_data_in_leaf'</span>] = min_data_in_leaf</span><br><span class="line"></span><br><span class="line">            cv_results = lgb.cv(</span><br><span class="line">                                params,</span><br><span class="line">                                lgb_train,</span><br><span class="line">                                seed=<span class="number">42</span>,</span><br><span class="line">                                nfold=<span class="number">3</span>,</span><br><span class="line">                                metrics=[<span class="string">'binary_error'</span>],</span><br><span class="line">                                early_stopping_rounds=<span class="number">3</span>,</span><br><span class="line">                                verbose_eval=<span class="keyword">True</span></span><br><span class="line">                                )</span><br><span class="line"></span><br><span class="line">            mean_merror = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).min()</span><br><span class="line">            boost_rounds = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).argmin()</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> mean_merror &lt; min_merror:</span><br><span class="line">                min_merror = mean_merror</span><br><span class="line">                best_params[<span class="string">'max_bin'</span>]= max_bin</span><br><span class="line">                best_params[<span class="string">'min_data_in_leaf'</span>] = min_data_in_leaf</span><br><span class="line"></span><br><span class="line">params[<span class="string">'min_data_in_leaf'</span>] = best_params[<span class="string">'min_data_in_leaf'</span>]</span><br><span class="line">params[<span class="string">'max_bin'</span>] = best_params[<span class="string">'max_bin'</span>]</span><br><span class="line"></span><br><span class="line">print(<span class="string">"调参3：降低过拟合"</span>)</span><br><span class="line"><span class="keyword">for</span> feature_fraction <span class="keyword">in</span> [<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">0.6</span>,<span class="number">0.7</span>,<span class="number">0.8</span>,<span class="number">0.9</span>,<span class="number">1.0</span>]:</span><br><span class="line">    <span class="keyword">for</span> bagging_fraction <span class="keyword">in</span> [<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">0.6</span>,<span class="number">0.7</span>,<span class="number">0.8</span>,<span class="number">0.9</span>,<span class="number">1.0</span>]:</span><br><span class="line">        <span class="keyword">for</span> bagging_freq <span class="keyword">in</span> range(<span class="number">0</span>,<span class="number">50</span>,<span class="number">5</span>):</span><br><span class="line">            params[<span class="string">'feature_fraction'</span>] = feature_fraction</span><br><span class="line">            params[<span class="string">'bagging_fraction'</span>] = bagging_fraction</span><br><span class="line">            params[<span class="string">'bagging_freq'</span>] = bagging_freq</span><br><span class="line"></span><br><span class="line">            cv_results = lgb.cv(</span><br><span class="line">                                params,</span><br><span class="line">                                lgb_train,</span><br><span class="line">                                seed=<span class="number">42</span>,</span><br><span class="line">                                nfold=<span class="number">3</span>,</span><br><span class="line">                                metrics=[<span class="string">'binary_error'</span>],</span><br><span class="line">                                early_stopping_rounds=<span class="number">3</span>,</span><br><span class="line">                                verbose_eval=<span class="keyword">True</span></span><br><span class="line">                                )</span><br><span class="line"></span><br><span class="line">            mean_merror = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).min()</span><br><span class="line">            boost_rounds = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).argmin()</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> mean_merror &lt; min_merror:</span><br><span class="line">                min_merror = mean_merror</span><br><span class="line">                best_params[<span class="string">'feature_fraction'</span>] = feature_fraction</span><br><span class="line">                best_params[<span class="string">'bagging_fraction'</span>] = bagging_fraction</span><br><span class="line">                best_params[<span class="string">'bagging_freq'</span>] = bagging_freq</span><br><span class="line"></span><br><span class="line">params[<span class="string">'feature_fraction'</span>] = best_params[<span class="string">'feature_fraction'</span>]</span><br><span class="line">params[<span class="string">'bagging_fraction'</span>] = best_params[<span class="string">'bagging_fraction'</span>]</span><br><span class="line">params[<span class="string">'bagging_freq'</span>] = best_params[<span class="string">'bagging_freq'</span>]</span><br><span class="line"></span><br><span class="line">print(<span class="string">"调参4：降低过拟合"</span>)</span><br><span class="line"><span class="keyword">for</span> lambda_l1 <span class="keyword">in</span> [<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">0.6</span>,<span class="number">0.7</span>,<span class="number">0.8</span>,<span class="number">0.9</span>,<span class="number">1.0</span>]:</span><br><span class="line">    <span class="keyword">for</span> lambda_l2 <span class="keyword">in</span> [<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">0.6</span>,<span class="number">0.7</span>,<span class="number">0.8</span>,<span class="number">0.9</span>,<span class="number">1.0</span>]:</span><br><span class="line">        <span class="keyword">for</span> min_split_gain <span class="keyword">in</span> [<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">0.6</span>,<span class="number">0.7</span>,<span class="number">0.8</span>,<span class="number">0.9</span>,<span class="number">1.0</span>]:</span><br><span class="line">            params[<span class="string">'lambda_l1'</span>] = lambda_l1</span><br><span class="line">            params[<span class="string">'lambda_l2'</span>] = lambda_l2</span><br><span class="line">            params[<span class="string">'min_split_gain'</span>] = min_split_gain</span><br><span class="line"></span><br><span class="line">            cv_results = lgb.cv(</span><br><span class="line">                                params,</span><br><span class="line">                                lgb_train,</span><br><span class="line">                                seed=<span class="number">42</span>,</span><br><span class="line">                                nfold=<span class="number">3</span>,</span><br><span class="line">                                metrics=[<span class="string">'binary_error'</span>],</span><br><span class="line">                                early_stopping_rounds=<span class="number">3</span>,</span><br><span class="line">                                verbose_eval=<span class="keyword">True</span></span><br><span class="line">                                )</span><br><span class="line"></span><br><span class="line">            mean_merror = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).min()</span><br><span class="line">            boost_rounds = pd.Series(cv_results[<span class="string">'binary_error-mean'</span>]).argmin()</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> mean_merror &lt; min_merror:</span><br><span class="line">                min_merror = mean_merror</span><br><span class="line">                best_params[<span class="string">'lambda_l1'</span>] = lambda_l1</span><br><span class="line">                best_params[<span class="string">'lambda_l2'</span>] = lambda_l2</span><br><span class="line">                best_params[<span class="string">'min_split_gain'</span>] = min_split_gain</span><br><span class="line"></span><br><span class="line">params[<span class="string">'lambda_l1'</span>] = best_params[<span class="string">'lambda_l1'</span>]</span><br><span class="line">params[<span class="string">'lambda_l2'</span>] = best_params[<span class="string">'lambda_l2'</span>]</span><br><span class="line">params[<span class="string">'min_split_gain'</span>] = best_params[<span class="string">'min_split_gain'</span>]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">print(best_params)</span><br><span class="line"></span><br><span class="line"><span class="comment">### 训练</span></span><br><span class="line">params[<span class="string">'learning_rate'</span>]=<span class="number">0.01</span></span><br><span class="line">lgb.train(</span><br><span class="line">          params,                     <span class="comment"># 参数字典</span></span><br><span class="line">          lgb_train,                  <span class="comment"># 训练集</span></span><br><span class="line">          valid_sets=lgb_eval,        <span class="comment"># 验证集</span></span><br><span class="line">          num_boost_round=<span class="number">2000</span>,       <span class="comment"># 迭代次数</span></span><br><span class="line">          early_stopping_rounds=<span class="number">50</span>    <span class="comment"># 早停次数</span></span><br><span class="line">          )</span><br><span class="line"></span><br><span class="line"><span class="comment">### 线下预测</span></span><br><span class="line"><span class="keyword">print</span> (<span class="string">"线下预测"</span>)</span><br><span class="line">preds_offline = lgb.predict(offline_test_X, num_iteration=lgb.best_iteration) <span class="comment"># 输出概率</span></span><br><span class="line">offline=offline_test[[<span class="string">'instance_id'</span>,<span class="string">'is_trade'</span>]]</span><br><span class="line">offline[<span class="string">'preds'</span>]=preds_offline</span><br><span class="line">offline.is_trade = offline[<span class="string">'is_trade'</span>].astype(np.float64)</span><br><span class="line">print(<span class="string">'log_loss'</span>, metrics.log_loss(offline.is_trade, offline.preds))</span><br><span class="line"></span><br><span class="line"><span class="comment">### 线上预测</span></span><br><span class="line">print(<span class="string">"线上预测"</span>)</span><br><span class="line">preds_online =  lgb.predict(online_test_X, num_iteration=lgb.best_iteration)  <span class="comment"># 输出概率</span></span><br><span class="line">online=online_test[[<span class="string">'instance_id'</span>]]</span><br><span class="line">online[<span class="string">'preds'</span>]=preds_online</span><br><span class="line">online.rename(columns=&#123;<span class="string">'preds'</span>:<span class="string">'predicted_score'</span>&#125;,inplace=<span class="keyword">True</span>)           <span class="comment"># 更改列名</span></span><br><span class="line">online.to_csv(<span class="string">"./data/20180405.txt"</span>,index=<span class="keyword">None</span>,sep=<span class="string">' '</span>)                   <span class="comment"># 保存结果</span></span><br><span class="line"></span><br><span class="line"><span class="comment">### 保存模型</span></span><br><span class="line"><span class="keyword">from</span> sklearn.externals <span class="keyword">import</span> joblib</span><br><span class="line">joblib.dump(lgb,<span class="string">'lgb.pkl'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">### 特征选择</span></span><br><span class="line">df = pd.DataFrame(X_train.columns.tolist(), columns=[<span class="string">'feature'</span>])</span><br><span class="line">df[<span class="string">'importance'</span>]=list(lgb.feature_importance())                           <span class="comment"># 特征分数</span></span><br><span class="line">df = df.sort_values(by=<span class="string">'importance'</span>,ascending=<span class="keyword">False</span>)                      <span class="comment"># 特征排序</span></span><br><span class="line">df.to_csv(<span class="string">"./data/feature_score_20180331.csv"</span>,index=<span class="keyword">None</span>,encoding=<span class="string">'gbk'</span>)  <span class="comment"># 保存分数</span></span><br></pre></td></tr></table></figure>
-<h1 id="样本集处理"><a href="#样本集处理" class="headerlink" title="样本集处理"></a>样本集处理</h1><p>加载样本集，去掉app_code和日期列，保存为新样本集</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">df04 = pd.read_csv(<span class="string">'3dtrain_aprilnew.csv'</span>, header=<span class="number">0</span>)</span><br><span class="line">df04 = df04.drop(df04.columns[[<span class="number">0</span>,<span class="number">-2</span>]], axis=<span class="number">1</span>)</span><br><span class="line">print(df04.shape)</span><br><span class="line"><span class="comment"># print(df04['main_unittype_3days'] &gt; 0)</span></span><br><span class="line">df04 = df04[df04[<span class="string">'main_unittype_3days'</span>] &gt; <span class="number">0</span>]</span><br><span class="line">df04 = df04.drop(df04.columns[[<span class="string">'all_district_entropy_avg_3days'</span>, <span class="string">'all_max_distance_with_guarantee_now_unit_address_max_3days'</span>, <span class="string">'all_max_distance_with_guarantee_now_unit_address_min_3days'</span>, <span class="string">'all_max_distance_with_guarantee_now_unit_address_avg_3days'</span>, <span class="string">'all_max_distance_with_guarantee_now_unit_address_sd_3days'</span>, <span class="string">'all_max_distance_with_now_address_max_3days'</span>, <span class="string">'all_max_distance_with_now_address_min_3days'</span>, <span class="string">'all_max_distance_with_now_address_avg_3days'</span>, <span class="string">'all_max_distance_with_now_address_sd_3days'</span>, <span class="string">'all_min_time_between_accon_accoff_avg_3days'</span>, <span class="string">'all_min_time_between_accon_accoff_sd_3days'</span>, <span class="string">'all_overspeed120_time_before_dawn_sd_3days'</span>, <span class="string">'all_overspeed120_time_daytime_sd_3days'</span>, <span class="string">'all_total_time_near_now_unit_address_max_3days'</span>, <span class="string">'all_total_time_near_now_unit_address_min_3days'</span>, <span class="string">'all_total_time_near_now_unit_address_avg_3days'</span>, <span class="string">'all_total_time_near_now_unit_address_sd_3days'</span>, <span class="string">'topone_district_most_per_3days'</span>, <span class="string">'main_unittype_3days'</span>, <span class="string">'is_unittype_changed_3days'</span>]], axis=<span class="number">1</span>)</span><br><span class="line"><span class="comment"># df04 = df04[(True - (df04['days_samewith_now_address_3days'] == "-0.0507071"))]</span></span><br><span class="line"><span class="comment"># df04 = df04[df04["is_gps_yx_lost_nighttime_district_3days"] != "-0.0507071"]</span></span><br><span class="line"><span class="comment"># df04.loc[df04['days_samewith_now_address_3days'] != "-0.0507071"]</span></span><br><span class="line">print(df04.head)</span><br><span class="line"><span class="comment"># df04.to_csv('3dtrain_april_yx.csv', index=False)</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">df05 = pd.read_csv(<span class="string">'3dpredict_maynew.csv'</span>, header=<span class="number">0</span>)</span><br><span class="line">print(df05.shape)</span><br><span class="line">df05 = df05.drop(df05.columns[[<span class="number">0</span>,<span class="number">-2</span>]], axis=<span class="number">1</span>)</span><br><span class="line">df05 = df05[df05[<span class="string">'main_unittype_3days'</span>] &gt; <span class="number">0</span>]</span><br><span class="line">print(df05.shape)</span><br><span class="line">df05.to_csv(<span class="string">'3dpredict_may_yx.csv'</span>, index=<span class="keyword">False</span>)</span><br></pre></td></tr></table></figure>
-<h1 id="从最佳迭代开始预测"><a href="#从最佳迭代开始预测" class="headerlink" title="从最佳迭代开始预测"></a>从最佳迭代开始预测</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">y_pred = gbm.predict(X_test, num_iteration=gbm.best_iteration)</span><br></pre></td></tr></table></figure>
-<h1 id="lightgbm算法优化-不平衡二分类问题（附代码）"><a href="#lightgbm算法优化-不平衡二分类问题（附代码）" class="headerlink" title="lightgbm算法优化-不平衡二分类问题（附代码）"></a>lightgbm算法优化-不平衡二分类问题（附代码）</h1><p><a href="https://yq.aliyun.com/articles/529970" target="_blank" rel="noopener">https://yq.aliyun.com/articles/529970</a></p>
-<h1 id="减少打印日志"><a href="#减少打印日志" class="headerlink" title="减少打印日志"></a>减少打印日志</h1><p>设置verbosity</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">params = &#123;</span><br><span class="line">            &apos;boosting_type&apos;: &apos;gbdt&apos;,</span><br><span class="line">            &apos;objective&apos;: &apos;binary&apos;,</span><br><span class="line">            &apos;metric&apos;: &apos;binary_logloss&apos;,</span><br><span class="line">            &apos;verbosity&apos;: -1,</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
-<h1 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h1><h3 id="进程被killed"><a href="#进程被killed" class="headerlink" title="进程被killed"></a>进程被killed</h3><p>执行到cv时就显示Killed，被python杀死，可能是内存不够了</p>
-<p><a href="https://stackoverflow.com/questions/726690/what-killed-my-process-and-why" target="_blank" rel="noopener">https://stackoverflow.com/questions/726690/what-killed-my-process-and-why</a></p>
-<h1 id="Java调用"><a href="#Java调用" class="headerlink" title="Java调用"></a>Java调用</h1><p><a href="https://blog.csdn.net/luoyexuge/article/details/80087952" target="_blank" rel="noopener">https://blog.csdn.net/luoyexuge/article/details/80087952</a></p>
-<h1 id="处理离散特征"><a href="#处理离散特征" class="headerlink" title="处理离散特征"></a>处理离散特征</h1><p>而Lightgbm可以直接支持category特征的处理，在用pandas结构使用LGB时可以指定哪一列是类别型数据，省去one-hot的步骤。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">data[item] = data[item].astype(&quot;category&quot;).cat.codes +1</span><br><span class="line"></span><br><span class="line">train, test, y_train, y_test = train_test_split(data.drop([&quot;ARRIVAL_DELAY&quot;], axis=1), data[&quot;ARRIVAL_DELAY&quot;],</span><br><span class="line"></span><br><span class="line">random_state=10, test_size=0.25)</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/07/10/hadoop-spark/spark/pyspark笔记/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -2546,6 +2025,341 @@ IV=\sum_{i=0}^N IV_i</script><p>IV衡量的是某一个变量的信息量，从�
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/06/22/hadoop-spark/mllib/资料集/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/06/22/hadoop-spark/mllib/资料集/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-06-22 11:14:47 / 修改时间：11:15:00" itemprop="dateCreated datePublished" datetime="2018-06-22T11:14:47+08:00">2018-06-22</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/06/22/hadoop-spark/mllib/资料集/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/06/22/hadoop-spark/mllib/资料集/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>gitbook教程</p>
+<p><a href="https://endymecy.gitbooks.io/spark-ml-source-analysis/content/%E7%89%B9%E5%BE%81%E6%8A%BD%E5%8F%96%E5%92%8C%E8%BD%AC%E6%8D%A2/chi-square-selector.html" target="_blank" rel="noopener">https://endymecy.gitbooks.io/spark-ml-source-analysis/content/%E7%89%B9%E5%BE%81%E6%8A%BD%E5%8F%96%E5%92%8C%E8%BD%AC%E6%8D%A2/chi-square-selector.html</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/06/22/hadoop-spark/mllib/卡方/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/06/22/hadoop-spark/mllib/卡方/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-06-22 10:18:47" itemprop="dateCreated datePublished" datetime="2018-06-22T10:18:47+08:00">2018-06-22</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-06-25 16:39:38" itemprop="dateModified" datetime="2018-06-25T16:39:38+08:00">2018-06-25</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/06/22/hadoop-spark/mllib/卡方/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/06/22/hadoop-spark/mllib/卡方/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>1.6版本下可行的例子</p>
+<p>参考<a href="http://dblab.xmu.edu.cn/blog/1475-2/" target="_blank" rel="noopener">http://dblab.xmu.edu.cn/blog/1475-2/</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// 创造实验数据，这是一个具有三个样本，四个特征维度的数据集，标签有1，0两种。1.6中，标签必须是double型</span><br><span class="line">val df = sqlContext.createDataFrame(Seq(</span><br><span class="line">       (1, Vectors.dense(0.0, 0.0, 18.0, 1.0), 1.0),</span><br><span class="line">       (2, Vectors.dense(0.0, 1.0, 12.0, 0.0), 0.0),</span><br><span class="line">       (3, Vectors.dense(1.0, 0.0, 15.0, 0.1), 0.0)</span><br><span class="line">         )).toDF(&quot;id&quot;, &quot;features&quot;, &quot;label&quot;)</span><br><span class="line">    df.show()</span><br><span class="line"></span><br><span class="line">    val selector = new ChiSqSelector().</span><br><span class="line">      setNumTopFeatures(1).</span><br><span class="line">      setFeaturesCol(&quot;features&quot;).</span><br><span class="line">      setLabelCol(&quot;label&quot;).</span><br><span class="line">      setOutputCol(&quot;selected_features&quot;)</span><br><span class="line">    val select_model = selector.fit(df)</span><br><span class="line">    val result = select_model.transform(df)</span><br><span class="line">    result.show()</span><br></pre></td></tr></table></figure>
+<p>源码的主要逻辑在</p>
+<p><code>ChiSqTest.chiSquaredFeatures</code></p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">chiSquaredFeatures</span></span>(data: <span class="type">RDD</span>[<span class="type">LabeledPoint</span>],</span><br><span class="line">      methodName: <span class="type">String</span> = <span class="type">PEARSON</span>.name): <span class="type">Array</span>[<span class="type">ChiSqTestResult</span>] = &#123;</span><br><span class="line">    <span class="keyword">val</span> maxCategories = <span class="number">10000</span></span><br><span class="line">    <span class="keyword">val</span> numCols = data.first().features.size</span><br><span class="line">    <span class="keyword">val</span> results = <span class="keyword">new</span> <span class="type">Array</span>[<span class="type">ChiSqTestResult</span>](numCols)</span><br><span class="line">    <span class="keyword">var</span> labels: <span class="type">Map</span>[<span class="type">Double</span>, <span class="type">Int</span>] = <span class="literal">null</span></span><br><span class="line">    <span class="comment">// at most 1000 columns at a time</span></span><br><span class="line">    <span class="keyword">val</span> batchSize = <span class="number">1000</span></span><br><span class="line">    <span class="keyword">var</span> batch = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> (batch * batchSize &lt; numCols) &#123;</span><br><span class="line">      <span class="comment">// The following block of code can be cleaned up and made public as</span></span><br><span class="line">      <span class="comment">// chiSquared(data: RDD[(V1, V2)])</span></span><br><span class="line">      <span class="keyword">val</span> startCol = batch * batchSize</span><br><span class="line">      <span class="keyword">val</span> endCol = startCol + math.min(batchSize, numCols - startCol)</span><br><span class="line">      <span class="keyword">val</span> pairCounts = data.mapPartitions &#123; iter =&gt;</span><br><span class="line">        <span class="keyword">val</span> distinctLabels = mutable.<span class="type">HashSet</span>.empty[<span class="type">Double</span>]</span><br><span class="line">        <span class="keyword">val</span> allDistinctFeatures: <span class="type">Map</span>[<span class="type">Int</span>, mutable.<span class="type">HashSet</span>[<span class="type">Double</span>]] =</span><br><span class="line">          <span class="type">Map</span>((startCol until endCol).map(col =&gt; (col, mutable.<span class="type">HashSet</span>.empty[<span class="type">Double</span>])): _*)</span><br><span class="line">        <span class="keyword">var</span> i = <span class="number">1</span></span><br><span class="line">        iter.flatMap &#123; <span class="keyword">case</span> <span class="type">LabeledPoint</span>(label, features) =&gt;</span><br><span class="line">          <span class="keyword">if</span> (i % <span class="number">1000</span> == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (distinctLabels.size &gt; maxCategories) &#123;</span><br><span class="line">              <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">SparkException</span>(<span class="string">s"Chi-square test expect factors (categorical values) but "</span></span><br><span class="line">                + <span class="string">s"found more than <span class="subst">$maxCategories</span> distinct label values."</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            allDistinctFeatures.foreach &#123; <span class="keyword">case</span> (col, distinctFeatures) =&gt;</span><br><span class="line">              <span class="keyword">if</span> (distinctFeatures.size &gt; maxCategories) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">SparkException</span>(<span class="string">s"Chi-square test expect factors (categorical values) but "</span></span><br><span class="line">                  + <span class="string">s"found more than <span class="subst">$maxCategories</span> distinct values in column <span class="subst">$col</span>."</span>)</span><br><span class="line">              &#125;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">          i += <span class="number">1</span></span><br><span class="line">          distinctLabels += label</span><br><span class="line">          features.toArray.view.zipWithIndex.slice(startCol, endCol).map &#123; <span class="keyword">case</span> (feature, col) =&gt;</span><br><span class="line">            allDistinctFeatures(col) += feature</span><br><span class="line">            (col, feature, label)</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;.countByValue()</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (labels == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="comment">// Do this only once for the first column since labels are invariant across features.</span></span><br><span class="line">        labels =</span><br><span class="line">          pairCounts.keys.filter(_._1 == startCol).map(_._3).toArray.distinct.zipWithIndex.toMap</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">val</span> numLabels = labels.size</span><br><span class="line">      pairCounts.keys.groupBy(_._1).map &#123; <span class="keyword">case</span> (col, keys) =&gt;</span><br><span class="line">        <span class="keyword">val</span> features = keys.map(_._2).toArray.distinct.zipWithIndex.toMap</span><br><span class="line">        <span class="keyword">val</span> numRows = features.size</span><br><span class="line">        <span class="keyword">val</span> contingency = <span class="keyword">new</span> <span class="type">BDM</span>(numRows, numLabels, <span class="keyword">new</span> <span class="type">Array</span>[<span class="type">Double</span>](numRows * numLabels))</span><br><span class="line">        keys.foreach &#123; <span class="keyword">case</span> (_, feature, label) =&gt;</span><br><span class="line">          <span class="keyword">val</span> i = features(feature)</span><br><span class="line">          <span class="keyword">val</span> j = labels(label)</span><br><span class="line">          contingency(i, j) += pairCounts((col, feature, label))</span><br><span class="line">        &#125;</span><br><span class="line">        results(col) = chiSquaredMatrix(<span class="type">Matrices</span>.fromBreeze(contingency), methodName)</span><br><span class="line">      &#125;</span><br><span class="line">      batch += <span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line">    results</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Chi-squared statistic undefined for input matrix due to0 sum in column [1].</span><br></pre></td></tr></table></figure>
+<p>某个特征都是0的时候，卡方不能计算</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -2592,7 +2406,7 @@ IV=\sum_{i=0}^N IV_i</script><p>IV衡量的是某一个变量的信息量，从�
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">315</span>
+                    <span class="site-state-item-count">313</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2800,7 +2614,9 @@ IV=\sum_{i=0}^N IV_i</script><p>IV衡量的是某一个变量的信息量，从�
                     
                       
                     
-                    <span class="site-state-item-count">62</span>
+                      
+                    
+                    <span class="site-state-item-count">63</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

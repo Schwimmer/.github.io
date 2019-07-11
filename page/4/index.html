@@ -357,289 +357,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/07/01/机器学习/知识图谱/cypher基本概念和语法/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/07/01/机器学习/知识图谱/cypher基本概念和语法/" class="post-title-link" itemprop="url">cypher基本概念和语法</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-01 09:37:21" itemprop="dateCreated datePublished" datetime="2019-07-01T09:37:21+08:00">2019-07-01</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-08 18:01:17" itemprop="dateModified" datetime="2019-07-08T18:01:17+08:00">2019-07-08</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/知识图谱/" itemprop="url" rel="index"><span itemprop="name">知识图谱</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/07/01/机器学习/知识图谱/cypher基本概念和语法/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/07/01/机器学习/知识图谱/cypher基本概念和语法/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>官方文档：<a href="https://neo4j.com/docs/cypher-refcard/3.0/" target="_blank" rel="noopener">https://neo4j.com/docs/cypher-refcard/3.0/</a></p>
-<h1 id="快捷技巧"><a href="#快捷技巧" class="headerlink" title="快捷技巧"></a>快捷技巧</h1><p>结合表达式：  match(n)-[r] -(b)</p>
-<pre><code>  如果查询节点n                            就    return n
-
-  如果查询关系r                             就    return r
-
-  如果查询节点b                            就    return b
-
-  如果查询节点n和b之间的关系r    就    return n，r，b
-
-  如果查询带条件                          就    where n.x = x，r.xx = xx，b.xxx = xxx
-
-  如果修改属性                             就     where.....   set ....
-
-  如果删除属性                             就     where.....   remove .....
-
-  如果删除节点或关系                   就     where.....   delete n 或者 delete r  或者 delete b 或者 delete n , r , b
-</code></pre><hr>
-<h1 id="检索节点"><a href="#检索节点" class="headerlink" title="检索节点"></a>检索节点</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">MATCH (n:Movie) RETURN n LIMIT 25</span><br><span class="line"></span><br><span class="line">// 这种查询时不限节点类型</span><br><span class="line">MATCH (tom &#123;name: &quot;冒险&quot;&#125;) RETURN tom</span><br><span class="line">MATCH (tom &#123;title: &quot;一曲凤求凰&quot;&#125;) RETURN tom</span><br><span class="line"></span><br><span class="line">// where条件</span><br><span class="line">match (p:Movie)</span><br></pre></td></tr></table></figure>
-<h1 id="创建节点"><a href="#创建节点" class="headerlink" title="创建节点"></a>创建节点</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 前面这个david的部分没有意义，随便起名字</span><br><span class="line">// 属性中，最好有个叫name或者title的字段，这样在检索时会默认显示这个值。</span><br><span class="line">CREATE (david:Person &#123;name:&apos;david&apos;, borns:&apos;19869623&apos;&#125;)</span><br></pre></td></tr></table></figure>
-<h1 id="建立连接"><a href="#建立连接" class="headerlink" title="建立连接"></a>建立连接</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 没有效果，为什么呢</span><br><span class="line">CREATE (david) - [:ACT_I &#123;roles:[&apos;Neo&apos;]&#125;] -&gt; (珠海三雄)</span><br><span class="line"></span><br><span class="line">// 导入数据时用的方式</span><br><span class="line">merge (from)-[r:actedin&#123;pid:toInteger(line.pid),mid:toInteger(line.mid)&#125;]-&gt;(to)</span><br></pre></td></tr></table></figure>
-<h1 id="删除所有节点和关系"><a href="#删除所有节点和关系" class="headerlink" title="删除所有节点和关系"></a>删除所有节点和关系</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MATCH (n)-[r]-(b)</span><br><span class="line">DELETE n,r,b</span><br></pre></td></tr></table></figure>
-<h1 id="Node语法"><a href="#Node语法" class="headerlink" title="Node语法"></a>Node语法</h1><p>在cypher里面通过用一对小括号()表示一个节点，它在cypher里面查询形式如下：</p>
-<p>1，() 代表匹配任意一个节点</p>
-<p>2, (node1) 代表匹配任意一个节点，并给它起了一个别名</p>
-<p>3, (:Lable) 代表查询一个类型的数据</p>
-<p>4, (person:Lable) 代表查询一个类型的数据，并给它起了一个别名</p>
-<p>5, (person:Lable {name:”小王”}) 查询某个类型下，节点属性满足某个值的数据</p>
-<p>6, (person:Lable {name:”小王”,age:23})　节点的属性可以同时存在多个，是一个AND的关系</p>
-<h1 id="关系语法"><a href="#关系语法" class="headerlink" title="关系语法"></a>关系语法</h1><p>关系用一对-组成，关系分有方向的进和出，<strong>如果是无方向就是进和出都查询</strong></p>
-<p>1,—&gt; 指向一个节点</p>
-<p>2,-[role]-&gt; 给关系加个别名</p>
-<p>3,-[:acted_in]-&gt; 访问某一类关系</p>
-<p>4,-[role:acted_in]-&gt; 访问某一类关系，并加了别名</p>
-<p>5,-[role:acted_in {roles:[“neo”,”hadoop”]}]-&gt;</p>
-<p>访问某一类关系下的某个属性的关系的数据</p>
-<h2 id="带属性的关系"><a href="#带属性的关系" class="headerlink" title="带属性的关系"></a>带属性的关系</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">match(n),(b) where n.label=&apos;科比&apos; and b.label=&apos;奥尼尔&apos;</span><br><span class="line">create(n)-[r:搭档&#123;since:1996,des:&apos;NBA史上最强OK组合&apos;,champion:3&#125;]-&gt;(b) </span><br><span class="line">return n,r,b</span><br></pre></td></tr></table></figure>
-<h1 id="模式语法"><a href="#模式语法" class="headerlink" title="模式语法"></a>模式语法</h1><p>模式语法是节点和关系查询语法的结合，通过模式语法我们可以进行我们想要的任意复杂的查询</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 这里的Actor是什么</span><br><span class="line">(p1: Person:Actor &#123;name:&quot;tom&quot;&#125;)-[role:acted_in &#123;roles:[&quot;neo&quot;,&quot;actor&quot;]&#125;]-(m1:Movie &#123;title:&quot;water&quot;&#125;)</span><br></pre></td></tr></table></figure>
-<h1 id="模式变量"><a href="#模式变量" class="headerlink" title="模式变量"></a>模式变量</h1><p>为了增加模块化和减少重复，cypher允许把模式的结果指定在一个变量或者别名中，方便后续使用或操作</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">path = (: Person)-[:ACTED_IN]-&gt;(:Movie)</span><br></pre></td></tr></table></figure>
-<p>path是结果集的抽象封装，有多个函数可以直接从path里面提取数据如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">nodes(path)：提取所有的节点</span><br><span class="line"></span><br><span class="line">rels(path): 提取所有的关系 和relationships(path)相等</span><br><span class="line"></span><br><span class="line">length(path): 获取路径长度</span><br></pre></td></tr></table></figure>
-<h1 id="条件"><a href="#条件" class="headerlink" title="条件"></a>条件</h1><p>cypher语句也是由多个关键词组成，像SQL的</p>
-<p>select name, count(<em>) from talbe where age=24 group by name having count(</em>) &gt;2  order by count(*) desc<br>多个关键字组成的语法，cypher也非常类似，每个关键词会执行一个特定的task来处理数据</p>
-<p>match: 查询的主要关键词</p>
-<p>create: 类似sql里面的insert</p>
-<p>filter，project，sort，page等都有对应的功能语句</p>
-<p>通过组合上面的一些语句，我们可以写出非常强大复杂的语法，来查询我们想要检索的内容，cypher会 自动解析语法并优化执行。</p>
-<h1 id="创建"><a href="#创建" class="headerlink" title="创建"></a>创建</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create (:Movie &#123;title:&quot;驴得水&quot;,released:2016&#125;) return p;</span><br></pre></td></tr></table></figure>
-<p>执行成功，在neo4j的web页面我们能看到下面的信息</p>
-<p>+—————————-+| No data returned. |<br>+—————————-+Nodes created: 1<br>Properties set: 2<br>Labels added: 1<br>当然cypher也可以一次创建多个数据，并同时添加关系</p>
-<h1 id="查询"><a href="#查询" class="headerlink" title="查询"></a>查询</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">match (p: Person) return p; 查询Person类型的所有数据</span><br><span class="line"></span><br><span class="line">match (p: Person &#123;name:&quot;sun&quot;&#125;) return p; 查询名字等于sun的人</span><br><span class="line"></span><br><span class="line">match( p1: Person &#123;name:&quot;sun&quot;&#125; )-[rel:friend]-&gt;(p2) return p2.name , p2.age 查询sun的朋友的名字和年龄</span><br><span class="line"></span><br><span class="line">match (old) ... create (new) create (old)-[rel:dr]-&gt;(new) return new 对已经存在的节点和新建的节点建立关系</span><br></pre></td></tr></table></figure>
-<h2 id="用ID查询"><a href="#用ID查询" class="headerlink" title="用ID查询"></a>用ID查询</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 不能用n.id。这里的ID是neo4j默认的</span><br><span class="line">match(n) where ID(n) = 21798 return n</span><br></pre></td></tr></table></figure>
-<h2 id="模糊查询"><a href="#模糊查询" class="headerlink" title="模糊查询"></a>模糊查询</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">match(n) where n.label=~&apos;科*.&apos; return n</span><br></pre></td></tr></table></figure>
-<h1 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h1><p>merge 语法可以对已经存在的节点做改变，对变化的部分会合并</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">MERGE (m:Movie &#123; title:&quot;Cloud Atlas&quot; &#125;) ON CREATE SET m.released = 2012 RETURN m</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 执行以下语句没效果，没有增加realeased属性。把on CREATE去掉就可以了。</span><br><span class="line">MERGE (m:Person &#123; person_id:&quot;111&quot; &#125;) ON CREATE SET m.released = 2012 RETURN m</span><br><span class="line"></span><br><span class="line">MERGE (m:Person &#123; person_id:&quot;111&quot; &#125;) SET m.released = 2012 RETURN m</span><br></pre></td></tr></table></figure>
-<p>merge …. on create set … return 语法支持合并更新</p>
-<h2 id="更新属性"><a href="#更新属性" class="headerlink" title="更新属性"></a>更新属性</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">match(n) where ID(n) = 21798 set n.label=&apos;科比&apos;,n.height=198,n.position=&apos;得分后卫&apos; return n</span><br></pre></td></tr></table></figure>
-<h2 id="修改关系属性"><a href="#修改关系属性" class="headerlink" title="修改关系属性"></a>修改关系属性</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">match(n)-[r]-(b) where ID(r) = 12513 set r.des=&apos;小飞侠&amp;大鲨鱼&apos; </span><br><span class="line">return n,r,b</span><br></pre></td></tr></table></figure>
-<h2 id="删除属性"><a href="#删除属性" class="headerlink" title="删除属性"></a>删除属性</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">match(n) where ID(n) = 21798 remove n.height return n</span><br></pre></td></tr></table></figure>
-<h2 id="删除节点"><a href="#删除节点" class="headerlink" title="删除节点"></a>删除节点</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">match(n:洛杉矶湖人) where ID(n) = 21836 delete n</span><br></pre></td></tr></table></figure>
-<h2 id="删除关系"><a href="#删除关系" class="headerlink" title="删除关系"></a>删除关系</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">match(n)-[r]-(b) where n.label=&apos;科比&apos; and b.label=&apos;奥尼尔&apos;</span><br><span class="line">delete r</span><br><span class="line">return r</span><br></pre></td></tr></table></figure>
-<h2 id="现有节点创建关系"><a href="#现有节点创建关系" class="headerlink" title="现有节点创建关系"></a>现有节点创建关系</h2><p><a href="https://www.quackit.com/neo4j/tutorial/neo4j_create_a_relationship_using_cypher.cfm" target="_blank" rel="noopener">https://www.quackit.com/neo4j/tutorial/neo4j_create_a_relationship_using_cypher.cfm</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">MATCH (a:APP),(b:Person)</span><br><span class="line">WHERE a.app_code = &quot;F19999&quot; AND b.person_id = &quot;113&quot;</span><br><span class="line">CREATE (a)-[r:app_person]-&gt;(b)</span><br><span class="line">RETURN r</span><br></pre></td></tr></table></figure>
-<h2 id="多个关系的创建"><a href="#多个关系的创建" class="headerlink" title="多个关系的创建"></a>多个关系的创建</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">MATCH (a:Artist),(b:Album),(p:Person)</span><br><span class="line">WHERE a.Name = &quot;Strapping Young Lad&quot; AND b.Name = &quot;Heavy as a Really Heavy Thing&quot; AND p.Name = &quot;Devin Townsend&quot; </span><br><span class="line">CREATE (p)-[pr:PRODUCED]-&gt;(b), (p)-[pf:PERFORMED_ON]-&gt;(b), (p)-[pl:PLAYS_IN]-&gt;(a)</span><br><span class="line">RETURN a,b,p</span><br></pre></td></tr></table></figure>
-<h2 id="筛选过滤"><a href="#筛选过滤" class="headerlink" title="筛选过滤"></a>筛选过滤</h2><p>cypher过滤也是用的和SQL一样的关键词where</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">match (p1: Person) where p1.name=&quot;sun&quot; return p1;</span><br></pre></td></tr></table></figure>
-<p>等同下面的</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">match (p1: Person &#123;name:&quot;sun&quot;&#125;) return p1</span><br></pre></td></tr></table></figure>
-<p>注意where条件里面支持 and ， or ，xor，not等boolean运算符，在json串里面都是and</p>
-<p>除此之外，where里面查询还支持<strong>正则查询</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">match (p1: Person)-[r:friend]-&gt;(p2: Person)</span><br><span class="line">where p1.name=~&quot;K.+&quot; or p2.age=24 or &quot;neo&quot; in r.rels</span><br><span class="line">return p1,r,p2</span><br></pre></td></tr></table></figure>
-<p>关系过滤匹配使用not</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MATCH (p:Person)-[:ACTED_IN]-&gt;(m) WHERE NOT (p)-[:DIRECTED]-&gt;() RETURN p,m</span><br></pre></td></tr></table></figure>
-<h2 id="结果集返回"><a href="#结果集返回" class="headerlink" title="结果集返回"></a>结果集返回</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 结果集返回做去重</span><br><span class="line">MATCH (p:Person) RETURN p, p.name AS name, upper(p.name), coalesce(p.nickname,&quot;n/a&quot;) AS nickname, &#123; name: p.name, label:head(labels(p))&#125; AS person</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">match (n) return distinct n.name;</span><br></pre></td></tr></table></figure>
-<h2 id="聚合函数"><a href="#聚合函数" class="headerlink" title="聚合函数"></a>聚合函数</h2><p>cypher支持count,sum,avg,min,max</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">match (: Person) return count(*)</span><br></pre></td></tr></table></figure>
-<p>聚合的时候null会被跳过 count 语法 支持 count( distinct role )</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MATCH (actor:Person)-[:ACTED_IN]-&gt;(movie:Movie)&lt;-[:DIRECTED]-(director:Person)RETURN actor,director,count(*) AS collaborations</span><br></pre></td></tr></table></figure>
-<h2 id="排序和分页"><a href="#排序和分页" class="headerlink" title="排序和分页"></a>排序和分页</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MATCH (a:Person)-[:ACTED_IN]-&gt;(m:Movie) RETURN a,count() AS appearances ORDER BY appearances DESC SKIP 3 LIMIT 10;</span><br></pre></td></tr></table></figure>
-<h2 id="收集聚合结果"><a href="#收集聚合结果" class="headerlink" title="收集聚合结果"></a>收集聚合结果</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MATCH (m:Movie)&lt;-[:ACTED_IN]-(a:Person)</span><br><span class="line">RETURN m.title AS movie, collect(a.name) AS cast, count(*) AS actors</span><br></pre></td></tr></table></figure>
-<h2 id="union-联合"><a href="#union-联合" class="headerlink" title="union 联合"></a>union 联合</h2><p>支持两个查询结构集一样的结果合并</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">MATCH (actor:Person)-[r:ACTED_IN]-&gt;(movie:Movie)</span><br><span class="line">RETURN actor.name AS name, type(r) AS acted_in, movie.title AS title</span><br><span class="line">UNION （ALL）</span><br><span class="line">MATCH (director:Person)-[r:DIRECTED]-&gt;(movie:Movie)</span><br><span class="line">RETURN director.name AS name, type(r) AS acted_in, movie.title AS title</span><br></pre></td></tr></table></figure>
-<h2 id="with"><a href="#with" class="headerlink" title="with"></a>with</h2><p>with语句给cypher提供了强大的pipeline能力，可以一个或者query的输出，或者下一个query的输入 和return语句非常类似，唯一不同的是，with的每一个结果，必须使用别名标识。</p>
-<p>通过这个功能，我们可以轻而易举的做到在查询结果里面在继续嵌套查询。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">MATCH (person:Person)-[:ACTED_IN]-&gt;(m:Movie)</span><br><span class="line">WITH person, count(*) AS appearances, collect(m.title) AS movies</span><br><span class="line">WHERE appearances &gt; 1 RETURN person.name, appearances, movies</span><br></pre></td></tr></table></figure>
-<p>注意在SQL里面，我们想过滤聚合结果，需要使用having语句但是在cypher里面我们可以配合with语句使用 where关键词来完成过滤</p>
-<h2 id="添加约束或者索引"><a href="#添加约束或者索引" class="headerlink" title="添加约束或者索引"></a>添加约束或者索引</h2><p>唯一约束(使用merge来实现) </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CREATE CONSTRAINT ON (movie:Movie) ASSERT movie.title IS UNIQUE</span><br></pre></td></tr></table></figure>
-<p>添加索引(在图谱遍历时，快速找到开始节点),大幅提高查询遍历性能 CREATE INDEX ON :Actor(name)</p>
-<p>添加测试数据：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CREATE (actor:Actor &#123; name:&quot;Tom Hanks&quot; &#125;),(movie:Movie &#123; title:‘Sleepless IN Seattle‘ &#125;),</span><br><span class="line">(actor)-[:ACTED_IN]-&gt;(movie);</span><br></pre></td></tr></table></figure>
-<p>使用索引查询:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MATCH (actor:Actor &#123; name: &quot;Tom Hanks&quot; &#125;) RETURN actor;</span><br></pre></td></tr></table></figure>
-<h1 id="地理信息"><a href="#地理信息" class="headerlink" title="地理信息"></a>地理信息</h1><p>转自：<a href="http://neo4j.com.cn/topic/5b0be3179662eee704f31db6" target="_blank" rel="noopener">neo4j 3.4根据经纬度计算两点之间的距离</a></p>
-<p><a href="https://neo4j.com/docs/developer-manual/current/cypher/functions/spatial/" target="_blank" rel="noopener">https://neo4j.com/docs/developer-manual/current/cypher/functions/spatial/</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">create(l:Location) set l.latitude=toFloat(&apos;55.612151&apos;),l.longitude=toFloat(&apos;12.995090&apos;) return l</span><br><span class="line"></span><br><span class="line">with point(&#123;latitude:55.612,longitude:12.995&#125;) as poi</span><br><span class="line">match (l:Location) where l.latitude=55.612151</span><br><span class="line">return distance(point(&#123;latitude:l.latitude,longitude: l.longitude&#125;),poi) as distince</span><br><span class="line"></span><br><span class="line">with point(&#123;latitude:55.612,longitude:12.995&#125;) as poi</span><br><span class="line">match (l:Location) where l.latitude=55.612151 and distance(point(&#123;latitude:l.latitude,longitude: l.longitude&#125;),poi)&lt;20</span><br><span class="line">return distance(point(&#123;latitude:l.latitude,longitude: l.longitude&#125;),poi) as distince</span><br></pre></td></tr></table></figure>
-<p>cypher 实现， 节点上存lat，lng属性，我用cypher重写了 谷歌的 地理位置距离算法，你可以在cypher的where语句里，用下面方法来找 500米以内的 节点</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// cypher有自带的，目前应该用不到下面的</span><br><span class="line">round( </span><br><span class="line"> 6378.137 *1000*2*</span><br><span class="line">  asin(sqrt(</span><br><span class="line">       sin((radians(start.lat)-radians(&#123;start_lat&#125;))/2)^2+cos(radians(start.lat))*cos(radians(&#123;start_lat&#125;))* </span><br><span class="line">      sin((radians(start.lng)-radians(&#123;start_lng&#125;))/2)^2</span><br><span class="line">    ))</span><br><span class="line">   )&lt;500</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/06/29/机器学习/知识图谱/教程-电影数据/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -700,7 +417,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-08 17:21:35" itemprop="dateModified" datetime="2019-07-08T17:21:35+08:00">2019-07-08</time>
+                <time title="修改时间：2019-07-10 18:00:39" itemprop="dateModified" datetime="2019-07-10T18:00:39+08:00">2019-07-10</time>
               </span>
             
           
@@ -864,7 +581,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2019/06/27/机器学习和深度学习算法专题/人脸识别/开源模型/" class="post-title-link" itemprop="url">未命名</a>
+                <a href="/2019/06/27/机器学习和深度学习算法专题/人脸识别/开源模型/" class="post-title-link" itemprop="url">人脸识别开源模型</a>
               
             
           </h1>
@@ -889,7 +606,7 @@
                 
               
 
-              <time title="创建时间：2019-06-27 09:27:07 / 修改时间：09:48:27" itemprop="dateCreated datePublished" datetime="2019-06-27T09:27:07+08:00">2019-06-27</time>
+              <time title="创建时间：2019-06-27 09:27:07" itemprop="dateCreated datePublished" datetime="2019-06-27T09:27:07+08:00">2019-06-27</time>
             </span>
           
 
@@ -897,8 +614,33 @@
             
 
             
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-11 11:12:09" itemprop="dateModified" datetime="2019-07-11T11:12:09+08:00">2019-07-11</time>
+              </span>
+            
           
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习算法专题/" itemprop="url" rel="index"><span itemprop="name">机器学习算法专题</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -1006,7 +748,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/06/26/hadoop-spark/spark/集群模式和local模式/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/06/26/机器学习和深度学习算法专题/OPTICS/【转】OPTICS原理/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -1026,176 +768,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2019/06/26/hadoop-spark/spark/集群模式和local模式/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-06-26 17:48:32" itemprop="dateCreated datePublished" datetime="2019-06-26T17:48:32+08:00">2019-06-26</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-04 15:38:46" itemprop="dateModified" datetime="2019-07-04T15:38:46+08:00">2019-07-04</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/06/26/hadoop-spark/spark/集群模式和local模式/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/06/26/hadoop-spark/spark/集群模式和local模式/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>local模式可用于debug</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">// 集群模式</span><br><span class="line">@transient</span><br><span class="line">val conf = new SparkConf().setAppName(&quot;MetricSimilarity&quot;).set(&quot;spark.sql.shuffle.partitions&quot;, &quot;500&quot;).set(&quot;spark.default.parallelism&quot;, &quot;500&quot;).set(&quot;spark.shuffle.consolidateFiles&quot;, &quot;true&quot;)</span><br><span class="line">@transient</span><br><span class="line">val sc = new SparkContext(conf)</span><br><span class="line">@transient</span><br><span class="line">val hiveContext = new HiveContext(sc)</span><br><span class="line">hiveContext.sql(&quot;SET mapreduce.job.reduces=40&quot;)</span><br><span class="line">val hiveSql = HiveHandler.getExecuteSql(&quot;wx.trajectory.select&quot;, List(currentDateStr))</span><br><span class="line">println(hiveSql)</span><br><span class="line">val df = hiveContext.sql(hiveSql)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// local模式</span><br><span class="line">//    val conf = new SparkConf().setAppName(&quot;LocalSpark&quot;).set(&quot;spark.default.parallelism&quot;, &quot;8&quot;).setMaster(&quot;local[1]&quot;)</span><br><span class="line">//    val sc = new SparkContext(conf)</span><br><span class="line">//    val hiveContext = new HiveContext(sc)</span><br><span class="line">//    val df = readCsv(sc, &quot;/Users/david/Downloads/app_traj.csv&quot;)</span><br><span class="line"></span><br><span class="line">//读取csv，由于HUE下载的数据表头带有表名，需要去掉。例如stg_d001_t_jxl_behavior.call_cnt --&gt;&gt; call_cnt</span><br><span class="line">  def readCsv(sc:SparkContext, csvPath:String)=&#123;</span><br><span class="line">    val sqlContext = new SQLContext(sc)</span><br><span class="line">    //这里如果在csv第一行有属性的话，没有就是&quot;false&quot;</span><br><span class="line">    val dataset = sqlContext.read.format(&quot;com.databricks.spark.csv&quot;)</span><br><span class="line">      .option(&quot;header&quot;,&quot;true&quot;)</span><br><span class="line">      //.option(&quot;inferSchema&quot;,true.toString)//这是自动推断属性列的数据类型。不要打开</span><br><span class="line">      .load(csvPath)//文件的路径</span><br><span class="line">    dataset</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/06/26/机器学习和深度学习算法专题/OPTICS/原理/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/06/26/机器学习和深度学习算法专题/OPTICS/原理/" class="post-title-link" itemprop="url">未命名</a>
+                <a href="/2019/06/26/机器学习和深度学习算法专题/OPTICS/【转】OPTICS原理/" class="post-title-link" itemprop="url">【转】OPTICS原理</a>
               
             
           </h1>
@@ -1235,11 +808,26 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-06-27 09:14:39" itemprop="dateModified" datetime="2019-06-27T09:14:39+08:00">2019-06-27</time>
+                <time title="修改时间：2019-07-11 11:14:40" itemprop="dateModified" datetime="2019-07-11T11:14:40+08:00">2019-07-11</time>
               </span>
             
           
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习算法专题/" itemprop="url" rel="index"><span itemprop="name">机器学习算法专题</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -1252,8 +840,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/06/26/机器学习和深度学习算法专题/OPTICS/原理/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/06/26/机器学习和深度学习算法专题/OPTICS/原理/" itemprop="commentCount"></span>
+                <a href="/2019/06/26/机器学习和深度学习算法专题/OPTICS/【转】OPTICS原理/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/06/26/机器学习和深度学习算法专题/OPTICS/【转】OPTICS原理/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1289,8 +877,8 @@
             <p><a href="https://zhuanlan.zhihu.com/p/41930932" target="_blank" rel="noopener">OPTICS聚类算法</a></p>
 <p>代码：<a href="https://github.com/amyxzhang/OPTICS-Automatic-Clustering" target="_blank" rel="noopener">https://github.com/amyxzhang/OPTICS-Automatic-Clustering</a></p>
 <h1 id="核心距离"><a href="#核心距离" class="headerlink" title="核心距离"></a>核心距离</h1><p>给若干个邻域参数，找到满足这个参数的最小半径？</p>
-<p><img src="//schwimmer.github.io/2019/06/26/机器学习和深度学习算法专题/OPTICS/原理/pic/image-20190626104739769.png" alt="image-20190626104739769"></p>
-<h1 id="可达距离"><a href="#可达距离" class="headerlink" title="可达距离"></a>可达距离</h1><p><img src="//schwimmer.github.io/2019/06/26/机器学习和深度学习算法专题/OPTICS/原理/pic/image-20190626104940080.png" alt="image-20190626104940080"></p>
+<p><img src="//schwimmer.github.io/2019/06/26/机器学习和深度学习算法专题/OPTICS/【转】OPTICS原理/image-20190626104739769.png" alt="image-20190626104739769"></p>
+<h1 id="可达距离"><a href="#可达距离" class="headerlink" title="可达距离"></a>可达距离</h1><p><img src="//schwimmer.github.io/2019/06/26/机器学习和深度学习算法专题/OPTICS/【转】OPTICS原理/image-20190626104940080.png" alt="image-20190626104940080"></p>
 
           
         
@@ -1347,7 +935,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/06/24/机器学习和深度学习算法专题/图算法/社区发现/文章整理/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/06/24/机器学习和深度学习算法专题/图算法/社区发现/图算法资料整理/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -1367,7 +955,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2019/06/24/机器学习和深度学习算法专题/图算法/社区发现/文章整理/" class="post-title-link" itemprop="url">未命名</a>
+                <a href="/2019/06/24/机器学习和深度学习算法专题/图算法/社区发现/图算法资料整理/" class="post-title-link" itemprop="url">图算法资料整理</a>
               
             
           </h1>
@@ -1392,7 +980,7 @@
                 
               
 
-              <time title="创建时间：2019-06-24 16:33:04 / 修改时间：16:37:39" itemprop="dateCreated datePublished" datetime="2019-06-24T16:33:04+08:00">2019-06-24</time>
+              <time title="创建时间：2019-06-24 16:33:04" itemprop="dateCreated datePublished" datetime="2019-06-24T16:33:04+08:00">2019-06-24</time>
             </span>
           
 
@@ -1400,8 +988,33 @@
             
 
             
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-11 11:15:46" itemprop="dateModified" datetime="2019-07-11T11:15:46+08:00">2019-07-11</time>
+              </span>
+            
           
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习算法专题/" itemprop="url" rel="index"><span itemprop="name">机器学习算法专题</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -1414,8 +1027,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/06/24/机器学习和深度学习算法专题/图算法/社区发现/文章整理/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/06/24/机器学习和深度学习算法专题/图算法/社区发现/文章整理/" itemprop="commentCount"></span>
+                <a href="/2019/06/24/机器学习和深度学习算法专题/图算法/社区发现/图算法资料整理/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/06/24/机器学习和深度学习算法专题/图算法/社区发现/图算法资料整理/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1506,7 +1119,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/反向传播讲解/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/【转】BP反向传播详解/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -1526,7 +1139,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2019/06/22/机器学习和深度学习算法专题/BP/反向传播讲解/" class="post-title-link" itemprop="url">未命名</a>
+                <a href="/2019/06/22/机器学习和深度学习算法专题/BP/【转】BP反向传播详解/" class="post-title-link" itemprop="url">【转】BP反向传播详解</a>
               
             
           </h1>
@@ -1551,7 +1164,7 @@
                 
               
 
-              <time title="创建时间：2019-06-22 16:38:35 / 修改时间：16:43:12" itemprop="dateCreated datePublished" datetime="2019-06-22T16:38:35+08:00">2019-06-22</time>
+              <time title="创建时间：2019-06-22 16:38:35" itemprop="dateCreated datePublished" datetime="2019-06-22T16:38:35+08:00">2019-06-22</time>
             </span>
           
 
@@ -1559,8 +1172,33 @@
             
 
             
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-11 11:18:21" itemprop="dateModified" datetime="2019-07-11T11:18:21+08:00">2019-07-11</time>
+              </span>
+            
           
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习算法专题/" itemprop="url" rel="index"><span itemprop="name">机器学习算法专题</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -1573,8 +1211,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/06/22/机器学习和深度学习算法专题/BP/反向传播讲解/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/06/22/机器学习和深度学习算法专题/BP/反向传播讲解/" itemprop="commentCount"></span>
+                <a href="/2019/06/22/机器学习和深度学习算法专题/BP/【转】BP反向传播详解/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/06/22/机器学习和深度学习算法专题/BP/【转】BP反向传播详解/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1610,24 +1248,24 @@
             <p>转自：<a href="https://blog.csdn.net/qq_32865355/article/details/80260212" target="_blank" rel="noopener">神经网络BP反向传播算法原理和详细推导流程</a></p>
 <p>这篇还算讲的比较清楚的。后面我需要手动推一遍公式</p>
 <p>本文的记号说明：</p>
-<p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/反向传播讲解/pic/20180509220432642.png" alt="img"></p>
+<p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/【转】BP反向传播详解/20180509220432642.png" alt="img"></p>
 <p>下面以三层感知器(即只含有一个隐藏层的多层感知器)为例介绍“反向传播算法(BP 算法)”。</p>
-<p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/反向传播讲解/pic/2018050922060950.png" alt="img"></p>
+<p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/【转】BP反向传播详解/2018050922060950.png" alt="img"></p>
 <p><strong>2 信息前向传播</strong></p>
-<p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/反向传播讲解/pic/20180509220830262.png" alt="img"></p>
-<h1 id="3-误差反向传播"><a href="#3-误差反向传播" class="headerlink" title="3 误差反向传播"></a>3 误差反向传播</h1><p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/反向传播讲解/pic/20180509221116734.png" alt="img"></p>
-<p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/反向传播讲解/pic/20180509221204791.png" alt="img"></p>
-<p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/反向传播讲解/pic/20180509221247739.png" alt="img"></p>
-<h1 id="3-1-输出层的权重参数更新"><a href="#3-1-输出层的权重参数更新" class="headerlink" title="3.1 输出层的权重参数更新"></a>3.1 输出层的权重参数更新</h1><p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/反向传播讲解/pic/20180509221435900.png" alt="img"></p>
-<p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/反向传播讲解/pic/20180509221511306.png" alt="img"></p>
-<p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/反向传播讲解/pic/20180509221533158.png" alt="img"></p>
-<h1 id="3-2-隐藏层的权重参数更新"><a href="#3-2-隐藏层的权重参数更新" class="headerlink" title="3.2  隐藏层的权重参数更新"></a>3.2  隐藏层的权重参数更新</h1><p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/反向传播讲解/pic/20180509221717653.png" alt="img"></p>
-<p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/反向传播讲解/pic/2018050922180018.png" alt="img"></p>
-<p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/反向传播讲解/pic/20180509221814447.png" alt="img"></p>
-<h1 id="3-3输出层和隐藏层的偏置参数更新"><a href="#3-3输出层和隐藏层的偏置参数更新" class="headerlink" title="3.3输出层和隐藏层的偏置参数更新"></a>3.3输出层和隐藏层的偏置参数更新</h1><p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/反向传播讲解/pic/2018050922202053.png" alt="img"></p>
-<h1 id="3-4-BP算法四个核心公式"><a href="#3-4-BP算法四个核心公式" class="headerlink" title="3.4 BP算法四个核心公式"></a>3.4 BP算法四个核心公式</h1><p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/反向传播讲解/pic/2018050922212487.png" alt="img"></p>
-<h1 id="3-5-BP-算法计算某个训练数据的代价函数对参数的偏导数"><a href="#3-5-BP-算法计算某个训练数据的代价函数对参数的偏导数" class="headerlink" title="3.5 BP 算法计算某个训练数据的代价函数对参数的偏导数"></a>3.5 BP 算法计算某个训练数据的代价函数对参数的偏导数</h1><p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/反向传播讲解/pic/20180509222238953.png" alt="img"></p>
-<p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/反向传播讲解/pic/2018050922230279.png" alt="img"></p>
+<p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/【转】BP反向传播详解/20180509220830262.png" alt="img"></p>
+<h1 id="3-误差反向传播"><a href="#3-误差反向传播" class="headerlink" title="3 误差反向传播"></a>3 误差反向传播</h1><p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/【转】BP反向传播详解/20180509221116734.png" alt="img"></p>
+<p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/【转】BP反向传播详解/20180509221204791.png" alt="img"></p>
+<p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/【转】BP反向传播详解/20180509221247739.png" alt="img"></p>
+<h1 id="3-1-输出层的权重参数更新"><a href="#3-1-输出层的权重参数更新" class="headerlink" title="3.1 输出层的权重参数更新"></a>3.1 输出层的权重参数更新</h1><p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/【转】BP反向传播详解/20180509221435900.png" alt="img"></p>
+<p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/【转】BP反向传播详解/20180509221511306.png" alt="img"></p>
+<p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/【转】BP反向传播详解/20180509221533158.png" alt="img"></p>
+<h1 id="3-2-隐藏层的权重参数更新"><a href="#3-2-隐藏层的权重参数更新" class="headerlink" title="3.2  隐藏层的权重参数更新"></a>3.2  隐藏层的权重参数更新</h1><p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/【转】BP反向传播详解/20180509221717653.png" alt="img"></p>
+<p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/【转】BP反向传播详解/2018050922180018.png" alt="img"></p>
+<p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/【转】BP反向传播详解/20180509221814447.png" alt="img"></p>
+<h1 id="3-3输出层和隐藏层的偏置参数更新"><a href="#3-3输出层和隐藏层的偏置参数更新" class="headerlink" title="3.3输出层和隐藏层的偏置参数更新"></a>3.3输出层和隐藏层的偏置参数更新</h1><p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/【转】BP反向传播详解/2018050922202053.png" alt="img"></p>
+<h1 id="3-4-BP算法四个核心公式"><a href="#3-4-BP算法四个核心公式" class="headerlink" title="3.4 BP算法四个核心公式"></a>3.4 BP算法四个核心公式</h1><p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/【转】BP反向传播详解/2018050922212487.png" alt="img"></p>
+<h1 id="3-5-BP-算法计算某个训练数据的代价函数对参数的偏导数"><a href="#3-5-BP-算法计算某个训练数据的代价函数对参数的偏导数" class="headerlink" title="3.5 BP 算法计算某个训练数据的代价函数对参数的偏导数"></a>3.5 BP 算法计算某个训练数据的代价函数对参数的偏导数</h1><p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/【转】BP反向传播详解/20180509222238953.png" alt="img"></p>
+<p><img src="//schwimmer.github.io/2019/06/22/机器学习和深度学习算法专题/BP/【转】BP反向传播详解/2018050922230279.png" alt="img"></p>
 
           
         
@@ -2227,6 +1865,408 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/06/20/地理信息挖掘/行为模式挖掘/论文整理/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/06/20/地理信息挖掘/行为模式挖掘/论文整理/" class="post-title-link" itemprop="url">行为模式挖掘论文整理</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-20 11:24:21" itemprop="dateCreated datePublished" datetime="2019-06-20T11:24:21+08:00">2019-06-20</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-05 15:07:41" itemprop="dateModified" datetime="2019-07-05T15:07:41+08:00">2019-07-05</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/地理信息处理和挖掘/" itemprop="url" rel="index"><span itemprop="name">地理信息处理和挖掘</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/06/20/地理信息挖掘/行为模式挖掘/论文整理/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/06/20/地理信息挖掘/行为模式挖掘/论文整理/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="综述"><a href="#综述" class="headerlink" title="综述"></a>综述</h1><blockquote>
+<p> 吉根林, 赵斌. 时空轨迹大数据模式挖掘研究进展[J]. 数据采集与处理, 2015, 30(1): 47-58.</p>
+</blockquote>
+<p>提到了频繁模式挖掘，伴随模式挖掘，聚集模式挖掘等。</p>
+<h1 id="行为模式挖掘"><a href="#行为模式挖掘" class="headerlink" title="行为模式挖掘"></a>行为模式挖掘</h1><p><strong>Ye Y, Zheng Y, Chen Y, et al. Mining individual life pattern based on location history[C]//2009 tenth international conference on mobile data management: Systems, services and middleware. IEEE, 2009: 1-10.</strong></p>
+<p>被引244次。讲通过找兴趣点等。</p>
+<p>1）第一层建模，获取停留点</p>
+<p>2）第二层建模，停留点=&gt; 历史位置序列</p>
+<p>3）时序抽样，找到特定日期的行为</p>
+<p>4）挖掘非时序的行为模式，频繁项集。</p>
+<p>5）挖掘时序的行为模式。从频繁项目里面找出有时序的</p>
+<p>6）找出一些规则</p>
+<blockquote>
+<p>如何通过增量聚类来更新历史区域。</p>
+</blockquote>
+<p><strong>Zhao S, Zhao Z, Huang R, et al. Discovering Individual Life Style From Anonymized WiFi Scan Lists on Smartphones[J]. IEEE Access, 2019, 7: 22698-22709.</strong></p>
+<p>用图来找出用户经过的区域的关系</p>
+<p>用户在地点之间的变迁可以表示为无向图中的权重。</p>
+<p>从P到P+1的点，构成一条弧，次数就是弧的权重。点的大小是平均停留时长。点的编号就是停留区域的编号。</p>
+<p><img src="//schwimmer.github.io/2019/06/20/地理信息挖掘/行为模式挖掘/论文整理/pic/image-20190624153608856.png" alt="image-20190624153608856"></p>
+<p>这张图可以得到如下信息：</p>
+<p>1）少数点size大，说明A到过很多地方，但经常待的只有几个。</p>
+<p>2）71和14最大，说明最常停留的是这两个点。</p>
+<p>3）很多点会连接到71（71的degree最大），说明71是核心停留点。</p>
+<p>4）71和66，71和14的edge最粗，说明是最频繁的往返点。</p>
+<blockquote>
+<p>把这个图跟地图结合起来？</p>
+</blockquote>
+<h4 id="接下来用社区发现（Community-Detection-）算法"><a href="#接下来用社区发现（Community-Detection-）算法" class="headerlink" title="接下来用社区发现（Community Detection ）算法"></a>接下来用社区发现（Community Detection ）算法</h4><p>这样可以知道每个人的activity area的数量。</p>
+<p>再从activity area发现行为模式。</p>
+<p>1）计算活跃度。统计在activity area中次数的均值。</p>
+<p>搞了一堆统计</p>
+<h1 id="Andrade-T-Gama-J-Identifying-Points-of-Interest-and-Similar-Individuals-from-Raw-GPS-Data-J-arXiv-preprint-arXiv-1904-09357-2019"><a href="#Andrade-T-Gama-J-Identifying-Points-of-Interest-and-Similar-Individuals-from-Raw-GPS-Data-J-arXiv-preprint-arXiv-1904-09357-2019" class="headerlink" title="Andrade T, Gama J. Identifying Points of Interest and Similar Individuals from Raw GPS Data[J]. arXiv preprint arXiv:1904.09357, 2019."></a><strong>Andrade T, Gama J. Identifying Points of Interest and Similar Individuals from Raw GPS Data[J]. arXiv preprint arXiv:1904.09357, 2019.</strong></h1><p>用户相似性的定义：太简单了，就是看A和B的停留点的重复数，然后算jaccard系数</p>
+<p><img src="//schwimmer.github.io/2019/06/20/地理信息挖掘/行为模式挖掘/论文整理/pic/image-20190624181222829.png" alt="image-20190624181222829"></p>
+<h1 id="Yang-M-Cheng-C-Chen-B-Mining-Individual-Similarity-by-Assessing-Interactions-with-Personally-Significant-Places-from-GPS-Trajectories-J-ISPRS-International-Journal-of-Geo-Information-2018-7-3-126"><a href="#Yang-M-Cheng-C-Chen-B-Mining-Individual-Similarity-by-Assessing-Interactions-with-Personally-Significant-Places-from-GPS-Trajectories-J-ISPRS-International-Journal-of-Geo-Information-2018-7-3-126" class="headerlink" title="Yang M, Cheng C, Chen B. Mining Individual Similarity by Assessing Interactions with Personally Significant Places from GPS Trajectories[J]. ISPRS International Journal of Geo-Information, 2018, 7(3): 126."></a><strong>Yang M, Cheng C, Chen B. Mining Individual Similarity by Assessing Interactions with Personally Significant Places from GPS Trajectories[J]. ISPRS International Journal of Geo-Information, 2018, 7(3): 126.</strong></h1><p>SCI</p>
+<p><img src="//schwimmer.github.io/2019/06/20/地理信息挖掘/行为模式挖掘/论文整理/pic/image-20190626103058625.png" alt="image-20190626103058625"></p>
+<p>关于Individual Significant Places，大多数用逆编码。文章除了POI，还考虑了用户的个人兴趣点（比如家）。</p>
+<p>个人兴趣点，比如居住地和工作地，有高频的访问和长时间停留。</p>
+<p>提出居住地工作地的新算法</p>
+<p><img src="//schwimmer.github.io/2019/06/20/地理信息挖掘/行为模式挖掘/论文整理/pic/image-20190626141515795.png" alt="image-20190626141515795"></p>
+<ul>
+<li>提出一种相似度计算的算法</li>
+</ul>
+<p>Naserian E, Wang X, Dahal K, et al. Personalized location prediction for group travellers from spatial–temporal trajectories[J]. Future Generation Computer Systems, 2018, 83: 278-292.</p>
+<p>Parent C, Spaccapietra S, Renso C, et al. Semantic trajectories modeling and analysis[J]. ACM Computing Surveys (CSUR), 2013, 45(4): 42.</p>
+<p>被引381</p>
+<p>轨迹的语义</p>
+<p>完成常驻地列表、中心经纬度的指标加工</p>
+<p>其他文献</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/06/20/机器学习和深度学习算法专题/隐马尔可夫/隐马尔可夫基本问题/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/06/20/机器学习和深度学习算法专题/隐马尔可夫/隐马尔可夫基本问题/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-20 10:37:47 / 修改时间：10:39:39" itemprop="dateCreated datePublished" datetime="2019-06-20T10:37:47+08:00">2019-06-20</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/06/20/机器学习和深度学习算法专题/隐马尔可夫/隐马尔可夫基本问题/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/06/20/机器学习和深度学习算法专题/隐马尔可夫/隐马尔可夫基本问题/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="隐马尔可夫模型的三个基本问题"><a href="#隐马尔可夫模型的三个基本问题" class="headerlink" title="隐马尔可夫模型的三个基本问题"></a>隐马尔可夫模型的三个基本问题</h1><p><a href="https://zhuanlan.zhihu.com/p/35169365" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/35169365</a></p>
+<p><strong>隐马尔科夫模型的三个基本问题</strong>是：</p>
+<p>（1）<strong>评估</strong>问题；（2）<strong>模型学习</strong>问题；（3）<strong>解码/预测</strong>问题</p>
+<p>不同的问题有不同的算法！</p>
+<p>（<strong>1）评估问题：</strong>也即概率计算问题。在给定模型和观测序列的条件下，<strong>计算在给定模型下观测序列出现的概率。</strong></p>
+<p><strong>前向、后向算法</strong>用于解决评估问题，也就是说，在给定模型下，求某观测序列出现的概率，用于评估该观测序列最匹配的模型。</p>
+<p><strong>（2）模型学习问题：也即参数估计问题</strong>，具体是指，<strong>用已知的观测序列去估计模型中的参数，使得在给定模型下观测序列出现的概率最大</strong>，采用的方法为极大似然估计方法。</p>
+<p><strong>Baum-Welchs算法</strong>用于解决模型学习问题，即参数估计，它是zy一种无监督的训练方法，主要通过EM迭代来实现。</p>
+<p><strong>（3）解码/预测问题：</strong>已知模型和观测序列，<strong>在给定的观测序列下，求其最可能对应的状态序列。</strong></p>
+<p><strong>维特比算法</strong>用于解决的是给定一个模型和某个特定的输出序列下，求最可能产生这个特定的输出序列对应的状态序列。</p>
+<p>参考</p>
+<h1 id="一文搞懂HMM（隐马尔可夫模型）"><a href="#一文搞懂HMM（隐马尔可夫模型）" class="headerlink" title="一文搞懂HMM（隐马尔可夫模型）"></a><a href="https://www.cnblogs.com/skyme/p/4651331.html" target="_blank" rel="noopener">一文搞懂HMM（隐马尔可夫模型）</a></h1><p>和HMM模型相关的算法主要分为三类，分别解决三种问题：<br>      <strong>1）知道骰子有几种（隐含状态数量），每种骰子是什么（转换概率），根据掷骰子掷出的结果（可见状态链），我想知道每次掷出来的都是哪种骰子（隐含状态链）。</strong><br>      这个问题呢，在语音识别领域呢，叫做解码问题。这个问题其实有两种解法，会给出两个不同的答案。每个答案都对，只不过这些答案的意义不一样。第一种解法求最大似然状态路径，说通俗点呢，就是我求一串骰子序列，这串骰子序列产生观测结果的概率最大。第二种解法呢，就不是求一组骰子序列了，而是求每次掷出的骰子分别是某种骰子的概率。比如说我看到结果后，我可以求得第一次掷骰子是D4的概率是0.5，D6的概率是0.3，D8的概率是0.2.第一种解法我会在下面说到，但是第二种解法我就不写在这里了，如果大家有兴趣，我们另开一个问题继续写吧。</p>
+<p><strong>2）还是知道骰子有几种</strong> <strong>（隐含状态数量）</strong> <strong>，每种骰子是什么</strong> <strong>（转换概率）</strong> <strong>，根据掷骰子掷出的结果</strong> <strong>（可见状态链）</strong> <strong>，我想知道掷出这个结果的概率。</strong><br>      看似这个问题意义不大，因为你掷出来的结果很多时候都对应了一个比较大的概率。问这个问题的目的呢，其实是检测观察到的结果和已知的模型是否吻合。如果很多次结果都对应了比较小的概率，那么就说明我们已知的模型很有可能是错的，有人偷偷把我们的骰子給换了。</p>
+<p><strong>3）知道骰子有几种 </strong> <strong>（隐含状态数量）</strong> <strong>，不知道每种骰子是什么</strong> <strong>（转换概率）</strong> <strong>，观测到很多次掷骰子的结果 </strong>（可见状态链）<strong> </strong>，我想反推出每种骰子是什么<strong> </strong>（转换概率）** 。<br>      这个问题很重要，因为这是最常见的情况。很多时候我们只有可见结果，不知道HMM模型里的参数，我们需要从可见结果估计出这些参数，这是建模的一个必要步骤。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -2273,7 +2313,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">315</span>
+                    <span class="site-state-item-count">313</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2481,7 +2521,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">62</span>
+                      
+                    
+                    <span class="site-state-item-count">63</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

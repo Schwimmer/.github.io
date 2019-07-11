@@ -357,371 +357,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/02/24/算法与数据结构/LeeCode/奇偶跳/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/02/24/算法与数据结构/LeeCode/奇偶跳/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-02-24 22:01:36" itemprop="dateCreated datePublished" datetime="2019-02-24T22:01:36+08:00">2019-02-24</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-02-25 15:55:52" itemprop="dateModified" datetime="2019-02-25T15:55:52+08:00">2019-02-25</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/02/24/算法与数据结构/LeeCode/奇偶跳/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/02/24/算法与数据结构/LeeCode/奇偶跳/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>第奇数次跳，可以跳到后面的所有比当前数字大的，其中最小的那个数字的位置上；</p>
-<p>第偶数次跳，可以跳到后面的所有比当前数字小的，其中最大的那个数字的位置上；</p>
-<p>如果跳到最后的一个位置，就相当于成功了。问有多少个位置可以成功。</p>
-<p>暴力解法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; A.length; i++)</span><br><span class="line">    <span class="keyword">while</span> ( j != A.length - <span class="number">1</span>)</span><br><span class="line">        <span class="keyword">if</span> ( jump % <span class="number">2</span> == <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> k = j + <span class="number">1</span>; k &lt; A.length; k++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (A[j] &lt;= A[k] &amp;&amp; A[k] &lt; tmp) </span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">			</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
-<p>从后往前遍历，<strong>如果某个点能够跳到的点已经被证实可以跳到终点</strong>，那么这个点肯定能跳到终点。</p>
-<p>但是，某个点能不能跳到终点要分情况看的，要看这个点在奇数跳次数和偶数跳次数是不是分别能达到终点。</p>
-<p>比如，从A跳到B，当【从A出发且第一步是奇数步，最后能到达终点】，当且仅当【从B出发，且B的第一步是偶数步能到达终点】。</p>
-<p>所以就要知道每个点出发的时候，奇数步或偶数步能不能到达终点。</p>
-<p>再假设odd_jump[i]表示【从i点进行奇数跳时下一步的位置】，even_jump[i]表示【从i点进行偶数跳时下一步的位置】，若无法跳跃，取值为-1。这个数组的计算先放一边，假设已经算好了。</p>
-<p>再领odd_position[i]表示【从i点开始奇数跳能不能到达终点】，even_position[i]表示【从i点开始偶数跳能不能到达终点】。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">odd_jump = findJump(A)</span><br><span class="line">even_jump = findJump([-e <span class="keyword">for</span> e <span class="keyword">in</span> A])</span><br><span class="line"></span><br><span class="line">N = len(A)</span><br><span class="line">odd_position = [<span class="keyword">False</span>] * N</span><br><span class="line">even_position = [<span class="keyword">False</span>] * N</span><br><span class="line"></span><br><span class="line">result = <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(N)[::<span class="number">-1</span>]:</span><br><span class="line">    <span class="keyword">if</span> i == N - <span class="number">1</span>:</span><br><span class="line">        odd_position[i] = even_position[i] = <span class="keyword">True</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            odd_position[i] = even_position[odd_jump[i]] <span class="keyword">if</span> odd_jump != [<span class="number">-1</span>] then <span class="keyword">False</span></span><br><span class="line">            even_position[i] = odd_position[even_jump[i]] <span class="keyword">if</span> even_jump != [<span class="number">-1</span>] then <span class="keyword">False</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> odd_position[i]:</span><br><span class="line">                result += <span class="number">1</span></span><br></pre></td></tr></table></figure>
-<p>接下来是findJump的实现。</p>
-<p>在一个有序数组中，对于奇数跳，对于某一个数，要找到比它第一个比它大的数的最早出现的位置。</p>
-<p>对于偶数跳，要找到第一个比它小的数的最早出现位置。</p>
-<p>这个用二分法实现。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/02/16/算法与数据结构/LeeCode/Week1-3不含AAA或BBB的字符串/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/02/16/算法与数据结构/LeeCode/Week1-3不含AAA或BBB的字符串/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-02-16 10:08:44" itemprop="dateCreated datePublished" datetime="2019-02-16T10:08:44+08:00">2019-02-16</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-02-25 13:44:29" itemprop="dateModified" datetime="2019-02-25T13:44:29+08:00">2019-02-25</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/02/16/算法与数据结构/LeeCode/Week1-3不含AAA或BBB的字符串/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/02/16/算法与数据结构/LeeCode/Week1-3不含AAA或BBB的字符串/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="方法一：贪心"><a href="#方法一：贪心" class="headerlink" title="方法一：贪心"></a>方法一：贪心</h4><p><strong>思路</strong></p>
-<p>直观感觉，我们应该先选择当前所剩最多的待写字母写入字符串中。举一个例子，如果 <code>A = 6, B = 2</code>，那么我们期望写出 <code>&#39;aabaabaa&#39;</code>。进一步说，设当前所剩最多的待写字母为 <code>x</code>，只有前两个已经写下的字母都是 <code>x</code> 的时候，下一个写入字符串中的字母才不应该选择它。</p>
-<p><strong>算法</strong></p>
-<p>我们定义 <code>A, B</code>：待写的 <code>&#39;a&#39;</code> 与 <code>&#39;b&#39;</code> 的数量。</p>
-<p>设当前还需要写入字符串的 <code>&#39;a&#39;</code> 与 <code>&#39;b&#39;</code> 中较多的那一个为 <code>x</code>，如果我们已经连续写了两个 <code>x</code> 了，下一次我们应该写另一个字母。否则，我们应该继续写 <code>x</code>。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">strWithout3a3b</span><span class="params">(<span class="keyword">int</span> A, <span class="keyword">int</span> B)</span> </span>&#123;</span><br><span class="line">        StringBuilder ans = <span class="keyword">new</span> StringBuilder();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (A &gt; <span class="number">0</span> || B &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">boolean</span> writeA = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">int</span> L = ans.length();</span><br><span class="line">            <span class="keyword">if</span> (L &gt;= <span class="number">2</span> &amp;&amp; ans.charAt(L-<span class="number">1</span>) == ans.charAt(L-<span class="number">2</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (ans.charAt(L-<span class="number">1</span>) == <span class="string">'b'</span>)</span><br><span class="line">                    writeA = <span class="keyword">true</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (A &gt;= B)</span><br><span class="line">                    writeA = <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (writeA) &#123;</span><br><span class="line">                A--;</span><br><span class="line">                ans.append(<span class="string">'a'</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                B--;</span><br><span class="line">                ans.append(<span class="string">'b'</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans.toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>复杂度分析</strong></p>
-<ul>
-<li>时间复杂度：O(A+B)<em>O</em>(<em>A</em>+<em>B</em>)。</li>
-<li>空间复杂度：O(A+B)<em>O</em>(<em>A</em>+<em>B</em>)。 </li>
-</ul>
-<p>若A&gt;=B，</p>
-<p>若i&gt;2且i的前三位是aaa，则b</p>
-<p>s.append(x)</p>
-<p>若A&lt;0或B&lt;0，则报错</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/02/13/算法与数据结构/LeeCode/Week1-2无重复字符的最长子串/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -2190,6 +1825,374 @@ O\left(\sum{i = 0}^{n - 1}\left(\sum{j = i + 1}^{n}(j - i)\right)\right) = O\lef
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/12/18/工具和环境/Azkaban操作/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/12/18/工具和环境/Azkaban操作/" class="post-title-link" itemprop="url">Azkaban技巧</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-12-18 10:23:04" itemprop="dateCreated datePublished" datetime="2018-12-18T10:23:04+08:00">2018-12-18</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-05 16:27:26" itemprop="dateModified" datetime="2019-07-05T16:27:26+08:00">2019-07-05</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/工具和环境/" itemprop="url" rel="index"><span itemprop="name">工具和环境</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/12/18/工具和环境/Azkaban操作/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/12/18/工具和环境/Azkaban操作/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>指定服务器节点执行</p>
+<p>useExecutor</p>
+<p><img src="/Users/david/david/00projects/00markdown/pic/image-20181218102331060-5099811.png" alt="image-20181218102331060"></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/11/18/编程语言学习/PYTHON/python画图/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/11/18/编程语言学习/PYTHON/python画图/" class="post-title-link" itemprop="url">Python画图</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-11-18 17:00:31" itemprop="dateCreated datePublished" datetime="2018-11-18T17:00:31+08:00">2018-11-18</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-05 12:56:32" itemprop="dateModified" datetime="2019-07-05T12:56:32+08:00">2019-07-05</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/11/18/编程语言学习/PYTHON/python画图/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/11/18/编程语言学习/PYTHON/python画图/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="散点图"><a href="#散点图" class="headerlink" title="散点图"></a>散点图</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">fig = plt.figure()</span><br><span class="line">ax1 = fig.add_subplot(<span class="number">111</span>)</span><br><span class="line"><span class="comment">#设置X轴标签</span></span><br><span class="line">plt.xlabel(<span class="string">'Guage (mm/5min)'</span>)</span><br><span class="line"><span class="comment">#设置Y轴标签</span></span><br><span class="line">plt.ylabel(<span class="string">'R(Z) (mm/5min)'</span>)</span><br><span class="line">plt.title(<span class="string">'(c)'</span>)</span><br><span class="line"><span class="comment">#设置XY轴的范围</span></span><br><span class="line">plt.xlim(xmax=<span class="number">20</span>,xmin=<span class="number">0</span>)</span><br><span class="line">plt.ylim(ymax=<span class="number">20</span>,ymin=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 在散点图上画对角线</span></span><br><span class="line">Y = linspace(<span class="number">0</span>, <span class="number">30</span>, <span class="number">13</span>)</span><br><span class="line"><span class="comment"># 横轴数据。</span></span><br><span class="line">X = linspace(<span class="number">0</span>, <span class="number">30</span>, <span class="number">13</span>)</span><br><span class="line">ax1.plot(X,Y,c=<span class="string">'black'</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#画散点图</span></span><br><span class="line"><span class="comment"># cValue = ['r','y','g','b','r','y','g','b','r']</span></span><br><span class="line"><span class="comment"># c是颜色，linewidths是点的大小</span></span><br><span class="line">ax1.scatter(data_real_np, ydz_np , c=<span class="string">'black'</span>, linewidths=<span class="number">1</span>, s=<span class="number">1</span>)</span><br><span class="line"><span class="comment"># plt.plot(data_real_np,ydz_np,'ro')</span></span><br><span class="line"><span class="comment">#设置图标</span></span><br><span class="line"><span class="comment"># plt.legend('x1')</span></span><br><span class="line"><span class="comment">#显示所画的图</span></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -2236,7 +2239,7 @@ O\left(\sum{i = 0}^{n - 1}\left(\sum{j = i + 1}^{n}(j - i)\right)\right) = O\lef
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">315</span>
+                    <span class="site-state-item-count">313</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2444,7 +2447,9 @@ O\left(\sum{i = 0}^{n - 1}\left(\sum{j = i + 1}^{n}(j - i)\right)\right) = O\lef
                     
                       
                     
-                    <span class="site-state-item-count">62</span>
+                      
+                    
+                    <span class="site-state-item-count">63</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
