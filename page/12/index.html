@@ -357,6 +357,1167 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/09/算法与数据结构/递归讲解/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/09/算法与数据结构/递归讲解/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-03-09 23:01:16" itemprop="dateCreated datePublished" datetime="2019-03-09T23:01:16+08:00">2019-03-09</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-03-31 08:57:11" itemprop="dateModified" datetime="2019-03-31T08:57:11+08:00">2019-03-31</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/03/09/算法与数据结构/递归讲解/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/09/算法与数据结构/递归讲解/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="递归讲解"><a href="#递归讲解" class="headerlink" title="递归讲解"></a>递归讲解</h1><p>[TOC]</p>
+<h1 id="递归概念"><a href="#递归概念" class="headerlink" title="递归概念"></a>递归概念</h1><ol>
+<li>递归就是方法里调用自身。   </li>
+<li>在使用递增归策略时，必须有一个明确的递归结束条件，称为递归出口。                 </li>
+</ol>
+<p>递归一般用于解决三类问题：</p>
+<p>　  <strong>(1)数据的定义是按递归定义的。（Fibonacci函数，n的阶乘）</strong></p>
+<p>　  <strong>(2)问题解法按递归实现。（回溯）</strong></p>
+<p>　  <strong>(3)数据的结构形式是按递归定义的。（二叉树的遍历，图的搜索）</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">FibonacciRecursive</span><span class="params">(<span class="keyword">int</span> n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>( n &lt; <span class="number">2</span>)</span><br><span class="line">        <span class="keyword">return</span> n;</span><br><span class="line">    <span class="keyword">return</span> (FibonacciRecursive(n<span class="number">-1</span>)+FibonacciRecursive(n<span class="number">-2</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/Users/david/david/00projects/00markdown/pic/04214621-bde3e339931444a1a56ce66dd73d1f9b.png" alt="img"></p>
+<h1 id="尾递归"><a href="#尾递归" class="headerlink" title="尾递归"></a>尾递归</h1><p>顾名思义，尾递归就是<strong>从最后开始计算, 每递归一次就算出相应的结果</strong>, 也就是说, 函数调用出现在调用者函数的尾部, 因为是尾部, 所以根本没有必要去保存任何局部变量. 直接让被调用的函数返回时越过调用者, 返回到调用者的调用者去。</p>
+<p>尾递归是极其重要的，不用尾递归，函数的堆栈耗用难以估量，需要保存很多中间函数的堆栈。比如f(n, sum) = f(n-1) + value(n) + sum; 会保存n个函数调用堆栈，而使用尾递归f(n, sum) = f(n-1, sum+value(n)); 这样则只保留后一个函数堆栈即可，之前的可优化删去。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">FibonacciTailRecursive</span><span class="params">(<span class="keyword">int</span> n,<span class="keyword">int</span> ret1,<span class="keyword">int</span> ret2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">if</span>(n==<span class="number">0</span>)</span><br><span class="line">      <span class="keyword">return</span> ret1; </span><br><span class="line">    <span class="keyword">return</span> FibonacciTailRecursive(n<span class="number">-1</span>,ret2,ret1+ret2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看出，<strong>尾递归就是把当前的运算结果（或路径）放在参数里传给下层函数</strong>，深层函数所面对的不是越来越简单的问题，而是越来越复杂的问题，因为参数里带有前面若干步的运算路径。</p>
+<p><img src="/Users/david/david/00projects/00markdown/pic/04221026-166e3bca62d14ea7bb37eee0e6390d2d.png" alt="img"></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/06/总结与思考/项目复盘示例/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/06/总结与思考/项目复盘示例/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-03-06 18:52:23 / 修改时间：18:52:39" itemprop="dateCreated datePublished" datetime="2019-03-06T18:52:23+08:00">2019-03-06</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/03/06/总结与思考/项目复盘示例/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/06/总结与思考/项目复盘示例/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>故障过程:</p>
+<p>​        2月28日晚完成上线</p>
+<p>​        3月1日凌晨宋楠发现存储到数据表的快照协议号出现重复,并且存在一定的规律性.表现为前100000数据无重复,从100001开始到102000持续出现重复,且重复值范围就在100001到102000之间.定位具体原因可能为1.数据库层面查询重复 2.分页组件bug</p>
+<p>​        3月1日上午与倩倩沟通影响范围.与资付产品沟通后认为范围影响不大,确定可以接受后几日补偿推送数据或当日重新推送</p>
+<p>​        3月1日晚上复现问题并解决.紧急上线问题修复.补偿推送当日数据</p>
+<p>​        3月4,5日与DBA占杰共同确定问题发生具体原因</p>
+<p>​    问题影响:</p>
+<p>​        推送数据重复导致部分有效数据未推送到资付,资付的部分资金方无法获取最新的还款计划数据</p>
+<p>​    判断依据:</p>
+<p>​        数据可后续补偿推送</p>
+<p>​        资金方对贷后还款计划关注度不高</p>
+<p>​    本次上线需求:</p>
+<p>​        优化贷后还款计划推送模块,提高效率</p>
+<p>​    问题原因:</p>
+<p>​        <strong>mysql使用distinct+limit时,mysql不会扫描所有记录,而是找到满足条件后立即停止,然后将结果返回.因此需要强制显示指定order by的顺序.告诉mysql根据某子段生成排序后生成临时表，返回满足偏移量结果集</strong></p>
+<p>​    改进计划:</p>
+<p>​        <strong>使用distinct + limit的组合需增加强制排序</strong></p>
+<p>​        <strong>如有有相对复杂且不常用的sql上线前需优先咨询DBA,并按照DBA的建议进行优化</strong></p>
+<p>​        <strong>遇到数据量大的操作评估是否需要从线上拉去部分脱敏数据到测试库中进行充分测试</strong></p>
+<p>​    附出现问题的sql</p>
+<p>​        有问题:</p>
+<p>​            select DISTINCT p.agreement_no</p>
+<p>​                    from repayment_plan p</p>
+<p>​                    where p.modified_time &gt;= ‘开始时间’</p>
+<p>​                    and p.repayment_method != 4</p>
+<p>​                    and p.agreement_type != 2</p>
+<p>​        修复后:</p>
+<p>​            select DISTINCT p.agreement_no</p>
+<p>​                    from repayment_plan p</p>
+<p>​                    where p.modified_time &gt;= ‘开始时间’</p>
+<p>​                    and p.repayment_method != 4</p>
+<p>​                    and p.agreement_type != 2</p>
+<p>​    </p>
+<p>​                </p>
+<p>order by p.agreement_no asc</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/05/深度学习笔记/tensorflow/Transformer写春联/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/05/深度学习笔记/tensorflow/Transformer写春联/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-03-05 22:39:59 / 修改时间：23:11:13" itemprop="dateCreated datePublished" datetime="2019-03-05T22:39:59+08:00">2019-03-05</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/03/05/深度学习笔记/tensorflow/Transformer写春联/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/05/深度学习笔记/tensorflow/Transformer写春联/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://mp.weixin.qq.com/s/N6sSQ3EG_NPFaOGwkC0i6w" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/N6sSQ3EG_NPFaOGwkC0i6w</a></p>
+<h1 id="数据集"><a href="#数据集" class="headerlink" title="数据集"></a>数据集</h1><p>数据集来自一位名为冯重朴_梨味斋散叶的博主的新浪博客，总共包含超过70万副对联。</p>
+<p>github地址（脚本已无法使用，可以用我们上传的couplets，google drive需科学翻墙）：</p>
+<p><a href="https://github.com/wb14123/couplet-dataset" target="_blank" rel="noopener">https://github.com/wb14123/couplet-dataset</a></p>
+<p>google drive：</p>
+<p><a href="https://drive.google.com/file/d/13cJWWp_ST2Xqt76pEr5ZWa6LVJwGYC4-/view?usp=sharing" target="_blank" rel="noopener">https://drive.google.com/file/d/13cJWWp_ST2Xqt76pEr5ZWa6LVJwGYC4-/view?usp=sharing</a></p>
+<p>我下载后，放在<code>/Users/david/david/code/deep_learning/duilian/couplet.tar.gz</code></p>
+<p>整个数据集解压过后总共56.9兆，其中训练数据集56.4兆，测试数据集400多KB。另外，数据是以TXT格式储存的。全文不含标点15,153,840字，如果每天看100条的话，20多年都看不完。而文摘菌采用Tesla K80，2个小时就能来一个Epoch。</p>
+<h1 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h1><p>首先进行数据预处理，因为拿到的数据比较干净，所以这任务主要就是创建词表。值得一提的是，数据集的压缩文件中存在着一个创建好的词表。你也可以用数据集给出的词表。因为对联任务并不难，所以我们直接使用字粒度来作为输入，<strong>也就是像“我们”这样的词，我们是把其当做两个单元进行输入，而不是一个。</strong></p>
+<p>关键代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">make_vocab</span><span class="params">(fpaths, out)</span>:</span></span><br><span class="line">    <span class="string">'''Constructs vocabulary.</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">      fpaths: A string. Input file path.</span></span><br><span class="line"><span class="string">      out: A string. Output file name.</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    '''</span>  </span><br><span class="line">    char2cnt = Counter()</span><br><span class="line">    <span class="keyword">for</span> path <span class="keyword">in</span> fpaths:</span><br><span class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> open(path, <span class="string">'r'</span>):</span><br><span class="line">            line = line.strip()</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> line: <span class="comment"># detect the empty line</span></span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            chars = line.split()</span><br><span class="line">            char2cnt.update(chars)</span><br><span class="line">    <span class="keyword">with</span> open(out, <span class="string">'w'</span>) <span class="keyword">as</span> fout:</span><br><span class="line">        fout.write(<span class="string">"&#123;&#125;\t1000000000\n&#123;&#125;\t1000000000\n&#123;&#125;\t1000000000\n&#123;&#125;\t1000000000\n"</span>.format(<span class="string">"&lt;PAD&gt;"</span>, <span class="string">"&lt;UNK&gt;"</span>, <span class="string">"&lt;S&gt;"</span>, <span class="string">"&lt;/S&gt;"</span>)) <span class="comment"># special tokens</span></span><br><span class="line">        <span class="keyword">for</span> word, cnt <span class="keyword">in</span> char2cnt.most_common(len(char2cnt)):</span><br><span class="line">            fout.write(<span class="string">u"&#123;&#125;\t&#123;&#125;\n"</span>.format(word, cnt))</span><br><span class="line">        print(<span class="string">"%d chars written!"</span> % (len(char2cnt)))</span><br></pre></td></tr></table></figure>
+<p>建立完词表之后，所有单个汉字加上一些特殊字符，总共9126个字符。其实我们看看频率为1的字符就会发现，好像都不认识。一般来说，在序列到序列任务里面，我们会在词表里面忽略频率小不常用的字词。但是因为这里我们词表并不大，所以就全部采用了。</p>
+<p>之后，我们对训练数据的字长进行统计，来决定训练时句子的最大长度。统计后发现，对联数据中单句的长度大部分集中在5-10字之间，最长大概30字左右，所以训练的最大长度文摘菌选的也是30。这个长度并不长，所以之后整个 Transformer 的大小都不是很大。</p>
+<h1 id="模型编写与训练"><a href="#模型编写与训练" class="headerlink" title="模型编写与训练"></a>模型编写与训练</h1><p>这里我们首先搭建好模型，之后通过数据将模型中的参数训练成我们所希望的，之后存储起来。这里便是<strong>一个epoch存储一个模型</strong>。而测试的时候，就可以直接读入参数获得一个训练好的模型来使用。</p>
+<p>此外，我们也可以将保存的模型分享给别人，让其他人也可以直接利用我们的训练结果。</p>
+<p>模型和训练的代码太多，这里就全不放出来了，感兴趣的读者可以去github上下载完整代码。</p>
+<p>github地址：</p>
+<p><a href="https://github.com/andy-yangz/coupletsseq2seqtransformer" target="_blank" rel="noopener">https://github.com/andy-yangz/coupletsseq2seqtransformer</a></p>
+<p>于是整个模型的训练过程主要分为四个步骤：</p>
+<p>第一步，先下载对联数据 couplets, 然后解压到 data 里去</p>
+<p>第二步，调整超参数</p>
+<p>第三步，运行 prepro.py预处理数据，产生词表，也可以用提供的词表</p>
+<p>第四步，运行 train.py 训练模型</p>
+<h1 id="评估"><a href="#评估" class="headerlink" title="评估"></a>评估</h1><p>训练完之后，保存模型，评估脚本会自动读入最新模型来进行评估。</p>
+<p>评估的主要步骤包括：</p>
+<ul>
+<li>建立模型</li>
+<li>读入训练好的参数</li>
+<li>读入测试数据</li>
+<li>将数据喂入模型</li>
+<li>编码解码获得结果</li>
+</ul>
+<p>最主要代码应该是解码这一块：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">### Autoregressive inference</span></span><br><span class="line">preds = np.zeros((<span class="number">1</span>, hp.maxlen), np.int32)</span><br><span class="line"><span class="keyword">for</span> j <span class="keyword">in</span> range(hp.maxlen):</span><br><span class="line">    _preds = sess.run(g.preds, &#123;g.x: x, g.y: preds&#125;)</span><br><span class="line">    preds[:, j] = _preds[:, j]</span><br></pre></td></tr></table></figure>
+<p>最开始喂入x，还有一个空的preds，然后获得一个预测的字，将这个字放在preds相应的位置，之后循环，不断将preds填满。最后就能获得完整的预测结果。</p>
+<p>这里每次预测的字，取得都是预测概率最大的那个字，这叫做 greedy decoding（贪婪搜寻解码），因为每次都是选最大的。这样虽然快，但是也会出现陷入局部最优解的情况。更好些解码方法，可以使用Beam search（束搜索）。</p>
+<p>这是我们训练了6个epoch，也就是模型将数据看了六遍的结果。这次我们总共保存了7个模型，从Epoch1到Epoch7模型，其实要说那个好只能是见仁见智了，比如说我就觉得6个Epoch会好些。但是可以确认的是随着Epoch增加模型就越能学到对联数据里的模式。</p>
+<h1 id="其他模型"><a href="#其他模型" class="headerlink" title="其他模型"></a><strong>其他模型</strong></h1><p>关于AI写对联，其实之前已经有了基于深度学习seq2seq的模型，同样其用到的也是TensorFlow和那位冯重朴_梨味斋散叶的博主提供的数据集。</p>
+<p>目前，代码已经开源，你可以在下面的github中找到：</p>
+<p><a href="https://github.com/wb14123/seq2seq-couplet" target="_blank" rel="noopener">https://github.com/wb14123/seq2seq-couplet</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/03/01/编程语言学习/JAVA/Spring Boot/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/01/编程语言学习/JAVA/Spring Boot/" class="post-title-link" itemprop="url">Spring Boot用法记录</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-03-01 15:51:54" itemprop="dateCreated datePublished" datetime="2019-03-01T15:51:54+08:00">2019-03-01</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-03 22:50:50" itemprop="dateModified" datetime="2019-07-03T22:50:50+08:00">2019-07-03</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/JAVA/" itemprop="url" rel="index"><span itemprop="name">JAVA</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/03/01/编程语言学习/JAVA/Spring Boot/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/03/01/编程语言学习/JAVA/Spring Boot/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="启动时用DEBUG模式"><a href="#启动时用DEBUG模式" class="headerlink" title="启动时用DEBUG模式"></a>启动时用DEBUG模式</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Users/david/david/gitlab_mljr/carthage-greenwich/carthage-web/src/main/resources/logback.groovy</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root(DEBUG, [&quot;APP_INFO&quot;, &quot;APP_ERROR&quot;, &quot;CONSOLE&quot;])</span><br></pre></td></tr></table></figure>
+<h1 id="项目打包"><a href="#项目打包" class="headerlink" title="项目打包"></a>项目打包</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;plugin&gt;</span><br><span class="line">        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;</span><br><span class="line">        &lt;!--这里写上main方法所在类的路径--&gt;</span><br><span class="line">        &lt;configuration&gt;</span><br><span class="line">          &lt;mainClass&gt;com.mljr.carthage.web.SpringBootFlyingApsarasMain&lt;/mainClass&gt;</span><br><span class="line">        &lt;/configuration&gt;</span><br><span class="line">        &lt;executions&gt;</span><br><span class="line">          &lt;execution&gt;</span><br><span class="line">            &lt;goals&gt;</span><br><span class="line">              &lt;goal&gt;repackage&lt;/goal&gt;</span><br><span class="line">            &lt;/goals&gt;</span><br><span class="line">          &lt;/execution&gt;</span><br><span class="line">        &lt;/executions&gt;</span><br><span class="line">      &lt;/plugin&gt;</span><br></pre></td></tr></table></figure>
+<h1 id="Spring-Boot-推荐目录结构"><a href="#Spring-Boot-推荐目录结构" class="headerlink" title="Spring Boot 推荐目录结构"></a>Spring Boot 推荐目录结构</h1><p>（1）代码层的结构</p>
+<p>　　根目录：com.springboot</p>
+<p>　　　　1.工程启动类(ApplicationServer.java)置于com.springboot.build包下</p>
+<p>　　　　2.实体类(domain)置于com.springboot.domain</p>
+<p>　　　　3.数据访问层(Dao)置于com.springboot.repository</p>
+<p>　　　　4.数据服务层(Service)置于com,springboot.service,数据服务的实现接口(serviceImpl)至于com.springboot.service.impl</p>
+<p>　　　　5.前端控制器(Controller)置于com.springboot.controller</p>
+<p>　　　　6.工具类(utils)置于com.springboot.utils</p>
+<p>　　　　7.常量接口类(constant)置于com.springboot.constant</p>
+<p>　　　　8.配置信息类(config)置于com.springboot.config</p>
+<p>　　　　9.数据传输类(vo)置于com.springboot.vo</p>
+<p>（2）资源文件的结构</p>
+<p>　　根目录:src/main/resources</p>
+<p>　　　　1.配置文件(.properties/.json等)置于config文件夹下</p>
+<p>　　　　2.国际化(i18n))置于i18n文件夹下</p>
+<p>　　　　3.spring.xml置于META-INF/spring文件夹下</p>
+<p>　　　　4.页面以及js/css/image等置于static文件夹下的各自文件下</p>
+<p>实体类，也可以包括调用第三方接口后，解析返回json的类</p>
+<p><img src="/Users/david/david/00projects/00markdown/pic/image-20190301165217946.png" alt="image-20190301165217946"></p>
+<h1 id="queryForList"><a href="#queryForList" class="headerlink" title="queryForList"></a>queryForList</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Map&lt;String, Object&gt;&gt; rows = jdbcTemplate.queryForList(query);</span><br><span class="line">       for(Map&lt;String, Object&gt; row : rows)&#123;</span><br><span class="line">          String id = row.get(&quot;id&quot;).toString();</span><br><span class="line">          String name = (String)row.get(&quot;name&quot;);</span><br><span class="line">          String salary = row.get(&quot;salary&quot;).toString();</span><br><span class="line">          System.out.println(id + &quot; &quot; + name + &quot; &quot; + salary );</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<h1 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h1><p><a href="https://blog.csdn.net/qq_38974634/article/details/80650810" target="_blank" rel="noopener">https://blog.csdn.net/qq_38974634/article/details/80650810</a></p>
+<p>现在用redis缓存</p>
+<h1 id="mybatis"><a href="#mybatis" class="headerlink" title="mybatis"></a>mybatis</h1><h2 id="parameterType"><a href="#parameterType" class="headerlink" title="parameterType"></a>parameterType</h2><p><a href="https://www.jianshu.com/p/db20f3224038" target="_blank" rel="noopener">https://www.jianshu.com/p/db20f3224038</a></p>
+<h1 id="错题集"><a href="#错题集" class="headerlink" title="错题集"></a>错题集</h1><h2 id="如果不加BeanPropertyRowMapper会报错"><a href="#如果不加BeanPropertyRowMapper会报错" class="headerlink" title="如果不加BeanPropertyRowMapper会报错"></a>如果不加BeanPropertyRowMapper会报错</h2><p>org.springframework.jdbc.IncorrectResultSetColumnCountException: Incorrect column count: expected 1, actual 4</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 这种不行</span><br><span class="line">jdbcTemplate.queryForObject(sql,</span><br><span class="line">                TopMetricInfoVO.class)</span><br><span class="line">          </span><br><span class="line">// 这种可以</span><br></pre></td></tr></table></figure>
+<h2 id="不能自动注入"><a href="#不能自动注入" class="headerlink" title="不能自动注入"></a>不能自动注入</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">The bean &apos;dashBoardServiceImpl&apos; could not be injected as a &apos;com.mljr.carthage.service.Impl.DashBoardServiceImpl&apos; because it is a JDK dynamic proxy that implements:</span><br><span class="line">	com.mljr.carthage.service.DashboardService</span><br></pre></td></tr></table></figure>
+<h2 id="mybatis-1"><a href="#mybatis-1" class="headerlink" title="mybatis"></a>mybatis</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">不允许有匹配 &quot;[xX][mM][lL]&quot; 的处理指令目标。</span><br></pre></td></tr></table></figure>
+<p>在mapper的xml中不能有代码注释</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">org.apache.ibatis.exceptions.PersistenceException: </span><br><span class="line">### Error querying database.  Cause: com.zaxxer.hikari.pool.HikariPool$PoolInitializationException: Failed to initialize pool: Unable to load authentication plugin &apos;caching_sha2_password&apos;.</span><br><span class="line">### The error may exist in mapper/mybatis/mysql/carthage/gps/AnalysisMapper.xml</span><br><span class="line">### The error may involve com.mljr.carthage.dao.mapper.gps.AnalysisMapper.selectDistributionCount</span><br><span class="line">### The error occurred while executing a query</span><br><span class="line">### Cause: com.zaxxer.hikari.pool.HikariPool$PoolInitializationException: Failed to initialize pool: Unable to load authentication plugin &apos;caching_sha2_password&apos;.</span><br></pre></td></tr></table></figure>
+<p>本地没设密码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER USER &apos;root&apos;@&apos;localhost&apos; IDENTIFIED WITH mysql_native_password BY &apos;123456&apos;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Unknown system variable &apos;query_cache_size&apos;</span><br></pre></td></tr></table></figure>
+<p>服务器版本低，本地版本是8.0.15</p>
+<h1 id="jdbcTemplate"><a href="#jdbcTemplate" class="headerlink" title="jdbcTemplate"></a>jdbcTemplate</h1><h2 id="返回string的list"><a href="#返回string的list" class="headerlink" title="返回string的list"></a>返回string的list</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; defaultAnomalies = jdbcTemplate.queryForList(sql, String.class);</span><br></pre></td></tr></table></figure>
+<h1 id="Swagger技巧"><a href="#Swagger技巧" class="headerlink" title="Swagger技巧"></a>Swagger技巧</h1><h2 id="配置了-ApiModelProperty的allowableValues属性但不显示"><a href="#配置了-ApiModelProperty的allowableValues属性但不显示" class="headerlink" title="配置了@ApiModelProperty的allowableValues属性但不显示"></a>配置了@ApiModelProperty的allowableValues属性但不显示</h2><p><a href="https://blog.csdn.net/dyc87112/article/details/83241038" target="_blank" rel="noopener">https://blog.csdn.net/dyc87112/article/details/83241038</a></p>
+<p>我们只需要通过,分割来定义可选值，或者用range函数定义范围等方式就能正确显示了，比如：</p>
+<p>public class Filter {</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@ApiModelProperty(allowableValues = &quot;range[1,5]&quot;)</span><br><span class="line">Integer order</span><br><span class="line">@ApiModelProperty(allowableValues = &quot;111, 222&quot;)</span><br><span class="line">String code;</span><br></pre></td></tr></table></figure>
+<h2 id="swagger命名风格"><a href="#swagger命名风格" class="headerlink" title="swagger命名风格"></a>swagger命名风格</h2><p>变量用@ApiModelProperty</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/02/24/算法与数据结构/LeeCode/奇偶跳/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/02/24/算法与数据结构/LeeCode/奇偶跳/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-02-24 22:01:36" itemprop="dateCreated datePublished" datetime="2019-02-24T22:01:36+08:00">2019-02-24</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-02-25 15:55:52" itemprop="dateModified" datetime="2019-02-25T15:55:52+08:00">2019-02-25</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/02/24/算法与数据结构/LeeCode/奇偶跳/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/02/24/算法与数据结构/LeeCode/奇偶跳/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>第奇数次跳，可以跳到后面的所有比当前数字大的，其中最小的那个数字的位置上；</p>
+<p>第偶数次跳，可以跳到后面的所有比当前数字小的，其中最大的那个数字的位置上；</p>
+<p>如果跳到最后的一个位置，就相当于成功了。问有多少个位置可以成功。</p>
+<p>暴力解法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; A.length; i++)</span><br><span class="line">    <span class="keyword">while</span> ( j != A.length - <span class="number">1</span>)</span><br><span class="line">        <span class="keyword">if</span> ( jump % <span class="number">2</span> == <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> k = j + <span class="number">1</span>; k &lt; A.length; k++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (A[j] &lt;= A[k] &amp;&amp; A[k] &lt; tmp) </span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">			</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>从后往前遍历，<strong>如果某个点能够跳到的点已经被证实可以跳到终点</strong>，那么这个点肯定能跳到终点。</p>
+<p>但是，某个点能不能跳到终点要分情况看的，要看这个点在奇数跳次数和偶数跳次数是不是分别能达到终点。</p>
+<p>比如，从A跳到B，当【从A出发且第一步是奇数步，最后能到达终点】，当且仅当【从B出发，且B的第一步是偶数步能到达终点】。</p>
+<p>所以就要知道每个点出发的时候，奇数步或偶数步能不能到达终点。</p>
+<p>再假设odd_jump[i]表示【从i点进行奇数跳时下一步的位置】，even_jump[i]表示【从i点进行偶数跳时下一步的位置】，若无法跳跃，取值为-1。这个数组的计算先放一边，假设已经算好了。</p>
+<p>再领odd_position[i]表示【从i点开始奇数跳能不能到达终点】，even_position[i]表示【从i点开始偶数跳能不能到达终点】。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">odd_jump = findJump(A)</span><br><span class="line">even_jump = findJump([-e <span class="keyword">for</span> e <span class="keyword">in</span> A])</span><br><span class="line"></span><br><span class="line">N = len(A)</span><br><span class="line">odd_position = [<span class="keyword">False</span>] * N</span><br><span class="line">even_position = [<span class="keyword">False</span>] * N</span><br><span class="line"></span><br><span class="line">result = <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(N)[::<span class="number">-1</span>]:</span><br><span class="line">    <span class="keyword">if</span> i == N - <span class="number">1</span>:</span><br><span class="line">        odd_position[i] = even_position[i] = <span class="keyword">True</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            odd_position[i] = even_position[odd_jump[i]] <span class="keyword">if</span> odd_jump != [<span class="number">-1</span>] then <span class="keyword">False</span></span><br><span class="line">            even_position[i] = odd_position[even_jump[i]] <span class="keyword">if</span> even_jump != [<span class="number">-1</span>] then <span class="keyword">False</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> odd_position[i]:</span><br><span class="line">                result += <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>接下来是findJump的实现。</p>
+<p>在一个有序数组中，对于奇数跳，对于某一个数，要找到比它第一个比它大的数的最早出现的位置。</p>
+<p>对于偶数跳，要找到第一个比它小的数的最早出现位置。</p>
+<p>这个用二分法实现。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/02/16/算法与数据结构/LeeCode/Week1-3不含AAA或BBB的字符串/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/02/16/算法与数据结构/LeeCode/Week1-3不含AAA或BBB的字符串/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-02-16 10:08:44" itemprop="dateCreated datePublished" datetime="2019-02-16T10:08:44+08:00">2019-02-16</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-02-25 13:44:29" itemprop="dateModified" datetime="2019-02-25T13:44:29+08:00">2019-02-25</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/02/16/算法与数据结构/LeeCode/Week1-3不含AAA或BBB的字符串/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/02/16/算法与数据结构/LeeCode/Week1-3不含AAA或BBB的字符串/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="方法一：贪心"><a href="#方法一：贪心" class="headerlink" title="方法一：贪心"></a>方法一：贪心</h4><p><strong>思路</strong></p>
+<p>直观感觉，我们应该先选择当前所剩最多的待写字母写入字符串中。举一个例子，如果 <code>A = 6, B = 2</code>，那么我们期望写出 <code>&#39;aabaabaa&#39;</code>。进一步说，设当前所剩最多的待写字母为 <code>x</code>，只有前两个已经写下的字母都是 <code>x</code> 的时候，下一个写入字符串中的字母才不应该选择它。</p>
+<p><strong>算法</strong></p>
+<p>我们定义 <code>A, B</code>：待写的 <code>&#39;a&#39;</code> 与 <code>&#39;b&#39;</code> 的数量。</p>
+<p>设当前还需要写入字符串的 <code>&#39;a&#39;</code> 与 <code>&#39;b&#39;</code> 中较多的那一个为 <code>x</code>，如果我们已经连续写了两个 <code>x</code> 了，下一次我们应该写另一个字母。否则，我们应该继续写 <code>x</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">strWithout3a3b</span><span class="params">(<span class="keyword">int</span> A, <span class="keyword">int</span> B)</span> </span>&#123;</span><br><span class="line">        StringBuilder ans = <span class="keyword">new</span> StringBuilder();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (A &gt; <span class="number">0</span> || B &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">boolean</span> writeA = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">int</span> L = ans.length();</span><br><span class="line">            <span class="keyword">if</span> (L &gt;= <span class="number">2</span> &amp;&amp; ans.charAt(L-<span class="number">1</span>) == ans.charAt(L-<span class="number">2</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (ans.charAt(L-<span class="number">1</span>) == <span class="string">'b'</span>)</span><br><span class="line">                    writeA = <span class="keyword">true</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (A &gt;= B)</span><br><span class="line">                    writeA = <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (writeA) &#123;</span><br><span class="line">                A--;</span><br><span class="line">                ans.append(<span class="string">'a'</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                B--;</span><br><span class="line">                ans.append(<span class="string">'b'</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans.toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>复杂度分析</strong></p>
+<ul>
+<li>时间复杂度：O(A+B)<em>O</em>(<em>A</em>+<em>B</em>)。</li>
+<li>空间复杂度：O(A+B)<em>O</em>(<em>A</em>+<em>B</em>)。 </li>
+</ul>
+<p>若A&gt;=B，</p>
+<p>若i&gt;2且i的前三位是aaa，则b</p>
+<p>s.append(x)</p>
+<p>若A&lt;0或B&lt;0，则报错</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/02/13/算法与数据结构/LeeCode/Week1-2无重复字符的最长子串/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1127,1072 +2288,6 @@ O\left(\sum{i = 0}^{n - 1}\left(\sum{j = i + 1}^{n}(j - i)\right)\right) = O\lef
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/02/07/机器学习/NLP/Transformer对联/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/02/07/机器学习/NLP/Transformer对联/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-02-07 17:26:10 / 修改时间：19:07:29" itemprop="dateCreated datePublished" datetime="2019-02-07T17:26:10+08:00">2019-02-07</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/02/07/机器学习/NLP/Transformer对联/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/02/07/机器学习/NLP/Transformer对联/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://mp.weixin.qq.com/s/N6sSQ3EG_NPFaOGwkC0i6w" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/N6sSQ3EG_NPFaOGwkC0i6w</a></p>
-<h2 id="为了写春联，我用Transformer训练了一个“对穿肠”"><a href="#为了写春联，我用Transformer训练了一个“对穿肠”" class="headerlink" title="为了写春联，我用Transformer训练了一个“对穿肠”"></a>为了写春联，我用Transformer训练了一个“对穿肠”</h2><p>这里我们用6层Transformer单元，里面的Self-Attention的头数为8，隐单元数512个。模型采用 tensorflow 框架，GPU 则用深度学习标配的 Tesla K80。</p>
-<p>github地址（脚本已无法使用，可以用我们上传的couplets，google drive需科学翻墙）：</p>
-<p><a href="https://github.com/wb14123/couplet-dataset" target="_blank" rel="noopener">https://github.com/wb14123/couplet-dataset</a></p>
-<p>google drive：</p>
-<p><a href="https://drive.google.com/file/d/13cJWWp_ST2Xqt76pEr5ZWa6LVJwGYC4-/view?usp=sharing" target="_blank" rel="noopener">https://drive.google.com/file/d/13cJWWp_ST2Xqt76pEr5ZWa6LVJwGYC4-/view?usp=sharing</a></p>
-<p>整个数据集解压过后总共56.9兆，其中训练数据集56.4兆，测试数据集400多KB。另外，数据是以TXT格式储存的。全文不含标点15,153,840字，如果每天看100条的话，20多年都看不完。而文摘菌采用Tesla K80，2个小时就能来一个Epoch。</p>
-<p><strong>数据预处理</strong></p>
-<p>首先进行数据预处理，因为拿到的数据比较干净，所以这任务主要就是创建词表。值得一提的是，数据集的压缩文件中存在着一个创建好的词表。你也可以用数据集给出的词表。因为对联任务并不难，所以我们直接使用字粒度来作为输入，也就是像“我们”这样的词，我们是把其当做两个单元进行输入，而不是一个。</p>
-<p>关键代码如下：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">make_vocab</span><span class="params">(fpaths, out)</span>:</span></span><br><span class="line">     <span class="string">'''Constructs vocabulary.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">     Args:</span></span><br><span class="line"><span class="string">       fpaths: Astring. Input file path.</span></span><br><span class="line"><span class="string">       fname: Astring. Output file name.</span></span><br><span class="line"><span class="string">     '''</span>  </span><br><span class="line">     char2cnt = Counter()</span><br><span class="line">     <span class="keyword">for</span> path <span class="keyword">in</span> fpaths:</span><br><span class="line">         <span class="keyword">for</span> line inopen(path, <span class="string">'r'</span>):</span><br><span class="line">             line = line.strip()</span><br><span class="line">             <span class="keyword">if</span> <span class="keyword">not</span> line: *<span class="comment"># detect the empty line*</span></span><br><span class="line">                 <span class="keyword">continue</span></span><br><span class="line">             chars = line.split()</span><br><span class="line">             char2cnt.update(chars)</span><br><span class="line">     withopen(out, <span class="string">'w'</span>) <span class="keyword">as</span> fout:</span><br><span class="line">        fout.write(<span class="string">"&#123;&#125;\t1000000000\n&#123;&#125;\t1000000000\n&#123;&#125;\t1000000000\n&#123;&#125;\t1000000000\n"</span>.format(<span class="string">"&lt;PAD&gt;"</span>, <span class="string">"&lt;UNK&gt;"</span>, <span class="string">"&lt;S&gt;"</span>, <span class="string">"&lt;/S&gt;"</span>)) <span class="comment"># special tokens</span></span><br><span class="line">         <span class="keyword">for</span> word, cnt <span class="keyword">in</span> char2cnt.most_common(len(char2cnt)):</span><br><span class="line">            fout.write(<span class="string">u"&#123;&#125;\t&#123;&#125;\n"</span>.format(word, cnt))</span><br><span class="line">         print(<span class="string">"%d chars written!"</span>% (len(char2cnt)))</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/02/07/机器学习/NLP/Bert/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/02/07/机器学习/NLP/Bert/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-02-07 11:28:29 / 修改时间：17:10:51" itemprop="dateCreated datePublished" datetime="2019-02-07T11:28:29+08:00">2019-02-07</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/02/07/机器学习/NLP/Bert/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/02/07/机器学习/NLP/Bert/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://mp.weixin.qq.com/s/WDq8tUpfiKHNC6y_8pgHoA" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/WDq8tUpfiKHNC6y_8pgHoA</a></p>
-<p>Transformer由论文《Attention is All You Need》提出，现在是谷歌云TPU推荐的参考模型。论文相关的Tensorflow的代码可以从GitHub获取，其作为Tensor2Tensor包的一部分。哈佛的NLP团队也实现了一个基于PyTorch的版本，并注释该论文。</p>
-<p>Attention is All You Need：</p>
-<p><a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">https://arxiv.org/abs/1706.03762</a></p>
-<p>它是由编码组件、解码组件和它们之间的连接组成。</p>
-<p><img src="/Users/david/david/00projects/00markdown/pic/image-20190207113341655.png" alt="image-20190207113341655"></p>
-<p>编码组件部分由一堆编码器（encoder）构成（论文中是将6个编码器叠在一起——数字6没有什么神奇之处，你也可以尝试其他数字）。解码组件部分也是由相同数量（与编码器对应）的解码器（decoder）组成的。</p>
-<p><img src="/Users/david/david/00projects/00markdown/pic/image-20190207113400338.png" alt="image-20190207113400338"></p>
-<p>所有的编码器在结构上都是相同的，但它们没有共享参数。每个解码器都可以分解成两个子层。</p>
-<p><img src="/Users/david/david/00projects/00markdown/pic/image-20190207113420630.png" alt="image-20190207113420630"></p>
-<p>从编码器输入的句子首先会经过一个<strong>自注意力</strong>（self-attention）层，这层帮助编码器在对每个单词编码时关注输入句子的其他单词。我们将在稍后的文章中更深入地研究自注意力。</p>
-<p>自注意力层的输出会传递到前馈（feed-forward）神经网络中。每个位置的单词对应的前馈神经网络都完全一样（译注：另一种解读就是一层窗口为一个单词的一维卷积神经网络）。</p>
-<p>解码器中也有编码器的自注意力（self-attention）层和前馈（feed-forward）层。除此之外，这两个层之间还有一个注意力层，用来关注输入句子的相关部分（和seq2seq模型的注意力作用相似）。</p>
-<p>词嵌入过程只发生在最底层的编码器中。所有的编码器都有一个相同的特点，即它们接收一个向量列表，列表中的每个向量大小为512维。在底层（最开始）编码器中它就是词向量，但是在其他编码器中，它就是下一层编码器的输出（也是一个向量列表）。向量列表大小是我们可以设置的超参数——一般是我们训练集中最长句子的长度。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/01/22/工具和环境/typora技巧/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/01/22/工具和环境/typora技巧/" class="post-title-link" itemprop="url">Typora技巧</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-01-22 11:43:44" itemprop="dateCreated datePublished" datetime="2019-01-22T11:43:44+08:00">2019-01-22</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-05 18:34:15" itemprop="dateModified" datetime="2019-07-05T18:34:15+08:00">2019-07-05</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/工具和环境/" itemprop="url" rel="index"><span itemprop="name">工具和环境</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/01/22/工具和环境/typora技巧/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/01/22/工具和环境/typora技巧/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="图片缩放"><a href="#图片缩放" class="headerlink" title="图片缩放"></a>图片缩放</h1><p>通过如下方式插入图片</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=&quot;/Users/david/david/00projects/00markdown/pic/image-20190118153222511.png&quot; style=&quot;zoom:70&quot; /&gt;</span><br><span class="line"></span><br><span class="line">或者</span><br><span class="line"></span><br><span class="line">&lt;img src=“url” style=“width:200px height:300px” /&gt;</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/01/18/算法与数据结构/算法导论/Untitled/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/01/18/算法与数据结构/算法导论/Untitled/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-01-18 17:42:10" itemprop="dateCreated datePublished" datetime="2019-01-18T17:42:10+08:00">2019-01-18</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-01-25 11:44:39" itemprop="dateModified" datetime="2019-01-25T11:44:39+08:00">2019-01-25</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/01/18/算法与数据结构/算法导论/Untitled/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/01/18/算法与数据结构/算法导论/Untitled/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>刷完一道题其实是一件很难的事情，因为普通解法很容易，但是最优解真得去耐着性子研究好久，去查资料，去做优化，这个过程很漫长。</strong> 刷题圈流行一句话，<strong>“刷200道题之后，再无庸手”</strong>，说的就是用必须找到最优解的心态去刷200道题之后，进步真的非常大。</p>
-<p><a href="https://www.csdn.net/article/2015-10-23/2826015" target="_blank" rel="noopener">https://www.csdn.net/article/2015-10-23/2826015</a></p>
-<p>1、排序和查找</p>
-<p>2、栈和队列</p>
-<p>3、链表</p>
-<p>4、树</p>
-<p>5、动态规划</p>
-<p>6、图</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/12/18/工具和环境/Azkaban操作/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/12/18/工具和环境/Azkaban操作/" class="post-title-link" itemprop="url">Azkaban技巧</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-12-18 10:23:04" itemprop="dateCreated datePublished" datetime="2018-12-18T10:23:04+08:00">2018-12-18</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-05 16:27:26" itemprop="dateModified" datetime="2019-07-05T16:27:26+08:00">2019-07-05</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/工具和环境/" itemprop="url" rel="index"><span itemprop="name">工具和环境</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/12/18/工具和环境/Azkaban操作/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/12/18/工具和环境/Azkaban操作/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>指定服务器节点执行</p>
-<p>useExecutor</p>
-<p><img src="/Users/david/david/00projects/00markdown/pic/image-20181218102331060-5099811.png" alt="image-20181218102331060"></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/11/18/编程语言学习/PYTHON/python画图/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/11/18/编程语言学习/PYTHON/python画图/" class="post-title-link" itemprop="url">Python画图</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-11-18 17:00:31" itemprop="dateCreated datePublished" datetime="2018-11-18T17:00:31+08:00">2018-11-18</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-05 12:56:32" itemprop="dateModified" datetime="2019-07-05T12:56:32+08:00">2019-07-05</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/11/18/编程语言学习/PYTHON/python画图/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/11/18/编程语言学习/PYTHON/python画图/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="散点图"><a href="#散点图" class="headerlink" title="散点图"></a>散点图</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">fig = plt.figure()</span><br><span class="line">ax1 = fig.add_subplot(<span class="number">111</span>)</span><br><span class="line"><span class="comment">#设置X轴标签</span></span><br><span class="line">plt.xlabel(<span class="string">'Guage (mm/5min)'</span>)</span><br><span class="line"><span class="comment">#设置Y轴标签</span></span><br><span class="line">plt.ylabel(<span class="string">'R(Z) (mm/5min)'</span>)</span><br><span class="line">plt.title(<span class="string">'(c)'</span>)</span><br><span class="line"><span class="comment">#设置XY轴的范围</span></span><br><span class="line">plt.xlim(xmax=<span class="number">20</span>,xmin=<span class="number">0</span>)</span><br><span class="line">plt.ylim(ymax=<span class="number">20</span>,ymin=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 在散点图上画对角线</span></span><br><span class="line">Y = linspace(<span class="number">0</span>, <span class="number">30</span>, <span class="number">13</span>)</span><br><span class="line"><span class="comment"># 横轴数据。</span></span><br><span class="line">X = linspace(<span class="number">0</span>, <span class="number">30</span>, <span class="number">13</span>)</span><br><span class="line">ax1.plot(X,Y,c=<span class="string">'black'</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#画散点图</span></span><br><span class="line"><span class="comment"># cValue = ['r','y','g','b','r','y','g','b','r']</span></span><br><span class="line"><span class="comment"># c是颜色，linewidths是点的大小</span></span><br><span class="line">ax1.scatter(data_real_np, ydz_np , c=<span class="string">'black'</span>, linewidths=<span class="number">1</span>, s=<span class="number">1</span>)</span><br><span class="line"><span class="comment"># plt.plot(data_real_np,ydz_np,'ro')</span></span><br><span class="line"><span class="comment">#设置图标</span></span><br><span class="line"><span class="comment"># plt.legend('x1')</span></span><br><span class="line"><span class="comment">#显示所画的图</span></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2239,7 +2334,7 @@ O\left(\sum{i = 0}^{n - 1}\left(\sum{j = i + 1}^{n}(j - i)\right)\right) = O\lef
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">313</span>
+                    <span class="site-state-item-count">319</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="http://paradoxlife.me/how-to-insert-bulk-data-into-neo4j 项目需要基于Neo4j开发，由于数据量较大（数千万节点），因此对当前数据插入的方法进行了分析和对比。 常见数据插入方式概览    Neo4j Version Language Driver     Community 3.0.2 Python neo4j-driver 1.0.0">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【转】如何将大规模数据导入Neo4j">
+<meta property="og:url" content="https://schwimmer.github.io/2019/07/01/知识图谱/如何将大规模数据导入Neo4j/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="http://paradoxlife.me/how-to-insert-bulk-data-into-neo4j 项目需要基于Neo4j开发，由于数据量较大（数千万节点），因此对当前数据插入的方法进行了分析和对比。 常见数据插入方式概览    Neo4j Version Language Driver     Community 3.0.2 Python neo4j-driver 1.0.0">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://schwimmer.github.io/2019/07/01/知识图谱/如何将大规模数据导入Neo4j/165254_MJAK_2538940.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/07/01/知识图谱/如何将大规模数据导入Neo4j/165703_ijnC_2538940.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/07/01/知识图谱/如何将大规模数据导入Neo4j/170506_Wsy2_2538940.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/07/01/知识图谱/如何将大规模数据导入Neo4j/171850_LZQj_2538940.png">
+<meta property="og:updated_time" content="2019-07-18T08:22:03.712Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【转】如何将大规模数据导入Neo4j">
+<meta name="twitter:description" content="http://paradoxlife.me/how-to-insert-bulk-data-into-neo4j 项目需要基于Neo4j开发，由于数据量较大（数千万节点），因此对当前数据插入的方法进行了分析和对比。 常见数据插入方式概览    Neo4j Version Language Driver     Community 3.0.2 Python neo4j-driver 1.0.0">
+<meta name="twitter:image" content="https://schwimmer.github.io/2019/07/01/知识图谱/如何将大规模数据导入Neo4j/165254_MJAK_2538940.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://schwimmer.github.io/2019/07/01/知识图谱/如何将大规模数据导入Neo4j/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>【转】如何将大规模数据导入Neo4j | Schwimmer's Blog</title>
+  
+
+
+
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-143240576-1"></script>
+  <script>
+    var host = window.location.hostname;
+    if (host !== "localhost" || !true) {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-143240576-1');
+    }
+  </script>
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/07/01/知识图谱/如何将大规模数据导入Neo4j/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">【转】如何将大规模数据导入Neo4j
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-01 11:30:22" itemprop="dateCreated datePublished" datetime="2019-07-01T11:30:22+08:00">2019-07-01</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-18 16:22:03" itemprop="dateModified" datetime="2019-07-18T16:22:03+08:00">2019-07-18</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/知识图谱/" itemprop="url" rel="index"><span itemprop="name">知识图谱</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/07/01/知识图谱/如何将大规模数据导入Neo4j/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/07/01/知识图谱/如何将大规模数据导入Neo4j/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+                 阅读次数： 
+                <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+              </span>
+            </span>
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="http://paradoxlife.me/how-to-insert-bulk-data-into-neo4j" target="_blank" rel="noopener">http://paradoxlife.me/how-to-insert-bulk-data-into-neo4j</a></p>
+<p>项目需要基于Neo4j开发，由于数据量较大（数千万节点），因此对当前数据插入的方法进行了分析和对比。</p>
+<h2 id="常见数据插入方式概览"><a href="#常见数据插入方式概览" class="headerlink" title="常见数据插入方式概览"></a>常见数据插入方式概览</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Neo4j Version</th>
+<th style="text-align:center">Language Driver</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Community 3.0.2</td>
+<td style="text-align:center">Python <a href="http://neo4j.com/developer/python/" target="_blank" rel="noopener">neo4j-driver 1.0.0</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>目前主要有以下几种数据插入方式：</p>
+<ol>
+<li>Cypher CREATE 语句，为每一条数据写一个CREATE</li>
+<li>Cypher <a href="http://neo4j.com/developer/guide-import-csv/#_load_csv_for_medium_sized_datasets" target="_blank" rel="noopener">LOAD CSV</a> 语句，将数据转成CSV格式，通过LOAD CSV读取数据。</li>
+<li>官方提供的Java API —— <a href="http://neo4j.com/docs/java-reference/current/javadocs/org/neo4j/unsafe/batchinsert/BatchInserter.html" target="_blank" rel="noopener">Batch Inserter</a></li>
+<li>大牛编写的 <a href="https://github.com/jexp/batch-import/blob/2.3/readme.md" target="_blank" rel="noopener">Batch Import</a> 工具</li>
+<li>官方提供的 <a href="http://neo4j.com/developer/guide-import-csv/#_super_fast_batch_importer_for_huge_datasets" target="_blank" rel="noopener">neo4j-import</a> 工具</li>
+<li>（之前的文章没有提到的）官方提供的neo4j-admin工具</li>
+</ol>
+<p>这些工具有什么不同呢？速度如何？适用的场景分别是什么？我这里根据我个人理解，粗略地给出了一个结果：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">CREATE语句</th>
+<th style="text-align:center">LOAD CSV语句</th>
+<th style="text-align:center">Batch Inserter</th>
+<th style="text-align:center">Batch Import</th>
+<th style="text-align:center">Neo4j-import</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">适用场景</td>
+<td style="text-align:center">1 ~ 1w nodes</td>
+<td style="text-align:center">1w ~ 10 w nodes</td>
+<td style="text-align:center">千万以上 nodes</td>
+<td style="text-align:center">千万以上 nodes</td>
+<td style="text-align:center">千万以上 nodes</td>
+</tr>
+<tr>
+<td style="text-align:center">速度</td>
+<td style="text-align:center">很慢 (1000 nodes/s)</td>
+<td style="text-align:center">一般 (5000 nodes/s)</td>
+<td style="text-align:center">非常快 (数万 nodes/s)</td>
+<td style="text-align:center">非常快 (数万 nodes/s)</td>
+<td style="text-align:center">非常快 (数万 nodes/s)</td>
+</tr>
+<tr>
+<td style="text-align:center">优点</td>
+<td style="text-align:center">使用方便，可实时插入。</td>
+<td style="text-align:center">使用方便，可以加载本地/远程CSV；可实时插入。</td>
+<td style="text-align:center">速度相比于前两个，有数量级的提升</td>
+<td style="text-align:center">基于Batch Inserter，可以直接运行编译好的jar包；<strong>可以在已存在的数据库中导入数据</strong></td>
+<td style="text-align:center">官方出品，比Batch Import占用更少的资源</td>
+</tr>
+<tr>
+<td style="text-align:center">缺点</td>
+<td style="text-align:center">速度慢</td>
+<td style="text-align:center">需要将数据转换成CSV</td>
+<td style="text-align:center">需要转成CSV；<strong>只能在JAVA中使用</strong>；且插入时<strong>必须停止neo4j</strong></td>
+<td style="text-align:center">需要转成CSV；<strong>必须停止neo4j</strong> 。有重复数据就不能用</td>
+<td style="text-align:center">需要转成CSV；<strong>必须停止neo4j</strong>；<strong>只能生成新的数据库，而不能在已存在的数据库中插入数据。</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="速度测试"><a href="#速度测试" class="headerlink" title="速度测试"></a>速度测试</h2><p>下面是我自己做的一些性能测试：</p>
+<h3 id="1-CREATE-语句"><a href="#1-CREATE-语句" class="headerlink" title="1. CREATE 语句"></a>1. CREATE 语句</h3><p>这里每1000条进行一次Transaction提交</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CREATE (:label &#123;property1:value, property2:value, property3:value&#125; )</span><br></pre></td></tr></table></figure>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">11.5w nodes</th>
+<th style="text-align:center">18.5w nodes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">100 s</td>
+<td style="text-align:center">160 s</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="2-LOAD-CSV-语句"><a href="#2-LOAD-CSV-语句" class="headerlink" title="2. LOAD CSV 语句"></a>2. LOAD CSV 语句</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">using periodic commit 1000</span><br><span class="line">load csv from &quot;file:///fscapture_screencapture_syscall.csv&quot; as line</span><br><span class="line">create (:label &#123;a:line[1], b:line[2], c:line[3], d:line[4], e:line[5], f:line[6], g:line[7], h:line[8], i:line[9], j:line[10]&#125;)</span><br></pre></td></tr></table></figure>
+<p>这里使用了语句USING PERIODIC COMMIT 1000，使得每1000行作为一次Transaction提交。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">11.5w nodes</th>
+<th style="text-align:center">18.5w nodes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">21 s</td>
+<td style="text-align:center">39 s</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="3-Batch-Inserter、Batch-Import、Neo4j-import"><a href="#3-Batch-Inserter、Batch-Import、Neo4j-import" class="headerlink" title="3. Batch Inserter、Batch Import、Neo4j-import"></a>3. Batch Inserter、Batch Import、Neo4j-import</h3><p>我只测试了Neo4j-import，没有测试Batch Inserter和Batch Import，但是我估计他们的内部实现差不多，速度也处于一个数量级别上，因此这里就一概而论了。</p>
+<p>neo4j-import需要在Neo4j所在服务器执行，因此服务器的资源影响数据导入的性能，我这里为JVM分配了16G的heap资源，确保性能达到最好。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ./bin/neo4j-import --into graph.db --nodes:label path_to_csv.csv</span><br></pre></td></tr></table></figure>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">11.5w nodes</th>
+<th style="text-align:center">18.5w nodes</th>
+<th style="text-align:center">150w nodes + 1431w edges</th>
+<th style="text-align:center">3113w nodes + 7793w edges</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">3.4 s</td>
+<td style="text-align:center">3.8 s</td>
+<td style="text-align:center">26.5 s</td>
+<td style="text-align:center">3 m 48 s</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><ol>
+<li>如果项目刚开始，想要将大量数据导入数据库，Neo4j-import是最好的选择。</li>
+<li>如果数据库已经投入使用，并且可以容忍Neo4j关闭一段时间，那么Batch Import是最好的选择，当然如果你想自己实现，那么你应该选择Batch Inserter</li>
+<li>如果数据库已经投入使用，且不能容忍Neo4j的临时关闭，那么LOAD CSV是最好的选择。</li>
+<li>最后，如果只是想插入少量的数据，且不怎么在乎实时性，那么请直接看Cypher语言。</li>
+</ol>
+<h2 id="其它的Tips"><a href="#其它的Tips" class="headerlink" title="其它的Tips"></a>其它的Tips</h2><ol>
+<li>在LOAD CSV前面加上USING PERIODIC COMMIT 1000，1000表示每1000行的数据进行一次Transaction提交，提升性能。</li>
+<li><a href="http://jexp.de/blog/2015/04/on-neo4j-indexes-match-merge/" target="_blank" rel="noopener">建立index</a>可以使得查询性能得到巨大提升。如果不建立index，则需要对每个node的每一个属性进行遍历，所以比较慢。 并且index建立之后，新加入的数据都会自动编入到index中。 注意index是建立在label上的，不是在node上，所以一个node有多个label，需要对每一个label都建立index。</li>
+</ol>
+<h1 id="Batch-Import使用"><a href="#Batch-Import使用" class="headerlink" title="Batch Import使用"></a>Batch Import使用</h1><p>参考 </p>
+<p><a href="https://my.oschina.net/u/2538940/blog/883829" target="_blank" rel="noopener">使用batch-import工具向neo4j中导入海量数据</a></p>
+<p>1、搭建batch import环境</p>
+<p>1）从<code>https://github.com/jexp/batch-import</code>下载源码</p>
+<p>2）配jar包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># 创建lib</span><br><span class="line">mkdir lib</span><br><span class="line"></span><br><span class="line"># 编译</span><br><span class="line">mvn clean package</span><br><span class="line"></span><br><span class="line"># jar包扔到lib</span><br><span class="line">mv target/batch-import-3.0.4.jar lib</span><br><span class="line"></span><br><span class="line"># 输出依赖包，放到lib下面</span><br><span class="line">mvn dependency:copy-dependencies</span><br><span class="line">mv dependence/* lib</span><br></pre></td></tr></table></figure>
+<p>3）修改配置文件<code>batch.properties</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"># 在现有的neo4j数据库中进行导入</span><br><span class="line">batch_import.keep_db=true</span><br><span class="line">batch_import.graph_db=/Users/david/david/neo4j-community-3.5.6/data/databases/graph.db</span><br><span class="line">dump_configuration=false</span><br><span class="line">cache_type=none</span><br><span class="line">use_memory_mapped_buffers=true</span><br><span class="line">neostore.propertystore.db.index.keys.mapped_memory=5M</span><br><span class="line">neostore.propertystore.db.index.mapped_memory=5M</span><br><span class="line">neostore.nodestore.db.mapped_memory=200M</span><br><span class="line">neostore.relationshipstore.db.mapped_memory=500M</span><br><span class="line">neostore.propertystore.db.mapped_memory=200M</span><br><span class="line">neostore.propertystore.db.strings.mapped_memory=200M</span><br><span class="line">batch_array_separator=,</span><br><span class="line">#batch_import.csv.quotes=true</span><br><span class="line"># csv的分隔符</span><br><span class="line">batch_import.csv.delim=,</span><br><span class="line"># 节点csv文件中所有的索引名</span><br><span class="line">batch_import.node_index.proposerIndex=exact</span><br><span class="line">batch_import.node_index.appCodeIndex=exact</span><br></pre></td></tr></table></figure>
+<p>1、创建节点csv</p>
+<p> 节点csv文件的第一列是固定的，列值为此节点的label名称，第二列是index，它的列头是id:string:indexName 这种格式，解释一下，id是这一列的property名字，可以根据需要自己命名，string为字段的数据类型，indexName是neo4j数据库中将要导入的索引名称，我自己的文件格式如下：</p>
+<p><img src="//schwimmer.github.io/2019/07/01/知识图谱/如何将大规模数据导入Neo4j/165254_MJAK_2538940.png" alt="img"></p>
+<p>2、创建关系csv</p>
+<p>关系的csv文件前两列要特别注意，第一列是关系的起始节点，第二列是关系的结束节点，第三列是关系类型，后面的列是关系的property，可以随意了。他github上的说明没有说出一些注意点，这里要特别标明：</p>
+<p>​    第一列的起始节点的列头，也就是id:string:buyerId这个东西，这个玩意一定要和节点csv文件(上图)中定义的一模一样，第二列也是如此，要和结束节点的csv文件里的一样，不然他会找不到对应的关系。</p>
+<p><img src="//schwimmer.github.io/2019/07/01/知识图谱/如何将大规模数据导入Neo4j/165703_ijnC_2538940.png" alt="img"></p>
+<p>3、修改batch.properties文件</p>
+<p>​        主要修改两个地方，</p>
+<p>1）如果是在现有的neo4j数据库中进行导入，请设置：</p>
+<p>​        batch_import.keep_db=true</p>
+<p> 2）将节点csv文件中所有的索引名称加入到文件中，例如上面这个节点csv文件中的索引名称是buyerId，那就在文件中加入batch_import.node_index.buyerId=exact</p>
+<p><img src="//schwimmer.github.io/2019/07/01/知识图谱/如何将大规模数据导入Neo4j/170506_Wsy2_2538940.png" alt="img"></p>
+<p>4、导入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import.bat test.db node.csv rel.csv</span><br></pre></td></tr></table></figure>
+<p>解释一下命令的几个参数：第一个参数是数据库的目录，可以绝对路径指定到任意位置，第二个参数是节点csv文件，多个csv文件用逗号分隔，如果是压缩包，一定要注意，这里有个坑，不能把所有类型的node都放到一个压缩包中，一定要每个类型的node分开压缩，不然它只会导入第一个类型的node节点，同理，关系的压缩包也要分开压缩，然后导入时用逗号分隔.gz文件。</p>
+<p>​    如果想修改导入工具的Heap大小，可以修改脚本文件中的 set HEAP=4G</p>
+<p><img src="//schwimmer.github.io/2019/07/01/知识图谱/如何将大规模数据导入Neo4j/171850_LZQj_2538940.png" alt="img"></p>
+<h1 id="Batch-Inserter使用"><a href="#Batch-Inserter使用" class="headerlink" title="Batch Inserter使用"></a>Batch Inserter使用</h1><p><a href="https://neo4j.com/docs/stable/batchinsert-examples.html" target="_blank" rel="noopener">https://neo4j.com/docs/stable/batchinsert-examples.html</a></p>
+<h1 id="neo4j-admin"><a href="#neo4j-admin" class="headerlink" title="neo4j-admin"></a>neo4j-admin</h1><p>需要关闭数据库，需要数据库没有数据，所以只能用于第一次导入大量数据</p>
+<p><a href="https://neo4j.com/docs/operations-manual/current/tools/import/syntax/" target="_blank" rel="noopener">https://neo4j.com/docs/operations-manual/current/tools/import/syntax/</a></p>
+<p><a href="https://blog.csdn.net/u013946356/article/details/82629014" target="_blank" rel="noopener">https://blog.csdn.net/u013946356/article/details/82629014</a></p>
+<p>官网提供的一种导入方式为</p>
+<blockquote>
+<p><strong>movies.csv.</strong> </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt; movieId:ID,title,year:int,:LABEL</span><br><span class="line">&gt; tt0133093,&quot;The Matrix&quot;,1999,Movie</span><br><span class="line">&gt; tt0234215,&quot;The Matrix Reloaded&quot;,2003,Movie;Sequel</span><br><span class="line">&gt; tt0242653,&quot;The Matrix Revolutions&quot;,2003,Movie;Sequel</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>&gt;</p>
+<blockquote>
+<p>Next up are the actors. They have an id - in this case a shorthand of their name - and a name. All the actors have the node label <code>Actor</code>.</p>
+<p><strong>actors.csv.</strong> </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt; personId:ID,name,:LABEL</span><br><span class="line">&gt; keanu,&quot;Keanu Reeves&quot;,Actor</span><br><span class="line">&gt; laurence,&quot;Laurence Fishburne&quot;,Actor</span><br><span class="line">&gt; carrieanne,&quot;Carrie-Anne Moss&quot;,Actor</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>&gt;</p>
+<blockquote>
+<p>Finally we have the roles that an actor plays in a movie, which will be represented by relationships in the database. In order to create a relationship between nodes we use the ids defined in <code>actors.csv</code> and <code>movies.csv</code> for the <code>START_ID</code>and <code>END_ID</code> fields. We also need to provide a relationship type (in this case <code>ACTED_IN</code>) for the <code>:TYPE</code> field.</p>
+<p><strong>roles.csv.</strong> </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&gt; :START_ID,role,:END_ID,:TYPE</span><br><span class="line">&gt; keanu,&quot;Neo&quot;,tt0133093,ACTED_IN</span><br><span class="line">&gt; keanu,&quot;Neo&quot;,tt0234215,ACTED_IN</span><br><span class="line">&gt; keanu,&quot;Neo&quot;,tt0242653,ACTED_IN</span><br><span class="line">&gt; laurence,&quot;Morpheus&quot;,tt0133093,ACTED_IN</span><br><span class="line">&gt; laurence,&quot;Morpheus&quot;,tt0234215,ACTED_IN</span><br><span class="line">&gt; laurence,&quot;Morpheus&quot;,tt0242653,ACTED_IN</span><br><span class="line">&gt; carrieanne,&quot;Trinity&quot;,tt0133093,ACTED_IN</span><br><span class="line">&gt; carrieanne,&quot;Trinity&quot;,tt0234215,ACTED_IN</span><br><span class="line">&gt; carrieanne,&quot;Trinity&quot;,tt0242653,ACTED_IN</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>&gt;</p>
+<blockquote>
+<p>The call to <code>neo4j-admin import</code> would look like this:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; neo4j_home$ bin/neo4j-admin import --nodes=import/movies.csv --nodes=import/actors.csv --relationships=import/roles.csv</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./neo4j-admin import  --mode csv --database company_outbound.db    --nodes:company &quot;/home/neo4j-community-3.2.12/import/neo4j-company-header.csv,/home/neo4j-community-3.2.12/import/company_all.csv&quot;  --nodes:investor &quot;/home/neo4j-community-3.2.12/import/neo4j-company-header.csv,/home/neo4j-community-3.2.12/import/neo4j_company_invest_nodes.csv&quot; --relationships &quot;/home/neo4j-community-3.2.12/import/neo4j-company-rec-header.csv,/home/neo4j-community-3.2.12/import/neo4j_company_rec_all.csv,/home/neo4j-community-3.2.12/import/neo4j_company_invest_rec.csv,/home/neo4j-community-3.2.12/import/neo4j_company_outinvest_rec.csv&quot; --ignore-extra-columns=true  --ignore-missing-nodes=true --ignore-duplicate-nodes=true</span><br></pre></td></tr></table></figure>
+<p>其中：</p>
+<p><code>--ignore-extra-columns=true</code>忽略多余列</p>
+<p><code>--ignore-missing-nodes=true</code>忽略丢失节点</p>
+<p><code>--ignore-duplicate-nodes=true</code>忽略重复节点</p>
+<p>导入完成后，要在/home/neo4j-community-3.2.12/data/databases将创建的数据库名company_outbound.db改为graph.db</p>
+<p>使用./neo4j restart重启数据库。</p>
+<p>参考</p>
+<p><a href="https://blog.csdn.net/u013946356/article/details/82629014" target="_blank" rel="noopener">neo4j-admin import大数据量导入</a></p>
+<p><a href="https://blog.csdn.net/u013946356/article/details/82628265" target="_blank" rel="noopener">关于neo4j亿级数据提高查询效率的方法总结</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/01/知识图谱/cypher基本概念和语法/" rel="next" title="cypher基本概念和语法">
+                <i class="fa fa-chevron-left"></i> cypher基本概念和语法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/01/知识图谱/Neo4j使用技巧汇总/" rel="prev" title="Neo4j使用技巧汇总">
+                Neo4j使用技巧汇总 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Schwimmer</p>
+              <div class="site-description motion-element" itemprop="description">Record and Think!</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">319</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">63</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#常见数据插入方式概览"><span class="nav-number">1.</span> <span class="nav-text">常见数据插入方式概览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#速度测试"><span class="nav-number">2.</span> <span class="nav-text">速度测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-CREATE-语句"><span class="nav-number">2.1.</span> <span class="nav-text">1. CREATE 语句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-LOAD-CSV-语句"><span class="nav-number">2.2.</span> <span class="nav-text">2. LOAD CSV 语句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Batch-Inserter、Batch-Import、Neo4j-import"><span class="nav-number">2.3.</span> <span class="nav-text">3. Batch Inserter、Batch Import、Neo4j-import</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结论"><span class="nav-number">3.</span> <span class="nav-text">结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其它的Tips"><span class="nav-number">4.</span> <span class="nav-text">其它的Tips</span></a></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#Batch-Import使用"><span class="nav-number"></span> <span class="nav-text">Batch Import使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Batch-Inserter使用"><span class="nav-number"></span> <span class="nav-text">Batch Inserter使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#neo4j-admin"><span class="nav-number"></span> <span class="nav-text">neo4j-admin</span></a></li></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.2.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      "image": {
+        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+        "viewText": "分享到：",
+        "viewSize": "16"
+      },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      </div>
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+  
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-schwimmer-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://schwimmer.github.io/2019/07/01/知识图谱/如何将大规模数据导入Neo4j/";
+    this.page.identifier = "2019/07/01/知识图谱/如何将大规模数据导入Neo4j/";
+    this.page.title = '【转】如何将大规模数据导入Neo4j';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-schwimmer-github-io.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    window.addEventListener('load', loadComments, false);
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

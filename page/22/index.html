@@ -357,6 +357,1421 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/31/hadoop-spark/hive笔记/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/03/31/hadoop-spark/hive笔记/" class="post-title-link" itemprop="url">hive技巧总结</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-03-31 10:28:31" itemprop="dateCreated datePublished" datetime="2018-03-31T10:28:31+08:00">2018-03-31</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-18 10:33:42" itemprop="dateModified" datetime="2019-07-18T10:33:42+08:00">2019-07-18</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/大数据平台工具/" itemprop="url" rel="index"><span itemprop="name">大数据平台工具</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/03/31/hadoop-spark/hive笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/31/hadoop-spark/hive笔记/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="插入hive表控制part文件数量"><a href="#插入hive表控制part文件数量" class="headerlink" title="插入hive表控制part文件数量"></a>插入hive表控制part文件数量</h1><p><a href="http://blog.sina.com.cn/s/blog_604c7cdd0102wbsw.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_604c7cdd0102wbsw.html</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-- 每个文件上限500M</span><br><span class="line">set hive.exec.reducers.bytes.per.reducer=512000000;</span><br><span class="line">insert overwrite table carthage.gps_address_info_weekly_bak PARTITION(DATA_DATE=&apos;2019-01-15&apos;)</span><br><span class="line">select * from carthage.gps_address_info DISTRIBUTE by RAND();</span><br><span class="line">-- DISTRIBUTE by RAND()主要靠这个控制reduce的文件数</span><br></pre></td></tr></table></figure>
+<h1 id="strict模式"><a href="#strict模式" class="headerlink" title="strict模式"></a>strict模式</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set hive.mapred.mode=strict</span><br></pre></td></tr></table></figure>
+<p>有助于前置解决一些语法和可能的逻辑错误。</p>
+<h1 id="限制小文件数量"><a href="#限制小文件数量" class="headerlink" title="限制小文件数量"></a>限制小文件数量</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">set mapred.max.split.size=256000000;        -- 决定每个map处理的最大的文件大小，单位为B</span><br><span class="line">set mapred.min.split.size.per.node=10000000;         -- 节点中可以处理的最小的文件大小</span><br><span class="line">set mapred.min.split.size.per.rack=10000000;          -- 机架中可以处理的最小的文件大小</span><br></pre></td></tr></table></figure>
+<h1 id="查询时如何去掉重复数据"><a href="#查询时如何去掉重复数据" class="headerlink" title="查询时如何去掉重复数据"></a>查询时如何去掉重复数据</h1><p>假设数据为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">name  adx        tran_id                  cost        ts</span><br><span class="line">ck        5         125.168.10.0           33.00   1407234660</span><br><span class="line">ck        5         187.18.99.00           33.32   1407234661</span><br><span class="line">ck        5         125.168.10.0           33.24   1407234661</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from (select *,row_number() over (partition by tran_id order by timestamp asc) num from table) t where t.num=1;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>附上：<br><strong>ROW_NUMBER() OVER函数的基本用法 </strong></p>
+<p>语法：ROW_NUMBER() OVER(PARTITION BY COLUMN ORDER BY COLUMN) </p>
+<p>简单的说row_number()从1开始，为每一条分组记录返回一个数字，这里的ROW_NUMBER() OVER (ORDER BY xlh DESC) 是先把xlh列降序，再为降序以后的没条xlh记录返回一个序号。<br>示例： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt; xlh           row_num </span><br><span class="line">&gt; 1700              1 </span><br><span class="line">&gt; 1500              2 </span><br><span class="line">&gt; 1085              3 </span><br><span class="line">&gt; 710                4 </span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>&gt;</p>
+<blockquote>
+<p>row_number() OVER (PARTITION BY COL1 ORDER BY COL2) 表示根据COL1分组，在分组内部根据 COL2排序，而此函数计算的值就表示每组内部排序后的顺序编号（组内连续的唯一的) </p>
+</blockquote>
+<h1 id="split后的数组长度"><a href="#split后的数组长度" class="headerlink" title="split后的数组长度"></a>split后的数组长度</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">size(split(driving_districts,&apos;;&apos;))</span><br></pre></td></tr></table></figure>
+<h1 id="切换队列"><a href="#切换队列" class="headerlink" title="切换队列"></a>切换队列</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set mapred.job.queue.name=data;</span><br></pre></td></tr></table></figure>
+<p>sqoop切换队列是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-D mapred.job.queue.name=data</span><br></pre></td></tr></table></figure>
+<h1 id="加载hdfs的udf"><a href="#加载hdfs的udf" class="headerlink" title="加载hdfs的udf"></a>加载hdfs的udf</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ADD JAR hdfs://iclick/zyz/udf/zyz_udf2.jar;</span><br><span class="line">CREATE TEMPORARY FUNCTION get_region as &apos;org.apache.hadoop.hive.ql.udf.Ip2GeoCodeUDF&apos;;</span><br></pre></td></tr></table></figure>
+<h1 id="Hive-Trash"><a href="#Hive-Trash" class="headerlink" title="Hive Trash"></a>Hive Trash</h1><p>hive删除表时，会移除表的元数据和数据，而HDFS上的数据，如果配置了Trash，会移到.Trash/Current目录下。删除外部表时，表中的数据不会被删除。</p>
+<h1 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h1><p>用groupby代替distinct，少用orderby</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">同事写了个hive的sql语句，执行效率特别慢，跑了一个多小时程序只是map完了，reduce进行到20%。</span><br><span class="line">该Hive语句如下：</span><br><span class="line">select count(distinct ip) </span><br><span class="line">from (select ip as ip from comprehensive.f_client_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot;  </span><br><span class="line">union all </span><br><span class="line">select pub_ip as ip from f_app_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot; </span><br><span class="line">union all select ip as ip from format_log.format_pv1 where year=&quot;2013&quot; and month=&quot;10&quot; and url_first_id=1 </span><br><span class="line">) d </span><br><span class="line"></span><br><span class="line">       分析：select ip as ip from comprehensive.f_client_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot;这个语句筛选出来的数据约有10亿条，select pub_ip as ip from f_app_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot;约有10亿条条，select ip as ip from format_log.format_pv1 where year=&quot;2013&quot; and month=&quot;10&quot; and url_first_id=1 筛选出来的数据约有10亿条，总的数据量大约30亿条。这么大的数据量，使用disticnt函数，所有的数据只会shuffle到一个reducer上，导致reducer数据倾斜严重。</span><br><span class="line">       解决办法：</span><br><span class="line">       首先，通过使用groupby，按照ip进行分组。改写后的sql语句如下：</span><br><span class="line">select count(*) </span><br><span class="line">from </span><br><span class="line">(select ip </span><br><span class="line">from</span><br><span class="line">(select ip as ip from comprehensive.f_client_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot; </span><br><span class="line">union all </span><br><span class="line">select pub_ip as ip from f_app_boot_daily where year=&quot;2013&quot; and month=&quot;10&quot; </span><br><span class="line">union all select ip as ip from format_log.format_pv1 where year=&quot;2013&quot; and month=&quot;10&quot; and url_first_id=1</span><br><span class="line">) d </span><br><span class="line">group by ip ) b </span><br><span class="line">       然后，合理的设置reducer数量，将数据分散到多台机器上。set mapred.reduce.tasks=50; </span><br><span class="line">       经过优化后，速度提高非常明显。整个作业跑完大约只需要20多分钟的时间。</span><br></pre></td></tr></table></figure>
+<p>提高order by的性能<a href="https://blog.csdn.net/djd1234567/article/details/51917603" target="_blank" rel="noopener">https://blog.csdn.net/djd1234567/article/details/51917603</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">Hive中的order by跟传统的sql语言中的order by作用是一样的，会对查询的结果做一次全局排序，所以说，只有hive的sql中制定了order by所有的数据都会到同一个reducer进行处理（不管有多少map，也不管文件有多少的block只会启动一个reducer）。但是对于大量数据这 将会消耗很长的时间去执行。</span><br><span class="line"></span><br><span class="line">    这里跟传统的sql还有一点区别：如果指定了hive.mapred.mode=strict（默认值是nonstrict）,这时就必须指定limit 来限制输出条数，原因是：所有的数据都会在同一个reducer端进行，数据量大的情况下可能不能出结果，那么在这样的严格模式下，必须指定输出的条数。</span><br><span class="line"></span><br><span class="line">    所以数据量大的时候能不用order by就不用，可以使用sort by结合distribute by来进行实现。sort by是局部排序，而distribute by是控制map怎么划分reducer。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    Hive中指定了sort by，那么在每个reducer端都会做排序，也就是说保证了局部有序（每个reducer出来的数据是有序的，但是不能保证所有的数据是有序的，除非只有一个reducer），好处是：执行了局部排序之后可以为接下去的全局排序提高不少的效率（其实就是做一次归并排序就可以做到全局排序了）</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    ditribute by是控制map的输出在reducer是如何划分的，举个例子，我们有一张表，mid是指这个store所属的商户，money是这个商户的盈利，name是这个store的名字</span><br><span class="line"></span><br><span class="line">store:</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mid	money	name</span><br><span class="line">AA	15.0	商店1</span><br><span class="line">AA	20.0	商店2</span><br><span class="line">BB	22.0	商店3</span><br><span class="line">CC	44.0	商店4</span><br><span class="line">    执行hive语句：</span><br><span class="line"></span><br><span class="line">[sql] view plain copy</span><br><span class="line">select mid, money, name from store distribute by mid sort by mid asc, money asc  </span><br><span class="line">我 们所有的mid相同的数据会被送到同一个reducer去处理，这就是因为指定了distribute by mid，这样的话就可以统计出每个商户中各个商店盈利的排序了（这个肯定是全局有序的，因为相同的商户会放到同一个reducer去处理）。这里需要注意 的是distribute by必须要写在sort by之前。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">cluster by</span><br><span class="line">    cluster by的功能就是distribute by和sort by相结合，如下2个语句是等价的：</span><br><span class="line"></span><br><span class="line">[sql] view plain copy</span><br><span class="line">select mid, money, name from store cluster by mid  </span><br><span class="line">select mid, money, name from store distribute by mid sort by mid  </span><br><span class="line">    如果需要获得与上面的中语句一样的效果：</span><br><span class="line"></span><br><span class="line">[sql] view plain copy</span><br><span class="line">select mid, money, name from store cluster by mid sort by money  </span><br><span class="line">    注意被cluster by指定的列只能是降序，不能指定asc和desc。</span><br></pre></td></tr></table></figure>
+<h1 id="问题集"><a href="#问题集" class="headerlink" title="问题集"></a>问题集</h1><h2 id="查询ES表报错"><a href="#查询ES表报错" class="headerlink" title="查询ES表报错"></a>查询ES表报错</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Failed with exception java.io.IOException:org.elasticsearch.hadoop.rest.EsHadoopInvalidRequest: The number of slices [1126] is too large. It must be less than [1024]. This limit can be set by changing the [index.max_slices_per_scroll] index level settin</span><br></pre></td></tr></table></figure>
+<p>修改es的设置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">PUT /megacorp/_settings</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">  &quot;index&quot;: &#123;</span><br><span class="line"></span><br><span class="line">    &quot;max_slices_per_scroll&quot; : 1126</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="上传hive-UDF包后重启hive-server报错"><a href="#上传hive-UDF包后重启hive-server报错" class="headerlink" title="上传hive UDF包后重启hive server报错"></a>上传hive UDF包后重启hive server报错</h2><h2 id="hive-udf没有权限执行"><a href="#hive-udf没有权限执行" class="headerlink" title="hive udf没有权限执行"></a>hive udf没有权限执行</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error while compiling statement: FAILED: SemanticException No valid privileges User dmp does not have privileges for CREATEFUNCTION The required privileges: Server=server1-&gt;URI=file:///home/hive/aux_libs/carthage-common-udf-hive-test.jar-&gt;action=*;</span><br></pre></td></tr></table></figure>
+<h2 id="没有找到jar包的报错"><a href="#没有找到jar包的报错" class="headerlink" title="没有找到jar包的报错"></a>没有找到jar包的报错</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error while compiling statement: FAILED: SemanticException [Error 10014]: Line 1:7 Wrong arguments &apos;70.0&apos;: org.apache.hadoop.hive.ql.metadata.HiveException: Unable to execute method public java.lang.String com.mljr.carthage.common.geo.udf.hive.UDFGeoLocation.evaluate(java.lang.Double,java.lang.Double) on object com.mljr.carthage.common.geo.udf.hive.UDFGeoLocation@54ee9573 of class com.mljr.carthage.common.geo.udf.hive.UDFGeoLocation with arguments &#123;50.0:java.lang.Double, 70.0:java.lang.Double&#125; of size 2</span><br></pre></td></tr></table></figure>
+<p>其他都是可以的，就这个udf的第二个参数一直报错。经测试，还是UDF本身的问题，跟参数的设置没有关系。</p>
+<p>最后发现问题是udf的jar包上传后，关联的一些jar包没有打进去，手动加上</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&lt;plugin&gt;</span><br><span class="line">				&lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;</span><br><span class="line">				&lt;artifactId&gt;maven-shade-plugin&lt;/artifactId&gt;</span><br><span class="line">				&lt;version&gt;1.6&lt;/version&gt;</span><br><span class="line">				&lt;executions&gt;</span><br><span class="line">					&lt;execution&gt;</span><br><span class="line">						&lt;phase&gt;package&lt;/phase&gt;</span><br><span class="line">						&lt;goals&gt;</span><br><span class="line">							&lt;goal&gt;shade&lt;/goal&gt;</span><br><span class="line">						&lt;/goals&gt;</span><br><span class="line">						&lt;configuration&gt;</span><br><span class="line">							&lt;artifactSet&gt;</span><br><span class="line">								&lt;includes&gt;</span><br><span class="line">									&lt;include&gt;com.mljr.carthage:carthage-common-geo&lt;/include&gt;</span><br><span class="line">									&lt;include&gt;com.alibaba:fastjson&lt;/include&gt;</span><br><span class="line">									&lt;include&gt;com.github.davidmoten:geo&lt;/include&gt;</span><br><span class="line">									&lt;include&gt;com.github.davidmoten:grumpy-core&lt;/include&gt;</span><br><span class="line">								&lt;/includes&gt;</span><br><span class="line">							&lt;/artifactSet&gt;</span><br><span class="line">						&lt;/configuration&gt;</span><br><span class="line">					&lt;/execution&gt;</span><br><span class="line">				&lt;/executions&gt;</span><br><span class="line">			&lt;/plugin&gt;</span><br></pre></td></tr></table></figure>
+<h1 id="hive用高版本的UDF"><a href="#hive用高版本的UDF" class="headerlink" title="hive用高版本的UDF"></a>hive用高版本的UDF</h1><p>在hive2.0中有类似于months_between的函数，可以实现2个时间之间的月份差。但是低版本没有这个函数</p>
+<p>解决：</p>
+<p>下载hive-2.1源码包</p>
+<p><a href="http://mirrors.hust.edu.cn/apache/hive/hive-2.2.0/" target="_blank" rel="noopener">http://mirrors.hust.edu.cn/apache/hive/hive-2.2.0/</a></p>
+<p>导入eclipse，查找months_between</p>
+<p>在org.apache.hadoop.hive.ql.udf.generic包下找到GenericUDFMonthsBetween类，移植即可</p>
+<p>/ql/src/java/org/apache/hadoop/hive/ql/udf/generic/GenericUDFMonthsBetween.java</p>
+<h1 id="String转date"><a href="#String转date" class="headerlink" title="String转date"></a>String转date</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select cast(to_date(from_unixtime(unix_timestamp(&apos;12-05-2010&apos;, &apos;dd-MM-yyyy&apos;))) as date)</span><br></pre></td></tr></table></figure>
+<h1 id="MapJoin异常问题处理总结"><a href="#MapJoin异常问题处理总结" class="headerlink" title="MapJoin异常问题处理总结"></a>MapJoin异常问题处理总结</h1><p><a href="https://yq.aliyun.com/articles/64306" target="_blank" rel="noopener">https://yq.aliyun.com/articles/64306</a></p>
+<h1 id="替换hive分隔符"><a href="#替换hive分隔符" class="headerlink" title="替换hive分隔符"></a>替换hive分隔符</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;.bak&apos; &apos;s/^A/,/g&apos; baseinfo05.csv</span><br></pre></td></tr></table></figure>
+<p><code>^A</code>要用ctrl+V+A打出来</p>
+<h1 id="Beeline导出csv后特殊符号"><a href="#Beeline导出csv后特殊符号" class="headerlink" title="Beeline导出csv后特殊符号"></a>Beeline导出csv后特殊符号</h1><p>导出csv后，由于某个字段（比如经纬度），本身就包括逗号，于是在导出时加上了特殊字符。</p>
+<p>sublime打开是</p>
+<p><img src="//schwimmer.github.io/2018/03/31/hadoop-spark/hive笔记/pic/image-20190704165407658.png" alt="image-20190704165407658"></p>
+<p>于是搜索替换的方法，用vim打开后，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:%s/\%x00/&quot;/g</span><br></pre></td></tr></table></figure>
+<p>就替换为了双引号，这样在读取csv的时候会将双引号自动转义</p>
+<h1 id="LOAD-DATA"><a href="#LOAD-DATA" class="headerlink" title="LOAD DATA"></a>LOAD DATA</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LOAD DATA [LOCAL] INPATH &apos;filepath&apos; [OVERWRITE] INTO TABLE tablename[PARTITION (partcol1=val1,partcol2=val2,…)]</span><br></pre></td></tr></table></figure>
+<p>最好不要用LOCAL，要从hadoop加载数据。local读的是hive服务器的本地路径。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"># coding:utf-8</span><br><span class="line">from pyhive import hive</span><br><span class="line">from TCLIService.ttypes import TOperationState</span><br><span class="line"></span><br><span class="line"># 打开hive连接</span><br><span class="line">hiveConn = hive.connect(host=&apos;192.168.83.135&apos;,port=11111,username=&apos;hadoop&apos;)</span><br><span class="line">cursor = hiveConn.cursor()</span><br><span class="line"></span><br><span class="line"># 执行sql语句</span><br><span class="line">sql = &apos;&apos;&apos; LOAD DATA LOCAL INPATH &apos;/home/hadoop/HivePy/employee.txt&apos; OVERWRITE INTO TABLE userdbbypy.employee &apos;&apos;&apos;</span><br><span class="line">cursor.execute(sql, async=True)</span><br><span class="line"></span><br><span class="line"># 得到执行语句的状态</span><br><span class="line">status = cursor.poll().operationState</span><br><span class="line">print &quot;status:&quot;,status</span><br><span class="line"></span><br><span class="line"># 关闭hive连接</span><br><span class="line">cursor.close()</span><br><span class="line">hiveConn.close()</span><br></pre></td></tr></table></figure>
+<h1 id="return-code-3"><a href="#return-code-3" class="headerlink" title="return code 3"></a>return code 3</h1><p>试试</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set hive.vectorized.execution.enabled=false;</span><br></pre></td></tr></table></figure>
+<h1 id="hive锁表"><a href="#hive锁表" class="headerlink" title="hive锁表"></a>hive锁表</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Completed compiling command</span><br></pre></td></tr></table></figure>
+<p>若卡在上面的语句，说明锁表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">show locks carthage_dev.baseinfo_personal_info;</span><br><span class="line">-- 如果是</span><br><span class="line"></span><br><span class="line">unlock table dwh_dml_risk_dev.rec_car_operation;</span><br><span class="line">show locks carthage_dev.baseinfo_personal_info partition(data_date=&apos;20180517&apos;);</span><br><span class="line">unlock table dwh_dml_risk_dev.rec_car_operation partition(data_date=&apos;2018-09-30&apos;);</span><br></pre></td></tr></table></figure>
+<p>hive解锁的脚本是<code>all_hive_unlock.sh</code></p>
+<h1 id="hive新增列报错"><a href="#hive新增列报错" class="headerlink" title="hive新增列报错"></a>hive新增列报错</h1><p>在添加字段是可以通过CASCADE关键字来，避免出现这种问题。如alter table table_name add columns(age int) CASCADE</p>
+<p><a href="https://qubole.zendesk.com/hc/en-us/articles/115002396646-Hive-Null-Pointer-Exception-in-select-query-after-modifying-table-definition" target="_blank" rel="noopener">https://qubole.zendesk.com/hc/en-us/articles/115002396646-Hive-Null-Pointer-Exception-in-select-query-after-modifying-table-definition</a></p>
+<blockquote>
+<p>This can happen in the scenario where table definition and specific partition definition is different, and the underlying data matches table definition but not partition definition.</p>
+<p>When a table with partitions is altered to add a column using statement:</p>
+<p><em>ALTER TABLE <tablename> ADD COLUMNS (c1 int);</tablename></em></p>
+<p>The table definition for existing partitions don’t get modified as per the above statement. As a result of this there is a mismatch between partition and table definition. </p>
+<p>This is ok if the partition data matches the definition of partition, but if the data matches definition of table itself, NPE is thrown as there is a mismatch in data vs definition.</p>
+<p>To avoid this issue, this statement should be used in hadoop2</p>
+<p><em>ALTER TABLE <tablename> ADD COLUMNS (c1 int) CASCADE;</tablename></em> </p>
+<p>In case of hadoop1, CASCADE option is not available. Hence, as long as the table is external table, following can be done:</p>
+<ol>
+<li>Drop and recreate partitions for this table</li>
+<li>Alter partition definition for specific partition having issues</li>
+</ol>
+</blockquote>
+<p>用了cascade 无效。</p>
+<p>找到原因：</p>
+<p>hive表是ORC格式的，因此cascade无效，若改成text格式则成功。</p>
+<p>解决方案：</p>
+<p>若必须是ORC格式，建表是先预留若干字段，后期改名字</p>
+<h1 id="hive分区解锁"><a href="#hive分区解锁" class="headerlink" title="hive分区解锁"></a>hive分区解锁</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">show locks carthage_dev.baseinfo_personal_info;</span><br><span class="line">unlock table carthage_dev.baseinfo_personal_info;</span><br><span class="line">show locks carthage_dev.baseinfo_personal_info partition(data_date=&apos;20180517&apos;);</span><br><span class="line">unlock table carthage_dev.baseinfo_personal_info partition(data_date=&apos;20180517&apos;);</span><br></pre></td></tr></table></figure>
+<p>解锁的技巧：</p>
+<p>1、定位哪张表锁住，可以分批执行sql，定位关键表</p>
+<p>2、show locks并下载，观察锁表的状态，通过</p>
+<p><code>show locks table extended</code>可以看依赖的表</p>
+<p>3、用脚本all_hive_unlock.sh解锁</p>
+<h1 id="hive-column-rename"><a href="#hive-column-rename" class="headerlink" title="hive column rename"></a>hive column rename</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter table carthage_dev.gps_wx_stop_status CHANGE stop_region_center_lon stop_status_center_lon string</span><br></pre></td></tr></table></figure>
+<h1 id="批量新增字段"><a href="#批量新增字段" class="headerlink" title="批量新增字段"></a>批量新增字段</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">alter table carthage.gps_address_info add columns (</span><br><span class="line">  `actual_now_address` string  COMMENT &apos;实际居住地&apos;, </span><br><span class="line">  `actual_now_address_lon` string  COMMENT &apos;实际居住地经度&apos;, </span><br><span class="line">  `actual_now_address_lat` string  COMMENT &apos;实际居住地纬度&apos;, </span><br><span class="line">  `actual_now_address_flag` string  COMMENT &apos;实际居住地标记&apos;, </span><br><span class="line">  `actual_now_unit_address` string  COMMENT &apos;实际工作地&apos;, </span><br><span class="line">  `actual_now_unit_address_lon` string  COMMENT &apos;实际工作地经度&apos;, </span><br><span class="line">  `actual_now_unit_address_lat` string  COMMENT &apos;实际工作地纬度&apos;, </span><br><span class="line">  `actual_now_unit_address_flag` string  COMMENT &apos;实际工作地标记&apos;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h1 id="根据日期批量跑Beeline"><a href="#根据日期批量跑Beeline" class="headerlink" title="根据日期批量跑Beeline"></a>根据日期批量跑Beeline</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/sh</span><br><span class="line">#bash address.sh</span><br><span class="line">startdate=`date -d &quot;$1&quot; +%Y-%m-%d`</span><br><span class="line">enddate=`date -d &quot;$2&quot; +%Y-%m-%d`</span><br><span class="line"></span><br><span class="line">while [[ $startdate &lt; $enddate  ]]</span><br><span class="line">do</span><br><span class="line">    beeline -n dmp -p dmp@MLJR -u jdbc:hive2://10.8.49.171:10000 -f hivesql3.hql -hiveconf dt=$startdate</span><br><span class="line">    startdate=`date -d &quot;+1 day $startdate&quot; +%Y-%m-%d`</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+<h1 id="hive配置"><a href="#hive配置" class="headerlink" title="hive配置"></a>hive配置</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-- 输出为gzip</span><br><span class="line">set hive.exec.compress.output=true;    </span><br><span class="line">set mapred.output.compression.codec=org.apache.hadoop.io.compress.GzipCodec;</span><br><span class="line">-- 输出为一个文件</span><br><span class="line">set mapred.reduce.tasks=1;</span><br></pre></td></tr></table></figure>
+<h1 id="hive-timestamp转时间"><a href="#hive-timestamp转时间" class="headerlink" title="hive timestamp转时间"></a>hive timestamp转时间</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from_unixtime(unix_timestamp(),‘yyyy/MM/dd HH:mm:ss’);</span><br><span class="line"></span><br><span class="line">from_unixtime(cast(cast(time as bigint)/1000 as bigint),&apos;yyyy/MM/dd HH:mm:ss&apos;)</span><br></pre></td></tr></table></figure>
+<h1 id="常用日期函数"><a href="#常用日期函数" class="headerlink" title="常用日期函数"></a>常用日期函数</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">to_date：日期时间转日期函数    </span><br><span class="line">	select to_date(&apos;2018-04-02 13:34:12&apos;);   输出：2018-04-02   </span><br><span class="line">from_unixtime：转化unix时间戳到当前时区的时间格式    </span><br><span class="line">	select from_unixtime(1524573762,&apos;yyyy-MM-dd HH:mm:ss&apos;);    输出：2018-04-24 20:42:42</span><br><span class="line">unix_timestamp：获取当前unix时间戳    </span><br><span class="line">	select unix_timestamp();    输出：1524573762  </span><br><span class="line">	select unix_timestamp(&apos;2018-04-01 13:01:20&apos;);  输出：1522558880</span><br><span class="line">datediff：返回开始日期减去结束日期的天数    </span><br><span class="line">	select datediff(&apos;2018-04-09&apos;,&apos;2018-04-01&apos;);    输出：8    </span><br><span class="line">date_sub：返回日期前n天的日期    </span><br><span class="line">	select date_sub(&apos;2018-04-09&apos;,4);    输出：2018-04-05    </span><br><span class="line">date_add：返回日期后n天的日期    </span><br><span class="line">	select date_add(&apos;2018-04-09&apos;,4);    输出：2018-04-13  </span><br><span class="line">add_months：月份增加函数</span><br><span class="line">	select add_months(&apos;2018-02-10&apos;, 2 );    输出：2018-04-10 </span><br><span class="line">last_day：返回当月底日期</span><br><span class="line">	select last_day(&apos;2018-02-21&apos;);    输出：2018-02-28</span><br></pre></td></tr></table></figure>
+<h1 id="hive-字符串函数"><a href="#hive-字符串函数" class="headerlink" title="hive 字符串函数"></a>hive 字符串函数</h1><p><strong>1. 字符串长度函数：length</strong></p>
+<p>语法: length(string A)</p>
+<p>返回值: int</p>
+<p>说明：返回字符串A的长度</p>
+<p>举例：</p>
+<p>hive&gt; select length(‘abcedfg’) from lxw_dual;</p>
+<p>7</p>
+<p><strong>2. 字符串反转函数：reverse</strong></p>
+<p>语法: reverse(string A)</p>
+<p>返回值: string</p>
+<p>说明：返回字符串A的反转结果</p>
+<p>举例：</p>
+<p>hive&gt; select reverse(abcedfg’) from lxw_dual;</p>
+<p>gfdecba</p>
+<p><strong>3. 字符串连接函数：concat</strong></p>
+<p>语法: concat(string A, string B…)</p>
+<p>返回值: string</p>
+<p>说明：返回输入字符串连接后的结果，支持任意个输入字符串</p>
+<p>举例：</p>
+<p>hive&gt; select concat(‘abc’,’def’,’gh’) from lxw_dual;</p>
+<p>abcdefgh</p>
+<p><strong>4. 带分隔符字符串连接函数：concat_ws</strong></p>
+<p>语法: concat_ws(string SEP, string A, string B…)</p>
+<p>返回值: string</p>
+<p>说明：返回输入字符串连接后的结果，SEP表示各个字符串间的分隔符</p>
+<p>举例：</p>
+<p>hive&gt; select concat_ws(‘,’,’abc’,’def’,’gh’) from lxw_dual;</p>
+<p>abc,def,gh</p>
+<p><strong>5. 字符串截取函数：substr,substring</strong></p>
+<p>语法: substr(string A, int start),substring(string A, int start)</p>
+<p>返回值: string</p>
+<p>说明：返回字符串A从start位置到结尾的字符串</p>
+<p>举例：</p>
+<p>hive&gt; select substr(‘abcde’,3) from lxw_dual;</p>
+<p>cde</p>
+<p>hive&gt; select substring(‘abcde’,3) from lxw_dual;</p>
+<p>cde</p>
+<p>hive&gt;  selectsubstr(‘abcde’,-1) from lxw_dual;  （和ORACLE相同）</p>
+<p>e</p>
+<p><strong>6. 字符串截取函数：substr,substring</strong></p>
+<p>语法: substr(string A, int start, int len),substring(string A, intstart, int len)</p>
+<p>返回值: string</p>
+<p>说明：返回字符串A从start位置开始，长度为len的字符串</p>
+<p>举例：</p>
+<p>hive&gt; select substr(‘abcde’,3,2) from lxw_dual;</p>
+<p>cd</p>
+<p>hive&gt; select substring(‘abcde’,3,2) from lxw_dual;</p>
+<p>cd</p>
+<p>hive&gt;select substring(‘abcde’,-2,2) from lxw_dual;</p>
+<p>de</p>
+<p><strong>7. 字符串转大写函数：upper,ucase</strong></p>
+<p>语法: upper(string A) ucase(string A)</p>
+<p>返回值: string</p>
+<p>说明：返回字符串A的大写格式</p>
+<p>举例：</p>
+<p>hive&gt; select upper(‘abSEd’) from lxw_dual;</p>
+<p>ABSED</p>
+<p>hive&gt; select ucase(‘abSEd’) from lxw_dual;</p>
+<p>ABSED</p>
+<p><strong>8. 字符串转小写函数：lower,lcase</strong></p>
+<p>语法: lower(string A) lcase(string A)</p>
+<p>返回值: string</p>
+<p>说明：返回字符串A的小写格式</p>
+<p>举例：</p>
+<p>hive&gt; select lower(‘abSEd’) from lxw_dual;</p>
+<p>absed</p>
+<p>hive&gt; select lcase(‘abSEd’) from lxw_dual;</p>
+<p>absed</p>
+<p><strong>9. 去空格函数：trim</strong></p>
+<p>语法: trim(string A)</p>
+<p>返回值: string</p>
+<p>说明：去除字符串两边的空格</p>
+<p>举例：</p>
+<p>hive&gt; select trim(‘ abc ‘) from lxw_dual;</p>
+<p>abc</p>
+<p><strong>10. 左边去空格函数：ltrim</strong></p>
+<p>语法: ltrim(string A)</p>
+<p>返回值: string</p>
+<p>说明：去除字符串左边的空格</p>
+<p>举例：</p>
+<p>hive&gt; select ltrim(‘ abc ‘) from lxw_dual;</p>
+<p>abc</p>
+<p><strong>11. 右边去空格函数：rtrim</strong></p>
+<p>语法: rtrim(string A)</p>
+<p>返回值: string</p>
+<p>说明：去除字符串右边的空格</p>
+<p>举例：</p>
+<p>hive&gt; select rtrim(‘ abc ‘) from lxw_dual;</p>
+<p>abc</p>
+<p><strong>12. 正则表达式替换函数：regexp_replace</strong></p>
+<p>语法: regexp_replace(string A, string B, string C)</p>
+<p>返回值: string</p>
+<p>说明：将字符串A中的符合java正则表达式B的部分替换为C。注意，在有些情况下要使用转义字符,类似oracle中的regexp_replace函数。</p>
+<p>举例：</p>
+<p>hive&gt; select regexp_replace(‘foobar’, ‘oo|ar’, ‘’) from lxw_dual;</p>
+<p>fb</p>
+<p><strong>13. 正则表达式解析函数：regexp_extract</strong></p>
+<p>语法: regexp_extract(string subject, string pattern, int index)</p>
+<p>返回值: string</p>
+<p>说明：将字符串subject按照pattern正则表达式的规则拆分，返回index指定的字符。</p>
+<p>举例：</p>
+<p>hive&gt; select regexp_extract(‘foothebar’, ‘foo(.*?)(bar)’, 1) fromlxw_dual;</p>
+<p>the</p>
+<p>hive&gt; select regexp_extract(‘foothebar’, ‘foo(.*?)(bar)’, 2) fromlxw_dual;</p>
+<p>bar</p>
+<p>hive&gt; select regexp_extract(‘foothebar’, ‘foo(.*?)(bar)’, 0) fromlxw_dual;</p>
+<p>foothebar</p>
+<p><strong>注意，在有些情况下要使用转义字符，下面的等号要用双竖线转义，这是java**</strong>正则表达式的规则。**</p>
+<p>select data_field,</p>
+<p>​     regexp_extract(data_field,’.*?bgStart\=(<sup><a href="#fn_&" id="reffn_&">&</a></sup>+)’,1) as aaa,</p>
+<p>​     regexp_extract(data_field,’.*?contentLoaded_headStart\=(<sup><a href="#fn_&" id="reffn_&">&</a></sup>+)’,1) as bbb,</p>
+<p>​     regexp_extract(data_field,’.*?AppLoad2Req\=(<sup><a href="#fn_&" id="reffn_&">&</a></sup>+)’,1) as ccc</p>
+<p>​     from pt_nginx_loginlog_st</p>
+<p>​     where pt = ‘2012-03-26’limit 2;</p>
+<p><strong>14. URL解析函数：parse_url</strong></p>
+<p>语法: parse_url(string urlString, string partToExtract [, stringkeyToExtract])</p>
+<p>返回值: string</p>
+<p>说明：返回URL中指定的部分。partToExtract的有效值为：HOST, PATH, QUERY, REF, PROTOCOL, AUTHORITY, FILE, and USERINFO.</p>
+<p>举例：</p>
+<p>hive&gt; selectparse_url(‘<a href="http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1" target="_blank" rel="noopener">http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1</a>‘, ‘HOST’) fromlxw_dual;</p>
+<p>facebook.com</p>
+<p>hive&gt; selectparse_url(‘<a href="http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1" target="_blank" rel="noopener">http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1</a>‘, ‘QUERY’,’k1’) from lxw_dual;</p>
+<p>v1</p>
+<p><strong>15. json解析函数：get_json_object</strong></p>
+<p>语法: get_json_object(string json_string, string path)</p>
+<p>返回值: string</p>
+<p>说明：解析json的字符串json_string,返回path指定的内容。如果输入的json字符串无效，那么返回NULL。</p>
+<p>举例：</p>
+<p>hive&gt; select get_json_object(‘{“store”:</p>
+<p>>  {“fruit”:[{“weight”:8,”type”:”apple”},{“weight”:9,”type”:”pear”}],</p>
+<p>>   “bicycle”:{“price”:19.95,”color”:”red”}</p>
+<p>>   },</p>
+<p>> “email”:”amy@only_for_json_udf_test.net”,</p>
+<p>>  “owner”:”amy”</p>
+<p>> }</p>
+<p>> ‘,’$.owner’) from lxw_dual;</p>
+<p>amy</p>
+<p><strong>16. 空格字符串函数：space</strong></p>
+<p>语法: space(int n)</p>
+<p>返回值: string</p>
+<p>说明：返回长度为n的字符串</p>
+<p>举例：</p>
+<p>hive&gt; select space(10) from lxw_dual;</p>
+<p>hive&gt; select length(space(10)) from lxw_dual;</p>
+<p>10</p>
+<p><strong>17. 重复字符串函数：repeat</strong></p>
+<p>语法: repeat(string str, int n)</p>
+<p>返回值: string</p>
+<p>说明：返回重复n次后的str字符串</p>
+<p>举例：</p>
+<p>hive&gt; select repeat(‘abc’,5) from lxw_dual;</p>
+<p>abcabcabcabcabc</p>
+<p><strong>18. 首字符ascii函数：ascii</strong></p>
+<p>语法: ascii(string str)</p>
+<p>返回值: int</p>
+<p>说明：返回字符串str第一个字符的ascii码</p>
+<p>举例：</p>
+<p>hive&gt; select ascii(‘abcde’) from lxw_dual;</p>
+<p>97</p>
+<p><strong>19. 左补足函数：lpad</strong></p>
+<p>语法: lpad(string str, int len, string pad)</p>
+<p>返回值: string</p>
+<p>说明：将str进行用pad进行左补足到len位</p>
+<p>举例：</p>
+<p>hive&gt; select lpad(‘abc’,10,’td’) from lxw_dual;</p>
+<p>tdtdtdtabc</p>
+<p><strong>注意：与GP**</strong>，ORACLE<strong>**不同，pad</strong> <strong>不能默认</strong></p>
+<p><strong>20. 右补足函数：rpad</strong></p>
+<p>语法: rpad(string str, int len, string pad)</p>
+<p>返回值: string</p>
+<p>说明：将str进行用pad进行右补足到len位</p>
+<p>举例：</p>
+<p>hive&gt; select rpad(‘abc’,10,’td’) from lxw_dual;</p>
+<p>abctdtdtdt</p>
+<p><strong>21. 分割字符串函数: split</strong></p>
+<p>语法:  split(string str, stringpat)</p>
+<p>返回值:  array</p>
+<p>说明: 按照pat字符串分割str，会返回分割后的字符串数组</p>
+<p>举例：</p>
+<p>hive&gt; select split(‘abtcdtef’,’t’) from lxw_dual;</p>
+<p>[“ab”,”cd”,”ef”]</p>
+<p><strong>22. 集合查找函数:find_in_set</strong></p>
+<p>语法: find_in_set(string str, string strList)</p>
+<p>返回值: int</p>
+<p>说明: 返回str在strlist第一次出现的位置，strlist是用逗号分割的字符串。如果没有找该str字符，则返回0</p>
+<p>举例：</p>
+<p>hive&gt; select find_in_set(‘ab’,’ef,ab,de’) from lxw_dual;</p>
+<p>2</p>
+<p>hive&gt; select find_in_set(‘at’,’ef,ab,de’) from lxw_dual;</p>
+<p>0</p>
+<p>instr</p>
+<h1 id="group后拼接"><a href="#group后拼接" class="headerlink" title="group后拼接"></a>group后拼接</h1><p>group_concat( [distinct] 要连接的字段 [order by 排序字段 asc/desc ] [separator ‘分隔符’] )</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select userid,bankid,group_concat(cast(creditlimit as string))</span><br><span class="line">from vdm_fin.cc_user_bill_0724</span><br><span class="line">group by userid,bankid</span><br></pre></td></tr></table></figure>
+<p><img src="//schwimmer.github.io/2018/03/31/hadoop-spark/hive笔记/pic/70.png" alt="è¿éåå¾çæè¿°"></p>
+<p><strong>hive实现相同的功能：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT id,</span><br><span class="line">concat_ws(&apos;|&apos;, collect_set(str)) </span><br><span class="line">FROM t  </span><br><span class="line">GROUP BY id;1234</span><br></pre></td></tr></table></figure>
+<p>主意:collect_set 只能返回不重复的集合<br>若要返回带重复的要用collect_list</p>
+<p>2、collect_list 展示子表排序后结果，collect_set 不受子表排序影响<br>select phone,collect_list(user_id) ,collect_set(user_id) from<br>(select * from a order by order_time asc)b<br>group by phone<br>结果：123456789    [1,1,3,2,2]    [1,3,2]</p>
+<p>a表数据如下<br>phone    user_id order_time<br>123456789    1    2018/8/23<br>123456789    3    2018/8/24<br>123456789    2    2018/8/25<br>123456789    1    2018/8/22<br>123456789    2    2018/8/26</p>
+<h1 id="beeline导出csv"><a href="#beeline导出csv" class="headerlink" title="beeline导出csv"></a>beeline导出csv</h1><p>导出csv并且不带一些无用输出的命令是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">beeline -u jdbc:hive2://localhost:10000/default --silent=true --outputformat=csv2 -e &quot;select * from sample_07 limit 10&quot; &gt; out.csv</span><br></pre></td></tr></table></figure>
+<p>如果依然有一些无用到输出可以使用<code>sed</code>删去前N行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;1,6d&apos; out.csv</span><br></pre></td></tr></table></figure>
+<h1 id="创建csv格式的hive表"><a href="#创建csv格式的hive表" class="headerlink" title="创建csv格式的hive表"></a>创建csv格式的hive表</h1>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/31/地理信息挖掘/经纬度找POI/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/03/31/地理信息挖掘/经纬度找POI/" class="post-title-link" itemprop="url">经纬度找POI</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-03-31 10:28:31" itemprop="dateCreated datePublished" datetime="2018-03-31T10:28:31+08:00">2018-03-31</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-05 14:42:47" itemprop="dateModified" datetime="2019-07-05T14:42:47+08:00">2019-07-05</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/地理信息处理和挖掘/" itemprop="url" rel="index"><span itemprop="name">地理信息处理和挖掘</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/03/31/地理信息挖掘/经纬度找POI/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/31/地理信息挖掘/经纬度找POI/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="定时任务"><a href="#定时任务" class="headerlink" title="定时任务"></a>定时任务</h1><p>每天有定时任务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">00 07 * * * source /etc/profile; python /opt/pig_home/mobile_poi/lbspoi.py &gt;&gt; /opt/pig_home/mobile_poi/lbs.log 2&gt;&amp;1</span><br></pre></td></tr></table></figure>
+<h2 id="generate-mobile-geo-info"><a href="#generate-mobile-geo-info" class="headerlink" title="generate_mobile_geo_info"></a>generate_mobile_geo_info</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">USE</span> <span class="keyword">default</span>;</span><br><span class="line">                ADD JAR hdfs://iclick/zyz/udf/zyz_udf2.jar;</span><br><span class="line">                <span class="keyword">CREATE</span> <span class="keyword">TEMPORARY</span> <span class="keyword">FUNCTION</span> get_region <span class="keyword">as</span> <span class="string">'org.apache.hadoop.hive.ql.udf.Ip2GeoCodeUDF'</span>;</span><br><span class="line">                <span class="keyword">INSERT</span> OVERWRITE <span class="keyword">TABLE</span> shortdata.mobile_poi_raw <span class="keyword">partition</span>(day_id=<span class="string">'%s'</span>,city)</span><br><span class="line">                <span class="keyword">SELECT</span></span><br><span class="line">                    zuid, gps, ip, ts, slot_id, city_code <span class="keyword">AS</span> city</span><br><span class="line">                <span class="keyword">FROM</span></span><br><span class="line">                  (</span><br><span class="line">                    <span class="keyword">SELECT</span></span><br><span class="line">                      region_code, city_code</span><br><span class="line">                    <span class="keyword">FROM</span></span><br><span class="line">                      persona.pois_city_dict</span><br><span class="line">                  ) a <span class="keyword">join</span> (</span><br><span class="line">                    <span class="keyword">SELECT</span></span><br><span class="line">                      zuid,gps,ip,ts,slot_id,get_region(ip) region_code,day_id</span><br><span class="line">                    <span class="keyword">FROM</span></span><br><span class="line">                      nobid</span><br><span class="line">                    <span class="keyword">WHERE</span></span><br><span class="line">                      day_id=<span class="string">'%s'</span></span><br><span class="line">                      <span class="keyword">AND</span> gps!=<span class="string">''</span></span><br><span class="line">                      <span class="keyword">AND</span> dt!=<span class="number">0</span></span><br><span class="line">                      <span class="keyword">AND</span> <span class="keyword">length</span>(zuid)=<span class="number">32</span></span><br><span class="line">                      <span class="keyword">AND</span> ip!=<span class="string">''</span></span><br><span class="line">                      <span class="keyword">AND</span> slot_id !=<span class="string">''</span></span><br><span class="line">                  ) b</span><br><span class="line">                <span class="keyword">on</span>(a.region_code=b.region_code);</span><br></pre></td></tr></table></figure>
+<p>从<code>persona.pois_city_dict</code> 取地理编码region_code和城市区号city_code，从<code>nobid</code>中取zuid，gps等，通过region_code做join，结果放到<code>shortdata.mobile_poi_raw</code> ，包括<code>zuid, gps, ip, ts, slot_id, city_code</code></p>
+<h2 id="check-raw-data"><a href="#check-raw-data" class="headerlink" title="check_raw_data"></a>check_raw_data</h2><p>检查</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/shortdata/mobile_poi_raw/day_id=%s</span><br></pre></td></tr></table></figure>
+<p>是否有数据</p>
+<h2 id="create-mobile-es-index"><a href="#create-mobile-es-index" class="headerlink" title="create_mobile_es_index"></a>create_mobile_es_index</h2><p>ES中创建索引</p>
+<h2 id="generate-poi-content"><a href="#generate-poi-content" class="headerlink" title="generate_poi_content"></a>generate_poi_content</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop fs -ls /shortdata/mobile_poi_raw/day_id=%s|awk -F&apos;city=&apos; &apos;NF==2&#123;print $2&#125;&apos;</span><br></pre></td></tr></table></figure>
+<p>目录下找出所有的城市的区号。对于每个区号，执行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pig -p MOBILE_POI_RAW=/shortdata/mobile_poi_raw/day_id=%s/city=%s -p CITY_CODE=%s -p MOBILE_POI_INFO=/shortdata/persona/mobile_poi/%s/%s /opt/pig_home/mobile_poi/GeneratePoiContent.pig</span><br></pre></td></tr></table></figure>
+<p><code>MOBILE_POI_RAW</code>的字段包括数据如<code>mid,geo,ip,timestamp,ban</code>，ban不知道是什么。数据例如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">(0072e62dcb59f4193a87c57b52f72f40,0.000000_-0.000000,223.104.106.193,1522251854,9641490506058567536)</span><br><span class="line">(00a416a2bf6155061378554128e6d34e,0.000000_-0.000000,223.104.63.204,1522177840,2079384033841789443)</span><br><span class="line">(00a78ac01d879f209f0d9ca1c44c8e7f,116.272537_39.905327,114.248.119.130,1522242470,12150475897216517376)</span><br><span class="line">(012ddc44478c6d828ab151b6ca683916,0.000000_-0.000000,117.157.192.13,1522193641,11414853793502166973)</span><br><span class="line">(025f2ed81db51d3d99d9a47bf9aeb9a0,0.000000_-0.000000,47.94.140.78,1522187326,18293937070879238797)</span><br><span class="line">(02bf4d8bdc38ac1f6fdd52209e84039c,115.123116_35.816261,223.104.108.158,1522242477,17879387064476989398)</span><br><span class="line">(02c18f312fa72708909183b040e74e13,120.034416_32.183392,36.149.39.178,1522181536,16092911831591004172)</span><br><span class="line">(03279dff09e62f9eaba637fa43744dd6,0.000000_-0.000000,223.72.77.105,1522201115,692495996220981070)</span><br><span class="line">(034cd47c18e030379ac5bdfaa4c2f1cb,106.306679_26.233530,223.104.95.36,1522191134,2612)</span><br></pre></td></tr></table></figure>
+<p>后面会对<code>mid,geo,ip,timestamp</code>去重，ban就去掉了。</p>
+<p>有一个关键的UDF</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DEFINE getPoiContent com.buzzinate.pig.udf.util.SearchPoiContentHdfs();</span><br><span class="line"></span><br><span class="line">mobile_poi_city = FOREACH mobile_poi GENERATE mid,FLATTEN(getPoiContent('$CITY_CODE',mid,timestamp,ip,geo,50.0)) as content;</span><br></pre></td></tr></table></figure>
+<p><code>SearchPoiContentHdfs</code> 首先初始化<code>/geo-poi/src/main/java/com/iclick/geo/search/GeoPois.java</code> 。初始化时要加载POI文件，如<code>010.csv</code>，然后添加到前缀树<code>TrieTree</code> 中。</p>
+<p>然后给定一个经纬度坐标和搜索范围，搜索POI点。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> rlng     WGS84坐标系的经度</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> rlat     WGS84坐标系的纬度</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> accuracy 匹配精度</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 匹配到的POI列表</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> List&lt;POINode&gt; <span class="title">search</span><span class="params">(<span class="keyword">double</span> rlng, <span class="keyword">double</span> rlat, <span class="keyword">double</span> accuracy, TrieTree trieTree)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 转成火星坐标系</span></span><br><span class="line">    Double[] gc = GPSTransform.wgs84Togcj02(rlng, rlat);</span><br><span class="line">    Double lng = gc[<span class="number">0</span>];</span><br><span class="line">    Double lat = gc[<span class="number">1</span>];</span><br><span class="line">    List&lt;POINode&gt; pois = <span class="keyword">new</span> ArrayList&lt;POINode&gt;();</span><br><span class="line">    HashSet&lt;String&gt; fn = <span class="keyword">new</span> HashSet&lt;String&gt;();</span><br><span class="line">  <span class="comment">// 根据精度误差，得到geohash编码长度</span></span><br><span class="line">    <span class="keyword">int</span> rlen = getAccuracyRange(accuracy);</span><br><span class="line">    String shash = <span class="string">""</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        shash = GeoHash.encodeHash(lat, lng, rlen);</span><br><span class="line">        fn.add(shash);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IllegalArgumentException e) &#123;</span><br><span class="line">        <span class="keyword">return</span> pois;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (String nbour : GeoHash.neighbours(shash)) &#123;</span><br><span class="line">        fn.add(nbour.substring(<span class="number">0</span>, rlen));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (String thash : fn) &#123;</span><br><span class="line">        <span class="keyword">for</span> (Entry&lt;String, LinkedList&lt;POINode&gt;&gt; entry : trieTree.getPrefixString(thash).entrySet()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (entry.getValue() != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (POINode poi : entry.getValue()) &#123;</span><br><span class="line">                    Double distance = PointUtils.distance(lng, lat, poi.lng, poi.lat);</span><br><span class="line">                    <span class="keyword">if</span> (distance &lt;= accuracy) &#123;</span><br><span class="line">                        pois.add(poi);</span><br><span class="line">                        poi.setDistance(distance);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> pois;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先要进行坐标转换，<code>GPSTransform</code></p>
+<p><code>getAccuracyRange</code>的代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">/*</span></span><br><span class="line"><span class="comment">  * 根据精度误差，得到geohash编码长度</span></span><br><span class="line"><span class="comment">  *</span></span><br><span class="line"><span class="comment">  * accuracy: 精度误差</span></span><br><span class="line"><span class="comment">  *</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getAccuracyRange</span><span class="params">(<span class="keyword">double</span> accuracy)</span> </span>&#123;</span><br><span class="line">     <span class="comment">/*</span></span><br><span class="line"><span class="comment">      *</span></span><br><span class="line"><span class="comment">* 具体的计算方法：</span></span><br><span class="line"><span class="comment">Latitude的范围是：-90 到 +90</span></span><br><span class="line"><span class="comment">Longitude的范围：-180 到 +180</span></span><br><span class="line"><span class="comment">地球参考球体的周长：40075016.68米</span></span><br><span class="line"><span class="comment">geohash长度	Lat位数	Lng位数	Lat误差	Lng误差	km误差</span></span><br><span class="line"><span class="comment">1	2	3	±23	±23	±2500</span></span><br><span class="line"><span class="comment">2	5	5	± 2.8	±5.6	±630</span></span><br><span class="line"><span class="comment">3	7	8	± 0.70	± 0.7	±78</span></span><br><span class="line"><span class="comment">4	10	10	± 0.087	± 0.18	±20</span></span><br><span class="line"><span class="comment">5	12	13	± 0.022	± 0.022	±2.4</span></span><br><span class="line"><span class="comment">6	15	15	± 0.0027	± 0.0055	±0.61</span></span><br><span class="line"><span class="comment">7	17	18	±0.00068	±0.00068	±0.076</span></span><br><span class="line"><span class="comment">8	20	20	±0.000086	±0.000172	±0.01911</span></span><br><span class="line"><span class="comment">9	22	23	±0.000021	±0.000021	±0.00478</span></span><br><span class="line"><span class="comment">10	25	25	±0.00000268	±0.00000536	±0.0005971</span></span><br><span class="line"><span class="comment">11	27	28	±0.00000067	±0.00000067	±0.0001492</span></span><br><span class="line"><span class="comment">12	30	30	±0.00000008	±0.00000017	±0.0000186</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">     <span class="keyword">if</span> (accuracy &gt; <span class="number">76</span>) &#123;  <span class="comment">//当精度要求大于76米的时候，geohash长度为６</span></span><br><span class="line">         <span class="keyword">return</span> <span class="number">6</span>;</span><br><span class="line">     &#125; <span class="keyword">else</span> <span class="keyword">if</span> (accuracy &gt; <span class="number">19</span>) &#123; <span class="comment">//当精度要求19米 &lt; 76米的时候，geohash长度为７</span></span><br><span class="line">         <span class="keyword">return</span> <span class="number">7</span>;</span><br><span class="line">     &#125; <span class="keyword">else</span> &#123; <span class="comment">//当精度要求 &lt; 19米的时候，geohash长度为8</span></span><br><span class="line">         <span class="keyword">return</span> <span class="number">8</span>;</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>将经纬度转成geohash，找到邻近的geohash。对每个邻近的遍历前缀树，找到邻近的POI点，提取符合要求的。</p>
+<p>看每个cookie的经纬度最近的POI是什么，最后得出每个POI的分布</p>
+<h3 id="3-1-ES的index"><a href="#3-1-ES的index" class="headerlink" title="3.1 ES的index"></a>3.1 ES的index</h3><p>1、<code>pois_v2</code> ：所有的POI信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;name&quot;: &quot;华光庙大街二巷8号&quot;,</span><br><span class="line">  &quot;citycode&quot;: &quot;020&quot;,</span><br><span class="line">  &quot;city&quot;: &quot;广州市&quot;,</span><br><span class="line">  &quot;district&quot;: &quot;番禺区&quot;,</span><br><span class="line">  &quot;street&quot;: &quot;钟村镇&quot;,</span><br><span class="line">  &quot;location&quot;: &quot;22.984817,113.309482&quot;,</span><br><span class="line">  &quot;slatlng&quot;: &quot;22.984817,113.309482&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>2、<code>lbs_v2</code> ：每个cookie的位置属于哪个POI</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">          &quot;id&quot;: &quot;17fa0f7bc0e06a5f9cac64547ce5b24b&quot;,</span><br><span class="line">          &quot;ip&quot;: &quot;223.73.116.54&quot;,</span><br><span class="line">          &quot;citycode&quot;: &quot;020&quot;,</span><br><span class="line">          &quot;location&quot;: &quot;23.1024,113.28197&quot;,</span><br><span class="line">          &quot;slatlng&quot;: &quot;23.1024,113.28197&quot;,</span><br><span class="line">          &quot;city&quot;: &quot;广州市&quot;,</span><br><span class="line">          &quot;district&quot;: &quot;海珠区&quot;,</span><br><span class="line">          &quot;street&quot;: &quot;滨江街道&quot;,</span><br><span class="line">          &quot;name&quot;: &quot;万寿门诊部&quot;,</span><br><span class="line">          &quot;create_time&quot;: &quot;2017-12-05 21:03:25&quot;,</span><br><span class="line">          &quot;index_time&quot;: &quot;2017-12-05&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-2-查询"><a href="#3-2-查询" class="headerlink" title="3.2 查询"></a>3.2 查询</h3><p>LBS api的使用：</p>
+<h4 id="3-2-1-通过POI点的关键词、城市找到按经纬度分布的POI数量"><a href="#3-2-1-通过POI点的关键词、城市找到按经纬度分布的POI数量" class="headerlink" title="3.2.1 通过POI点的关键词、城市找到按经纬度分布的POI数量"></a>3.2.1 通过POI点的关键词、城市找到按经纬度分布的POI数量</h4><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">GET pois_v2/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"size"</span> : <span class="number">10000</span>,</span><br><span class="line">  <span class="attr">"query"</span> : &#123;</span><br><span class="line">    <span class="attr">"bool"</span> : &#123;</span><br><span class="line">      <span class="attr">"filter"</span> : [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">"terms"</span> : &#123;</span><br><span class="line">            <span class="attr">"citycode"</span> : [</span><br><span class="line">              <span class="string">"010"</span></span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">"boost"</span> : <span class="number">1.0</span></span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      ],</span><br><span class="line">      <span class="attr">"should"</span> : [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">"match_phrase"</span> : &#123;</span><br><span class="line">            <span class="attr">"name"</span> : &#123;</span><br><span class="line">              <span class="attr">"query"</span> : <span class="string">"星巴克"</span>,</span><br><span class="line">              <span class="attr">"slop"</span> : <span class="number">0</span>,</span><br><span class="line">              <span class="attr">"boost"</span> : <span class="number">1.0</span></span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      ],</span><br><span class="line">      <span class="attr">"disable_coord"</span> : <span class="literal">true</span>,</span><br><span class="line">      <span class="attr">"adjust_pure_negative"</span> : <span class="literal">true</span>,</span><br><span class="line">      <span class="attr">"minimum_should_match"</span> : <span class="string">"1"</span>,</span><br><span class="line">      <span class="attr">"boost"</span> : <span class="number">1.0</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"aggregations"</span> : &#123;</span><br><span class="line">    <span class="attr">"geo"</span> : &#123;</span><br><span class="line">      <span class="attr">"terms"</span> : &#123;</span><br><span class="line">        <span class="attr">"field"</span> : <span class="string">"slatlng"</span>,</span><br><span class="line">        <span class="attr">"size"</span> : <span class="number">10000</span>,</span><br><span class="line">        <span class="attr">"shard_size"</span> : <span class="number">-1</span>,</span><br><span class="line">        <span class="attr">"min_doc_count"</span> : <span class="number">1</span>,</span><br><span class="line">        <span class="attr">"shard_min_doc_count"</span> : <span class="number">0</span>,</span><br><span class="line">        <span class="attr">"show_term_doc_count_error"</span> : <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">"order"</span> : [</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">"_count"</span> : <span class="string">"desc"</span></span><br><span class="line">          &#125;,</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">"_term"</span> : <span class="string">"asc"</span></span><br><span class="line">          &#125;</span><br><span class="line">        ]</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"ext"</span> : &#123; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="3-2-2-通过关键词、城市，查询每个区，每个街道的POI点有多少PV和UV"><a href="#3-2-2-通过关键词、城市，查询每个区，每个街道的POI点有多少PV和UV" class="headerlink" title="3.2.2 通过关键词、城市，查询每个区，每个街道的POI点有多少PV和UV"></a>3.2.2 通过关键词、城市，查询每个区，每个街道的POI点有多少PV和UV</h4><p>DSL为：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br></pre></td><td class="code"><pre><span class="line">GET lbs_v2/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"size"</span> : <span class="number">0</span>,</span><br><span class="line">  <span class="attr">"query"</span> : &#123;</span><br><span class="line">    <span class="attr">"bool"</span> : &#123;</span><br><span class="line">      <span class="attr">"filter"</span> : [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">"terms"</span> : &#123;</span><br><span class="line">            <span class="attr">"citycode"</span> : [</span><br><span class="line">              <span class="string">"010"</span></span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">"boost"</span> : <span class="number">1.0</span></span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      ],</span><br><span class="line">      <span class="attr">"should"</span> : [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">"match_phrase"</span> : &#123;</span><br><span class="line">            <span class="attr">"name"</span> : &#123;</span><br><span class="line">              <span class="attr">"query"</span> : <span class="string">"星巴克"</span>,</span><br><span class="line">              <span class="attr">"slop"</span> : <span class="number">0</span>,</span><br><span class="line">              <span class="attr">"boost"</span> : <span class="number">1.0</span></span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      ],</span><br><span class="line">      <span class="attr">"disable_coord"</span> : <span class="literal">true</span>,</span><br><span class="line">      <span class="attr">"adjust_pure_negative"</span> : <span class="literal">true</span>,</span><br><span class="line">      <span class="attr">"minimum_should_match"</span> : <span class="string">"1"</span>,</span><br><span class="line">      <span class="attr">"boost"</span> : <span class="number">1.0</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"aggregations"</span> : &#123;</span><br><span class="line">    <span class="attr">"city"</span> : &#123;</span><br><span class="line">      <span class="attr">"terms"</span> : &#123;</span><br><span class="line">        <span class="attr">"field"</span> : <span class="string">"city"</span>,</span><br><span class="line">        <span class="attr">"size"</span> : <span class="number">1000</span>,</span><br><span class="line">        <span class="attr">"shard_size"</span> : <span class="number">-1</span>,</span><br><span class="line">        <span class="attr">"min_doc_count"</span> : <span class="number">1</span>,</span><br><span class="line">        <span class="attr">"shard_min_doc_count"</span> : <span class="number">0</span>,</span><br><span class="line">        <span class="attr">"show_term_doc_count_error"</span> : <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">"order"</span> : [</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">"_count"</span> : <span class="string">"desc"</span></span><br><span class="line">          &#125;,</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">"_term"</span> : <span class="string">"asc"</span></span><br><span class="line">          &#125;</span><br><span class="line">        ]</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="attr">"aggregations"</span> : &#123;</span><br><span class="line">        <span class="attr">"district"</span> : &#123;</span><br><span class="line">          <span class="attr">"terms"</span> : &#123;</span><br><span class="line">            <span class="attr">"field"</span> : <span class="string">"district"</span>,</span><br><span class="line">            <span class="attr">"size"</span> : <span class="number">30</span>,</span><br><span class="line">            <span class="attr">"shard_size"</span> : <span class="number">-1</span>,</span><br><span class="line">            <span class="attr">"min_doc_count"</span> : <span class="number">1</span>,</span><br><span class="line">            <span class="attr">"shard_min_doc_count"</span> : <span class="number">0</span>,</span><br><span class="line">            <span class="attr">"show_term_doc_count_error"</span> : <span class="literal">false</span>,</span><br><span class="line">            <span class="attr">"order"</span> : [</span><br><span class="line">              &#123;</span><br><span class="line">                <span class="attr">"_count"</span> : <span class="string">"desc"</span></span><br><span class="line">              &#125;,</span><br><span class="line">              &#123;</span><br><span class="line">                <span class="attr">"_term"</span> : <span class="string">"asc"</span></span><br><span class="line">              &#125;</span><br><span class="line">            ]</span><br><span class="line">          &#125;,</span><br><span class="line">          <span class="attr">"aggregations"</span> : &#123;</span><br><span class="line">            <span class="attr">"street"</span> : &#123;</span><br><span class="line">              <span class="attr">"terms"</span> : &#123;</span><br><span class="line">                <span class="attr">"field"</span> : <span class="string">"street"</span>,</span><br><span class="line">                <span class="attr">"size"</span> : <span class="number">30</span>,</span><br><span class="line">                <span class="attr">"shard_size"</span> : <span class="number">-1</span>,</span><br><span class="line">                <span class="attr">"min_doc_count"</span> : <span class="number">1</span>,</span><br><span class="line">                <span class="attr">"shard_min_doc_count"</span> : <span class="number">0</span>,</span><br><span class="line">                <span class="attr">"show_term_doc_count_error"</span> : <span class="literal">false</span>,</span><br><span class="line">                <span class="attr">"order"</span> : [</span><br><span class="line">                  &#123;</span><br><span class="line">                    <span class="attr">"_count"</span> : <span class="string">"desc"</span></span><br><span class="line">                  &#125;,</span><br><span class="line">                  &#123;</span><br><span class="line">                    <span class="attr">"_term"</span> : <span class="string">"asc"</span></span><br><span class="line">                  &#125;</span><br><span class="line">                ]</span><br><span class="line">              &#125;,</span><br><span class="line">              <span class="attr">"aggregations"</span> : &#123;</span><br><span class="line">                <span class="attr">"uniq"</span> : &#123;</span><br><span class="line">                  <span class="attr">"cardinality"</span> : &#123;</span><br><span class="line">                    <span class="attr">"field"</span> : <span class="string">"id"</span></span><br><span class="line">                  &#125;</span><br><span class="line">                &#125;</span><br><span class="line">              &#125;</span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="attr">"uniq"</span> : &#123;</span><br><span class="line">              <span class="attr">"cardinality"</span> : &#123;</span><br><span class="line">                <span class="attr">"field"</span> : <span class="string">"id"</span></span><br><span class="line">              &#125;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">"poi"</span> : &#123;</span><br><span class="line">          <span class="attr">"terms"</span> : &#123;</span><br><span class="line">            <span class="attr">"field"</span> : <span class="string">"slatlng"</span>,</span><br><span class="line">            <span class="attr">"size"</span> : <span class="number">10000</span>,</span><br><span class="line">            <span class="attr">"shard_size"</span> : <span class="number">-1</span>,</span><br><span class="line">            <span class="attr">"min_doc_count"</span> : <span class="number">1</span>,</span><br><span class="line">            <span class="attr">"shard_min_doc_count"</span> : <span class="number">0</span>,</span><br><span class="line">            <span class="attr">"show_term_doc_count_error"</span> : <span class="literal">false</span>,</span><br><span class="line">            <span class="attr">"order"</span> : [</span><br><span class="line">              &#123;</span><br><span class="line">                <span class="attr">"_count"</span> : <span class="string">"desc"</span></span><br><span class="line">              &#125;,</span><br><span class="line">              &#123;</span><br><span class="line">                <span class="attr">"_term"</span> : <span class="string">"asc"</span></span><br><span class="line">              &#125;</span><br><span class="line">            ]</span><br><span class="line">          &#125;,</span><br><span class="line">          <span class="attr">"aggregations"</span> : &#123;</span><br><span class="line">            <span class="attr">"uniq"</span> : &#123;</span><br><span class="line">              <span class="attr">"cardinality"</span> : &#123;</span><br><span class="line">                <span class="attr">"field"</span> : <span class="string">"id"</span></span><br><span class="line">              &#125;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">"uniq"</span> : &#123;</span><br><span class="line">          <span class="attr">"cardinality"</span> : &#123;</span><br><span class="line">            <span class="attr">"field"</span> : <span class="string">"id"</span></span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"uniq"</span> : &#123;</span><br><span class="line">      <span class="attr">"cardinality"</span> : &#123;</span><br><span class="line">        <span class="attr">"field"</span> : <span class="string">"id"</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"ext"</span> : &#123; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/31/地理信息挖掘/GeoHash/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/03/31/地理信息挖掘/GeoHash/" class="post-title-link" itemprop="url">GeoHash</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-03-31 10:28:31" itemprop="dateCreated datePublished" datetime="2018-03-31T10:28:31+08:00">2018-03-31</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-05 14:44:06" itemprop="dateModified" datetime="2019-07-05T14:44:06+08:00">2019-07-05</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/地理信息处理和挖掘/" itemprop="url" rel="index"><span itemprop="name">地理信息处理和挖掘</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/03/31/地理信息挖掘/GeoHash/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/31/地理信息挖掘/GeoHash/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://blog.csdn.net/lulu2008061626/article/details/47146011" target="_blank" rel="noopener">geohash学习及优化</a></p>
+<p><a href="https://blog.csdn.net/qq_27717921/article/details/77893365" target="_blank" rel="noopener">GeoHash 经纬度坐标编码与解码算法</a></p>
+<p><img src="/Users/david/Library/Application Support/typora-user-images/image-20181121165559550.png" alt="image-20181121165559550"></p>
+<p>geohash在实际使用时，需要注意：</p>
+<p>1、一个geohash编码对应一个区域</p>
+<p>2、geohash编码越长，精度越高</p>
+<p>3、同一个区域内的点的距离不一定就比不同区域的距离短。这个很容易理解，这就像你有两个朋友A和B，A和你都在中国，B在俄罗斯，你和A的编码是一样的，但是不一定A离你近，还是B离你近。</p>
+<p>4、由于存在#3的问题，搜索范围poi时，必须至少扩展一圈。</p>
+<p>5、#4带来一个扩展策略的问题，就是精度选择的问题。精度太低，划分的区域很大，会选择出很多多余的点，降低性能。精度太高，有可能需要进行多次扩展，扩展得到的区域数将会快速的增长(2*n+1)^2，性能也会降低。</p>
+<h1 id="GeoHash的优化"><a href="#GeoHash的优化" class="headerlink" title="GeoHash的优化"></a>GeoHash的优化</h1><h2 id="用打表的方式解决求Geohash当前区域周围8个区域编码"><a href="#用打表的方式解决求Geohash当前区域周围8个区域编码" class="headerlink" title="用打表的方式解决求Geohash当前区域周围8个区域编码"></a>用打表的方式解决求Geohash当前区域周围8个区域编码</h2><p><a href="https://blog.csdn.net/u014520745/article/details/52619796" target="_blank" rel="noopener">https://blog.csdn.net/u014520745/article/details/52619796</a></p>
+<h2 id="订制经纬度范围"><a href="#订制经纬度范围" class="headerlink" title="订制经纬度范围"></a>订制经纬度范围</h2><p>标准的geohash算法的经度范围是(-180,180)，纬度范围为(-90,90)，这个范围是适用于全球的地理位置的。但是我们目前的应用数据点仅局限于国内，所以可以将范围缩小。</p>
+<ul>
+<li>减少计算的次数提高性能</li>
+<li>降低geohash有效值的位数</li>
+<li>自定义经纬度范围可选定一个趋于正方形的范围，当计算结果为一个圆形区域，这样能更好的和圆契合。</li>
+</ul>
+<p>​    可选定经纬度范围， 经度(75, 135)，纬度(18, 53)。</p>
+<p>GeoHash获取矩形的四个顶点</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">Geohash.bounds = function(geohash) &#123;</span><br><span class="line">    if (geohash.length === 0) throw new Error(&apos;Invalid geohash&apos;);</span><br><span class="line"></span><br><span class="line">    geohash = geohash.toLowerCase();</span><br><span class="line"></span><br><span class="line">    var evenBit = true;</span><br><span class="line">    var latMin =  -90, latMax =  90;</span><br><span class="line">    var lonMin = -180, lonMax = 180;</span><br><span class="line"></span><br><span class="line">    for (var i=0; i&lt;geohash.length; i++) &#123;</span><br><span class="line">        var chr = geohash.charAt(i);</span><br><span class="line">        var idx = Geohash.base32.indexOf(chr);</span><br><span class="line">        if (idx == -1) throw new Error(&apos;Invalid geohash&apos;);</span><br><span class="line"></span><br><span class="line">        for (var n=4; n&gt;=0; n--) &#123;</span><br><span class="line">            var bitN = idx &gt;&gt; n &amp; 1;</span><br><span class="line">            if (evenBit) &#123;</span><br><span class="line">                // longitude</span><br><span class="line">                var lonMid = (lonMin+lonMax) / 2;</span><br><span class="line">                if (bitN == 1) &#123;</span><br><span class="line">                    lonMin = lonMid;</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    lonMax = lonMid;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                // latitude</span><br><span class="line">                var latMid = (latMin+latMax) / 2;</span><br><span class="line">                if (bitN == 1) &#123;</span><br><span class="line">                    latMin = latMid;</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    latMax = latMid;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            evenBit = !evenBit;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    var bounds = &#123;</span><br><span class="line">        sw: &#123; lat: latMin, lon: lonMin &#125;,</span><br><span class="line">        ne: &#123; lat: latMax, lon: lonMax &#125;,</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    return bounds;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>参考</p>
+<p><a href="https://my.oschina.net/shipley/blog/704964" target="_blank" rel="noopener">Geohash介绍及针对具体需求的改良</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/31/机器学习/NLP/fasttext/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/03/31/机器学习/NLP/fasttext/" class="post-title-link" itemprop="url">fastText</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-03-31 10:28:31" itemprop="dateCreated datePublished" datetime="2018-03-31T10:28:31+08:00">2018-03-31</time>
+            </span>
+          
+
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/03/31/机器学习/NLP/fasttext/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/31/机器学习/NLP/fasttext/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://heleifz.github.io/14732610572844.html" target="_blank" rel="noopener">fastText 源码分析</a></p>
+<p><a href="http://www.ijiandao.com/2b/baijia/89997.html" target="_blank" rel="noopener">fastText原理和实践</a></p>
+<p><a href="http://www.cnblogs.com/DjangoBlog/p/7903647.html" target="_blank" rel="noopener">带监督的文本分类算法FastText</a></p>
+<p><a href="https://blog.csdn.net/lxg0807/article/details/52960072" target="_blank" rel="noopener">文本分类（六）：使用fastText对文本进行分类—小插曲</a></p>
+<p>本地测试代码``</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/25/总结与思考/如何阅读代码/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/03/25/总结与思考/如何阅读代码/" class="post-title-link" itemprop="url">如何阅读代码</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-03-25 21:56:56 / 修改时间：22:01:30" itemprop="dateCreated datePublished" datetime="2018-03-25T21:56:56+08:00">2018-03-25</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/总结与思考/" itemprop="url" rel="index"><span itemprop="name">总结与思考</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/03/25/总结与思考/如何阅读代码/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/25/总结与思考/如何阅读代码/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>从宏观到微观的原则。</p>
+<p>即明确读代码的目的，找到关键问题，忽略中间的细节。</p>
+<p>比如今天读w2v的增量学习代码，花了太多时间读小模型的具体实现，又看了不少理论，其实增量学习的逻辑只在后面一点，浪费了大量时间。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/23/机器学习/计算广告/相关文章/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/03/23/机器学习/计算广告/相关文章/" class="post-title-link" itemprop="url">相关文章</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-03-23 21:02:13" itemprop="dateCreated datePublished" datetime="2018-03-23T21:02:13+08:00">2018-03-23</time>
+            </span>
+          
+
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/计算广告/" itemprop="url" rel="index"><span itemprop="name">计算广告</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/03/23/机器学习/计算广告/相关文章/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/23/机器学习/计算广告/相关文章/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>腾讯2017广告大赛的代码<a href="https://github.com/BladeCoda/Tencent2017_Final_Coda_Allegro" target="_blank" rel="noopener">https://github.com/BladeCoda/Tencent2017_Final_Coda_Allegro</a></p>
+<p>在线广告中基于转化率提升的竞价策略<a href="https://zhuanlan.zhihu.com/p/24801130" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/24801130</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/23/编程语言学习/PYTHON/读取文件内容并写到kafka/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -600,7 +2015,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-05 12:52:15" itemprop="dateModified" datetime="2019-07-05T12:52:15+08:00">2019-07-05</time>
+                <time title="修改时间：2019-07-15 18:24:02" itemprop="dateModified" datetime="2019-07-15T18:24:02+08:00">2019-07-15</time>
               </span>
             
           
@@ -737,13 +2152,17 @@
 <p>这两个方法会判断全部列，你也可以指定部分列进行重复项判段。</p>
 <p>例如，希望对名字为k2的列进行去重，</p>
 <p>data.drop_duplicates([‘k2’])</p>
+<h2 id="修改列名"><a href="#修改列名" class="headerlink" title="修改列名"></a>修改列名</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 可以修改任意多的列</span><br><span class="line">a.rename(columns=&#123;&apos;A&apos;:&apos;a&apos;, &apos;C&apos;:&apos;c&apos;&#125;, inplace = True)</span><br></pre></td></tr></table></figure>
 <h1 id="多个DataFrame操作"><a href="#多个DataFrame操作" class="headerlink" title="多个DataFrame操作"></a>多个DataFrame操作</h1><h2 id="合并"><a href="#合并" class="headerlink" title="合并"></a>合并</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">objs 是需要拼接的对象集合，一般为列表或者字典</span><br><span class="line">axis=0 是行拼接，拼接之后行数增加，列数也根据join来定，join=’outer’时，列数是两表并集。同理join=’inner’,列数是两表交集。</span><br><span class="line">在默认情况下，axis=0为纵向拼接，此时有</span><br><span class="line">concat([df1,df2]) 等价于 df1.append(df2)</span><br><span class="line"></span><br><span class="line">在axis=1 时为横向拼接 ，此时有</span><br><span class="line">concat([df1,df2],axis=1) 等价于 merge(df1,df2,left_index=True,right_index=True,how=&apos;outer&apos;)</span><br></pre></td></tr></table></figure>
 <h1 id="处理数据"><a href="#处理数据" class="headerlink" title="处理数据"></a>处理数据</h1><h2 id="填充缺失值"><a href="#填充缺失值" class="headerlink" title="填充缺失值"></a>填充缺失值</h2><p>使用一个全局常量填充缺失值：将缺失值用同一个常数（如Unknown或﹣∞）替换。如果缺失值都用Unknown替换，则挖掘程序可能误认为它们形成了一个有趣的概念，因为它们都具有相同的值“Unknown”。因此此方法虽然简单但不可靠。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">data.Cabin.fillna(&apos;unknown&apos;,inplace=True)</span><br><span class="line"></span><br><span class="line">df_all.fillna(0, inplace=True)</span><br></pre></td></tr></table></figure>
 <p>使用属性的均值填充缺失值：例如，假定顾客的平均收入为56000美元，则使用该值替换income中的缺失值。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data.Age.fillna(data.Age.mean(),inplace=True)</span><br></pre></td></tr></table></figure>
 <h2 id="新建列并赋值"><a href="#新建列并赋值" class="headerlink" title="新建列并赋值"></a>新建列并赋值</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">frame[&apos;panduan&apos;] = frame.city.apply(lambda x: 1 if &apos;ing&apos; in x else 0)</span><br></pre></td></tr></table></figure>
+<h2 id="插入列到指定位置"><a href="#插入列到指定位置" class="headerlink" title="插入列到指定位置"></a>插入列到指定位置</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">app_node.insert(0, &apos;l:label&apos;, &apos;APP&apos;)</span><br></pre></td></tr></table></figure>
 <h2 id="Drop列"><a href="#Drop列" class="headerlink" title="Drop列"></a>Drop列</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">df1t.drop([&apos;app&apos;], axis=1, inplace=True)</span><br></pre></td></tr></table></figure>
+<h2 id="复制列"><a href="#复制列" class="headerlink" title="复制列"></a>复制列</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 相当于新建列</span><br><span class="line">app_proposer_relat[&apos;id:string:proposerIndex&apos;]=app_proposer_relat[&apos;id:string:appCodeIndex&apos;]</span><br></pre></td></tr></table></figure>
+<h2 id="改变列的顺序"><a href="#改变列的顺序" class="headerlink" title="改变列的顺序"></a>改变列的顺序</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 先弹出再插入</span><br><span class="line"># get a list of columns</span><br><span class="line">cols = list(df)</span><br><span class="line"># move the column to head of list using index, pop and insert</span><br><span class="line">cols.insert(0, cols.pop(cols.index(&apos;Mid&apos;)))</span><br></pre></td></tr></table></figure>
 <h2 id="选择列"><a href="#选择列" class="headerlink" title="选择列"></a>选择列</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">col_imp = [&apos;mobile_city_code&apos;,&apos;label&apos;]</span><br><span class="line">df_train = pd.DataFrame(df_train, columns=col_imp)</span><br></pre></td></tr></table></figure>
 <h2 id="改列名"><a href="#改列名" class="headerlink" title="改列名"></a>改列名</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a.rename(columns=&#123;&apos;A&apos;:&apos;a&apos;, &apos;C&apos;:&apos;c&apos;&#125;, inplace = True)</span><br></pre></td></tr></table></figure>
 <h1 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h1><h2 id="用kmeans聚类"><a href="#用kmeans聚类" class="headerlink" title="用kmeans聚类"></a>用kmeans聚类</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="comment">#读取文本数据到DataFrame中，将数据转换为matrix，保存在dataSet中</span></span><br><span class="line">df = pd.read_table(<span class="string">'d:/22.txt'</span>)</span><br><span class="line">dataSet = df.as_matrix(columns=<span class="keyword">None</span>)</span><br><span class="line"><span class="comment"># n_clusters=4，参数设置需要的分类这里设置成4类</span></span><br><span class="line">kmeans = KMeans(n_clusters=<span class="number">4</span>, random_state=<span class="number">0</span>).fit(dataSet)</span><br><span class="line"><span class="comment">#center为各类的聚类中心，保存在df_center的DataFrame中给数据加上标签</span></span><br><span class="line">center = kmeans.cluster_centers_</span><br><span class="line">df_center = pd.DataFrame(center, columns=[<span class="string">'x'</span>, <span class="string">'y'</span>])</span><br><span class="line"><span class="comment">#标注每个点的聚类结果</span></span><br><span class="line">labels = kmeans.labels_</span><br><span class="line"><span class="comment">#将原始数据中的索引设置成得到的数据类别，根据索引提取各类数据并保存</span></span><br><span class="line">df = pd.DataFrame(dataSet, index=labels, columns=[<span class="string">'x'</span>, <span class="string">'y'</span>])</span><br><span class="line">df1 = df[df.index==<span class="number">0</span>]</span><br><span class="line">df2 = df[df.index==<span class="number">1</span>]</span><br><span class="line">df3 = df[df.index==<span class="number">2</span>]</span><br><span class="line">df4 = df[df.index==<span class="number">3</span>]</span><br><span class="line"><span class="comment">#绘图</span></span><br><span class="line">plt.figure(figsize=(<span class="number">10</span>,<span class="number">8</span>), dpi=<span class="number">80</span>)</span><br><span class="line">axes = plt.subplot()</span><br><span class="line"><span class="comment">#s表示点大小，c表示color，marker表示点类型，DataFrame数据列引用参考博客其他文章</span></span><br><span class="line">type1 = axes.scatter(df1.loc[:,[<span class="string">'x'</span>]], df1.loc[:,[<span class="string">'y'</span>]], s=<span class="number">50</span>, c=<span class="string">'red'</span>, marker=<span class="string">'d'</span>)</span><br><span class="line">type2 = axes.scatter(df2.loc[:,[<span class="string">'x'</span>]], df2.loc[:,[<span class="string">'y'</span>]], s=<span class="number">50</span>, c=<span class="string">'green'</span>, marker=<span class="string">'*'</span>)</span><br><span class="line">type3 = axes.scatter(df3.loc[:,[<span class="string">'x'</span>]], df3.loc[:,[<span class="string">'y'</span>]], s=<span class="number">50</span>, c=<span class="string">'brown'</span>, marker=<span class="string">'p'</span>)</span><br><span class="line">type4 = axes.scatter(df4.loc[:,[<span class="string">'x'</span>]], df4.loc[:,[<span class="string">'y'</span>]], s=<span class="number">50</span>, c=<span class="string">'black'</span>)</span><br><span class="line"><span class="comment">#显示聚类中心数据点</span></span><br><span class="line">type_center = axes.scatter(df_center.loc[:,<span class="string">'x'</span>], df_center.loc[:,<span class="string">'y'</span>], s=<span class="number">40</span>, c=<span class="string">'blue'</span>)</span><br><span class="line">plt.xlabel(<span class="string">'x'</span>, fontsize=<span class="number">16</span>)</span><br><span class="line">plt.ylabel(<span class="string">'y'</span>, fontsize=<span class="number">16</span>)</span><br><span class="line">axes.legend((type1, type2, type3, type4, type_center), (<span class="string">'0'</span>,<span class="string">'1'</span>,<span class="string">'2'</span>,<span class="string">'3'</span>,<span class="string">'center'</span>), loc=<span class="number">1</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
@@ -1049,201 +2468,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/23/编程语言学习/JAVA/java出错汇总/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/03/23/编程语言学习/JAVA/java出错汇总/" class="post-title-link" itemprop="url">java出错总结</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-03-23 21:02:13" itemprop="dateCreated datePublished" datetime="2018-03-23T21:02:13+08:00">2018-03-23</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-03 23:18:12" itemprop="dateModified" datetime="2019-07-03T23:18:12+08:00">2019-07-03</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/JAVA/" itemprop="url" rel="index"><span itemprop="name">JAVA</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/23/编程语言学习/JAVA/java出错汇总/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/23/编程语言学习/JAVA/java出错汇总/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="MD5线程不安全"><a href="#MD5线程不安全" class="headerlink" title="MD5线程不安全"></a>MD5线程不安全</h1><p>MessageDigest线程不安全，多线程下会报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">java.lang.ArrayIndexOutOfBoundsException</span><br><span class="line"></span><br><span class="line">	at java.lang.System.arraycopy(Native Method)</span><br><span class="line"></span><br><span class="line">	at sun.security.provider.DigestBase.engineUpdate(DigestBase.java:114)</span><br><span class="line"></span><br><span class="line">	at java.security.MessageDigest$Delegate.engineUpdate(MessageDigest.java:584)</span><br><span class="line"></span><br><span class="line">	at java.security.MessageDigest.update(MessageDigest.java:335)</span><br><span class="line"></span><br><span class="line">	at com.buzzinate.common.util.hash.MD5Util.getMD5String(MD5Util.java:98)</span><br><span class="line"></span><br><span class="line">	at com.buzzinate.common.util.hash.MD5Util.getMD5String(MD5Util.java:94)</span><br></pre></td></tr></table></figure>
-<p>改用apache的commons-codec</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt; </span><br><span class="line"></span><br><span class="line">           &lt;groupId&gt;commons-codec&lt;/groupId&gt; </span><br><span class="line"></span><br><span class="line">           &lt;artifactId&gt;commons-codec&lt;/artifactId&gt; </span><br><span class="line"></span><br><span class="line">           &lt;version&gt;1.10&lt;/version&gt; </span><br><span class="line"></span><br><span class="line">       &lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<p>使用方法</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public static String encodeMD5Hex(String data)     </span><br><span class="line"></span><br><span class="line"> &#123;</span><br><span class="line"></span><br><span class="line">          return DigestUtils.md5Hex(data);      </span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>该方法是线程安全的</p>
-<h1 id="Eclipse闪退"><a href="#Eclipse闪退" class="headerlink" title="Eclipse闪退"></a>Eclipse闪退</h1><p>每次闪退后都提示查看\workspace.metadata.log，发现有如下异常信息记录：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">!ENTRY org.eclipse.e4.ui.workbench.swt 4 2 2016-08-23 08:42:49.516  </span><br><span class="line">!MESSAGE Problems occurred when invoking code from plug-in: &quot;org.eclipse.e4.ui.workbench.swt&quot;.  </span><br><span class="line">!STACK 0  </span><br><span class="line">java.lang.IllegalArgumentException: Argument cannot be null</span><br></pre></td></tr></table></figure>
-<p>出现该问题的原因是：由于项目没有正常关闭运行而导致”workbench.xmi”中的”persistedState”标签还保持在运行时的配置造成的。</p>
-<p>解决办法：</p>
-<p>找到<code>&lt;workspace&gt;/.metadata/.plugins/org.eclipse.e4.workbench/workbench.xmi</code>文件，将其删掉，再重启Eclipse，恢复正常。</p>
-<h1 id="ConcurrentModificationException"><a href="#ConcurrentModificationException" class="headerlink" title="ConcurrentModificationException"></a>ConcurrentModificationException</h1><p><a href="http://www.cnblogs.com/dolphin0520/p/3933551.html" target="_blank" rel="noopener">http://www.cnblogs.com/dolphin0520/p/3933551.html</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/23/编程语言学习/JAVA/scala和java混编项目创建/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1403,904 +2627,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/23/算法与数据结构/树的算法题/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/03/23/算法与数据结构/树的算法题/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-03-23 21:02:13" itemprop="dateCreated datePublished" datetime="2018-03-23T21:02:13+08:00">2018-03-23</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-03-04 17:57:16" itemprop="dateModified" datetime="2019-03-04T17:57:16+08:00">2019-03-04</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/23/算法与数据结构/树的算法题/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/23/算法与数据结构/树的算法题/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="二叉树插入"><a href="#二叉树插入" class="headerlink" title="二叉树插入"></a>二叉树插入</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TreeNode</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, val, left, right)</span>:</span></span><br><span class="line">        self.val = val</span><br><span class="line">        self.left = left</span><br><span class="line">        self.right = right</span><br><span class="line">      </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BinarySearchTree</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">insert</span><span class="params">(self, root, val)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> root == <span class="keyword">None</span>:</span><br><span class="line">            root = TreeNode(val, <span class="keyword">None</span>, <span class="keyword">None</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">if</span> val &lt; root.val:</span><br><span class="line">                root.left = self.insert(root.left, val)</span><br><span class="line">            <span class="keyword">if</span> val &gt; root.val:</span><br><span class="line">                root.right = self.insert(root.right, val)</span><br><span class="line">        <span class="keyword">return</span> root    </span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">preOrder</span><span class="params">(self, root)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> root:</span><br><span class="line">            <span class="keyword">print</span> root.val</span><br><span class="line">            self.preOrder(root.left)</span><br><span class="line">            self.preOrder(root.right)</span><br><span class="line"></span><br><span class="line">Tree = BinarySearchTree()</span><br><span class="line">root = <span class="keyword">None</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]:</span><br><span class="line">    root = Tree.insert(root, i)</span><br><span class="line">Tree.preOrder(root)</span><br></pre></td></tr></table></figure>
-<h1 id="有序数组创建二叉树"><a href="#有序数组创建二叉树" class="headerlink" title="有序数组创建二叉树"></a>有序数组创建二叉树</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">class Solution:  </span><br><span class="line">    def sortedArrayToBST(self, num):  </span><br><span class="line">        if not num:  </span><br><span class="line">            return None  </span><br><span class="line">          </span><br><span class="line">        mid = len(num)//2  #“//”表示整数除法；“/”浮点数除法；  </span><br><span class="line">        root = TreeNode(num[mid])  </span><br><span class="line">        left = num[:mid]  </span><br><span class="line">        right = num[mid+1:]  </span><br><span class="line">        root.left = self.sortedArrayToBST(left)  </span><br><span class="line">        root.right = self.sortedArrayToBST(right)  </span><br><span class="line">        return root</span><br></pre></td></tr></table></figure>
-<h1 id="遍历二叉树"><a href="#遍历二叉树" class="headerlink" title="遍历二叉树"></a>遍历二叉树</h1><p><code>algorithms/</code></p>
-<p>前序 根左右</p>
-<p>中序 左根右</p>
-<p>后序 左右根</p>
-<p>递归方式</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">class Tree(object):</span><br><span class="line">    def __init__(self,data,left,right):</span><br><span class="line">        self.data=data</span><br><span class="line">        self.left=left</span><br><span class="line">        self.right=right</span><br><span class="line">def post_visit(Tree):</span><br><span class="line">    if Tree:</span><br><span class="line">        post_visit(Tree.left)</span><br><span class="line">        post_visit(Tree.right)</span><br><span class="line">        print Tree.data</span><br><span class="line">def pre_visit(Tree):</span><br><span class="line">    if Tree:</span><br><span class="line">        print Tree.data</span><br><span class="line">        pre_visit(Tree.left)</span><br><span class="line">        pre_visit(Tree.right)</span><br><span class="line">def in_visit(Tree):</span><br><span class="line">    if Tree:</span><br><span class="line">        in_visit(Tree.left)</span><br><span class="line">        print Tree.data</span><br><span class="line">        in_visit(Tree.right)</span><br></pre></td></tr></table></figure>
-<p>非递归</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">class TreeNode:  </span><br><span class="line">    def __init__(self,value=None,leftNode=None,rightNode=None):  </span><br><span class="line">        self.value = value  </span><br><span class="line">        self.leftNode = leftNode  </span><br><span class="line">        self.rightNode = rightNode  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">class Tree:  </span><br><span class="line">    def __init__(self,root=None):  </span><br><span class="line">        self.root = root  </span><br><span class="line">  </span><br><span class="line">    def preOrder(self):  </span><br><span class="line">        if not self.root:  </span><br><span class="line">            return  </span><br><span class="line">        stackNode = []  </span><br><span class="line">        stackNode.append(self.root)  </span><br><span class="line">        while stackNode:  </span><br><span class="line">            node = stackNode.pop()  </span><br><span class="line">            print node.value,  </span><br><span class="line">            if node.rightNode:  </span><br><span class="line">                stackNode.append(node.rightNode)  </span><br><span class="line">            if node.leftNode:  </span><br><span class="line">                stackNode.append(node.leftNode)</span><br></pre></td></tr></table></figure>
-<h1 id="平衡二叉树"><a href="#平衡二叉树" class="headerlink" title="平衡二叉树"></a>平衡二叉树</h1><p>输入一棵二叉树，判断该二叉树是否是平衡二叉树。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def getDepth(self , Root):</span><br><span class="line">        if Root == None:</span><br><span class="line">            return 0;</span><br><span class="line">        lDepth = self.getDepth(Root.left);</span><br><span class="line">        rDepth = self.getDepth(Root.right);</span><br><span class="line">        return max(lDepth , rDepth) + 1;</span><br><span class="line"></span><br><span class="line">    def IsBalanced_Solution(self, pRoot):</span><br><span class="line">        if not pRoot:</span><br><span class="line">            return True</span><br><span class="line">        lDepth = self.getDepth(pRoot.left);</span><br><span class="line">        rDepth = self.getDepth(pRoot.right);</span><br><span class="line">        diff = lDepth - rDepth;</span><br><span class="line">        if diff &lt; -1 or diff &gt; 1:</span><br><span class="line">            return False;</span><br><span class="line">        return self.IsBalanced_Solution(pRoot.left) and self.IsBalanced_Solution(pRoot.right);</span><br></pre></td></tr></table></figure>
-<h1 id="判断一棵树是否为另一棵的子树"><a href="#判断一棵树是否为另一棵的子树" class="headerlink" title="判断一棵树是否为另一棵的子树"></a>判断一棵树是否为另一棵的子树</h1><p>给定两棵二叉树，判断T2是否是T1某棵子数的结构。</p>
-<p>T1序列化成字符串str1;</p>
-<p>T2序列化成字符串str2;</p>
-<p>用KMP算法判断str1中是否包含str2:如果str1包含str2,说明T1包含于T2结构一致的子树。</p>
-<p>KMP算法</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#KMP  </span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">kmp_match</span><span class="params">(s, p)</span>:</span>  </span><br><span class="line">    m = len(s); n = len(p)  </span><br><span class="line">    cur = <span class="number">0</span><span class="comment">#起始指针cur  </span></span><br><span class="line">    table = partial_table(p)  </span><br><span class="line">    <span class="keyword">while</span> cur&lt;=m-n:  </span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(n):  </span><br><span class="line">            <span class="keyword">if</span> s[i+cur]!=p[i]:  </span><br><span class="line">                cur += max(i - table[i<span class="number">-1</span>], <span class="number">1</span>)<span class="comment">#有了部分匹配表,我们不只是单纯的1位1位往右移,可以一次移动多位  </span></span><br><span class="line">                <span class="keyword">break</span>  </span><br><span class="line">        <span class="keyword">else</span>:  </span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">True</span>  </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">False</span>  </span><br><span class="line">  </span><br><span class="line"><span class="comment">#部分匹配表  </span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">partial_table</span><span class="params">(p)</span>:</span>  </span><br><span class="line">    <span class="string">'''''partial_table("ABCDABD") -&gt; [0, 0, 0, 0, 1, 2, 0]'''</span>  </span><br><span class="line">    prefix = set()  </span><br><span class="line">    postfix = set()  </span><br><span class="line">    ret = [<span class="number">0</span>]  </span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,len(p)):  </span><br><span class="line">        prefix.add(p[:i])  </span><br><span class="line">        postfix = &#123;p[j:i+<span class="number">1</span>] <span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">1</span>,i+<span class="number">1</span>)&#125;  </span><br><span class="line">        ret.append(len((prefix&amp;postfix <span class="keyword">or</span> &#123;<span class="string">''</span>&#125;).pop()))  </span><br><span class="line">    <span class="keyword">return</span> ret</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/23/算法与数据结构/最长公共子序列/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/03/23/算法与数据结构/最长公共子序列/" class="post-title-link" itemprop="url">最长公共子序列</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-03-23 21:02:13" itemprop="dateCreated datePublished" datetime="2018-03-23T21:02:13+08:00">2018-03-23</time>
-            </span>
-          
-
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/算法与数据结构/" itemprop="url" rel="index"><span itemprop="name">算法与数据结构</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/23/算法与数据结构/最长公共子序列/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/23/算法与数据结构/最长公共子序列/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>转自<a href="http://blog.csdn.net/littlethunder/article/details/25637173" target="_blank" rel="noopener">http://blog.csdn.net/littlethunder/article/details/25637173</a></p>
-<p>序列a共同拥有m个元素，序列b共同拥有n个元素，假设a[m-1]==b[n-1]，那么a[:m]和b[:n]的最长公共子序列长度就是a[:m-1]和b[:n-1]的最长公共子序列长度+1；假设a[m-1]!=b[n-1]，那么a[:m]和b[:n]的最长公共子序列长度就是MAX（a[:m-1]和b[:n]的最长公共子序列长度，a[:m]和b[:n-1]的最长公共子序列长度）。</p>
-<p><img src="http://img.blog.csdn.net/20140512165522375?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGl0dGxldGh1bmRlcg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">lcs</span><span class="params">(a,b)</span>:</span></span><br><span class="line">	lena=len(a)</span><br><span class="line">	lenb=len(b)</span><br><span class="line">	c=[[<span class="number">0</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(lenb+<span class="number">1</span>)] <span class="keyword">for</span> j <span class="keyword">in</span> range(lena+<span class="number">1</span>)]</span><br><span class="line">	flag=[[<span class="number">0</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(lenb+<span class="number">1</span>)] <span class="keyword">for</span> j <span class="keyword">in</span> range(lena+<span class="number">1</span>)]</span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> range(lena):</span><br><span class="line">		<span class="keyword">for</span> j <span class="keyword">in</span> range(lenb):</span><br><span class="line">			<span class="keyword">if</span> a[i]==b[j]:</span><br><span class="line">				c[i+<span class="number">1</span>][j+<span class="number">1</span>]=c[i][j]+<span class="number">1</span></span><br><span class="line">				flag[i+<span class="number">1</span>][j+<span class="number">1</span>]=<span class="string">'ok'</span></span><br><span class="line">			<span class="keyword">elif</span> c[i+<span class="number">1</span>][j]&gt;c[i][j+<span class="number">1</span>]:</span><br><span class="line">				c[i+<span class="number">1</span>][j+<span class="number">1</span>]=c[i+<span class="number">1</span>][j]</span><br><span class="line">				flag[i+<span class="number">1</span>][j+<span class="number">1</span>]=<span class="string">'left'</span></span><br><span class="line">			<span class="keyword">else</span>:</span><br><span class="line">				c[i+<span class="number">1</span>][j+<span class="number">1</span>]=c[i][j+<span class="number">1</span>]</span><br><span class="line">				flag[i+<span class="number">1</span>][j+<span class="number">1</span>]=<span class="string">'up'</span></span><br><span class="line">	<span class="keyword">return</span> c,flag</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">printLcs</span><span class="params">(flag,a,i,j)</span>:</span></span><br><span class="line">	<span class="keyword">if</span> i==<span class="number">0</span> <span class="keyword">or</span> j==<span class="number">0</span>:</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	<span class="keyword">if</span> flag[i][j]==<span class="string">'ok'</span>:</span><br><span class="line">		printLcs(flag,a,i<span class="number">-1</span>,j<span class="number">-1</span>)</span><br><span class="line">		print(a[i<span class="number">-1</span>],end=<span class="string">''</span>)</span><br><span class="line">	<span class="keyword">elif</span> flag[i][j]==<span class="string">'left'</span>:</span><br><span class="line">		printLcs(flag,a,i,j<span class="number">-1</span>)</span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		printLcs(flag,a,i<span class="number">-1</span>,j)</span><br><span class="line">		</span><br><span class="line">a=<span class="string">'ABCBDAB'</span></span><br><span class="line">b=<span class="string">'BDCABA'</span></span><br><span class="line">c,flag=lcs(a,b)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> c:</span><br><span class="line">	print(i)</span><br><span class="line">print(<span class="string">''</span>)</span><br><span class="line"><span class="keyword">for</span> j <span class="keyword">in</span> flag:</span><br><span class="line">	print(j)</span><br><span class="line">print(<span class="string">''</span>)</span><br><span class="line">printLcs(flag,a,len(a),len(b))</span><br><span class="line">print(<span class="string">''</span>)</span><br></pre></td></tr></table></figure>
-<p><img src="http://img.blog.csdn.net/20140512170027312?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGl0dGxldGh1bmRlcg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></p>
-<p><img src="http://img.blog.csdn.net/20140512170130046?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGl0dGxldGh1bmRlcg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></p>
-<p>上图是执行结果，第一个矩阵是计算公共子序列长度的，能够看到最长是4；第二个矩阵是构造这个最优解用的；最后输出一个最优解BCBA。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/23/算法与数据结构/所有回文子串/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/03/23/算法与数据结构/所有回文子串/" class="post-title-link" itemprop="url">所有回文子串</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-03-23 21:02:13" itemprop="dateCreated datePublished" datetime="2018-03-23T21:02:13+08:00">2018-03-23</time>
-            </span>
-          
-
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/算法与数据结构/" itemprop="url" rel="index"><span itemprop="name">算法与数据结构</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/23/算法与数据结构/所有回文子串/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/23/算法与数据结构/所有回文子串/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>一种是用了3重循环的方法</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> a[<span class="number">505</span>];</span><br><span class="line">    <span class="keyword">int</span> n,len,begin,maxBegin,i,j;</span><br><span class="line">    freopen(<span class="string">"29.in"</span>,<span class="string">"r"</span>,<span class="built_in">stdin</span>);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%s"</span>,a);</span><br><span class="line">    n=<span class="built_in">strlen</span>(a);</span><br><span class="line">    <span class="keyword">for</span>(len=<span class="number">2</span>;len&lt;=n;len++)<span class="comment">//枚举子串的所有可能的长度</span></span><br><span class="line">    &#123;</span><br><span class="line">        maxBegin=n-len;</span><br><span class="line">        <span class="keyword">for</span>(begin=<span class="number">0</span>;begin&lt;=maxBegin;begin++)<span class="comment">//枚举子串的开始点 </span></span><br><span class="line">        &#123;</span><br><span class="line">            j=begin+len<span class="number">-1</span>;</span><br><span class="line">            <span class="keyword">for</span>(i=begin;i&lt;j;i++,j--) <span class="comment">//遍历当前子串（a[i]~a[begin+len-1]）,判断是否回文串 </span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(a[i]!=a[j]) <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(i&gt;=j)<span class="comment">//是回文串</span></span><br><span class="line">            &#123;</span><br><span class="line">                j=begin+len<span class="number">-1</span>;</span><br><span class="line">                <span class="keyword">for</span>(i=begin;i&lt;=j;i++) <span class="built_in">printf</span>(<span class="string">"%c"</span>,a[i]);</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/23/算法与数据结构/敏感词过滤/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/03/23/算法与数据结构/敏感词过滤/" class="post-title-link" itemprop="url">敏感词过滤</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-03-23 21:02:13" itemprop="dateCreated datePublished" datetime="2018-03-23T21:02:13+08:00">2018-03-23</time>
-            </span>
-          
-
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/算法与数据结构/" itemprop="url" rel="index"><span itemprop="name">算法与数据结构</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/23/算法与数据结构/敏感词过滤/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/23/算法与数据结构/敏感词过滤/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>转自 <a href="http://www.mamicode.com/info-detail-965728.html" target="_blank" rel="noopener">敏感词过滤的算法原理之DFA算法</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/23/编程语言学习/JAVA/JAVA面试题/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/03/23/编程语言学习/JAVA/JAVA面试题/" class="post-title-link" itemprop="url">JAVA面试题总结</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-03-23 21:02:13" itemprop="dateCreated datePublished" datetime="2018-03-23T21:02:13+08:00">2018-03-23</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-03 22:55:39" itemprop="dateModified" datetime="2019-07-03T22:55:39+08:00">2019-07-03</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/JAVA/" itemprop="url" rel="index"><span itemprop="name">JAVA</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2018/03/23/编程语言学习/JAVA/JAVA面试题/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/23/编程语言学习/JAVA/JAVA面试题/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="HashMap和HashTable"><a href="#HashMap和HashTable" class="headerlink" title="HashMap和HashTable"></a>HashMap和HashTable</h1><p>HashMap通过hashcode对其内容进行快速查找，而 TreeMap中所有的元素都保持着某种固定的顺序，如果你需要得到一个有序的结果你就应该使用TreeMap（HashMap中元素的排列顺序是不固定的）。</p>
-<h1 id="HashMap和TreeMap"><a href="#HashMap和TreeMap" class="headerlink" title="HashMap和TreeMap"></a>HashMap和TreeMap</h1><p><a href="http://blog.csdn.net/fujiakai/article/details/51585767" target="_blank" rel="noopener">http://blog.csdn.net/fujiakai/article/details/51585767</a></p>
-<p>1、继承的父类不同</p>
-<p>Hashtable继承自Dictionary类，而HashMap继承自AbstractMap类。但二者都实现了Map接口。</p>
-<p>2、线程安全性不同</p>
-<p>​      Hashtable 中的方法是Synchronize的，而HashMap中的方法在缺省情况下是非Synchronize的。在多线程并发的环境下，可以直接使用Hashtable，不需要自己为它的方法实现同步，但使用HashMap时就必须要自己增加同步处理。</p>
-<p>3、contains方法</p>
-<p>HashMap把Hashtable的contains方法去掉了，改成containsValue和containsKey，因为contains方法容易让人引起误解。</p>
-<p>Hashtable则保留了contains，containsValue和containsKey三个方法，其中contains和containsValue功能相同。</p>
-<p>4、key和value是否允许为null</p>
-<p>Hashtable中，key和value都不允许出现null值。HashMap中，null可以作为键，这样的键只有一个；可以有一个或多个键所对应的值为null。因此，在HashMap中不能由get()方法来判断HashMap中是否存在某个键， 而应该用containsKey()方法来判断。</p>
-<p>5、遍历方式的内部实现上不同</p>
-<p>Hashtable、HashMap都使用了 Iterator。而由于历史原因，Hashtable还使用了Enumeration的方式 。</p>
-<p>6、hash值不同</p>
-<p>HashTable直接使用对象的hashCode。而HashMap重新计算hash值。</p>
-<p>hashCode是jdk根据对象的地址或者字符串或者数字算出来的int类型的数值。</p>
-<p>Hashtable在求hash值对应的位置索引时，用取模运算，而HashMap在求位置索引时，则用与运算，且这里一般先用hash&amp;0x7FFFFFFF后，再对length取模，&amp;0x7FFFFFFF的目的是为了将负的hash值转化为正值，因为hash值有可能为负数，而&amp;0x7FFFFFFF后，只有符号外改变，而后面的位都不变。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2347,7 +2673,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">313</span>
+                    <span class="site-state-item-count">319</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

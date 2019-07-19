@@ -357,6 +357,1097 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/05/03/深度学习笔记/tensorflow/基础-莫烦教程/4-2 TensorBoard训练过程/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/03/深度学习笔记/tensorflow/基础-莫烦教程/4-2 TensorBoard训练过程/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-03 23:02:17 / 修改时间：23:15:51" itemprop="dateCreated datePublished" datetime="2019-05-03T23:02:17+08:00">2019-05-03</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/05/03/深度学习笔记/tensorflow/基础-莫烦教程/4-2 TensorBoard训练过程/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/05/03/深度学习笔记/tensorflow/基础-莫烦教程/4-2 TensorBoard训练过程/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-2-tensorboard2/" target="_blank" rel="noopener">https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-2-tensorboard2/</a></p>
+<p>上一篇讲到了 如何可视化TesorBorad整个神经网络结构的过程。 其实tensorboard还可以可视化训练过程( biase变化过程) , 这节重点讲一下可视化训练过程的图标是如何做的 。请看下图, 这是如何做到的呢？</p>
+<p>在histograms里面我们还可以看到更多的layers的变化:</p>
+<p>这里还有一个events , 在这次练习中我们会把 整个训练过程中的误差值（loss）在event里面显示出来, 甚至你可以显示更多你想要显示的东西.</p>
+<h2 id="制作输入源"><a href="#制作输入源" class="headerlink" title="制作输入源"></a>制作输入源</h2><p>由于这节我们观察训练过程中神经网络的变化, 所以首先要添一些模拟数据. Python 的 numpy 工具包可以帮助我们制造一些模拟数据. 所以我们先导入这个工具包:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import tensorflow as tf</span><br><span class="line">import numpy as np</span><br></pre></td></tr></table></figure>
+<p>然后借助 np 中的 <code>np.linespace()</code> 产生随机的数字, 同时为了模拟更加真实我们会添加一些噪声, 这些噪声是通过 <code>np.random.normal()</code> 随机产生的.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">## make up some data</span><br><span class="line">x_data= np.linspace(-1, 1, 300, dtype=np.float32)[:,np.newaxis]</span><br><span class="line">noise=  np.random.normal(0, 0.05, x_data.shape).astype(np.float32)</span><br><span class="line">y_data= np.square(x_data) -0.5+ noise</span><br></pre></td></tr></table></figure>
+<h2 id="在-layer-中为-Weights-biases-设置变化图表-¶"><a href="#在-layer-中为-Weights-biases-设置变化图表-¶" class="headerlink" title="在 layer 中为 Weights, biases 设置变化图表 ¶"></a>在 layer 中为 Weights, biases 设置变化图表 <a href="https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/4-2-tensorboard2/#在-layer-中为-Weights,-biases-设置变化图表" target="_blank" rel="noopener">¶</a></h2><p>通过上图的观察我们发现每个 layer 后面有有一个数字: layer1 和layer2</p>
+<p>于是我们在 <code>add_layer()</code> 方法中添加一个参数 <code>n_layer</code>,用来标识层数, 并且用变量 <code>layer_name</code> 代表其每层的名名称, 代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">def add_layer(</span><br><span class="line">    inputs , </span><br><span class="line">    in_size, </span><br><span class="line">    out_size,</span><br><span class="line">    n_layer, </span><br><span class="line">    activation_function=None):</span><br><span class="line">    ## add one more layer and return the output of this layer</span><br><span class="line">    layer_name=&apos;layer%s&apos;%n_layer  ## define a new var</span><br><span class="line">    ## and so on ……</span><br></pre></td></tr></table></figure>
+<p>接下来,我们为层中的<code>Weights</code>设置变化图, tensorflow中提供了<code>tf.histogram_summary()</code>方法,用来绘制图片, 第一个参数是图表的名称, 第二个参数是图表要记录的变量</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs , </span></span></span><br><span class="line"><span class="function"><span class="params">            in_size, </span></span></span><br><span class="line"><span class="function"><span class="params">            out_size,n_layer, </span></span></span><br><span class="line"><span class="function"><span class="params">            activation_function=None)</span>:</span></span><br><span class="line">    <span class="comment">## add one more layer and return the output of this layer</span></span><br><span class="line">    layer_name=<span class="string">'layer%s'</span>%n_layer</span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'layer'</span>):</span><br><span class="line">         <span class="keyword">with</span> tf.name_scope(<span class="string">'weights'</span>):</span><br><span class="line">              Weights= tf.Variable(tf.random_normal([in_size, out_size]),name=<span class="string">'W'</span>)</span><br><span class="line">              <span class="comment"># tf.histogram_summary(layer_name+'/weights',Weights)   # tensorflow 0.12 以下版的</span></span><br><span class="line">              tf.summary.histogram(layer_name + <span class="string">'/weights'</span>, Weights) <span class="comment"># tensorflow &gt;= 0.12</span></span><br><span class="line">    <span class="comment">##and so no ……</span></span><br></pre></td></tr></table></figure>
+<p>同样的方法我们对<code>biases</code>进行绘制图标:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">with tf.name_scope(&apos;biases&apos;):</span><br><span class="line">    biases = tf.Variable(tf.zeros([1,out_size])+0.1, name=&apos;b&apos;)</span><br><span class="line">    # tf.histogram_summary(layer_name+&apos;/biase&apos;,biases)   # tensorflow 0.12 以下版的</span><br><span class="line">    tf.summary.histogram(layer_name + &apos;/biases&apos;, biases)  # Tensorflow &gt;= 0.12</span><br></pre></td></tr></table></figure>
+<p>至于<code>activation_function</code> 可以不绘制. 我们对output 使用同样的方法:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># tf.histogram_summary(layer_name+&apos;/outputs&apos;,outputs) # tensorflow 0.12 以下版本</span><br><span class="line">tf.summary.histogram(layer_name + &apos;/outputs&apos;, outputs) # Tensorflow &gt;= 0.12</span><br></pre></td></tr></table></figure>
+<p>最终经过我们的修改 , <code>addlayer()</code>方法成为如下的样子:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span><span class="params">(inputs , </span></span></span><br><span class="line"><span class="function"><span class="params">              in_size, </span></span></span><br><span class="line"><span class="function"><span class="params">              out_size,n_layer, </span></span></span><br><span class="line"><span class="function"><span class="params">              activation_function=None)</span>:</span></span><br><span class="line">    <span class="comment">## add one more layer and return the output of this layer</span></span><br><span class="line">    layer_name=<span class="string">'layer%s'</span>%n_layer</span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(layer_name):</span><br><span class="line">         <span class="keyword">with</span> tf.name_scope(<span class="string">'weights'</span>):</span><br><span class="line">              Weights= tf.Variable(tf.random_normal([in_size, out_size]),name=<span class="string">'W'</span>)</span><br><span class="line">              <span class="comment"># tf.histogram_summary(layer_name+'/weights',Weights)</span></span><br><span class="line">              tf.summary.histogram(layer_name + <span class="string">'/weights'</span>, Weights) <span class="comment"># tensorflow &gt;= 0.12</span></span><br><span class="line"></span><br><span class="line">         <span class="keyword">with</span> tf.name_scope(<span class="string">'biases'</span>):</span><br><span class="line">              biases = tf.Variable(tf.zeros([<span class="number">1</span>,out_size])+<span class="number">0.1</span>, name=<span class="string">'b'</span>)</span><br><span class="line">              <span class="comment"># tf.histogram_summary(layer_name+'/biase',biases)</span></span><br><span class="line">              tf.summary.histogram(layer_name + <span class="string">'/biases'</span>, biases)  <span class="comment"># Tensorflow &gt;= 0.12</span></span><br><span class="line"></span><br><span class="line">         <span class="keyword">with</span> tf.name_scope(<span class="string">'Wx_plus_b'</span>):</span><br><span class="line">              Wx_plus_b = tf.add(tf.matmul(inputs,Weights), biases)</span><br><span class="line"></span><br><span class="line">         <span class="keyword">if</span> activation_function <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">            outputs=Wx_plus_b</span><br><span class="line">         <span class="keyword">else</span>:</span><br><span class="line">            outputs= activation_function(Wx_plus_b)</span><br><span class="line"></span><br><span class="line">         <span class="comment"># tf.histogram_summary(layer_name+'/outputs',outputs)</span></span><br><span class="line">         tf.summary.histogram(layer_name + <span class="string">'/outputs'</span>, outputs) <span class="comment"># Tensorflow &gt;= 0.12</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> outputs</span><br></pre></td></tr></table></figure>
+<p>修改之后的名称会显示在每个tensorboard中每个图表的上方显示, 如下图所示:</p>
+<p>由于我们对<code>addlayer</code> 添加了一个参数, 所以修改之前调用<code>addlayer()</code>函数的地方. 对此处进行修改:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># add hidden layer</span><br><span class="line">l1= add_layer(xs, 1, 10 ,  activation_function=tf.nn.relu)</span><br><span class="line"># add output  layer</span><br><span class="line">prediction= add_layer(l1, 10, 1,  activation_function=None)</span><br></pre></td></tr></table></figure>
+<p>添加<code>n_layer</code>参数后, 修改成为 :</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># add hidden layer</span><br><span class="line">l1= add_layer(xs, 1, 10, n_layer=1, activation_function=tf.nn.relu)</span><br><span class="line"># add output  layer</span><br><span class="line">prediction= add_layer(l1, 10, 1, n_layer=2, activation_function=None)</span><br></pre></td></tr></table></figure>
+<h2 id="设置loss的变化图"><a href="#设置loss的变化图" class="headerlink" title="设置loss的变化图"></a>设置loss的变化图</h2><p><code>Loss</code> 的变化图和之前设置的方法略有不同. loss是在tesnorBorad 的event下面的, 这是由于我们使用的是<code>tf.scalar_summary()</code> 方法.</p>
+<p>观看loss的变化比较重要. 当你的loss呈下降的趋势,说明你的神经网络训练是有效果的.</p>
+<p>修改后的代码片段如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">with tf.name_scope(&apos;loss&apos;):</span><br><span class="line">     loss= tf.reduce_mean(tf.reduce_sum(</span><br><span class="line">              tf.square(ys- prediction), reduction_indices=[1]))</span><br><span class="line">     # tf.scalar_summary(&apos;loss&apos;,loss) # tensorflow &lt; 0.12</span><br><span class="line">     tf.summary.scalar(&apos;loss&apos;, loss) # tensorflow &gt;= 0.12</span><br></pre></td></tr></table></figure>
+<h2 id="给所有训练图合并"><a href="#给所有训练图合并" class="headerlink" title="给所有训练图合并"></a>给所有训练图合并</h2><p>接下来， 开始合并打包。 <code>tf.merge_all_summaries()</code> 方法会对我们所有的 <code>summaries</code>合并到一起. 因此在原有代码片段中添加：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">sess= tf.Session()</span><br><span class="line"></span><br><span class="line"># merged= tf.merge_all_summaries()    # tensorflow &lt; 0.12</span><br><span class="line">merged = tf.summary.merge_all() # tensorflow &gt;= 0.12</span><br><span class="line"></span><br><span class="line"># writer = tf.train.SummaryWriter(&apos;logs/&apos;, sess.graph)    # tensorflow &lt; 0.12</span><br><span class="line">writer = tf.summary.FileWriter(&quot;logs/&quot;, sess.graph) # tensorflow &gt;=0.12</span><br><span class="line"></span><br><span class="line"># sess.run(tf.initialize_all_variables()) # tf.initialize_all_variables() # tf 马上就要废弃这种写法</span><br><span class="line">sess.run(tf.global_variables_initializer())  # 替换成这样就好</span><br></pre></td></tr></table></figure>
+<h2 id="训练数据"><a href="#训练数据" class="headerlink" title="训练数据"></a>训练数据</h2><p>假定给出了<code>x_data,y_data</code>并且训练1000次.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">for i in range(1000):</span><br><span class="line">   sess.run(train_step, feed_dict=&#123;xs:x_data, ys:y_data&#125;)</span><br></pre></td></tr></table></figure>
+<p>以上这些仅仅可以记录很绘制出训练的图表， 但是不会记录训练的数据。 为了较为直观显示训练过程中每个参数的变化，我们每隔上50次就记录一次结果 , 同时我们也应注意, merged 也是需要run 才能发挥作用的,所以在for循环中写下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if i%50 == 0:</span><br><span class="line">    rs = sess.run(merged,feed_dict=&#123;xs:x_data,ys:y_data&#125;)</span><br><span class="line">    writer.add_summary(rs, i)</span><br></pre></td></tr></table></figure>
+<p>最后修改后的片段如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">for i in range(1000):</span><br><span class="line">   sess.run(train_step, feed_dict=&#123;xs:x_data, ys:y_data&#125;)</span><br><span class="line">   if i%50 == 0:</span><br><span class="line">      rs = sess.run(merged,feed_dict=&#123;xs:x_data,ys:y_data&#125;)</span><br><span class="line">      writer.add_summary(rs, i)</span><br></pre></td></tr></table></figure>
+<h2 id="在-tensorboard-中查看效果"><a href="#在-tensorboard-中查看效果" class="headerlink" title="在 tensorboard 中查看效果"></a>在 tensorboard 中查看效果</h2><p>程序运行完毕之后, 会产生logs目录 , 使用命令 <code>tensorboard --logdir logs</code></p>
+<p><strong>注意:</strong> 本节内容会用到浏览器, 而且与 tensorboard 兼容的浏览器是 “Google Chrome”. 使用其他的浏览器不保证所有内容都能正常显示.</p>
+<p><strong>同时注意, 如果使用 <a href="http://0.0.0.0:6006" target="_blank" rel="noopener">http://0.0.0.0:6006</a> 或者 tensorboard 中显示的网址打不开的朋友们, 请使用 <a href="http://localhost:6006" target="_blank" rel="noopener">http://localhost:6006</a>, 大多数朋友都是这个问题.</strong></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/19/工具和环境/gitbook/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/19/工具和环境/gitbook/" class="post-title-link" itemprop="url">【转】Gitbook使用</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-19 11:25:43" itemprop="dateCreated datePublished" datetime="2019-04-19T11:25:43+08:00">2019-04-19</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-05 16:30:21" itemprop="dateModified" datetime="2019-07-05T16:30:21+08:00">2019-07-05</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/工具和环境/" itemprop="url" rel="index"><span itemprop="name">工具和环境</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/04/19/工具和环境/gitbook/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/19/工具和环境/gitbook/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://blog.csdn.net/iron_ye/article/details/83254911" target="_blank" rel="noopener">https://blog.csdn.net/iron_ye/article/details/83254911</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm install -g gitbook-cli</span><br><span class="line"></span><br><span class="line">gitbook init</span><br></pre></td></tr></table></figure>
+<h1 id="插件"><a href="#插件" class="headerlink" title="插件"></a>插件</h1><h2 id="book-json"><a href="#book-json" class="headerlink" title="book.json"></a>book.json</h2><p>新建一个 book.json 文件，可以配置网站信息、在 plugins 和 pluginsConfig 字段添加插件等。</p>
+<p>插件命名方式为：</p>
+<p>gitbook-plugin-X: 插件；</p>
+<p>gitbook-theme-X: 主题。</p>
+<p>可以在 <a href="https://link.jianshu.com?t=https://www.npmjs.com/" target="_blank" rel="noopener">npmjs</a> 或 <a href="https://link.jianshu.com?t=https://plugins.gitbook.com/" target="_blank" rel="noopener">GitBook 插件</a> 直接搜索插件或者主题。<br> book.json 内容大概如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;gitbook&quot;: &quot;3.2.3&quot;,</span><br><span class="line">  &quot;title&quot;: &quot;GPS运营管理系统 - 使用手册&quot;,</span><br><span class="line">  &quot;author&quot;: &quot;yin.xu01&quot;,</span><br><span class="line">  &quot;language&quot;: &quot;zh-hans&quot;,</span><br><span class="line">  &quot;plugins&quot;: [</span><br><span class="line">    &quot;-lunr&quot;,</span><br><span class="line">    &quot;-search&quot;,</span><br><span class="line">    &quot;search-pro&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="插件-1"><a href="#插件-1" class="headerlink" title="插件"></a>插件</h1><p>官方v2版本禁用了插件，但是仍可以从github上下载并安装</p>
+<h3 id="Search-Pro"><a href="#Search-Pro" class="headerlink" title="Search Pro"></a>Search Pro</h3><p>支持中文搜索, 需要将默认的search插件去掉, 注意: 如果标题中有包含的关键字, 标题的样式会有所变化<br><a href="https://github.com/gitbook-plugins/gitbook-plugin-search-pro" target="_blank" rel="noopener">插件地址</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&quot;plugins&quot;: [</span><br><span class="line">    &quot;-lunr&quot;,</span><br><span class="line">    &quot;-search&quot;,</span><br><span class="line">    &quot;-fontsettings&quot;,</span><br><span class="line">    &quot;search-pro&quot;</span><br><span class="line">  ]</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/10/深度学习笔记/tensorflow/基础-莫烦教程/3-4 加速神经网络训练/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/10/深度学习笔记/tensorflow/基础-莫烦教程/3-4 加速神经网络训练/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-10 23:45:08 / 修改时间：23:55:27" itemprop="dateCreated datePublished" datetime="2019-04-10T23:45:08+08:00">2019-04-10</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/04/10/深度学习笔记/tensorflow/基础-莫烦教程/3-4 加速神经网络训练/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/10/深度学习笔记/tensorflow/基础-莫烦教程/3-4 加速神经网络训练/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/3-4-A-speed-up-learning/" target="_blank" rel="noopener">https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/3-4-A-speed-up-learning/</a></p>
+<p>包括以下几种模式:</p>
+<ul>
+<li>Stochastic Gradient Descent (SGD)</li>
+<li>Momentum</li>
+<li>AdaGrad</li>
+<li>RMSProp</li>
+<li>Adam</li>
+</ul>
+<p><img src="https://morvanzhou.github.io/static/results/ML-intro/speedup3.png" alt="img"></p>
+<h2 id="Stochastic-Gradient-Descent-SGD-¶"><a href="#Stochastic-Gradient-Descent-SGD-¶" class="headerlink" title="Stochastic Gradient Descent (SGD) ¶)"></a>Stochastic Gradient Descent (SGD) <a href="https://morvanzhou.github.io/tutorials/machine-learning/ML-intro/3-06-speed-up-learning/#Stochastic-Gradient-Descent-(SGD" target="_blank" rel="noopener">¶</a>)</h2><p>实证明, SGD 并不是最快速的训练方法, 红色的线是 SGD, 但它到达学习目标的时间是在这些方法中最长的一种. 我们还有很多其他的途径来加速训练.</p>
+<h2 id="Momentum-更新方法-¶"><a href="#Momentum-更新方法-¶" class="headerlink" title="Momentum 更新方法 ¶"></a>Momentum 更新方法 <a href="https://morvanzhou.github.io/tutorials/machine-learning/ML-intro/3-06-speed-up-learning/#Momentum-%E6%9B%B4%E6%96%B0%E6%96%B9%E6%B3%95" target="_blank" rel="noopener">¶</a></h2><p>大多数其他途径是在更新神经网络参数那一步上动动手脚. 传统的参数 W 的更新是把原始的 W 累加上一个负的学习率(learning rate) 乘以校正值 (dx). 这种方法可能会让学习过程曲折无比, 看起来像 喝醉的人回家时, 摇摇晃晃走了很多弯路.</p>
+<p><img src="https://morvanzhou.github.io/static/results/ML-intro/speedup4.png" alt="å éç¥ç&quot;ç½ç&quot;è®­ç&quot; (Speed Up Training)"></p>
+<p>所以我们把这个人从平地上放到了一个斜坡上, 只要他往下坡的方向走一点点, 由于向下的惯性, 他不自觉地就一直往下走, 走的弯路也变少了. 这就是 Momentum 参数更新. 另外一种加速方法叫AdaGrad.</p>
+<p><img src="https://morvanzhou.github.io/static/results/ML-intro/speedup5.png" alt="å éç¥ç&quot;ç½ç&quot;è®­ç&quot; (Speed Up Training)"></p>
+<h2 id="AdaGrad-更新方法-¶"><a href="#AdaGrad-更新方法-¶" class="headerlink" title="AdaGrad 更新方法 ¶"></a>AdaGrad 更新方法 <a href="https://morvanzhou.github.io/tutorials/machine-learning/ML-intro/3-06-speed-up-learning/#AdaGrad-%E6%9B%B4%E6%96%B0%E6%96%B9%E6%B3%95" target="_blank" rel="noopener">¶</a></h2><p><img src="https://morvanzhou.github.io/static/results/ML-intro/speedup6.png" alt="å éç¥ç&quot;ç½ç&quot;è®­ç&quot; (Speed Up Training)"></p>
+<p>这种方法是在学习率上面动手脚, 使得每一个参数更新都会有自己与众不同的学习率, 他的作用和 momentum 类似, 不过不是给喝醉酒的人安排另一个下坡, 而是给他一双不好走路的鞋子, 使得他一摇晃着走路就脚疼, 鞋子成为了走弯路的阻力, 逼着他往前直着走. 他的数学形式是这样的. 接下来又有什么方法呢? 如果把下坡和不好走路的鞋子合并起来, 是不是更好呢? 没错, 这样我们就有了 RMSProp 更新方法.</p>
+<h2 id="RMSProp-更新方法-¶"><a href="#RMSProp-更新方法-¶" class="headerlink" title="RMSProp 更新方法 ¶"></a>RMSProp 更新方法 <a href="https://morvanzhou.github.io/tutorials/machine-learning/ML-intro/3-06-speed-up-learning/#RMSProp-%E6%9B%B4%E6%96%B0%E6%96%B9%E6%B3%95" target="_blank" rel="noopener">¶</a></h2><p><img src="https://morvanzhou.github.io/static/results/ML-intro/speedup7.png" alt="å éç¥ç&quot;ç½ç&quot;è®­ç&quot; (Speed Up Training)"></p>
+<p>有了 momentum 的惯性原则 , 加上 adagrad 的对错误方向的阻力, 我们就能合并成这样. 让 RMSProp同时具备他们两种方法的优势. 不过细心的同学们肯定看出来了, 似乎在 RMSProp 中少了些什么. 原来是我们还没把 Momentum合并完全, RMSProp 还缺少了 momentum 中的 这一部分. 所以, 我们在 Adam 方法中补上了这种想法.</p>
+<h2 id="Adam-更新方法-¶"><a href="#Adam-更新方法-¶" class="headerlink" title="Adam 更新方法 ¶"></a>Adam 更新方法 <a href="https://morvanzhou.github.io/tutorials/machine-learning/ML-intro/3-06-speed-up-learning/#Adam-%E6%9B%B4%E6%96%B0%E6%96%B9%E6%B3%95" target="_blank" rel="noopener">¶</a></h2><p><img src="https://morvanzhou.github.io/static/results/ML-intro/speedup8.png" alt="å éç¥ç&quot;ç½ç&quot;è®­ç&quot; (Speed Up Training)"></p>
+<p>计算m 时有 momentum 下坡的属性, 计算 v 时有 adagrad 阻力的属性, 然后再更新参数时 把 m 和 V 都考虑进去. 实验证明, 大多数时候, 使用 adam 都能又快又好的达到目标, 迅速收敛. 所以说, 在加速神经网络训练的时候, 一个下坡, 一双破鞋子, 功不可没.</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/10/深度学习笔记/tensorflow/基础-莫烦教程/3-3 可视化/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/10/深度学习笔记/tensorflow/基础-莫烦教程/3-3 可视化/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-10 23:44:28 / 修改时间：23:44:56" itemprop="dateCreated datePublished" datetime="2019-04-10T23:44:28+08:00">2019-04-10</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/04/10/深度学习笔记/tensorflow/基础-莫烦教程/3-3 可视化/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/10/深度学习笔记/tensorflow/基础-莫烦教程/3-3 可视化/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/3-3-visualize-result/" target="_blank" rel="noopener">https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/3-3-visualize-result/</a></p>
+<h2 id="matplotlib-可视化"><a href="#matplotlib-可视化" class="headerlink" title="matplotlib 可视化"></a>matplotlib 可视化</h2><p>构建图形，用散点图描述真实数据之间的关系。 （注意：<code>plt.ion()</code>用于连续显示。）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># plot the real data</span><br><span class="line">fig = plt.figure()</span><br><span class="line">ax = fig.add_subplot(1,1,1)</span><br><span class="line">ax.scatter(x_data, y_data)</span><br><span class="line">plt.ion()#本次运行请注释，全局运行不要注释</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p>散点图的结果为：</p>
+<p>接下来，我们来显示预测数据。</p>
+<p>每隔50次训练刷新一次图形，用红色、宽度为5的线来显示我们的预测数据和输入之间的关系，并暂停0.1s。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">for i in range(1000):</span><br><span class="line">    # training</span><br><span class="line">    sess.run(train_step, feed_dict=&#123;xs: x_data, ys: y_data&#125;)</span><br><span class="line">    if i % 50 == 0:</span><br><span class="line">        # to visualize the result and improvement</span><br><span class="line">        try:</span><br><span class="line">            ax.lines.remove(lines[0])</span><br><span class="line">        except Exception:</span><br><span class="line">            pass</span><br><span class="line">        prediction_value = sess.run(prediction, feed_dict=&#123;xs: x_data&#125;)</span><br><span class="line">        # plot the prediction</span><br><span class="line">        lines = ax.plot(x_data, prediction_value, &apos;r-&apos;, lw=5)</span><br><span class="line">        plt.pause(0.1)</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/10/深度学习笔记/tensorflow/基础-莫烦教程/3-2 建造神经网络/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/10/深度学习笔记/tensorflow/基础-莫烦教程/3-2 建造神经网络/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-10 22:28:05 / 修改时间：22:41:28" itemprop="dateCreated datePublished" datetime="2019-04-10T22:28:05+08:00">2019-04-10</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/04/10/深度学习笔记/tensorflow/基础-莫烦教程/3-2 建造神经网络/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/10/深度学习笔记/tensorflow/基础-莫烦教程/3-2 建造神经网络/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/3-2-create-NN/" target="_blank" rel="noopener">https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/3-2-create-NN/</a></p>
+<h2 id="add-layer-功能"><a href="#add-layer-功能" class="headerlink" title="add_layer 功能"></a>add_layer 功能</h2><p>首先，我们导入本次所需的模块。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import tensorflow as tf</span><br><span class="line">import numpy as np</span><br></pre></td></tr></table></figure>
+<p>构造添加一个神经层的函数。（在上次课程中有详细介绍）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</span><br><span class="line">    Weights = tf.Variable(tf.random_normal([in_size, out_size]))</span><br><span class="line">    biases = tf.Variable(tf.zeros([1, out_size]) + 0.1)</span><br><span class="line">    Wx_plus_b = tf.matmul(inputs, Weights) + biases</span><br><span class="line">    if activation_function is None:</span><br><span class="line">        outputs = Wx_plus_b</span><br><span class="line">    else:</span><br><span class="line">        outputs = activation_function(Wx_plus_b)</span><br><span class="line">    return outputs</span><br></pre></td></tr></table></figure>
+<h2 id="导入数据"><a href="#导入数据" class="headerlink" title="导入数据"></a>导入数据</h2><p>构建所需的数据。 这里的<code>x_data</code>和<code>y_data</code>并不是严格的一元二次函数的关系，因为我们多加了一个<code>noise</code>,这样看起来会更像真实情况。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">x_data = np.linspace(-1,1,300, dtype=np.float32)[:, np.newaxis]</span><br><span class="line">noise = np.random.normal(0, 0.05, x_data.shape).astype(np.float32)</span><br><span class="line">y_data = np.square(x_data) - 0.5 + noise</span><br></pre></td></tr></table></figure>
+<p>利用占位符定义我们所需的神经网络的输入。 <code>tf.placeholder()</code>就是代表占位符，这里的<code>None</code>代表无论输入有多少都可以，因为输入只有一个特征，所以这里是<code>1</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">xs = tf.placeholder(tf.float32, [None, 1])</span><br><span class="line">ys = tf.placeholder(tf.float32, [None, 1])</span><br></pre></td></tr></table></figure>
+<p>接下来，我们就可以开始定义神经层了。 通常神经层都包括输入层、隐藏层和输出层。这里的输入层只有一个属性， 所以我们就只有一个输入；隐藏层我们可以自己假设，这里我们假设隐藏层有10个神经元； 输出层和输入层的结构是一样的，所以我们的输出层也是只有一层。 所以，我们构建的是——输入层1个、隐藏层10个、输出层1个的神经网络。</p>
+<h2 id="搭建网络"><a href="#搭建网络" class="headerlink" title="搭建网络"></a>搭建网络</h2><p>下面，我们开始定义隐藏层,利用之前的<code>add_layer()</code>函数，这里使用 Tensorflow 自带的激励函数<code>tf.nn.relu</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">l1 = add_layer(xs, 1, 10, activation_function=tf.nn.relu)</span><br></pre></td></tr></table></figure>
+<p>接着，定义输出层。此时的输入就是隐藏层的输出——<code>l1</code>，输入有10层（隐藏层的输出层），输出有1层。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">prediction = add_layer(l1, 10, 1, activation_function=None)</span><br></pre></td></tr></table></figure>
+<p>计算预测值<code>prediction</code>和真实值的误差，对二者差的平方求和再取平均。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">loss = tf.reduce_mean(tf.reduce_sum(tf.square(ys - prediction),</span><br><span class="line">                     reduction_indices=[1]))</span><br></pre></td></tr></table></figure>
+<p>接下来，是很关键的一步，如何让机器学习提升它的准确率。<code>tf.train.GradientDescentOptimizer()</code>中的值通常都小于1，这里取的是<code>0.1</code>，代表以<code>0.1</code>的学习率来最小化误差<code>loss</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">train_step = tf.train.GradientDescentOptimizer(0.1).minimize(loss)</span><br></pre></td></tr></table></figure>
+<p>使用变量时，都要对它进行初始化，这是必不可少的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># init = tf.initialize_all_variables() # tf 马上就要废弃这种写法</span><br><span class="line">init = tf.global_variables_initializer()  # 替换成这样就好</span><br></pre></td></tr></table></figure>
+<p>定义<code>Session</code>，并用 <code>Session</code> 来执行 <code>init</code> 初始化步骤。 （注意：在<code>tensorflow</code>中，只有<code>session.run()</code>才会执行我们定义的运算。）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sess = tf.Session()</span><br><span class="line">sess.run(init)</span><br></pre></td></tr></table></figure>
+<h2 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h2><p>下面，让机器开始学习。</p>
+<p>比如这里，我们让机器学习1000次。机器学习的内容是<code>train_step</code>, 用 <code>Session</code> 来 <code>run</code>每一次 training 的数据，逐步提升神经网络的预测准确性。 (注意：当运算要用到<code>placeholder</code>时，就需要<code>feed_dict</code>这个字典来指定输入。)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">for i in range(1000):</span><br><span class="line">    # training</span><br><span class="line">    sess.run(train_step, feed_dict=&#123;xs: x_data, ys: y_data&#125;)</span><br></pre></td></tr></table></figure>
+<p>每50步我们输出一下机器学习的误差。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if i % 50 == 0:</span><br><span class="line">    # to see the step improvement</span><br><span class="line">    print(sess.run(loss, feed_dict=&#123;xs: x_data, ys: y_data&#125;))</span><br></pre></td></tr></table></figure>
+<p>在电脑上运行本次代码的结果为：</p>
+<p><a href="https://morvanzhou.github.io/static/results/tensorflow/3_2_1.png" target="_blank" rel="noopener"><img src="https://morvanzhou.github.io/static/results/tensorflow/3_2_1.png" alt="例子3 建造神经网络"></a></p>
+<p>通过上图可以看出，误差在逐渐减小，这说明机器学习是有积极的效果的。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/10/深度学习笔记/tensorflow/基础-莫烦教程/3-1 添加层/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/10/深度学习笔记/tensorflow/基础-莫烦教程/3-1 添加层/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-10 22:17:03 / 修改时间：22:28:01" itemprop="dateCreated datePublished" datetime="2019-04-10T22:17:03+08:00">2019-04-10</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/04/10/深度学习笔记/tensorflow/基础-莫烦教程/3-1 添加层/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/10/深度学习笔记/tensorflow/基础-莫烦教程/3-1 添加层/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/3-1-add-layer/" target="_blank" rel="noopener">https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/3-1-add-layer/</a></p>
+<h2 id="定义-add-layer"><a href="#定义-add-layer" class="headerlink" title="定义 add_layer()"></a>定义 add_layer()</h2><p>在 Tensorflow 里定义一个添加层的函数可以很容易的添加神经层,为之后的添加省下不少时间.</p>
+<p>神经层里常见的参数通常有<code>weights</code>、<code>biases</code>和激励函数。</p>
+<p>首先，我们需要导入<code>tensorflow</code>模块。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import tensorflow as tf</span><br></pre></td></tr></table></figure>
+<p>然后定义添加神经层的函数<code>def add_layer()</code>,它有四个参数：输入值、输入的大小、输出的大小和激励函数，我们设定默认的激励函数是<code>None</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">def add_layer(inputs, in_size, out_size, activation_function=None):</span><br></pre></td></tr></table></figure>
+<p>接下来，我们开始定义<code>weights</code>和<code>biases</code>。</p>
+<p>因为在生成初始参数时，随机变量(normal distribution)会比全部为0要好很多，所以我们这里的<code>weights</code>为一个<code>in_size</code>行, <code>out_size</code>列的随机变量矩阵。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Weights = tf.Variable(tf.random_normal([in_size, out_size]))</span><br></pre></td></tr></table></figure>
+<p>在机器学习中，<code>biases</code>的推荐值不为0，所以我们这里是在0向量的基础上又加了<code>0.1</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">biases = tf.Variable(tf.zeros([1, out_size]) + 0.1)</span><br></pre></td></tr></table></figure>
+<p>下面，我们定义<code>Wx_plus_b</code>, 即神经网络未激活的值。其中，<code>tf.matmul()</code>是矩阵的乘法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Wx_plus_b = tf.matmul(inputs, Weights) + biases</span><br></pre></td></tr></table></figure>
+<p>当<code>activation_function</code>——激励函数为<code>None</code>时，输出就是当前的预测值——<code>Wx_plus_b</code>，不为<code>None</code>时，就把<code>Wx_plus_b</code>传到<code>activation_function()</code>函数中得到输出。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">if activation_function is None:</span><br><span class="line">        outputs = Wx_plus_b</span><br><span class="line">    else:</span><br><span class="line">        outputs = activation_function(Wx_plus_b)</span><br></pre></td></tr></table></figure>
+<p>最后，返回输出，添加一个神经层的函数——<code>def add_layer()</code>就定义好了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">return outputs</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/10/深度学习笔记/tensorflow/基础-莫烦教程/2-5 Placeholder传入值/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1024,1037 +2115,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/09/机器学习/00统计学习方法、西瓜书讲解/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/04/09/机器学习/00统计学习方法、西瓜书讲解/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-04-09 12:43:30" itemprop="dateCreated datePublished" datetime="2019-04-09T12:43:30+08:00">2019-04-09</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-04-11 21:25:05" itemprop="dateModified" datetime="2019-04-11T21:25:05+08:00">2019-04-11</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/04/09/机器学习/00统计学习方法、西瓜书讲解/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/09/机器学习/00统计学习方法、西瓜书讲解/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>统计学习方法</p>
-<p><a href="https://github.com/SmirkCao/Lihang" target="_blank" rel="noopener">https://github.com/SmirkCao/Lihang</a></p>
-<p>说明：<a href="https://zhuanlan.zhihu.com/p/58324861" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/58324861</a></p>
-<blockquote>
-<p>/Users/david/david/git/ml_book/Lihang</p>
-</blockquote>
-<p>西瓜书</p>
-<p><a href="https://github.com/datawhalechina/pumpkin-book" target="_blank" rel="noopener">https://github.com/datawhalechina/pumpkin-book</a></p>
-<p>在线阅读：<a href="https://datawhalechina.github.io/pumpkin-book/#/" target="_blank" rel="noopener">https://datawhalechina.github.io/pumpkin-book/#/</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/09/深度学习笔记/tensorflow/版本升级/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/04/09/深度学习笔记/tensorflow/版本升级/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-04-09 10:44:43 / 修改时间：10:45:28" itemprop="dateCreated datePublished" datetime="2019-04-09T10:44:43+08:00">2019-04-09</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/04/09/深度学习笔记/tensorflow/版本升级/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/09/深度学习笔记/tensorflow/版本升级/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">04/09/2019 10:44:17 ERROR    The minimum supported Tensorflow is version 1.12 but you have version 1.11 installed. Please upgrade Tensorflow.</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install --upgrade tensorflow</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/08/深度学习笔记/deepface/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/04/08/深度学习笔记/deepface/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-04-08 23:12:42" itemprop="dateCreated datePublished" datetime="2019-04-08T23:12:42+08:00">2019-04-08</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-04-10 18:54:48" itemprop="dateModified" datetime="2019-04-10T18:54:48+08:00">2019-04-10</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/04/08/深度学习笔记/deepface/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/08/深度学习笔记/deepface/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://www.cnblogs.com/zackstang/p/9011753.html" target="_blank" rel="noopener">https://www.cnblogs.com/zackstang/p/9011753.html</a></p>
-<p><a href="https://www.zhihu.com/question/264019472?sort=created" target="_blank" rel="noopener">https://www.zhihu.com/question/264019472?sort=created</a></p>
-<p>1.<strong> </strong>获取<strong>**deepfakes工具包</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/deepfakes/faceswap.git</span><br></pre></td></tr></table></figure>
-<p>2、安装包</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pip install pynvx</span><br><span class="line"># 安装cv2</span><br><span class="line">pip install opencv-python</span><br><span class="line">pip install dlib</span><br><span class="line">pip install face_recognition</span><br></pre></td></tr></table></figure>
-<p>在易学上安装</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pip3 install psutil</span><br><span class="line">pip3 install nvidia-ml-py</span><br><span class="line">pip3 install dlib</span><br></pre></td></tr></table></figure>
-<p>安装dlib报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">RuntimeError:</span><br><span class="line">    *******************************************************************</span><br><span class="line">     CMake must be installed to build the following extensions: dlib</span><br><span class="line">    *******************************************************************</span><br><span class="line">    Command &quot;/usr/bin/python3 -u -c &quot;import setuptools, tokenize;__file__=&apos;/tmp/pip-build-k2zw6rng/dlib/setup.py&apos;;exec(compile(getattr(tokenize, &apos;open&apos;, open)(__file__).read().replace(&apos;\r\n&apos;, &apos;\n&apos;), __file__, &apos;exec&apos;))&quot; install --record /tmp/pip-n4xvap5e-record/install-record.txt --single-version-externally-managed --compile --user --prefix=&quot; failed with error code 1 in /tmp/pip-build-k2zw6rng/dlib/</span><br></pre></td></tr></table></figure>
-<p>3.<strong> </strong>面部抓取**</p>
-<p>在收集完样本后，使用 </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python faceswap.py extract -i /home/ubuntu/MyFiles/deepface/pp -o /home/ubuntu/MyFiles/deepface/pp_out</span><br></pre></td></tr></table></figure>
-<p>命令对样本图片进行面部抓取。再手工删除不合适的照片</p>
-<p>4、解析视频为图片，或直接找一些图片，再进行面部抓取</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python faceswap.py extract -i /Users/david/david/code/deepface/kobe -o /Users/david/david/code/deepface/kobe_out</span><br></pre></td></tr></table></figure>
-<p>5、开始训练</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python faceswap.py train -A /home/ubuntu/MyFiles/deepface/pp_out/ -B /home/ubuntu/MyFiles/deepface/kobe_out  -m models/</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">===============================================</span><br><span class="line">04/09/2019 12:49:35 INFO     - Starting                                    -</span><br><span class="line">04/09/2019 12:49:35 INFO     - Press &apos;ENTER&apos; to save and quit              -</span><br><span class="line">04/09/2019 12:49:35 INFO     - Press &apos;S&apos; to save model weights immediately -</span><br><span class="line">04/09/2019 12:49:35 INFO     ===============================================</span><br></pre></td></tr></table></figure>
-<p>6、转换</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python faceswap.py convert –i /Users/david/david/code/deepface/pp_out/ -o /Users/david/david/code/deepface/pp_out_new  -m models/</span><br></pre></td></tr></table></figure>
-<h1 id="报错"><a href="#报错" class="headerlink" title="报错"></a>报错</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ModuleNotFoundError: No module named &apos;numpy.core._multiarray_umath&apos;</span><br><span class="line">ImportError: numpy.core.multiarray failed to import</span><br><span class="line"></span><br><span class="line">The above exception was the direct cause of the following exception:</span><br><span class="line"></span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 960, in _find_and_load</span><br><span class="line">SystemError: &lt;class &apos;_frozen_importlib._ModuleLockManager&apos;&gt; returned a result with an error set</span><br><span class="line">ImportError: numpy.core._multiarray_umath failed to import</span><br><span class="line">ImportError: numpy.core.umath failed to import</span><br><span class="line">2019-04-09 11:00:44.565633: F tensorflow/python/lib/core/bfloat16.cc:675] Check failed: PyBfloat16_Type.tp_base != nullptr</span><br><span class="line">Abort trap: 6</span><br></pre></td></tr></table></figure>
-<p>解决</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install --upgrade --force-reinstall numpy==1.14.5</span><br><span class="line">pip install --upgrade --force-reinstall pandas==0.22.0</span><br></pre></td></tr></table></figure>
-<p>2、</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">04/09/2019 12:49:42 ERROR    Number of images is lower than batch-size (Note that too few images may lead to bad training). # images: 39, batch-size: 64</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;/Users/david/david/git/dl/faceswap/lib/multithreading.py&quot;, line 261, in _runner</span><br><span class="line">    target(*args, **kwargs)</span><br><span class="line">  File &quot;/Users/david/david/git/dl/faceswap/lib/training_data.py&quot;, line 89, in load_batches</span><br><span class="line">    self.validate_samples(images)</span><br><span class="line">  File &quot;/Users/david/david/git/dl/faceswap/lib/training_data.py&quot;, line 122, in validate_samples</span><br><span class="line">    assert length &gt;= self.batchsize, msg</span><br><span class="line">AssertionError: Number of images is lower than batch-size (Note that too few images may lead to bad training). # images: 39, batch-size: 64</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/07/深度学习笔记/tensorflow/答疑/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/04/07/深度学习笔记/tensorflow/答疑/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-04-07 11:26:13 / 修改时间：12:10:04" itemprop="dateCreated datePublished" datetime="2019-04-07T11:26:13+08:00">2019-04-07</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/04/07/深度学习笔记/tensorflow/答疑/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/07/深度学习笔记/tensorflow/答疑/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="以下Variable的定义有什么不同"><a href="#以下Variable的定义有什么不同" class="headerlink" title="以下Variable的定义有什么不同"></a>以下Variable的定义有什么不同</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">w1 = tf.Variable(tf.random_uniform([1], -1.0, 1.0), name=&quot;weight&quot;)</span><br><span class="line"># 输出&lt;tf.Variable &apos;weight_3:0&apos; shape=(1,) dtype=float32_ref&gt;</span><br><span class="line"></span><br><span class="line">w2 = tf.Variable(tf.zeros([1]), name=&quot;weight&quot;)</span><br><span class="line"># 输出&lt;tf.Variable &apos;weight_4:0&apos; shape=(1,) dtype=float32_ref&gt;</span><br><span class="line"># 上面两种是一样的，都是一维的张量</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">w3 = tf.Variable(0.0, name=&quot;weight&quot;)</span><br><span class="line"># 这个是0维的张量</span><br><span class="line"># w1[0] = w3</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/07/深度学习笔记/tensorflow/最小二乘拟合/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/04/07/深度学习笔记/tensorflow/最小二乘拟合/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-04-07 11:07:25 / 修改时间：11:55:25" itemprop="dateCreated datePublished" datetime="2019-04-07T11:07:25+08:00">2019-04-07</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/04/07/深度学习笔记/tensorflow/最小二乘拟合/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/07/深度学习笔记/tensorflow/最小二乘拟合/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://blog.csdn.net/luoganttcc/article/details/56481549" target="_blank" rel="noopener">https://blog.csdn.net/luoganttcc/article/details/56481549</a></p>
-<blockquote>
-<p>/Users/david/david/code/deep_learning/tensorflow/Least_Square_sample.ipynb</p>
-</blockquote>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#程序 不是我写的，注释是我做的，转载请注明“lg土木设计”</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">#最小二乘法拟合，用y=ax+b  a=weight b=biases</span></span><br><span class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span> print_function</span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="comment"># create data 生成100个0-1之间的随机数   </span></span><br><span class="line"><span class="comment">#np.random.rand(100) 1*100的矩阵</span></span><br><span class="line"><span class="comment">#np.random.rand(3,3) 3*3的矩阵，其每个元素为0-1的随机数</span></span><br><span class="line">x_data = np.random.rand(<span class="number">100</span>).astype(np.float32)</span><br><span class="line">y_data = x_data*<span class="number">0.2</span> + <span class="number">0.5</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="comment">### create tensorflow structure start ###对权进行赋值 在-1到1之间随机数</span></span><br><span class="line"><span class="comment">#uniform([1]为1*1的矩阵，即一个数</span></span><br><span class="line">Weights = tf.Variable(tf.random_uniform([<span class="number">1</span>], <span class="number">-1.0</span>, <span class="number">1.0</span>), name=<span class="string">"weight"</span>)</span><br><span class="line"><span class="comment">#偏差为零，zeros([1]为一个1*1的零矩阵，即初始偏差为零</span></span><br><span class="line">biases = tf.Variable(tf.zeros([<span class="number">1</span>]))</span><br><span class="line"><span class="comment">#权值与x相乘并加偏差</span></span><br><span class="line">y = Weights*x_data + biases </span><br><span class="line"><span class="comment">#方差，(y-y_data)平方，求和，取均值</span></span><br><span class="line">loss = tf.reduce_mean(tf.square(y-y_data))</span><br><span class="line"><span class="comment">#定义梯度下降法优化函数，优化，步长为0.5</span></span><br><span class="line">optimizer = tf.train.GradientDescentOptimizer(<span class="number">0.2</span>)</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">train = optimizer.minimize(loss)</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">init = tf.initialize_all_variables()</span><br><span class="line"><span class="comment">### create tensorflow structure end ###</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">sess = tf.Session()</span><br><span class="line">sess.run(init)          <span class="comment"># Very important</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="keyword">for</span> step <span class="keyword">in</span> range(<span class="number">300</span>):</span><br><span class="line">  sess.run(train)</span><br><span class="line">  <span class="keyword">if</span> step % <span class="number">20</span> == <span class="number">0</span>:</span><br><span class="line">    print(step, sess.run(Weights), sess.run(biases))</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/04/07/深度学习笔记/tensorflow/tensorflow节点/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/04/07/深度学习笔记/tensorflow/tensorflow节点/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-04-07 10:49:56 / 修改时间：11:06:26" itemprop="dateCreated datePublished" datetime="2019-04-07T10:49:56+08:00">2019-04-07</time>
-            </span>
-          
-
-          
-            
-
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/04/07/深度学习笔记/tensorflow/tensorflow节点/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/07/深度学习笔记/tensorflow/tensorflow节点/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://www.cnblogs.com/Vulpers/p/7809276.html" target="_blank" rel="noopener">https://www.cnblogs.com/Vulpers/p/7809276.html</a></p>
-<h1 id="一、-constant（常量）"><a href="#一、-constant（常量）" class="headerlink" title="一、 constant（常量）"></a><strong>一、 constant（常量）</strong></h1><p>　　constant是TensorFlow的常量节点，通过constant方法创建，其是计算图（Computational Graph）中的起始节点，是传入数据。</p>
-<p><strong>创建方式</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cons = tf.constant(value=[1,2],dtype=tf.float32,shape=(1,2),name=&apos;testconst&apos;, verify_shape=False)</span><br></pre></td></tr></table></figure>
-<p><strong>参数说明</strong></p>
-<p><strong>value</strong>：初始值，必填，必须是一个张量（1或[1,2,3]或[[1,2,3],[2,2,3]]或……）</p>
-<p><strong>dtype</strong>：数据类型，选填，默认为value的数据类型，传入参数为tensorflow下的枚举值（float32，float64…….）</p>
-<p><strong>shape</strong>：数据形状，选填，默认为value的shape，设置时不得比value小，可以比value阶数、维度更高，超过部分按value提供最后一个数字填充，示例代码如下</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"></span><br><span class="line">sess = tf.InteractiveSession()</span><br><span class="line">cons1 = tf.constant([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>], shape=[<span class="number">2</span>, <span class="number">3</span>])</span><br><span class="line">print(sess.run(cons1))</span><br><span class="line"><span class="comment"># [[1 2 3]</span></span><br><span class="line"><span class="comment">#  [3 3 3]]</span></span><br></pre></td></tr></table></figure>
-<p><strong>name</strong>：常量名，选填，默认值不重复，根据创建顺序为（Const，Const_1，Const_2…….）</p>
-<p><strong>verify_shape</strong>:是否验证value的shape和指定shape相符，若设为True则进行验证，不相符时会抛出异常</p>
-<h1 id="二、placeholder（占位符）"><a href="#二、placeholder（占位符）" class="headerlink" title="二、placeholder（占位符）"></a><strong>二、placeholder（占位符）</strong></h1><p> 　　placeholder是TensorFlow的占位符节点，由placeholder方法创建，其也是一种常量，但是由用户在调用run方法时传递的，也可以将placeholder理解为一种形参。即其不像constant那样直接可以使用，需要用户传递常数值。</p>
-<p><strong>创建方式</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">X = tf.placeholder(dtype=tf.float32, shape=[144, 10], name=&apos;X&apos;)</span><br></pre></td></tr></table></figure>
-<p><strong>参数说明</strong></p>
-<p><strong>dtype</strong>：数据类型，必填，默认为value的数据类型，传入参数为tensorflow下的枚举值（float32，float64…….）</p>
-<p><strong>shape</strong>：数据形状，选填，不填则随传入数据的形状自行变动，可以在多次调用中传入不同形状的数据</p>
-<p><strong>name</strong>：常量名，选填，默认值不重复，根据创建顺序为（Placeholder，Placeholder_1，Placeholder_2…….）</p>
-<p><strong>示例代码</strong></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">import</span> numpy.random <span class="keyword">as</span> random</span><br><span class="line"></span><br><span class="line"><span class="comment">#占位符shape不设时会按传入参数自行匹配</span></span><br><span class="line">node1 = tf.placeholder(tf.float32)  <span class="comment"># , shape=[4, 5])</span></span><br><span class="line"><span class="comment">#也可以写成</span></span><br><span class="line"><span class="comment"># node1 = tf.placeholder("float")</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">node2 = tf.placeholder(tf.float32)  <span class="comment"># , shape=[4, 5])</span></span><br><span class="line">op = tf.multiply(node1, node2)</span><br><span class="line">session = tf.Session()</span><br><span class="line">const1 = tf.constant(random.rand(<span class="number">4</span>, <span class="number">5</span>))</span><br><span class="line">const2 = tf.constant(random.rand(<span class="number">4</span>, <span class="number">5</span>))</span><br><span class="line"><span class="comment">#可以传入初始化后的常量</span></span><br><span class="line">print(session.run(op, &#123;node1: session.run(const1), node2: session.run(const2)&#125;))</span><br><span class="line"><span class="comment">#也可以直接传入张量，其实同初始化后的常量一致</span></span><br><span class="line">print(session.run(op, &#123;node1: random.rand(<span class="number">2</span>, <span class="number">3</span>), node2: random.rand(<span class="number">2</span>, <span class="number">3</span>)&#125;))</span><br></pre></td></tr></table></figure>
-<h1 id="三、Variable（变量）"><a href="#三、Variable（变量）" class="headerlink" title="三、Variable（变量）"></a><strong>三、Variable（变量）</strong></h1><p>　　Vatiable是tensorflow的变量节点，通过Variable（注：V大写）方法创建，并且需要传递初始值。在使用前需要通过tensorflow的初始化方法进行初始化。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">W = tf.Variable(initial_value=tf.zeros([<span class="number">9</span>, <span class="number">5</span>]),  <span class="comment"># 初始值，必填，张量或可以转换为张量的Python对象。初始值必须有指定一个形状，除非`validate_shape`设置为False。</span></span><br><span class="line">trainable=<span class="keyword">True</span>,  <span class="comment"># 如果`True`，则默认值也将变量添加到图形中集合`GraphKeys.TRAINABLE_VARIABLES`。这个集合用作“Optimizer”类使用的默认变量列表</span></span><br><span class="line">collections=<span class="keyword">None</span>,  <span class="comment"># 图表集合键的列表。新的变量被添加到这些集合。默认为`[GraphKeys.GLOBAL_VARIABLES]`。</span></span><br><span class="line">validate_shape=<span class="keyword">True</span>,  <span class="comment"># 如果`False`，允许变量用初始化未知形状的值。如果“True”，默认的形状`initial_value`必须是已知的。</span></span><br><span class="line">caching_device=<span class="keyword">None</span>,  <span class="comment"># 可选设备字符串，描述变量的位置应该被缓存以供阅读。默认为变量的设备。如果不是“None”，则缓存在另一个设备上。典型的用途是缓存在使用变量的Ops所在的设备上进行重复数据删除复制`Switch`和其他条件语句。</span></span><br><span class="line">name=<span class="string">'W'</span>,  <span class="comment"># 变量的可选名称。默认为“Variable”并获取自动去重（Variable_1,Variable_2....）。</span></span><br><span class="line">variable_def=<span class="keyword">None</span>, <span class="comment"># `VariableDef`协议缓冲区。如果不是“无”，则重新创建变量对象及其内容，引用变量的节点在图中，必须已经存在。图形没有改变。`variable_def`和其他参数是互斥的。</span></span><br><span class="line">dtype=tf.float32, <span class="comment"># 如果设置，initial_value将被转换为给定的类型。如果`None'，数据类型将被保存（如果`initial_value`是一个张量），或者“convert_to_tensor”来决定。</span></span><br><span class="line">expected_shape=<span class="keyword">None</span>,  <span class="comment"># 张量的Shape。如果设置，initial_value需要符合这个形状。</span></span><br><span class="line">import_scope=<span class="keyword">None</span>)  <span class="comment"># 可选的字符串。名称范围添加到`Variable.`仅在从协议缓冲区初始化时使用。</span></span><br></pre></td></tr></table></figure>
-<p>创建类似于</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">W = tf.Variable(tf.zeros([3, 10]), dtype=tf.float64, name=&apos;W&apos;)</span><br></pre></td></tr></table></figure>
-<p>例如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 0.0就是初始值</span><br><span class="line">w = tf.Variable(0.0, name=&quot;weight&quot;)</span><br><span class="line">b = tf.Variable(0.0, name=&quot;bias&quot;)</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2101,7 +2161,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">313</span>
+                    <span class="site-state-item-count">319</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
