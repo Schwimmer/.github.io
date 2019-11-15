@@ -357,7 +357,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/11/11/Kafka/kafka源码解析（一）/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/11/15/百问kafka/topic常用配置项/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -377,7 +377,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2019/11/11/Kafka/kafka源码解析（一）/" class="post-title-link" itemprop="url">未命名</a>
+                <a href="/2019/11/15/百问kafka/topic常用配置项/" class="post-title-link" itemprop="url">topic常用配置项</a>
               
             
           </h1>
@@ -402,7 +402,7 @@
                 
               
 
-              <time title="创建时间：2019-11-11 18:18:53" itemprop="dateCreated datePublished" datetime="2019-11-11T18:18:53+08:00">2019-11-11</time>
+              <time title="创建时间：2019-11-15 11:50:40 / 修改时间：11:56:10" itemprop="dateCreated datePublished" datetime="2019-11-15T11:50:40+08:00">2019-11-15</time>
             </span>
           
 
@@ -410,18 +410,23 @@
             
 
             
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-12 09:20:00" itemprop="dateModified" datetime="2019-11-12T09:20:00+08:00">2019-11-12</time>
-              </span>
-            
           
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/百问kafka/" itemprop="url" rel="index"><span itemprop="name">百问kafka</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -434,8 +439,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/11/11/Kafka/kafka源码解析（一）/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/11/11/Kafka/kafka源码解析（一）/" itemprop="commentCount"></span>
+                <a href="/2019/11/15/百问kafka/topic常用配置项/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/11/15/百问kafka/topic常用配置项/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -468,882 +473,7 @@
       
         
           
-            <p>下载0.10.0.0，解压在</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Users/david/david/git/kafka-0.10.0.0-src</span><br></pre></td></tr></table></figure>
-<p>编译</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /Users/david/david/git/kafka-0.10.0.0-src</span><br><span class="line">gradle idea</span><br></pre></td></tr></table></figure>
-<p>用idea导入目录，选择gradle导入。</p>
-<p>4、启动项目</p>
-<p>kafka的启动入口类是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">core/src/main/scala/kafka/Kafka</span><br></pre></td></tr></table></figure>
-<p>启动需要添加server.properties配置文件路径。</p>
-<p><img src="//schwimmer.github.io/2019/11/11/Kafka/kafka源码解析（一）/image-20191112091614230.png" alt="image-20191112091614230"></p>
-<p>然后，这样启动是不会打印日志的，所以要添加log4j.properties文件。在config文件夹下有log4j.properties文件，在core项目下创建resources文件夹，把log4j.properties文件复制过去。</p>
-<p><img src="//schwimmer.github.io/2019/11/11/Kafka/kafka源码解析（一）/image-20191112092000155.png" alt="image-20191112092000155"></p>
-<p>然后启动项目，这样就可以看到打印日志了。(记得修改server.properties里的zk地址和logDir地址)</p>
-<p>问题记录</p>
-<p>1、执行gradle idea时，遇到报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&gt; Configure project :</span><br><span class="line">Building project &apos;core&apos; with Scala version 2.10.6</span><br><span class="line"></span><br><span class="line">FAILURE: Build failed with an exception.</span><br><span class="line"></span><br><span class="line">* Where:</span><br><span class="line">Build file &apos;/Users/david/david/git/kafka-0.10.0.0-src/build.gradle&apos; line: 230</span><br><span class="line"></span><br><span class="line">* What went wrong:</span><br><span class="line">A problem occurred evaluating root project &apos;kafka-0.10.0.0-src&apos;.</span><br><span class="line">&gt; Failed to apply plugin [class &apos;org.gradle.api.plugins.scala.ScalaBasePlugin&apos;]</span><br><span class="line">   &gt; Could not create task &apos;:core:compileScala&apos;.</span><br><span class="line">      &gt; No such property: useAnt for class: org.gradle.api.tasks.scala.ScalaCompileOptions</span><br><span class="line"></span><br><span class="line">* Try:</span><br><span class="line">Run with --stacktrace option to get the stack trace. Run with --info or --debug option to get more log output. Run with --scan to get full insights.</span><br><span class="line"></span><br><span class="line">* Get more help at https://help.gradle.org</span><br><span class="line"></span><br><span class="line">Deprecated Gradle features were used in this build, making it incompatible with Gradle 6.0.</span><br><span class="line">Use &apos;--warning-mode all&apos; to show the individual deprecation warnings.</span><br><span class="line">See https://docs.gradle.org/5.4.1/userguide/command_line_interface.html#sec:command_line_warnings</span><br><span class="line"></span><br><span class="line">BUILD FAILED in 43s</span><br></pre></td></tr></table></figure>
-<p>解决方法：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">vim build.gradle</span><br><span class="line"></span><br><span class="line">ScalaCompileOptions.metaClass.daemonServer = true</span><br><span class="line">ScalaCompileOptions.metaClass.fork = true</span><br><span class="line">ScalaCompileOptions.metaClass.useAnt = false</span><br><span class="line">ScalaCompileOptions.metaClass.useCompileDaemon = false</span><br></pre></td></tr></table></figure>
-<p><img src="//schwimmer.github.io/2019/11/11/Kafka/kafka源码解析（一）/image-20191112083000352.png" alt="image-20191112083000352"></p>
-<p>继续报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&gt; Configure project :</span><br><span class="line">Building project &apos;core&apos; with Scala version 2.10.6</span><br><span class="line"></span><br><span class="line">FAILURE: Build failed with an exception.</span><br><span class="line"></span><br><span class="line">* Where:</span><br><span class="line">Build file &apos;/Users/david/david/git/kafka-0.10.0.0-src/build.gradle&apos; line: 373</span><br><span class="line"></span><br><span class="line">* What went wrong:</span><br><span class="line">A problem occurred evaluating root project &apos;kafka-0.10.0.0-src&apos;.</span><br><span class="line">&gt; Failed to apply plugin [id &apos;org.scoverage&apos;]</span><br><span class="line">   &gt; Could not create an instance of type org.scoverage.ScoverageExtension.</span><br><span class="line">      &gt; You can&apos;t map a property that does not exist: propertyName=testClassesDir</span><br><span class="line"></span><br><span class="line">* Try:</span><br><span class="line">Run with --stacktrace option to get the stack trace. Run with --info or --debug option to get more log output. Run with --scan to get full insights.</span><br><span class="line"></span><br><span class="line">* Get more help at https://help.gradle.org</span><br><span class="line"></span><br><span class="line">Deprecated Gradle features were used in this build, making it incompatible with Gradle 6.0.</span><br><span class="line">Use &apos;--warning-mode all&apos; to show the individual deprecation warnings.</span><br><span class="line">See https://docs.gradle.org/5.4.1/userguide/command_line_interface.html#sec:command_line_warnings</span><br><span class="line"></span><br><span class="line">BUILD FAILED in 4s</span><br></pre></td></tr></table></figure>
-<p>问题原因是gradle用的是新版，与旧版不兼容。修改以下行为</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">classpath &apos;org.scoverage:gradle-scoverage:2.5.0&apos;</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/10/20/Kafka/手动安装Kafka/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-20 10:52:01" itemprop="dateCreated datePublished" datetime="2019-10-20T10:52:01+08:00">2019-10-20</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-11 18:18:45" itemprop="dateModified" datetime="2019-11-11T18:18:45+08:00">2019-11-11</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/10/20/Kafka/手动安装Kafka/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/10/20/Kafka/手动安装Kafka/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h1><p>下载0.10.0.0版</p>
-<p><a href="http://kafka.apache.org/downloads" target="_blank" rel="noopener">http://kafka.apache.org/downloads</a></p>
-<p><img src="//schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/image-20191020105226247.png" alt="image-20191020105226247"></p>
-<p>解压到</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Users/david/soft/kafka_2.10-0.10.0.0</span><br></pre></td></tr></table></figure>
-<p>启动</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bin/zookeeper-server-start.sh config/zookeeper.properties &amp;</span><br><span class="line">bin/kafka-server-start.sh config/server.properties &amp;</span><br></pre></td></tr></table></figure>
-<h1 id="单机模式"><a href="#单机模式" class="headerlink" title="单机模式"></a>单机模式</h1><h2 id="一个副本一个分区"><a href="#一个副本一个分区" class="headerlink" title="一个副本一个分区"></a>一个副本一个分区</h2><p>create创建topic，list查看topic列表</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test</span><br><span class="line"></span><br><span class="line">[2019-10-20 11:03:58,460] INFO Created log for partition [test,0] in /tmp/kafka-logs with properties &#123;compression.type -&gt; producer, message.format.version -&gt; 0.10.0-IV1, file.delete.delay.ms -&gt; 60000, max.message.bytes -&gt; 1000012, message.timestamp.type -&gt; CreateTime, min.insync.replicas -&gt; 1, segment.jitter.ms -&gt; 0, preallocate -&gt; false, min.cleanable.dirty.ratio -&gt; 0.5, index.interval.bytes -&gt; 4096, unclean.leader.election.enable -&gt; true, retention.bytes -&gt; -1, delete.retention.ms -&gt; 86400000, cleanup.policy -&gt; delete, flush.ms -&gt; 9223372036854775807, segment.ms -&gt; 604800000, segment.bytes -&gt; 1073741824, retention.ms -&gt; 604800000, message.timestamp.difference.max.ms -&gt; 9223372036854775807, segment.index.bytes -&gt; 10485760, flush.messages -&gt; 9223372036854775807&#125;. (kafka.log.LogManager)</span><br><span class="line">[2019-10-20 11:03:58,462] INFO Partition [test,0] on broker 0: No checkpointed highwatermark is found for partition [test,0] (kafka.cluster.Partition)</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ bin/kafka-topics.sh --list --zookeeper localhost:2181 test</span><br><span class="line"></span><br><span class="line">test</span><br></pre></td></tr></table></figure>
-<p>接着启动一个producer，并生成一条消息</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test</span><br><span class="line">first message</span><br><span class="line">second message</span><br></pre></td></tr></table></figure>
-<p>启动一个consumer</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic test --from-beginning</span><br><span class="line"></span><br><span class="line">first message</span><br><span class="line">second message</span><br></pre></td></tr></table></figure>
-<h2 id="一个副本多个分区"><a href="#一个副本多个分区" class="headerlink" title="一个副本多个分区"></a>一个副本多个分区</h2><p>创建多个分区的my-partitioned-topic主题，然后用describe查看详细信息，验证3个分区，且每个分区有以下5个属性。</p>
-<ul>
-<li>topic</li>
-<li>partition。从0开始</li>
-<li>Leader。当前分区负责读写的节点，只有主副本才会接受消息读写。</li>
-<li>Replicas。分区的复制节点列表，与topic的副本数量有关，默认只有一个副本，即主副本。</li>
-<li>Isr。同步状态的副本，是Replicas的子集，必须是存活的，且都能赶上主副本。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic my-partitioned-topic</span><br><span class="line"></span><br><span class="line">[2019-10-20 12:10:19,194] INFO Created log for partition [my-partitioned-topic,2] in /tmp/kafka-logs with properties &#123;compression.type -&gt; producer, message.format.version -&gt; 0.10.0-IV1, file.delete.delay.ms -&gt; 60000, max.message.bytes -&gt; 1000012, message.timestamp.type -&gt; CreateTime, min.insync.replicas -&gt; 1, segment.jitter.ms -&gt; 0, preallocate -&gt; false, min.cleanable.dirty.ratio -&gt; 0.5, index.interval.bytes -&gt; 4096, unclean.leader.election.enable -&gt; true, retention.bytes -&gt; -1, delete.retention.ms -&gt; 86400000, cleanup.policy -&gt; delete, flush.ms -&gt; 9223372036854775807, segment.ms -&gt; 604800000, segment.bytes -&gt; 1073741824, retention.ms -&gt; 604800000, message.timestamp.difference.max.ms -&gt; 9223372036854775807, segment.index.bytes -&gt; 10485760, flush.messages -&gt; 9223372036854775807&#125;. (kafka.log.LogManager)</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic my-partitioned-topic</span><br><span class="line"></span><br><span class="line">Topic:my-partitioned-topic	PartitionCount:3	ReplicationFactor:1	Configs:</span><br><span class="line">	Topic: my-partitioned-topic	Partition: 0	Leader: 0	Replicas: 0	Isr: 0</span><br><span class="line">	Topic: my-partitioned-topic	Partition: 1	Leader: 0	Replicas: 0	Isr: 0</span><br><span class="line">	Topic: my-partitioned-topic	Partition: 2	Leader: 0	Replicas: 0	Isr: 0</span><br></pre></td></tr></table></figure>
-<p>为了验证消息是否写到主题分区的日志目录，可以查看日志目录，其中以log结果的是二进制日志格式，可以用<code>strings</code>查看。可以看到，刚才创建的还没有消息，但kafka已经提前创建了文件夹和对应的文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$ tree /tmp/kafka-logs</span><br><span class="line"></span><br><span class="line">/tmp/kafka-logs</span><br><span class="line">├── cleaner-offset-checkpoint</span><br><span class="line">├── meta.properties</span><br><span class="line">├── my-partitioned-topic-0</span><br><span class="line">│   ├── 00000000000000000000.index</span><br><span class="line">│   └── 00000000000000000000.log</span><br><span class="line">├── my-partitioned-topic-1</span><br><span class="line">│   ├── 00000000000000000000.index</span><br><span class="line">│   └── 00000000000000000000.log</span><br><span class="line">├── my-partitioned-topic-2</span><br><span class="line">│   ├── 00000000000000000000.index</span><br><span class="line">│   └── 00000000000000000000.log</span><br><span class="line">├── recovery-point-offset-checkpoint</span><br><span class="line">└── replication-offset-checkpoint</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ strings /tmp/kafka-logs/my-partitioned-topic-0/00000000000000000000.log</span><br></pre></td></tr></table></figure>
-<p>插入几条记录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ bin/kafka-console-producer.sh --broker-list localhost:9092 --topic my-partitioned-topic</span><br></pre></td></tr></table></figure>
-<p>其中recovery-point-offset-checkpoint记录offset</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ cat recovery-point-offset-checkpoint</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line">3  =&gt; 一共有3个分区</span><br><span class="line">my-partitioned-topic 1 0 =&gt; 单个partition的offset</span><br><span class="line">my-partitioned-topic 2 0</span><br><span class="line">my-partitioned-topic 0 0</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ cat replication-offset-checkpoint</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line">3</span><br><span class="line">my-partitioned-topic 2 2</span><br><span class="line">my-partitioned-topic 1 2</span><br><span class="line">my-partitioned-topic 0 2</span><br></pre></td></tr></table></figure>
-<p>再启动一个消费者并订阅，可以看到消息没有按照生产的顺序读取。这是因为Kafka不保证全局顺序，只保证分区级别的消息顺序。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic my-partitioned-topic --from-beginning</span><br><span class="line"></span><br><span class="line">m2</span><br><span class="line">m5</span><br><span class="line">m1</span><br><span class="line">m4</span><br><span class="line">m3</span><br><span class="line">m6</span><br></pre></td></tr></table></figure>
-<h2 id="分布式模式"><a href="#分布式模式" class="headerlink" title="分布式模式"></a>分布式模式</h2><p>搭建过程略。</p>
-<p>查看上面创建的有多个副本的主题分区信息，副本数为3，每个分区都会分布在3个服务端节点上:</p>
-<p><img src="//schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/image-20191103182419649.png" alt="image-20191103182419649"></p>
-<blockquote>
-<p>Isr的含义</p>
-<p>分区中的所有副本统称为AR（Assigned Repllicas）。所有与leader副本保持一定程度同步的副本（包括Leader）组成ISR（In-Sync Replicas），ISR集合是AR集合中的一个子集。</p>
-<p>消息会先发送到leader副本，然后follower副本才能从leader副本中拉取消息进行同步，同步期间内follower副本相对于leader副本而言会有一定程度的滞后。前面所说的“一定程度”是指可以忍受的滞后范围，这个范围可以通过参数进行配置。与leader副本同步滞后过多的副本（不包括leader）副本，组成OSR(Out-Sync Relipcas),由此可见：AR=ISR+OSR。在正常情况下，所有的follower副本都应该与leader副本保持一定程度的同步，即AR=ISR,OSR集合为空。</p>
-<p>Leader副本负责维护和跟踪ISR集合中所有的follower副本的滞后状态，当follower副本落后太多或者失效时，leader副本会吧它从ISR集合中剔除。如果OSR集合中follower副本“追上”了Leader副本，之后再ISR集合中的副本才有资格被选举为leader，而在OSR集合中的副本则没有机会（这个原则可以通过修改对应的参数配置来改变）<br>————————————————<br>原文链接：<a href="https://blog.csdn.net/weixin_43975220/article/details/93190906" target="_blank" rel="noopener">https://blog.csdn.net/weixin_43975220/article/details/93190906</a></p>
-</blockquote>
-<p>下面手动停止一个 Kafka服务节点，来模拟 Kafka集群中一个服务端节点出现者机的情况:</p>
-<p><img src="//schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/image-20191103183535132.png" alt="image-20191103183535132"></p>
-<p>再次查看创建的主题的信息，可以看到原先落在主副本编号为3的节点，分区的主副本会转移。比如， my-replicated-topic3主题的P1分区，主副本原先是3，现在变为2。另外，虽然每个分区的Replicas没有变化，但 Isr都不再包含 3:</p>
-<p><img src="//schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/image-20191103183623051.png" alt="image-20191103183623051"></p>
-<p>这里能看到编号为2的节点有3个分区在上面。 为了保证主副本会负载均衡到所有的服务器 ， 可以执行preferred-replica-election脚本来手动执行平衡操作， 即选择Replicas的第一个副本作为分区的主副本 。 比如，分区Pl的副本集等于[3, 2, 0]，当前的主副本编号为2，那么就要将分区Pl的主副本从现有的2迁移到3上。 执行完平衡<br>操作后 ， 再次查看分区信息，可 以看到分区 的主副本确实发生了转移 :</p>
-<p><img src="//schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/image-20191111175447002.png" alt="image-20191111175447002"></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/09/30/Kafka/kafka消费者/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/09/30/Kafka/kafka消费者/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-09-30 20:22:31" itemprop="dateCreated datePublished" datetime="2019-09-30T20:22:31+08:00">2019-09-30</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-07 20:08:10" itemprop="dateModified" datetime="2019-10-07T20:08:10+08:00">2019-10-07</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/09/30/Kafka/kafka消费者/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/09/30/Kafka/kafka消费者/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Consumer概念"><a href="#Consumer概念" class="headerlink" title="Consumer概念"></a>Consumer概念</h1><p>Consumer属于group。一个group里的consumer订阅同一个主题，每个consumer接收一部分分区的消息。</p>
-<p>假设主题T1有4个分区，我们创建了consumer C1，它是群组G1中唯一消费者，用它订阅主题T1。消费者C1将收到主题T1全部4个分区的消息。</p>
-<p><img src="//schwimmer.github.io/2019/09/30/Kafka/kafka消费者/image-20191002090247926.png" alt="image-20191002090247926"></p>
-<p>若在G1中新增一个C2，那么每个consumer分别从两个分区接收消息。</p>
-<p><img src="//schwimmer.github.io/2019/09/30/Kafka/kafka消费者/image-20191002090321265.png" alt="image-20191002090321265"></p>
-<p>若有4个consumer，每个都分配一个分区</p>
-<p><img src="//schwimmer.github.io/2019/09/30/Kafka/kafka消费者/image-20191002090342663.png" alt="image-20191002090342663"></p>
-<p>如果继续增加consumer数量且超过分区数，那么有一部分会闲置</p>
-<p><img src="//schwimmer.github.io/2019/09/30/Kafka/kafka消费者/image-20191002090414388.png" alt="image-20191002090414388"></p>
-<p><strong>往组里增加consumer是横向伸缩消费能力的主要方式</strong>。consumer经常做一些高延迟的事情，比如复杂计算等。这种情况下，单个consumer无法跟上数据生成的速度，所以可以增加更多consumer，让它们分担负载，每个consumer只处理部分分区的消息，这就是横向伸缩的主要手段。</p>
-<p>若新增一个G2，将从T1接收所有消息，与G1不影响。</p>
-<h2 id="消费者群组与分区再均衡"><a href="#消费者群组与分区再均衡" class="headerlink" title="消费者群组与分区再均衡"></a>消费者群组与分区再均衡</h2><p>在一个group中，一个新的consumer加入，读取的是本由其他consumer读取的消息。当一个consumer被关闭或发生崩溃时，它就离开群组，原本读取的分区由其他消费者来读取。</p>
-<p>在topic发生变化时，比如管理员添加了新的分区，会发生分区重分配。<strong>分区所有权从一个consumer转到另一个consumer，成为再均衡（rebalance）</strong>。有了rebalance，就可以放心的添加或移除消费者。不过在正常情况下，不希望发生rebalance。</p>
-<p><strong>在rebalance时，consumer无法读取消息，会造成整个group一段时间的不可用</strong>。</p>
-<p>另外，当分区被重新分配给另一个消费者时，<strong>消费者当前的读取状态会丢失，它有可能还需要去刷新缓存，在它重新恢复状态之前会拖慢应用</strong>。</p>
-<p>如何安全的Rebalance？如何避免不必要的Rebalance？</p>
-<p>consumer通过向<strong>群组协调器（coordinator，也是一个broker）</strong>发送<strong>心跳</strong>来维持他们和群组的从属关系以及它们对分区的所有权关系。<strong>只要consumer以正常时间间隔发送心跳，就被认为是活跃的，说明还在读取分区里的消息。consumer会在轮询消息或提交偏移量时发送心跳。若停止发送心跳时间过长，会话就会过期，coordinator认为它已经死亡，就会触发一次Rebalance。</strong></p>
-<p>当消费者崩溃，停止读取消息，coordinator会等待几秒，确认死亡才会触发Rebalance。在这几秒钟，死掉的consumer不会读取分区消息。<strong>在清理consumer时，consumer会通知coordinator它将要离开群组，coordinator会立即触发一次Rebalance</strong>。（死掉了还能通知？）</p>
-<blockquote>
-<p>心跳在最近版本中的变化</p>
-</blockquote>
-<p>在0.10.1中，引入一个独立的心跳线程。可以在轮询消息的空档发送心跳。这样，<strong>发送心跳的频率和消息轮询的频率之间是相互独立的</strong>。在新版kafka中，可以<strong>指定消费者在离开群组并触发Rebalance之前可以有多长时间不进行消息轮询</strong>，这样可以避免<strong>活锁</strong>（livelock），比如有时应用并没有崩溃，只是由于某些原因导致无法正常运行。这个配置与session.timeout.ms是相互独立的，后者用于控制检测consumer发生崩溃的时间与停止发送心跳的时间。<a name="jump1">没懂</a></p>
-<h2 id="创建Kafka消费者"><a href="#创建Kafka消费者" class="headerlink" title="创建Kafka消费者"></a>创建Kafka消费者</h2><p>在读取消息前，需先创建一个KafkaConsumer对象。有三个必要的属性：bootstrap.servers，key.deserializer和value.deserializer。</p>
-<p>第四个属性group.id不是必须的，指定KafkaConsumer属于哪一个group。创建不属于任何一个群组的消费者也是可以的，只是这样不太常见。</p>
-<h2 id="订阅topic"><a href="#订阅topic" class="headerlink" title="订阅topic"></a>订阅topic</h2><p>subscribe()方法接受一个topic列表作为参数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">consumer.subscribe(Collections.singletonList(&quot;customerCountries&quot;));</span><br></pre></td></tr></table></figure>
-<p>也可以传入一个正则，可以匹配多个主题。如果有人创建了新的主题，并且主题的名字与正则匹配，那么会立即触发一次Rebalance，消费者就可以读取新添加的主题。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">consumer.subscribe(&quot;test.*&quot;);</span><br></pre></td></tr></table></figure>
-<h2 id="轮询"><a href="#轮询" class="headerlink" title="轮询"></a>轮询</h2><p>消息轮询是consumer API的核心，通过一个简单的轮询向服务器请求数据。一旦consumer订阅主题，轮询就处理所有细节，包括群组协调、分区Rebalance、发送心跳和获取数据。开发者通过API来处理从分区返回的数据。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line"> <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">   <span class="comment">// 持续对kafka进行轮询，否则会被认为已经死亡，它的分区会被移交给group中其他消费者。poll传入的是一个超时时间，指定了方法在多久之后可以返回，不管有没有可用的数据都要返回。若设为0，poll()会立即返回，否则会在指定毫秒数内一直等待broker返回数据</span></span><br><span class="line"> 	ConsumerRecords&lt;String, String&gt; records = consumer.poll(<span class="number">100</span>);</span><br><span class="line">   <span class="comment">// poll返回一个记录列表。每条记录包含topic、分区、offset和key value。通过遍历来逐条处理。</span></span><br><span class="line">  <span class="keyword">for</span> (ConsumerRecord&lt;String, String&gt; record: records)</span><br><span class="line"> &#125;</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">  <span class="comment">// 在退出前关闭消费者。网络连接和socket也会随之关闭，并立即触发一次Rebalance，而不是等待group的coordinator发现它不再发送心跳并认定它已死亡，因此那样需要更长的时间。</span></span><br><span class="line"> consumer.close(); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>轮询不仅是获取数据这么简单。在第一次调用新消费者的poll()时，会负责查找GroupCoordinator，然后加入group，接受分配的分区。<strong>如果发生Rebalance，整个过程也是在轮询期间进行的。心跳也是从轮询发出去的。所以，要确保轮询期间所做的任何处理工作都应该尽快完成</strong>。</p>
-<h2 id="消费者的配置"><a href="#消费者的配置" class="headerlink" title="消费者的配置"></a>消费者的配置</h2><p><code>fetch.min.bytes</code></p>
-<p>指定从服务器获取记录的最小字节数。broker在收到consumer请求时，会等到有足够数据才返回。这样可以降低consumer和broker的工作量。</p>
-<p><code>fetch.max.wait.ms</code></p>
-<p>通过上一个参数告诉kafka，在有足够数据的时候才返回。而该参数是指定broker的等待时间，默认是500ms。</p>
-<p>若该参数设为100ms，fetch.min.bytes设为1MB，在kafka接收到consumer请求后，要么返回1MB，要么在100ms后返回所有可用的数据，就看哪个条件先得到满足。</p>
-<p><code>max.partitions.fetch.bytes</code></p>
-<p>指定服务器从每个分区里返回给消费者的最大字节数。默认值是1MB。即，KafkaConumser.poll()从每个分区返回的记录不超过该参数指定的字节。</p>
-<p>该参数的值必须比broker能接收的最大消息字节数（max.message.size）大，否则consumer可能无法读取，导致consumer一直挂起重试。<a name="jump2">不懂</a></p>
-<p><code>session.timeout.ms</code></p>
-<p>指定consumer在认为死亡前，可以与服务器断开连接的时间。默认是3s。如果在指定时间诶没有发送心跳，就认为是已经死亡，会触发Rebalance。该参数与headrbeat.interval.ms紧密相关，headrbeat.interval.ms指定poll向coordinator发送心跳的频率，session.timeout.ms则指定可以多久不发送心跳。<strong>所以，一般要同时修改这两个。一般headrbeat.interval.ms是session.timeout.ms的三分之一</strong>。</p>
-<p>如果参数值过小，可以更快检测和恢复崩溃节点，但长时间的轮询或GC可能导致非预期的Rebalance。若设的大，可以减少意外的Rebalance，但检测节点崩溃需要更长时间。</p>
-<p><code>auto.offset.reset</code></p>
-<p>指定consumer在读取一个没有offset的分区，或offset无效情况下该如何处理。默认是latest，是指在offset无效时，从最新记录开始读取数据（从consumer启动后生成的记录）。另一个值是earliest，是指在offset无效时，从起始位置读取分区记录。</p>
-<p><code>enable.auto.commit</code></p>
-<p>指定consumer是否自动提交offset，默认是true。为了尽量避免重复数据和丢失，可以设为false。如果设为true，可以通过auto.commit.interval.ms来控制提交的频率。</p>
-<p><code>partition.assignment.strategy</code></p>
-<p>PartitionAssignor根据给定的consumer和topic，决定哪些分区应该被分配给哪个consumer。kafka有两个默认的分配策略。</p>
-<p>Range</p>
-<p>该策略会把主题的若干个连续的分区分配给消费者。假设悄费者C1和消费者C2同时订阅了主题T1和主题T2 ,井且每个主题有3 个分区。那么消费者C1有可能分配到过两个主题的分区0 和分区1 ,而消费者C2分配到这两个主题的分区2 。因为每个主题拥有奇数个分区,而分配是在主题内独立完成的,第一个消费者最后分配到比第二个消费者更多的分区。只要使用了Range 策略,而且分区数量无怯被消费者数量整除,就会出现这种情况。</p>
-<p>RangeRobin</p>
-<p>该策略把主题的所有分区逐个分配给消费者。如果使用RangeRobin策略来给消费者C1和消费者C2分配分区,那么消费者C1将分到主题T1的分区0和分区2以及主题T2的分区1 ,消费者C2将分配到主题T1的分区1以及主题口的分区0和分区2。一般来说，如果所有消费者都订阅相同的主题(这种情况很常见)，RangeRobin策略会给所有消费者分配相同数量的分区(或最多就差一个分区)。</p>
-<p><code>client.id</code></p>
-<p>broker用它来标记从客户端发过来的消息，通常被用在日志、度量指标和配额里。</p>
-<p><code>max.poll.records</code></p>
-<p>用于控制单词调用call()方法能够返回的记录数量，可以帮你控制在轮询里需要处理的数据量。</p>
-<p><code>receive.buffer.bytes</code>和<code>send.buffer.bytes</code></p>
-<p>socket在读写数据时用到的TCP缓冲区也可以设置大小。如果它们被设为-1 ,就使用操作系统的默认值。如果生产者或消费者与broker处于不同的数据中心内,可以适当增大这些值,因为跨数据中心的网络一般都有比较高的延迟和比较低的带宽。</p>
-<h2 id="提交和偏移量"><a href="#提交和偏移量" class="headerlink" title="提交和偏移量"></a>提交和偏移量</h2><p>每次调用poll，总是返回由producer写入Kafka但还没有被consumer读取过的记录，我们因此可以追踪哪些记录是被group里面哪个消费者读取的。</p>
-<p>把更新分区当前位置的操作叫做<strong>提交</strong>。</p>
-<p>P80</p>
-<p>问题：</p>
-<p><a href="#jump1">1</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/09/28/Kafka/kafka生产者/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/09/28/Kafka/kafka生产者/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-09-28 14:45:15" itemprop="dateCreated datePublished" datetime="2019-09-28T14:45:15+08:00">2019-09-28</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-09-30 20:22:15" itemprop="dateModified" datetime="2019-09-30T20:22:15+08:00">2019-09-30</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/09/28/Kafka/kafka生产者/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/09/28/Kafka/kafka生产者/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="生产者概览"><a href="#生产者概览" class="headerlink" title="生产者概览"></a>生产者概览</h1><p>两种使用场景：</p>
-<p>1、不允许丢失或重复，低延迟，对吞吐要求高</p>
-<p>2、可以少量丢失或重复，高延迟</p>
-<p>向kafka发送消息的主要步骤</p>
-<p><img src="//schwimmer.github.io/2019/09/28/Kafka/kafka生产者/image-20190928144841035.png" alt="image-20190928144841035"></p>
-<p>从创建一个producerRecorder对象开始。</p>
-<p>1）若指定分区，则分区器不做事情，直接把指定分区返回；若没指定分区，则分区器会根据ProducerRecord对象的键来选择一个分区。</p>
-<p>2）记录被添加到一个记录批次中，这个批次所有消息会被发送到相同的主题和分区上。</p>
-<p>3）有一个独立线程把这些记录批次发送到相应broker上。</p>
-<p>4）服务器接收后返回一个响应。若成功写入，就返回一个RecordMetaData对象，包含主题和分区信息，以及记录再分区中的offset。若失败，会重试几次。</p>
-<h1 id="创建生产者"><a href="#创建生产者" class="headerlink" title="创建生产者"></a>创建生产者</h1><p>3个必选属性：<br><code>bootstrap.servers</code></p>
-<p>指定broker地址清单，格式为<code>host:port</code>。清单里不需要包含所有broker地址，生产者会从给定broker中查找其他broker信息。不过建议至少要提供两个，防止其中一个宕机。</p>
-<p><code>key.serializer</code></p>
-<p>将java对象设置为字节数组。</p>
-<p><code>value.serializer</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">private Properties kafkaProps = new Properties();</span><br><span class="line">kafkaProps.put(&quot;bootstrap.servers&quot;, &quot;broker1:9092,broker2:9092);</span><br><span class="line">kafkaProps.put(&quot;key.serializer&quot;, &quot;org.apache.kafka.common.serialization.StringSerializer&quot;);</span><br><span class="line">kafkaProps.put(&quot;value.serializer&quot;, &quot;org.apache.kafka.common.serialization.StringSerializer&quot;);</span><br><span class="line">producer = new KafkaProducer&lt;String, String&gt;(kafkaProps);</span><br></pre></td></tr></table></figure>
-<p>实例化producer后，接下里可以发送消息，3种方式。</p>
-<p><strong>发送并忘记</strong>（fire-and-forget)</p>
-<p><strong>同步发送</strong></p>
-<p>send()之后返回一个Future对象，调用get()方法进行等待，就可以知道是否发送成功。</p>
-<blockquote>
-<p>KafkaProducer一般会发生两类错误。</p>
-<p>一类是可重试错误，可以通过重发消息来解决。比如链接错误，通过再次建立连接；“无主（no leader）”错误，通过重新为分区选举首领来解决。</p>
-<p>一类无法通过重试解决，比如“消息太大”异常。对于这类，kafka不会重试，直接抛出异常。</p>
-</blockquote>
-<p><strong>异步发送</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">DemoProducerCallback</span> <span class="keyword">implements</span> <span class="title">Callback</span> </span>&#123;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCompletion</span><span class="params">(RecordMetadata recordMetadata, Exception e)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">producer.send(record, <span class="keyword">new</span> DemoProducerCallback());</span><br></pre></td></tr></table></figure>
-<h1 id="生产者的配置"><a href="#生产者的配置" class="headerlink" title="生产者的配置"></a>生产者的配置</h1><p><code>acks</code></p>
-<p>指定必须要有多少个分区收到消息，生产者才会认为消息写入是成功的。<strong>对消息丢失的可能性有重要影响</strong>。</p>
-<ul>
-<li><p>若acks=0，producer成功写入消息前不会等待任何来自服务器的响应。即，若当中出现问题，producer无感知，消息也就丢了。<strong>好处是，不需要等待响应，可以以网络能支持的最大速度发送消息，吞吐量最大</strong>。</p>
-</li>
-<li><p>若acks=1，只要集群首领收到消息，consumer就会收到成功响应。若无法到达leader节点（比如leader节点崩溃，新的leader还没被选举出来），会收到一个错误响应，然后producer会重发消息。<em>但若一个没有收到消息的节点成为新首领，消息还是会丢失</em> <a name="jump1">没懂</a>。此时，吞吐量取决于用的是同步还是异步（同步慢，异步快）。</p>
-</li>
-<li><p>若acks=all，最安全，保证不止一个服务器接收到消息，就算有服务器崩溃，整个集群仍然可以运行。不过延迟是最高的，因为要等到不止一个节点。</p>
-</li>
-</ul>
-<p><code>buffer.memory</code></p>
-<p>设置缓冲区大小，producer用它缓冲要发到服务器的消息。若应用发送消息的速度&gt; 发送到服务器的速度，会导致producer空间不足。此时，send()要么被阻塞，要么抛异常。取决于如何设置block.on.buffer.full参数（在0.9.0.0中被替换为max.block.ms，表示在抛出异常前可以阻塞一段时间）。</p>
-<p><code>compression.type</code></p>
-<p>压缩类型，snappy，gzip或lz4。若比较关注性能和网络带宽，推荐用snappy。gzip占CPU多，但压缩比高，在带宽有限的情况下使用。</p>
-<p><code>retries</code></p>
-<p>重试次数。若达到这个次数，返回错误。默认时，每次重试间隔100ms，通过retry.backoff.ms改变这个时间间隔。</p>
-<p><strong>建议在设置这两个参数前，测试一下恢复一个崩溃节点需要多久（比如所有分区选举出首领需要多久），让总的重试时间比kafka从崩溃中恢复的时间长。否则，producer会过早的放弃重试</strong>。</p>
-<p>因为producer会自动重试，代码就没必要处理可重试的错误，只需要处理不可重试的错误或重试次数超出上限的情况。</p>
-<p><code>batch.size</code></p>
-<p>当有多个消息要发送到同一个分区，producer会放到同一个批次里。参数指定一个批次可以使用的内存大小，按照字节数计算（而不是消息个数）。<strong>一个批次不用等到被填满，半满甚至只包括一个的也可能被发送（根据linger.ms）。所以就算设置的很大，也不会造成延迟，只是会占用更多内存而已。</strong>但如果设置太小，producer需要更频繁发送，<strong>会增加一些额外开销</strong>。</p>
-<p><code>linger.ms</code></p>
-<p>consumer在发送批次前等待更多消息加入批次的时间。KafkaProducer会在批次填满，或linger.ms达到上限后发送批次。</p>
-<p><code>client.id</code></p>
-<p>可以是任意字符串，用它识别消息来源，还可以用在日志和配额指标里。</p>
-<p><code>max.in.flight.requests.per.connection</code></p>
-<p>指定producer在收到响应前可以发多少消息。值越高，就会占用越多内存。</p>
-<p><a name="jump2">不是每次发一个批次吗，这个参数有什么作用</a>。貌似设的大可以发送多个批次。</p>
-<p>设为1可以保证消息是按照发送顺序写入服务器的，即使发生了重试。</p>
-<p><code>timeout.ms, request.timeout.ms和metadata.fetch.timeout.ms</code><br>request.timeout.ms指定了生产者在发送数据时等待服务器返回响应的时间。</p>
-<p>metadata.fetch.timeout.ms指定producer在获取元数据（比如目标分区首领是谁）时等待服务器响应的时间。若超时，要么重试，要么返回错误。</p>
-<p>timeout.ms指定broker等待同步副本返回消息确认的时间，与acks的配置相匹配——如果再指定时间内没有收到同步副本的确认，则broker返回一个错误。</p>
-<p><code>max.block.ms</code></p>
-<p>在调用send()方法或使用partitionsFor()方法获取元数据时producer的阻塞时间。<strong>当producer的缓冲区已满，或没有可用元数据时，这些方法就会阻塞</strong>。阻塞超过参数时，producer抛出超时异常。</p>
-<p><code>max.request.size</code></p>
-<p>控制producer发送的请求大小。假设为1MB，则可以发送的单个最大消息是1MB，或生产者可以在单个请求里发送一个批次，该批次包含1000个消息，每个消息大小是1KB。另外，<strong>borker对可接受消息也有限制（message.max.bytes），所以两边配置要可以匹配</strong>。</p>
-<p><code>receive.buffer.bytes和send.buffer.bytes</code></p>
-<p>指定TCP socket接收和发送数据包的缓冲区大小。若设为-1，就是用os的默认值。若<strong>producer和consumer与broker处于不同数据中心，则可以适当增大这些值，因为跨数据中心的网络一般有较高延迟和较低带宽</strong>。</p>
-<h1 id="序列化器"><a href="#序列化器" class="headerlink" title="序列化器"></a>序列化器</h1><h1 id="分区"><a href="#分区" class="headerlink" title="分区"></a>分区</h1><p>若key设为null，且使用默认分区器，则记录将被随机发送到topic内各个可用的分区上。分区器采用轮询（Round Robin）算法将消息均衡分区到各个分区上。</p>
-<p>若key不为null，且使用默认分区器，则kafka会对key进行hash（用kafka自己的hash算法，即使改变java版本，hash值不会变化），再根据hash值把消息映射到特定分区上。</p>
-<p><strong>这里的关键是，同一个key会分到同一个分区，所以在进行映射时，会使用topic所有分区，而不仅是可用分区。那么，若写入数据的分区不可用，就会发生错误，但这种情况很少发生</strong>。</p>
-<p>只有不改变partition个数的情况下，key和partition的映射才能保持不变。不过，一旦topic增加新的分区，新的数据可能被写到其他分区上。所以，<strong>如果要用key来映射分区，最好在创建topic时就把分区规划好，而且永远不要增加新分区</strong>。</p>
-<h2 id="实现自定义分区策略"><a href="#实现自定义分区策略" class="headerlink" title="实现自定义分区策略"></a>实现自定义分区策略</h2><p>按key可能造成不平衡，需要给一些大的key分配单独分区，再用hash处理其他的。</p>
-<p>没懂的记录</p>
-<p><a href="#jump1">1</a></p>
-<p><a href="#jump2">2</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/09/27/Kafka/百问Kafka/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Schwimmer">
-      <meta itemprop="description" content="Record and Think!">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Schwimmer's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/09/27/Kafka/百问Kafka/" class="post-title-link" itemprop="url">未命名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-
-          
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-09-27 09:38:15" itemprop="dateCreated datePublished" datetime="2019-09-27T09:38:15+08:00">2019-09-27</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-20 10:23:07" itemprop="dateModified" datetime="2019-10-20T10:23:07+08:00">2019-10-20</time>
-              </span>
-            
-          
-
-          
-
-          
-            
-            
-              
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-            
-                <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/09/27/Kafka/百问Kafka/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/09/27/Kafka/百问Kafka/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          <br>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="1、Topic的配置项"><a href="#1、Topic的配置项" class="headerlink" title="1、Topic的配置项"></a>1、Topic的配置项</h1><p><code>num.partitions</code></p>
+            <p><code>num.partitions</code></p>
 <p>topic包含多少个分区，一旦设定后，只能增加不能减少；若需要减少，得新增一个topic。</p>
 <p>kafka通过partitions对topic进行横向扩展，当有新broker加入时，通过分区个数实现集群的负载均衡。一般的，topic的partitions的个数大于broker个数。</p>
 <p><code>log.retention.hours</code></p>
@@ -1356,7 +486,6 @@
 <blockquote>
 <p>如果topic消息量不大，那么如何调整该参数大小就很重要。比如，一个topic每天100MB，而该参数是默认值，那么10天才能填满一个日志片段。由于日志片段在被关闭之前是不会过期的，所以如果log.retention,ms=1周，则segment最多需要17天才会过期。</p>
 <p>segment大小也会影响通过timestamp获取offset。在获取offset时，kafka会检查分区最后修改时间大于指定timestamp的segment，让该segment的前一个的最后修改时间小于指定timestamp。然后，kafka返回该segment文件开头的offset。</p>
-<p>segment越小，结果越准确。（不准有什么影响）</p>
 </blockquote>
 <p><code>message.max.bytes</code></p>
 <p>broker设置这个来限制单个消息的大小，默认是1MB。<strong>若生产者发生的消息超过这个大小，不仅不会被接收，还会收到broker返回的错误信息</strong>。跟其他与字节相关配置参数一样，该参数指的是<strong>压缩后的消息大小</strong>，实际大小可以大于这个值。</p>
@@ -1368,86 +497,6 @@
 <p>客户端的fetch.message.max.bytes必须与服务端的参数进行协调。若该值更小，则消费者无法获取大的消息，导致消费者被阻塞。</p>
 <p>在集群里的broker配置replica.fetch.max.bytes时，遵循同样原则。</p>
 </blockquote>
-<h1 id="2、如何选定分区数量"><a href="#2、如何选定分区数量" class="headerlink" title="2、如何选定分区数量"></a>2、如何选定分区数量</h1><p>需要考虑：</p>
-<p>1、topic需要多大吞吐量，每秒100KB还是1GB？</p>
-<p>2、从单个分区读取数据的最大吞吐量是多少？每个分区一般都会有一个消费者，如果知道消费者将写入数据库的速度不超过每秒50MB，那从一个分区读取数据的吞吐量不需要超过每秒50MB。</p>
-<p>3、每个broker包含的分区个数，可用的磁盘空间和网络带宽。</p>
-<p>4、如果消息按照不同键写入分区，则为已有主题增加分区就会困难。（为什么，键已经分布好了？）</p>
-<p>5、单个broker<strong>对分区个数有限制</strong>，因为<strong>分区越多，占用内存越多</strong>，完成首领选举需要时间越长。</p>
-<p>如果估算出topic的吞吐量和消费者的吞吐量，可以用</p>
-<script type="math/tex; mode=display">
-topic吞吐量 / 消费者吞吐量 = 分区个数</script><p>即，如果每秒要从topic写入和读取1GB数据，且每个消费者每秒可处理50MB数据，那至少需要20个分区，这样可以让20个消费者同时读取这些分区。</p>
-<p><strong>每个分区的大小，经验值是25GB</strong>。</p>
-<h1 id="3、过期时间是怎么判断的"><a href="#3、过期时间是怎么判断的" class="headerlink" title="3、过期时间是怎么判断的"></a>3、过期时间是怎么判断的</h1><p><code>根据时间保留数据</code>是通过检查磁盘上日志文件片段的最后修改时间来实现的。最后修改时间是日志片段的关闭事件，也就是<strong>文件里最后一个消息的timestamp</strong>。</p>
-<p>但是，<strong>如果用管理工具在服务器间移动分区</strong>，最后修改时间就不准了。时间误差可能导致分区过多的保留数据。</p>
-<h1 id="4、需要多少broker"><a href="#4、需要多少broker" class="headerlink" title="4、需要多少broker"></a>4、需要多少broker</h1><p>取决于：</p>
-<p>1、需要多少磁盘空间来保留数据，以及单个broker有多少空间可用。若整个集群要10TB，每个broker可以保存2TB，则需要5个broker。若启用数据复制，至少还需要一倍的空间，<strong>但要取决于配置的复制系数是多少</strong>。</p>
-<p>2、集群处理请求的能力。通常与网络接口处理客户端流量的能力有关，特别是当多个消费者存在或在数据保留期间流量发生波动。（这一段不太懂P25)</p>
-<h1 id="5、kafka和zookeeper"><a href="#5、kafka和zookeeper" class="headerlink" title="5、kafka和zookeeper"></a>5、kafka和zookeeper</h1><p>消费者可以选择将偏移量提交给zookeeper或kafka，还可以选择提交偏移量的时间间隔。</p>
-<p>若提交到zookeeper，那么在每个提交时间上，消费者会为每个消息的分区往zookeeper写入一次偏移量。合理提交间隔是1分钟，因为这刚好是group的某个消费者发生失效时能读取到重复消息的时间。</p>
-<p>并且，这些提交对zookeeper来说流量不算小，特别是当集群中有多个消费者的时候。若zookeeper无法处理太大的流量，就有必要使用长一点的提交时间间隔。</p>
-<p>kafka在0.9.0.0后，引入一个新的消费者接口，允许broker直接维护group信息、topic信息、offset信息。建议使用该接口，消除对zookeeper的依赖。</p>
-<h1 id="6、kafka如何保证顺序"><a href="#6、kafka如何保证顺序" class="headerlink" title="6、kafka如何保证顺序"></a>6、kafka如何保证顺序</h1><p>kafka可以保证同一个partition的消息是有序的。即，若producer按顺序发送消息，broker可以按顺序写入partition，consumer会按同样顺序消费。</p>
-<p>若吧retires&gt;0，同时把max.in.flight.requests.per.connection&gt;1，那么，若第一个批次消息写入失败，而第二个批次写入成功，broker会重试第一个批次，若第一个批次也成功，则两个批次的顺序就反过来了。</p>
-<p><strong>如果要求消息有序，那么写入成功也是很关键的，所以不建议retires=0，可以把max.in.flight.requests.per.connection=1，这样producer发送第一批时，就不会有其他消息发给broker。不过这样会严重影响producer的吞吐量，所以只有在对消息的顺序有严格要求时才这么做。</strong></p>
-<p><a name="jump1">看看canal怎么实现的</a></p>
-<h1 id="7、如何安全的Rebalance？如何避免不必要的Rebalance？"><a href="#7、如何安全的Rebalance？如何避免不必要的Rebalance？" class="headerlink" title="7、如何安全的Rebalance？如何避免不必要的Rebalance？"></a>7、如何安全的Rebalance？如何避免不必要的Rebalance？</h1><p>consumer通过向<strong>群组协调器（coordinator，也是一个broker）</strong>发送<strong>心跳</strong>来维持他们和群组的从属关系以及它们对分区的所有权关系。<strong>只要consumer以正常时间间隔发送心跳，就被认为是活跃的，说明还在读取分区里的消息。consumer会在轮询消息或提交偏移量时发送心跳。若停止发送心跳时间过长，会话就会过期，coordinator认为它已经死亡，就会触发一次Rebalance。</strong></p>
-<p>当消费者崩溃，停止读取消息，coordinator会等待几秒，确认死亡才会触发Rebalance。在这几秒钟，死掉的consumer不会读取分区消息。<strong>在清理consumer时，consumer会通知coordinator它将要离开群组，coordinator会立即触发一次Rebalance</strong>。（死掉了还能通知？）</p>
-<p><a name="jump2">没讲完，后面补充</a></p>
-<h1 id="8、分配分区是怎样的一个过程？"><a href="#8、分配分区是怎样的一个过程？" class="headerlink" title="8、分配分区是怎样的一个过程？"></a>8、分配分区是怎样的一个过程？</h1><p>当consumer要加入group时，会向coordinator发送一个JoinGroup请求。第一个加入group的consumer将成为“群主”。群主从coordinator那里获取群组的成员列表（列表中包含了所有最近发送过心跳的消费者，他们被认为是活跃的）。并负责给每个consumer分配分区。它使用一个实现了PartitionAssingor接口来决定哪些分区应该被分配给哪个消费者。</p>
-<p>kafka内置两种分配策略。</p>
-<p>分配完成后，群主把分配情况列表发送给coordinator，coordinator再把这些信息发给所有消费者。每个consumer只能看到自己的分配消息，只有群主知道group中所有consumer的分配信息。这个过程在Rebalance时重复发生。</p>
-<h1 id="9、消费时如何保证线程安全"><a href="#9、消费时如何保证线程安全" class="headerlink" title="9、消费时如何保证线程安全"></a>9、消费时如何保证线程安全</h1><p>在同一个group中，无法让一个线程运行多个consumer。按照规则，一个consumer使用一个线程。最好是把消费者的逻辑封装在自己的对象里，然后使用java的ExecutorService启动多个线程，使每个消费者运行在自己的线程上。</p>
-<h1 id="10、消费者如何提交offset"><a href="#10、消费者如何提交offset" class="headerlink" title="10、消费者如何提交offset"></a>10、消费者如何提交offset</h1><p>consumer往一个<code>_consumer_offset</code>的特殊topic发送消息，消息里包含每个分区的offset。如果消费者一直运行，offset就没有意义。但如果触发Rebalance后，每个consumer可能分配到新的分区，而不是之前处理的那个，为了能继续之前工作，consumer需要读取每个分区最后一次提交的offset。</p>
-<p>若提交的offset &lt; 处理的最后一个消息的offset，那么处于中间的就会重复处理。</p>
-<p><img src="//schwimmer.github.io/2019/09/27/Kafka/百问Kafka/image-20191004223039908.png" alt="image-20191004223039908"></p>
-<p>反之，就会丢失消息</p>
-<p><img src="//schwimmer.github.io/2019/09/27/Kafka/百问Kafka/image-20191004223057610.png" alt="image-20191004223057610"></p>
-<p>KafkaConsumer API有多种提交offset的方式。</p>
-<h2 id="自动提交"><a href="#自动提交" class="headerlink" title="自动提交"></a>自动提交</h2><p>若<code>enable.auto.commit=true</code>，则每过5s，会自动把poll()接收到的最大offset提交。提交时间间隔由<code>auto.commit.interval.ms</code>控制，默认5s。自动提交也是在轮询中进行的。每次轮询会检查是否该提交offset。</p>
-<p>可能的风险是：</p>
-<p>​    假设使用默认的5s一次，在最近一次提交后3s发生了Rebalance，发生之后，consumer从最后一次提交的offset开始读。但此时offset已经落后了3s，所以3s内的消息会被重复处理。</p>
-<p>所以，自动提交时可能有重复消息的风险。</p>
-<h2 id="提交当前offset"><a href="#提交当前offset" class="headerlink" title="提交当前offset"></a>提交当前offset</h2><p>把<code>auto.commit.offset=false</code>，让程序决定何时提交。使用commitSync()提交offset最简单可靠。这个api会提交由poll()方法返回的最新offset，提交成功后马上返回，否则抛出异常。</p>
-<p>采用这种方式，要确保处理完所有记录后调用commitSync，否则有消息丢失的风险。</p>
-<h2 id="异步提交"><a href="#异步提交" class="headerlink" title="异步提交"></a>异步提交</h2><p>手动提交的不足时，在broker对提交请求作出回应之前，程序会一直阻塞，这样会限制吞吐量。<strong>可以通过降低提交频率来提升吞吐量，但如果发生Rebalance，会增加重复消息的量</strong>。</p>
-<p>使用异步提交，只管发送提交，无需等待响应。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(<span class="keyword">true</span>) &#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="comment">// 提交最后一个offset</span></span><br><span class="line">	consumer.commitAsync();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这种方式也有重复消费的风险：</p>
-<p>​    假设我们发出一个请求用于提交偏移量2000 ,这个时候发生了短暂的通信问题,服务器收不到请求,自然也不会作出任何响应。与此同时,我们处理了另外一批消息,并成功提交了偏移量3000。如commitAsync()重新尝试提交偏移量2000 ,它有可能在偏移量3000之后提交成功。这个时候如果发生再均衡,就会出现重复消息。</p>
-<p>异步提交也支持回调</p>
-<p><img src="//schwimmer.github.io/2019/09/27/Kafka/百问Kafka/image-20191004233405388.png" alt="image-20191004233405388"></p>
-<blockquote>
-<p>重试异步提交</p>
-</blockquote>
-<p>我们可以使用一个单调递增的序列号来维护异步提交的顺序。在每次提交偏移量之后或在回调里提交偏移量时递增序列号。在进行重试前,先检查回调的序列号和即将提交的偏移量是否相等,如果相等,说明没有新的提交,那么可以安全地进行重试。如果序列号比较大,说明有一个新的提交已经发送出去了,应该停止重试。</p>
-<h2 id="同步和异步组合提交"><a href="#同步和异步组合提交" class="headerlink" title="同步和异步组合提交"></a>同步和异步组合提交</h2><p>偶尔的提交失败不进行重试问题不大，但是在关闭consumer或Rebalance前最后一次提交，要确保提交成功。这个时候一般组合用commitAsync()和commitSync()。</p>
-<p><img src="//schwimmer.github.io/2019/09/27/Kafka/百问Kafka/image-20191020102306184.png" alt="image-20191020102306184"></p>
-<h1 id="Kafka如何选举？"><a href="#Kafka如何选举？" class="headerlink" title="Kafka如何选举？"></a>Kafka如何选举？</h1><p>在Kafka里面，Master/Slave的选举，有2步：第1步，先通过ZK在所有机器中，选举出一个KafkaController；第2步，再由这个Controller，决定每个partition的Master是谁，Slave是谁。因为有了选举功能，所以kafka某个partition的master挂了，该partition对应的某个slave会升级为主对外提供服务。</p>
-<h1 id="与RocketMQ的区别"><a href="#与RocketMQ的区别" class="headerlink" title="与RocketMQ的区别"></a>与RocketMQ的区别</h1><p>转自：<a href="https://www.jianshu.com/p/c474ca9f9430" target="_blank" rel="noopener">https://www.jianshu.com/p/c474ca9f9430</a></p>
-<h2 id="namesrv-VS-zk"><a href="#namesrv-VS-zk" class="headerlink" title="namesrv VS zk"></a>namesrv VS zk</h2><p>​    1、我们可以对比下kafka和rocketMq在协调节点选择上的差异，kafka通过zookeeper来进行协调，而rocketMq通过自身的namesrv进行协调。</p>
-<p>​    2、kafka在具备选举功能，在Kafka里面，Master/Slave的选举，有2步：第1步，先通过ZK在所有机器中，选举出一个KafkaController；第2步，再由这个Controller，决定每个partition的Master是谁，Slave是谁。因为有了选举功能，所以kafka某个partition的master挂了，该partition对应的某个slave会升级为主对外提供服务。</p>
-<p>​    3、rocketMQ不具备选举，Master/Slave的角色也是固定的。当一个Master挂了之后，你可以写到其他Master上，但不能让一个Slave切换成Master。那么rocketMq是如何实现高可用的呢，其实很简单，rocketMq的所有broker节点的角色都是一样，上面分配的topic和对应的queue的数量也是一样的，Mq只能保证当一个broker挂了，把原本写到这个broker的请求迁移到其他broker上面，而并不是这个broker对应的slave升级为主。</p>
-<p>​    4、rocketMq在协调节点的设计上显得更加轻量，用了另外一种方式解决高可用的问题，思路也是可以借鉴的。</p>
-<p><img src="//schwimmer.github.io/2019/09/27/Kafka/百问Kafka/6302559-0fc029e27629eba7.png" alt="img"></p>
-<p>kafka部署图</p>
-<p><img src="//schwimmer.github.io/2019/09/27/Kafka/百问Kafka/6302559-83f7032bd6dcd799.png" alt="img"></p>
-<p>rocketmq部署图</p>
-<h2 id="关于吞吐量"><a href="#关于吞吐量" class="headerlink" title="关于吞吐量"></a>关于吞吐量</h2><p>1、首先说明下面的几张图片<strong>来自于互联网共享</strong>，也就是我后面参考文章里面的列出的文章。</p>
-<p>2、kafka在消息存储过程中会根据topic和partition的数量创建物理文件，也就是说我们创建一个topic并指定了3个partition，那么就会有3个物理文件目录，也就说说partition的数量和对应的物理文件是一一对应的。</p>
-<p>3、rocketMq在消息存储方式就一个物流问题，也就说传说中的commitLog，rocketMq的queue的数量其实是在consumeQueue里面体现的，在真正存储消息的commitLog其实就只有一个物理文件。</p>
-<p>4、kafka的多文件并发写入 VS rocketMq的单文件写入，性能差异kafka完胜可想而知。</p>
-<p>5、kafka的大量文件存储会导致一个问题，也就说在partition特别多的时候，磁盘的访问会发生很大的瓶颈，毕竟单个文件看着是append操作，但是多个文件之间必然会导致磁盘的寻道。</p>
-<p><img src="//schwimmer.github.io/2019/09/27/Kafka/百问Kafka/image-20191005131606925.png" alt="image-20191005131606925"></p>
-<p><img src="//schwimmer.github.io/2019/09/27/Kafka/百问Kafka/image-20191005131617553.png" alt="image-20191005131617553"></p>
-<p><img src="//schwimmer.github.io/2019/09/27/Kafka/百问Kafka/image-20191005131626391.png" alt="image-20191005131626391"></p>
-<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="https://link.jianshu.com/?t=https%3A%2F%2Fblog.csdn.net%2Fchunlongyu%2Farticle%2Fdetails%2F54018010" target="_blank" rel="noopener">分布式消息队列RocketMQ与Kafka架构上的巨大差异之1 — 为什么RocketMQ要去除ZK依赖？</a> </p>
-<p><a href="https://link.jianshu.com/?t=https%3A%2F%2Fblog.csdn.net%2Fchunlongyu%2Farticle%2Fdetails%2F54576649" target="_blank" rel="noopener">分布式消息队列RocketMQ与Kafka架构上的巨大差异之2 — CommitLog与ConsumeQueue</a></p>
-<p><a href="https://link.jianshu.com/?t=https%3A%2F%2Fblog.csdn.net%2Fdamacheng%2Farticle%2Fdetails%2F42846549" target="_blank" rel="noopener">RocketMQ与Kafka对比</a></p>
-<p><a href="https://link.jianshu.com/?t=http%3A%2F%2Fjm.taobao.org%2F2016%2F04%2F07%2Fkafka-vs-rocketmq-topic-amout%2F" target="_blank" rel="noopener">Kafka vs RocketMQ—— Topic数量对单机性能的影响</a></p>
-<p>问题</p>
-<p><a href="#jump1">1</a></p>
-<p><a href="#jump2">2</a></p>
 
           
         
@@ -1531,12 +580,29 @@ topic吞吐量 / 消费者吞吐量 = 分区个数</script><p>即，如果每秒
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-count">1</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
               
 
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                    <span class="site-state-item-count">1</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
               
 
               
@@ -2112,14 +1178,6 @@ topic吞吐量 / 消费者吞吐量 = 分区个数</script><p>即，如果每秒
 
   
   
-    
-      
-    
-      
-    
-      
-    
-      
     
       
     

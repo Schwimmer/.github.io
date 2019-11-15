@@ -94,23 +94,17 @@
 
 
 
-  <meta name="description" content="部署下载0.10.0.0版 http://kafka.apache.org/downloads  解压到 1/Users/david/soft/kafka_2.10-0.10.0.0 启动 12bin/zookeeper-server-start.sh config/zookeeper.properties &amp;amp;bin/kafka-server-start.sh config/server.">
+  <meta name="description" content="num.partitions topic包含多少个分区，一旦设定后，只能增加不能减少；若需要减少，得新增一个topic。 kafka通过partitions对topic进行横向扩展，当有新broker加入时，通过分区个数实现集群的负载均衡。一般的，topic的partitions的个数大于broker个数。 log.retention.hours 过期时间。默认值是168小时，也就是一周。还有两个">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Schwimmer&#39;s Blog">
-<meta property="og:url" content="https://schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/index.html">
+<meta property="og:title" content="topic常用配置项">
+<meta property="og:url" content="https://schwimmer.github.io/2019/11/15/百问kafka/topic常用配置项/index.html">
 <meta property="og:site_name" content="Schwimmer&#39;s Blog">
-<meta property="og:description" content="部署下载0.10.0.0版 http://kafka.apache.org/downloads  解压到 1/Users/david/soft/kafka_2.10-0.10.0.0 启动 12bin/zookeeper-server-start.sh config/zookeeper.properties &amp;amp;bin/kafka-server-start.sh config/server.">
+<meta property="og:description" content="num.partitions topic包含多少个分区，一旦设定后，只能增加不能减少；若需要减少，得新增一个topic。 kafka通过partitions对topic进行横向扩展，当有新broker加入时，通过分区个数实现集群的负载均衡。一般的，topic的partitions的个数大于broker个数。 log.retention.hours 过期时间。默认值是168小时，也就是一周。还有两个">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/image-20191020105226247.png">
-<meta property="og:image" content="https://schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/image-20191103182419649.png">
-<meta property="og:image" content="https://schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/image-20191103183535132.png">
-<meta property="og:image" content="https://schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/image-20191103183623051.png">
-<meta property="og:image" content="https://schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/image-20191111175447002.png">
-<meta property="og:updated_time" content="2019-11-11T10:18:45.999Z">
+<meta property="og:updated_time" content="2019-11-15T03:56:10.223Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Schwimmer&#39;s Blog">
-<meta name="twitter:description" content="部署下载0.10.0.0版 http://kafka.apache.org/downloads  解压到 1/Users/david/soft/kafka_2.10-0.10.0.0 启动 12bin/zookeeper-server-start.sh config/zookeeper.properties &amp;amp;bin/kafka-server-start.sh config/server.">
-<meta name="twitter:image" content="https://schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/image-20191020105226247.png">
+<meta name="twitter:title" content="topic常用配置项">
+<meta name="twitter:description" content="num.partitions topic包含多少个分区，一旦设定后，只能增加不能减少；若需要减少，得新增一个topic。 kafka通过partitions对topic进行横向扩展，当有新broker加入时，通过分区个数实现集群的负载均衡。一般的，topic的partitions的个数大于broker个数。 log.retention.hours 过期时间。默认值是168小时，也就是一周。还有两个">
 
 
 
@@ -118,7 +112,7 @@
 
   
   
-  <link rel="canonical" href="https://schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/">
+  <link rel="canonical" href="https://schwimmer.github.io/2019/11/15/百问kafka/topic常用配置项/">
 
 
 
@@ -128,7 +122,7 @@
   };
 </script>
 
-  <title> | Schwimmer's Blog</title>
+  <title>topic常用配置项 | Schwimmer's Blog</title>
   
 
 
@@ -363,7 +357,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/11/15/百问kafka/topic常用配置项/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -380,7 +374,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h1 class="post-title" itemprop="name headline">topic常用配置项
 
               
             
@@ -406,7 +400,7 @@
                 
               
 
-              <time title="创建时间：2019-10-20 10:52:01" itemprop="dateCreated datePublished" datetime="2019-10-20T10:52:01+08:00">2019-10-20</time>
+              <time title="创建时间：2019-11-15 11:50:40 / 修改时间：11:56:10" itemprop="dateCreated datePublished" datetime="2019-11-15T11:50:40+08:00">2019-11-15</time>
             </span>
           
 
@@ -414,18 +408,23 @@
             
 
             
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-11 18:18:45" itemprop="dateModified" datetime="2019-11-11T18:18:45+08:00">2019-11-11</time>
-              </span>
-            
           
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/百问kafka/" itemprop="url" rel="index"><span itemprop="name">百问kafka</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -438,8 +437,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/10/20/Kafka/手动安装Kafka/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/10/20/Kafka/手动安装Kafka/" itemprop="commentCount"></span>
+                <a href="/2019/11/15/百问kafka/topic常用配置项/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/11/15/百问kafka/topic常用配置项/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -478,55 +477,30 @@
       
 
       
-        <h1 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h1><p>下载0.10.0.0版</p>
-<p><a href="http://kafka.apache.org/downloads" target="_blank" rel="noopener">http://kafka.apache.org/downloads</a></p>
-<p><img src="//schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/image-20191020105226247.png" alt="image-20191020105226247"></p>
-<p>解压到</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Users/david/soft/kafka_2.10-0.10.0.0</span><br></pre></td></tr></table></figure>
-<p>启动</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bin/zookeeper-server-start.sh config/zookeeper.properties &amp;</span><br><span class="line">bin/kafka-server-start.sh config/server.properties &amp;</span><br></pre></td></tr></table></figure>
-<h1 id="单机模式"><a href="#单机模式" class="headerlink" title="单机模式"></a>单机模式</h1><h2 id="一个副本一个分区"><a href="#一个副本一个分区" class="headerlink" title="一个副本一个分区"></a>一个副本一个分区</h2><p>create创建topic，list查看topic列表</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test</span><br><span class="line"></span><br><span class="line">[2019-10-20 11:03:58,460] INFO Created log for partition [test,0] in /tmp/kafka-logs with properties &#123;compression.type -&gt; producer, message.format.version -&gt; 0.10.0-IV1, file.delete.delay.ms -&gt; 60000, max.message.bytes -&gt; 1000012, message.timestamp.type -&gt; CreateTime, min.insync.replicas -&gt; 1, segment.jitter.ms -&gt; 0, preallocate -&gt; false, min.cleanable.dirty.ratio -&gt; 0.5, index.interval.bytes -&gt; 4096, unclean.leader.election.enable -&gt; true, retention.bytes -&gt; -1, delete.retention.ms -&gt; 86400000, cleanup.policy -&gt; delete, flush.ms -&gt; 9223372036854775807, segment.ms -&gt; 604800000, segment.bytes -&gt; 1073741824, retention.ms -&gt; 604800000, message.timestamp.difference.max.ms -&gt; 9223372036854775807, segment.index.bytes -&gt; 10485760, flush.messages -&gt; 9223372036854775807&#125;. (kafka.log.LogManager)</span><br><span class="line">[2019-10-20 11:03:58,462] INFO Partition [test,0] on broker 0: No checkpointed highwatermark is found for partition [test,0] (kafka.cluster.Partition)</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ bin/kafka-topics.sh --list --zookeeper localhost:2181 test</span><br><span class="line"></span><br><span class="line">test</span><br></pre></td></tr></table></figure>
-<p>接着启动一个producer，并生成一条消息</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test</span><br><span class="line">first message</span><br><span class="line">second message</span><br></pre></td></tr></table></figure>
-<p>启动一个consumer</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic test --from-beginning</span><br><span class="line"></span><br><span class="line">first message</span><br><span class="line">second message</span><br></pre></td></tr></table></figure>
-<h2 id="一个副本多个分区"><a href="#一个副本多个分区" class="headerlink" title="一个副本多个分区"></a>一个副本多个分区</h2><p>创建多个分区的my-partitioned-topic主题，然后用describe查看详细信息，验证3个分区，且每个分区有以下5个属性。</p>
-<ul>
-<li>topic</li>
-<li>partition。从0开始</li>
-<li>Leader。当前分区负责读写的节点，只有主副本才会接受消息读写。</li>
-<li>Replicas。分区的复制节点列表，与topic的副本数量有关，默认只有一个副本，即主副本。</li>
-<li>Isr。同步状态的副本，是Replicas的子集，必须是存活的，且都能赶上主副本。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic my-partitioned-topic</span><br><span class="line"></span><br><span class="line">[2019-10-20 12:10:19,194] INFO Created log for partition [my-partitioned-topic,2] in /tmp/kafka-logs with properties &#123;compression.type -&gt; producer, message.format.version -&gt; 0.10.0-IV1, file.delete.delay.ms -&gt; 60000, max.message.bytes -&gt; 1000012, message.timestamp.type -&gt; CreateTime, min.insync.replicas -&gt; 1, segment.jitter.ms -&gt; 0, preallocate -&gt; false, min.cleanable.dirty.ratio -&gt; 0.5, index.interval.bytes -&gt; 4096, unclean.leader.election.enable -&gt; true, retention.bytes -&gt; -1, delete.retention.ms -&gt; 86400000, cleanup.policy -&gt; delete, flush.ms -&gt; 9223372036854775807, segment.ms -&gt; 604800000, segment.bytes -&gt; 1073741824, retention.ms -&gt; 604800000, message.timestamp.difference.max.ms -&gt; 9223372036854775807, segment.index.bytes -&gt; 10485760, flush.messages -&gt; 9223372036854775807&#125;. (kafka.log.LogManager)</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic my-partitioned-topic</span><br><span class="line"></span><br><span class="line">Topic:my-partitioned-topic	PartitionCount:3	ReplicationFactor:1	Configs:</span><br><span class="line">	Topic: my-partitioned-topic	Partition: 0	Leader: 0	Replicas: 0	Isr: 0</span><br><span class="line">	Topic: my-partitioned-topic	Partition: 1	Leader: 0	Replicas: 0	Isr: 0</span><br><span class="line">	Topic: my-partitioned-topic	Partition: 2	Leader: 0	Replicas: 0	Isr: 0</span><br></pre></td></tr></table></figure>
-<p>为了验证消息是否写到主题分区的日志目录，可以查看日志目录，其中以log结果的是二进制日志格式，可以用<code>strings</code>查看。可以看到，刚才创建的还没有消息，但kafka已经提前创建了文件夹和对应的文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$ tree /tmp/kafka-logs</span><br><span class="line"></span><br><span class="line">/tmp/kafka-logs</span><br><span class="line">├── cleaner-offset-checkpoint</span><br><span class="line">├── meta.properties</span><br><span class="line">├── my-partitioned-topic-0</span><br><span class="line">│   ├── 00000000000000000000.index</span><br><span class="line">│   └── 00000000000000000000.log</span><br><span class="line">├── my-partitioned-topic-1</span><br><span class="line">│   ├── 00000000000000000000.index</span><br><span class="line">│   └── 00000000000000000000.log</span><br><span class="line">├── my-partitioned-topic-2</span><br><span class="line">│   ├── 00000000000000000000.index</span><br><span class="line">│   └── 00000000000000000000.log</span><br><span class="line">├── recovery-point-offset-checkpoint</span><br><span class="line">└── replication-offset-checkpoint</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ strings /tmp/kafka-logs/my-partitioned-topic-0/00000000000000000000.log</span><br></pre></td></tr></table></figure>
-<p>插入几条记录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ bin/kafka-console-producer.sh --broker-list localhost:9092 --topic my-partitioned-topic</span><br></pre></td></tr></table></figure>
-<p>其中recovery-point-offset-checkpoint记录offset</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ cat recovery-point-offset-checkpoint</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line">3  =&gt; 一共有3个分区</span><br><span class="line">my-partitioned-topic 1 0 =&gt; 单个partition的offset</span><br><span class="line">my-partitioned-topic 2 0</span><br><span class="line">my-partitioned-topic 0 0</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ cat replication-offset-checkpoint</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line">3</span><br><span class="line">my-partitioned-topic 2 2</span><br><span class="line">my-partitioned-topic 1 2</span><br><span class="line">my-partitioned-topic 0 2</span><br></pre></td></tr></table></figure>
-<p>再启动一个消费者并订阅，可以看到消息没有按照生产的顺序读取。这是因为Kafka不保证全局顺序，只保证分区级别的消息顺序。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic my-partitioned-topic --from-beginning</span><br><span class="line"></span><br><span class="line">m2</span><br><span class="line">m5</span><br><span class="line">m1</span><br><span class="line">m4</span><br><span class="line">m3</span><br><span class="line">m6</span><br></pre></td></tr></table></figure>
-<h2 id="分布式模式"><a href="#分布式模式" class="headerlink" title="分布式模式"></a>分布式模式</h2><p>搭建过程略。</p>
-<p>查看上面创建的有多个副本的主题分区信息，副本数为3，每个分区都会分布在3个服务端节点上:</p>
-<p><img src="//schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/image-20191103182419649.png" alt="image-20191103182419649"></p>
+        <p><code>num.partitions</code></p>
+<p>topic包含多少个分区，一旦设定后，只能增加不能减少；若需要减少，得新增一个topic。</p>
+<p>kafka通过partitions对topic进行横向扩展，当有新broker加入时，通过分区个数实现集群的负载均衡。一般的，topic的partitions的个数大于broker个数。</p>
+<p><code>log.retention.hours</code></p>
+<p>过期时间。默认值是168小时，也就是一周。还有两个其他参数log.retention.minutes和log.retention.ms。如果指定多个，kafka优先使用最小值。</p>
+<p><code>log.retention.bytes</code></p>
+<p>通过保留的字节数判断过期。作用在每个分区。即假设有8个partitions，且设为1G，那该topic最多保留8GB的数据。所以，当topic的分区个数增加时，整个topic可保留的数据也随之增加。如果也设置了hours，只要任意一个条件满足，消息就会被删除。</p>
+<p><code>log.segment.bytes</code></p>
+<p>上面设置在日志片段上，而不是在单个消息上。<strong>当消息到达broker时，它们被追加到分区的当前日志片段上</strong>。当日志片段大小超过该参数上限（默认是1GB），当前日志片段会被关闭，产生一个新的日志片段。</p>
+<p>如果一个日志片段被关闭，就开始等待过期。<strong>该参数值越小，就会频繁关闭和分配新文件，从而降低磁盘写入的整体效率</strong>。</p>
 <blockquote>
-<p>Isr的含义</p>
-<p>分区中的所有副本统称为AR（Assigned Repllicas）。所有与leader副本保持一定程度同步的副本（包括Leader）组成ISR（In-Sync Replicas），ISR集合是AR集合中的一个子集。</p>
-<p>消息会先发送到leader副本，然后follower副本才能从leader副本中拉取消息进行同步，同步期间内follower副本相对于leader副本而言会有一定程度的滞后。前面所说的“一定程度”是指可以忍受的滞后范围，这个范围可以通过参数进行配置。与leader副本同步滞后过多的副本（不包括leader）副本，组成OSR(Out-Sync Relipcas),由此可见：AR=ISR+OSR。在正常情况下，所有的follower副本都应该与leader副本保持一定程度的同步，即AR=ISR,OSR集合为空。</p>
-<p>Leader副本负责维护和跟踪ISR集合中所有的follower副本的滞后状态，当follower副本落后太多或者失效时，leader副本会吧它从ISR集合中剔除。如果OSR集合中follower副本“追上”了Leader副本，之后再ISR集合中的副本才有资格被选举为leader，而在OSR集合中的副本则没有机会（这个原则可以通过修改对应的参数配置来改变）<br>————————————————<br>原文链接：<a href="https://blog.csdn.net/weixin_43975220/article/details/93190906" target="_blank" rel="noopener">https://blog.csdn.net/weixin_43975220/article/details/93190906</a></p>
+<p>如果topic消息量不大，那么如何调整该参数大小就很重要。比如，一个topic每天100MB，而该参数是默认值，那么10天才能填满一个日志片段。由于日志片段在被关闭之前是不会过期的，所以如果log.retention,ms=1周，则segment最多需要17天才会过期。</p>
+<p>segment大小也会影响通过timestamp获取offset。在获取offset时，kafka会检查分区最后修改时间大于指定timestamp的segment，让该segment的前一个的最后修改时间小于指定timestamp。然后，kafka返回该segment文件开头的offset。</p>
 </blockquote>
-<p>下面手动停止一个 Kafka服务节点，来模拟 Kafka集群中一个服务端节点出现者机的情况:</p>
-<p><img src="//schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/image-20191103183535132.png" alt="image-20191103183535132"></p>
-<p>再次查看创建的主题的信息，可以看到原先落在主副本编号为3的节点，分区的主副本会转移。比如， my-replicated-topic3主题的P1分区，主副本原先是3，现在变为2。另外，虽然每个分区的Replicas没有变化，但 Isr都不再包含 3:</p>
-<p><img src="//schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/image-20191103183623051.png" alt="image-20191103183623051"></p>
-<p>这里能看到编号为2的节点有3个分区在上面。 为了保证主副本会负载均衡到所有的服务器 ， 可以执行preferred-replica-election脚本来手动执行平衡操作， 即选择Replicas的第一个副本作为分区的主副本 。 比如，分区Pl的副本集等于[3, 2, 0]，当前的主副本编号为2，那么就要将分区Pl的主副本从现有的2迁移到3上。 执行完平衡<br>操作后 ， 再次查看分区信息，可 以看到分区 的主副本确实发生了转移 :</p>
-<p><img src="//schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/image-20191111175447002.png" alt="image-20191111175447002"></p>
+<p><code>message.max.bytes</code></p>
+<p>broker设置这个来限制单个消息的大小，默认是1MB。<strong>若生产者发生的消息超过这个大小，不仅不会被接收，还会收到broker返回的错误信息</strong>。跟其他与字节相关配置参数一样，该参数指的是<strong>压缩后的消息大小</strong>，实际大小可以大于这个值。</p>
+<blockquote>
+<p>该值对性能有很大影响。值越大，负责网络连接和请求的线程就要花更多时间处理这些请求。还会增加磁盘写入块的大小，从而影响IO吞吐量。</p>
+</blockquote>
+<p><strong>在服务端和客户端之间协调消息大小</strong></p>
+<blockquote>
+<p>客户端的fetch.message.max.bytes必须与服务端的参数进行协调。若该值更小，则消费者无法获取大的消息，导致消费者被阻塞。</p>
+<p>在集群里的broker配置replica.fetch.max.bytes时，遵循同样原则。</p>
+</blockquote>
 
       
     </div>
@@ -553,26 +527,6 @@
       
       
 
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2019/09/30/Kafka/kafka消费者/" rel="next" title="">
-                <i class="fa fa-chevron-left"></i> 
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/11/11/Kafka/kafka源码解析（一）/" rel="prev" title="">
-                 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
       
 
       
@@ -620,17 +574,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <div class="site-overview-wrap sidebar-panel">
+      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
@@ -645,12 +590,29 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-count">1</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
               
 
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                    <span class="site-state-item-count">1</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
               
 
               
@@ -676,23 +638,6 @@
         </div>
       </div>
 
-      
-      <!--noindex-->
-        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-            
-            
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#部署"><span class="nav-number">1.</span> <span class="nav-text">部署</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#单机模式"><span class="nav-number">2.</span> <span class="nav-text">单机模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一个副本一个分区"><span class="nav-number">2.1.</span> <span class="nav-text">一个副本一个分区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个副本多个分区"><span class="nav-number">2.2.</span> <span class="nav-text">一个副本多个分区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式模式"><span class="nav-number">2.3.</span> <span class="nav-text">分布式模式</span></a></li></ol></li></ol></div>
-            
-
-          </div>
-        </div>
-      <!--/noindex-->
       
 
       
@@ -910,9 +855,9 @@
 
 <script>
   var disqus_config = function() {
-    this.page.url = "https://schwimmer.github.io/2019/10/20/Kafka/手动安装Kafka/";
-    this.page.identifier = "2019/10/20/Kafka/手动安装Kafka/";
-    this.page.title = '';
+    this.page.url = "https://schwimmer.github.io/2019/11/15/百问kafka/topic常用配置项/";
+    this.page.identifier = "2019/11/15/百问kafka/topic常用配置项/";
+    this.page.title = 'topic常用配置项';
     };
   function loadComments() {
     var d = document, s = d.createElement('script');
