@@ -14,7 +14,7 @@
   
 
 
-<html class="theme-next mist use-motion" lang="zh-CN">
+<html class="theme-next pisces use-motion" lang="zh-CN">
 <head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -68,7 +68,7 @@
   var NexT = window.NexT || {};
   var CONFIG = {
     root: '/',
-    scheme: 'Mist',
+    scheme: 'Pisces',
     version: '7.2.0',
     sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
     back2top: true,
@@ -294,9 +294,6 @@
   
 
   
-    
-
-  
 
   
     <div class="site-search">
@@ -337,6 +334,9 @@
     <main id="main" class="main">
       <div class="main-inner">
         <div class="content-wrap">
+          
+            
+
           
           <div id="content" class="content">
             
@@ -473,18 +473,22 @@
       
         
           
-            <p>需要考虑：</p>
-<p>1、topic需要多大吞吐量，每秒100KB还是1GB？</p>
-<p>2、从单个分区读取数据的最大吞吐量是多少？每个分区一般都会有一个消费者，如果知道消费者将写入数据库的速度不超过每秒50MB，那从一个分区读取数据的吞吐量不需要超过每秒50MB。</p>
-<p>3、每个broker包含的分区个数，可用的磁盘空间和网络带宽。</p>
-<p>4、如果消息按照不同键写入分区，则为已有主题增加分区就会困难。（为什么，键已经分布好了？）</p>
-<p>5、单个broker<strong>对分区个数有限制</strong>，因为<strong>分区越多，占用内存越多</strong>，完成首领选举需要时间越长。</p>
-<p>如果估算出topic的吞吐量和消费者的吞吐量，可以用</p>
-<script type="math/tex; mode=display">
-topic吞吐量 / 消费者吞吐量 = 分区个数</script><p>即，如果每秒要从topic写入和读取1GB数据，且每个消费者每秒可处理50MB数据，那至少需要20个分区，这样可以让20个消费者同时读取这些分区。</p>
-<p><strong>每个分区的大小，经验值是25GB</strong>。</p>
-
+            <p>
+              需要考虑：
+1、topic需要多大吞吐量，每秒100KB还是1GB？
+2、从单个分区读取数据的最大吞吐量是多少？每个分区一般都会有一个消费者，如果知道消费者将写入数据库的速度不超过每秒50MB，那从一个分区读取数据的吞吐量不需要超过每秒50MB。
+3、每个broker包含的分区个数，可用的磁盘空间和
+              ...
+            </p>
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/11/15/kafka/百问kafka/如何选定分区数量/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -655,32 +659,21 @@ topic吞吐量 / 消费者吞吐量 = 分区个数</script><p>即，如果每秒
       
         
           
-            <p><code>num.partitions</code></p>
-<p>topic包含多少个分区，一旦设定后，只能增加不能减少；若需要减少，得新增一个topic。</p>
-<p>kafka通过partitions对topic进行横向扩展，当有新broker加入时，通过分区个数实现集群的负载均衡。一般的，topic的partitions的个数大于broker个数。</p>
-<p><code>log.retention.hours</code></p>
-<p>过期时间。默认值是168小时，也就是一周。还有两个其他参数log.retention.minutes和log.retention.ms。如果指定多个，kafka优先使用最小值。</p>
-<p><code>log.retention.bytes</code></p>
-<p>通过保留的字节数判断过期。作用在每个分区。即假设有8个partitions，且设为1G，那该topic最多保留8GB的数据。所以，当topic的分区个数增加时，整个topic可保留的数据也随之增加。如果也设置了hours，只要任意一个条件满足，消息就会被删除。</p>
-<p><code>log.segment.bytes</code></p>
-<p>上面设置在日志片段上，而不是在单个消息上。<strong>当消息到达broker时，它们被追加到分区的当前日志片段上</strong>。当日志片段大小超过该参数上限（默认是1GB），当前日志片段会被关闭，产生一个新的日志片段。</p>
-<p>如果一个日志片段被关闭，就开始等待过期。<strong>该参数值越小，就会频繁关闭和分配新文件，从而降低磁盘写入的整体效率</strong>。</p>
-<blockquote>
-<p>如果topic消息量不大，那么如何调整该参数大小就很重要。比如，一个topic每天100MB，而该参数是默认值，那么10天才能填满一个日志片段。由于日志片段在被关闭之前是不会过期的，所以如果log.retention,ms=1周，则segment最多需要17天才会过期。</p>
-<p>segment大小也会影响通过timestamp获取offset。在获取offset时，kafka会检查分区最后修改时间大于指定timestamp的segment，让该segment的前一个的最后修改时间小于指定timestamp。然后，kafka返回该segment文件开头的offset。</p>
-</blockquote>
-<p><code>message.max.bytes</code></p>
-<p>broker设置这个来限制单个消息的大小，默认是1MB。<strong>若生产者发生的消息超过这个大小，不仅不会被接收，还会收到broker返回的错误信息</strong>。跟其他与字节相关配置参数一样，该参数指的是<strong>压缩后的消息大小</strong>，实际大小可以大于这个值。</p>
-<blockquote>
-<p>该值对性能有很大影响。值越大，负责网络连接和请求的线程就要花更多时间处理这些请求。还会增加磁盘写入块的大小，从而影响IO吞吐量。</p>
-</blockquote>
-<p><strong>在服务端和客户端之间协调消息大小</strong></p>
-<blockquote>
-<p>客户端的fetch.message.max.bytes必须与服务端的参数进行协调。若该值更小，则消费者无法获取大的消息，导致消费者被阻塞。</p>
-<p>在集群里的broker配置replica.fetch.max.bytes时，遵循同样原则。</p>
-</blockquote>
-
+            <p>
+              num.partitions
+topic包含多少个分区，一旦设定后，只能增加不能减少；若需要减少，得新增一个topic。
+kafka通过partitions对topic进行横向扩展，当有新broker加入时，通过分区个数实现集群的负载均衡。一般的，topic的partitions的个数大于broke
+              ...
+            </p>
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/11/15/kafka/百问kafka/topic常用配置项/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -861,142 +854,19 @@ topic吞吐量 / 消费者吞吐量 = 分区个数</script><p>即，如果每秒
       
         
           
-            <h1 id="1、安装node-js"><a href="#1、安装node-js" class="headerlink" title="1、安装node.js"></a>1、安装node.js</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> sudo add-apt-repository ppa:chris-lea/node.js</span><br><span class="line"><span class="meta">$</span> sudo apt-get update</span><br><span class="line"><span class="meta">$</span> sudo apt-get install nodejs</span><br><span class="line"><span class="meta">#</span>原方法没有这一步，但是后面的操作会提示npm command not found</span><br><span class="line"><span class="meta">$</span> sudo apt-get install npm</span><br></pre></td></tr></table></figure>
-<h1 id="2、安装hexo"><a href="#2、安装hexo" class="headerlink" title="2、安装hexo"></a>2、安装hexo</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> sudo npm install hexo -g</span><br></pre></td></tr></table></figure>
-<p>如果是mac，要用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo npm install hexo --no-optional</span><br></pre></td></tr></table></figure>
-<p>不然会报错<strong>Error: Cannot find module ‘./build/Release/DTraceProviderBindings’] code: ‘MODULE_NOT_FOUND’</strong>这个错误。</p>
-<p>如果报权限错误，需要用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo npm install --unsafe-perm --verbose -g hexo</span><br></pre></td></tr></table></figure>
-<h1 id="3、初始博客的根目录"><a href="#3、初始博客的根目录" class="headerlink" title="3、初始博客的根目录"></a>3、初始博客的根目录</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> cd ~/myblog</span><br><span class="line"><span class="meta">$</span> hexo init</span><br></pre></td></tr></table></figure>
-<p>mac的根目录在</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Users/david/david/myblog</span><br></pre></td></tr></table></figure>
-<h1 id="4、在github上新建仓库"><a href="#4、在github上新建仓库" class="headerlink" title="4、在github上新建仓库"></a>4、在github上新建仓库</h1><p>名称必须是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gitusername.github.io</span><br></pre></td></tr></table></figure>
-<p>我的就是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Schwimmer.github.io</span><br></pre></td></tr></table></figure>
-<p>并将本地的SSH KEY添加到git上（略）</p>
-<h1 id="5、让博客可以发布到git"><a href="#5、让博客可以发布到git" class="headerlink" title="5、让博客可以发布到git"></a>5、让博客可以发布到git</h1><p>1）安装hexo-deployer-Git（不然会出现ERROR Deployer not found: git）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
-<p>2） 配置你hexo博客根目录下的_config.yml文件(应该是最下面一行，修改成你的github)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: git@github.com:Schwimmer/Schwimmer.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p> tips</p>
-<p> 冒号后面一定要跟空格</p>
-</blockquote>
-<h1 id="6、hexo常用命令"><a href="#6、hexo常用命令" class="headerlink" title="6、hexo常用命令"></a>6、hexo常用命令</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hexo clean #清除缓存</span><br><span class="line">hexo new &quot;title&quot; #新建文章</span><br><span class="line">hexo g #生成html，或hexo generate</span><br><span class="line">hexo s #在本地启动服务，启动后访问localhost:4000就可以打开，或hexo server</span><br><span class="line">hexo d #发布到git，发布后访问https://schwimmer.github.io/就可以打开，或hexo deploy</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p> tips</p>
-<p> 我目前用的新建文章的方法，就是直接在source/_posts/下面新建md文件</p>
-<p> 可以偷懒写成</p>
-<p> cd ~/myblog</p>
-<p> hexo clean;hexo g;hexo s</p>
-<p> 或</p>
-<p> hexo clean;hexo g;hexo d</p>
-</blockquote>
-<h1 id="支持数学公式"><a href="#支持数学公式" class="headerlink" title="支持数学公式"></a>支持数学公式</h1><p>Next 7的版本中，数学公式可以直接开启配置</p>
-<h3 id="Settings"><a href="#Settings" class="headerlink" title="Settings"></a>Settings</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"># Math Equations Render Support</span><br><span class="line">math:</span><br><span class="line">  enable: true</span><br><span class="line"></span><br><span class="line">  # Default(true) will load mathjax/katex script on demand</span><br><span class="line">  # That is it only render those page who has `mathjax: true` in Front-matter.</span><br><span class="line">  # If you set it to false, it will load mathjax/katex srcipt EVERY PAGE.</span><br><span class="line">  per_page: true</span><br><span class="line"></span><br><span class="line">  engine: mathjax</span><br><span class="line">  #engine: katex</span><br><span class="line"></span><br><span class="line">  # hexo-renderer-pandoc (or hexo-renderer-kramed) needed to full MathJax support.</span><br><span class="line">  mathjax:</span><br><span class="line">    # Use 2.7.5 as default, jsdelivr as default CDN, works everywhere even in China</span><br><span class="line">    cdn: //cdn.jsdelivr.net/npm/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML</span><br><span class="line">    # For direct link to MathJax.js with CloudFlare CDN (cdnjs.cloudflare.com)</span><br><span class="line">    #cdn: //cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML</span><br><span class="line"></span><br><span class="line">    # See: https://mhchem.github.io/MathJax-mhchem/</span><br><span class="line">    #mhchem: //cdn.jsdelivr.net/npm/mathjax-mhchem@3</span><br><span class="line">    #mhchem: //cdnjs.cloudflare.com/ajax/libs/mathjax-mhchem/3.3.0</span><br><span class="line"></span><br><span class="line">  # hexo-renderer-markdown-it-plus (or hexo-renderer-markdown-it with markdown-it-katex plugin) needed to full Katex support.</span><br><span class="line">  katex:</span><br><span class="line">    # Use 0.7.1 as default, jsdelivr as default CDN, works everywhere even in China</span><br><span class="line">    cdn: //cdn.jsdelivr.net/npm/katex@0.7.1/dist/katex.min.css</span><br><span class="line">    # CDNJS, provided by cloudflare, maybe the best CDN, but not works in China</span><br><span class="line">    #cdn: //cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css</span><br><span class="line"></span><br><span class="line">    copy_tex:</span><br><span class="line">      # See: https://github.com/KaTeX/KaTeX/tree/master/contrib/copy-tex</span><br><span class="line">      enable: false</span><br><span class="line">      copy_tex_js: //cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.js</span><br><span class="line">      copy_tex_css: //cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.css</span><br></pre></td></tr></table></figure>
-<h1 id="8、安装主题"><a href="#8、安装主题" class="headerlink" title="8、安装主题"></a>8、安装主题</h1><p>转自：<a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="noopener">NexT主题安装教程</a></p>
-<h1 id="9、文章阅读计数"><a href="#9、文章阅读计数" class="headerlink" title="9、文章阅读计数"></a>9、文章阅读计数</h1><p>转自：<a href="http://www.jianshu.com/p/702a7aec4d00" target="_blank" rel="noopener">Hexo添加不蒜子和LeanCloud统计无标题文章</a></p>
-<p>找到站点的<code>themes/next/layout/_partials</code>目录下的<code>footer.swig</code>文件。插入代码如下。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&#123;% if theme.copyright %&#125;</span><br><span class="line">&lt;div class=&quot;powered-by&quot;&gt;</span><br><span class="line">  &#123;&#123; __(&apos;footer.powered&apos;, &apos;&lt;a class=&quot;theme-link&quot; href=&quot;https://hexo.io&quot;&gt;Hexo&lt;/a&gt;&apos;) &#125;&#125;</span><br><span class="line">&lt;/div&gt;</span><br><span class="line"></span><br><span class="line">&lt;div class=&quot;theme-info&quot;&gt;</span><br><span class="line">  &#123;&#123; __(&apos;footer.theme&apos;) &#125;&#125; -</span><br><span class="line">  &lt;a class=&quot;theme-link&quot; href=&quot;https://github.com/iissnan/hexo-theme-next&quot;&gt;</span><br><span class="line">    NexT.&#123;&#123; theme.scheme &#125;&#125;</span><br><span class="line">  &lt;/a&gt;</span><br><span class="line">&lt;/div&gt;</span><br><span class="line"></span><br><span class="line"># 此位置插入以下代码</span><br><span class="line">&lt;div&gt;</span><br><span class="line">&lt;script async src=&quot;https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js&quot;&gt;&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">本站总访问量 &lt;span id=&quot;busuanzi_value_site_pv&quot;&gt;&lt;/span&gt; 次&amp;nbsp&amp;nbsp&amp;nbsp</span><br><span class="line">本站访客数&lt;span id=&quot;busuanzi_value_site_uv&quot;&gt;&lt;/span&gt;人次</span><br><span class="line">&lt;/div&gt;</span><br><span class="line"></span><br><span class="line">&#123;% endif %&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="10、增加图片"><a href="#10、增加图片" class="headerlink" title="10、增加图片"></a>10、增加图片</h1><p>原来记录过一个只安装插件的方法，现在已经失效了。目前参考的是</p>
-<p><a href="https://blog.csdn.net/xjm850552586/article/details/84101345" target="_blank" rel="noopener">hexo引用本地图片无法显示</a>的方法，感谢。</p>
-<p>1、安装插件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install https://github.com/CodeFalling/hexo-asset-image --save</span><br></pre></td></tr></table></figure>
-<p>2、修改文件</p>
-<p>打开/node_modules/hexo-asset-image/index.js，将内容更换为下面的代码</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">'use strict'</span>;</span><br><span class="line"><span class="keyword">var</span> cheerio = <span class="built_in">require</span>(<span class="string">'cheerio'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// http://stackoverflow.com/questions/14480345/how-to-get-the-nth-occurrence-in-a-string</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getPosition</span>(<span class="params">str, m, i</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> str.split(m, i).join(m).length;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> version = <span class="built_in">String</span>(hexo.version).split(<span class="string">'.'</span>);</span><br><span class="line">hexo.extend.filter.register(<span class="string">'after_post_render'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">data</span>)</span>&#123;</span><br><span class="line">  <span class="keyword">var</span> config = hexo.config;</span><br><span class="line">  <span class="keyword">if</span>(config.post_asset_folder)&#123;</span><br><span class="line">    	<span class="keyword">var</span> link = data.permalink;</span><br><span class="line">	<span class="keyword">if</span>(version.length &gt; <span class="number">0</span> &amp;&amp; <span class="built_in">Number</span>(version[<span class="number">0</span>]) == <span class="number">3</span>)</span><br><span class="line">	   <span class="keyword">var</span> beginPos = getPosition(link, <span class="string">'/'</span>, <span class="number">1</span>) + <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	   <span class="keyword">var</span> beginPos = getPosition(link, <span class="string">'/'</span>, <span class="number">3</span>) + <span class="number">1</span>;</span><br><span class="line">	<span class="comment">// In hexo 3.1.1, the permalink of "about" page is like ".../about/index.html".</span></span><br><span class="line">	<span class="keyword">var</span> endPos = link.lastIndexOf(<span class="string">'/'</span>) + <span class="number">1</span>;</span><br><span class="line">    link = link.substring(beginPos, endPos);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> toprocess = [<span class="string">'excerpt'</span>, <span class="string">'more'</span>, <span class="string">'content'</span>];</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; toprocess.length; i++)&#123;</span><br><span class="line">      <span class="keyword">var</span> key = toprocess[i];</span><br><span class="line"> </span><br><span class="line">      <span class="keyword">var</span> $ = cheerio.load(data[key], &#123;</span><br><span class="line">        ignoreWhitespace: <span class="literal">false</span>,</span><br><span class="line">        xmlMode: <span class="literal">false</span>,</span><br><span class="line">        lowerCaseTags: <span class="literal">false</span>,</span><br><span class="line">        decodeEntities: <span class="literal">false</span></span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">      $(<span class="string">'img'</span>).each(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		<span class="keyword">if</span> ($(<span class="keyword">this</span>).attr(<span class="string">'src'</span>))&#123;</span><br><span class="line">			<span class="comment">// For windows style path, we replace '\' to '/'.</span></span><br><span class="line">			<span class="keyword">var</span> src = $(<span class="keyword">this</span>).attr(<span class="string">'src'</span>).replace(<span class="string">'\\'</span>, <span class="string">'/'</span>);</span><br><span class="line">			<span class="keyword">if</span>(!<span class="regexp">/http[s]*.*|\/\/.*/</span>.test(src) &amp;&amp;</span><br><span class="line">			   !<span class="regexp">/^\s*\//</span>.test(src)) &#123;</span><br><span class="line">			  <span class="comment">// For "about" page, the first part of "src" can't be removed.</span></span><br><span class="line">			  <span class="comment">// In addition, to support multi-level local directory.</span></span><br><span class="line">			  <span class="keyword">var</span> linkArray = link.split(<span class="string">'/'</span>).filter(<span class="function"><span class="keyword">function</span>(<span class="params">elem</span>)</span>&#123;</span><br><span class="line">				<span class="keyword">return</span> elem != <span class="string">''</span>;</span><br><span class="line">			  &#125;);</span><br><span class="line">			  <span class="keyword">var</span> srcArray = src.split(<span class="string">'/'</span>).filter(<span class="function"><span class="keyword">function</span>(<span class="params">elem</span>)</span>&#123;</span><br><span class="line">				<span class="keyword">return</span> elem != <span class="string">''</span> &amp;&amp; elem != <span class="string">'.'</span>;</span><br><span class="line">			  &#125;);</span><br><span class="line">			  <span class="keyword">if</span>(srcArray.length &gt; <span class="number">1</span>)</span><br><span class="line">				srcArray.shift();</span><br><span class="line">			  src = srcArray.join(<span class="string">'/'</span>);</span><br><span class="line">			  $(<span class="keyword">this</span>).attr(<span class="string">'src'</span>, config.root + link + src);</span><br><span class="line">			  <span class="built_in">console</span>.info&amp;&amp;<span class="built_in">console</span>.info(<span class="string">"update link as:--&gt;"</span>+config.root + link + src);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">			<span class="built_in">console</span>.info&amp;&amp;<span class="built_in">console</span>.info(<span class="string">"no src attr, skipped..."</span>);</span><br><span class="line">			<span class="built_in">console</span>.info&amp;&amp;<span class="built_in">console</span>.info($(<span class="keyword">this</span>));</span><br><span class="line">		&#125;</span><br><span class="line">      &#125;);</span><br><span class="line">      data[key] = $.html();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<p>3、打开_config.yml文件，修改下述内容</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">post_asset_folder: true</span><br></pre></td></tr></table></figure>
-<p>4、要显式的图片需要放在和md同名的文件夹下面。例如，有一篇<code>机器学习算法推导（一）逻辑回归.md</code>，图片就要放在</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">![2](机器学习算法推导（一）逻辑回归/SouthEast-20190616095710926.png)</span><br></pre></td></tr></table></figure>
-<p>这里可以通过Typora的设置来方便实现。</p>
-<p>打开Typora-&gt;偏好设置-&gt;编辑器，配置为如下的格式</p>
-<p><img src="//schwimmer.github.io/2018/02/01/工具和环境/Hexo + Github 搭建博客入门/image-20190706195705826-2414225.png" alt="image-20190706195705826"></p>
-<p>再重新发布hexo就可以了。</p>
-<h1 id="11、sitemap-插件"><a href="#11、sitemap-插件" class="headerlink" title="11、sitemap 插件"></a>11、sitemap 插件</h1><p><a href="https://www.jianshu.com/p/86557c34b671" target="_blank" rel="noopener">Hexo Seo优化让你的博客在google搜索排名第一</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;meta name=&quot;google-site-verification&quot; content=&quot;Mx7Ikp0IpBtTbSpHDTBV0_CMJA-E8CLn8NRIrwyq5m4&quot; /&gt;</span><br><span class="line">&lt;meta name=&quot;baidu-site-verification&quot; content=&quot;ZBTsWx4NdC&quot; /&gt;</span><br></pre></td></tr></table></figure>
-<h1 id="12、首页显示文章摘要"><a href="#12、首页显示文章摘要" class="headerlink" title="12、首页显示文章摘要"></a>12、首页显示文章摘要</h1><ul>
-<li>进入hexo博客项目的themes/next目录</li>
-<li>用文本编辑器打开_config.yml文件</li>
-<li>搜索”auto_excerpt”,找到如下部分：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># Automatically Excerpt. Not recommand.</span><br><span class="line"># Please use &lt;!-- more --&gt; in the post to control excerpt accurately.</span><br><span class="line">auto_excerpt:</span><br><span class="line">  enable: false</span><br><span class="line">  length: 150</span><br></pre></td></tr></table></figure>
-<ul>
-<li>把enable改为对应的false改为true，然后<code>hexo d -g</code>，再进主页，问题就解决了！</li>
-</ul>
-<h1 id="13、启用分类和标签"><a href="#13、启用分类和标签" class="headerlink" title="13、启用分类和标签"></a>13、启用分类和标签</h1><p>1、在博客的开头要加上</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">title: Hexo + Github 搭建博客入门</span><br><span class="line">date: 2017-07-12 11:49:53</span><br><span class="line">categories: &quot;工具和环境&quot;</span><br><span class="line">tags: </span><br><span class="line"> - hexo</span><br><span class="line">description:</span><br></pre></td></tr></table></figure>
-<p>2、修改主题配置文档</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">menu:</span><br><span class="line">  home: /</span><br><span class="line">  categories: /categories</span><br><span class="line">  #about: /about</span><br><span class="line">  archives: /archives</span><br><span class="line">  tags: /tags</span><br></pre></td></tr></table></figure>
-<p>3、hexo加上page</p>
-<p>如分类</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new page categories</span><br></pre></td></tr></table></figure>
-<p>然后打开<code>source/categories/index.md</code>，增加一行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">type: &quot;categories&quot;</span><br></pre></td></tr></table></figure>
-<p>增加标签也是一样</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new page tags</span><br></pre></td></tr></table></figure>
-<p>然后打开<code>source/tags/index.md</code>，增加一行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">type: &quot;tags&quot;</span><br></pre></td></tr></table></figure>
-<p>谷歌与百度的站点地图，前者适用于其他搜索引擎，用来手动提交以增加收录</p>
-<p>安装：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-generator-sitemap@1 --save</span><br><span class="line">npm install hexo-generator-baidu-sitemap@0.1.1 --save</span><br></pre></td></tr></table></figure>
-<p><code>_config.yml</code>添加代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">baidusitemap:</span><br><span class="line">  path: baidusitemap.xml</span><br></pre></td></tr></table></figure>
-<p>谷歌的<code>sitemap.xml</code>不需要写到配置文件中，自动生效。</p>
-<p>在主页后面加<code>/baidusitemap.xml</code>可以看到baidusitemap（谷歌同理），将该网址它提交给百度搜索：<a href="http://zhanzhang.baidu.com/?castk=LTE%3D" target="_blank" rel="noopener">百度站长平台</a>，贴吧账号无法在这里使用。</p>
-<p>不过由于Github禁止了百度爬虫，百度无法抓取其中的URL：</p>
-<h1 id="添加搜索"><a href="#添加搜索" class="headerlink" title="添加搜索"></a>添加搜索</h1><p>Local search no need any external 3rd-party services and can be extra indexed by search engines. That search method recommended for most users.</p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>Install <code>hexo-generator-searchdb</code> by run following command in site root dir:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install hexo-generator-searchdb --save</span><br></pre></td></tr></table></figure>
-<h2 id="hexo-配置"><a href="#hexo-配置" class="headerlink" title="hexo 配置"></a>hexo 配置</h2><p>Edit site config file and add following content:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">hexo/_config.yml</span><br><span class="line"></span><br><span class="line">search:</span><br><span class="line">  path: search.xml</span><br><span class="line">  field: post</span><br><span class="line">  format: html</span><br><span class="line">  limit: 10000</span><br></pre></td></tr></table></figure>
-<h2 id="themes-配置"><a href="#themes-配置" class="headerlink" title="themes 配置"></a>themes 配置</h2><p>Edit theme config file to enable Local Search:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">next/_config.yml</span><br><span class="line"></span><br><span class="line"># Local search</span><br><span class="line"># Dependencies: https://github.com/theme-next/hexo-generator-searchdb</span><br><span class="line">local_search:</span><br><span class="line">  enable: true</span><br><span class="line">  # if auto, trigger search by changing input</span><br><span class="line">  # if manual, trigger search by pressing enter key or search button</span><br><span class="line">  trigger: auto</span><br><span class="line">  # show top n results per article, show all results by setting to -1</span><br><span class="line">  top_n_per_article: 1</span><br><span class="line">  # unescape html strings to the readable one</span><br><span class="line">  unescape: false</span><br></pre></td></tr></table></figure>
-<h1 id="添加评论"><a href="#添加评论" class="headerlink" title="添加评论"></a>添加评论</h1><h3 id="Disqus"><a href="#Disqus" class="headerlink" title="Disqus"></a>Disqus</h3><p>Disqus is a global comment system that improves discussion on websites and connects conversations across the web.</p>
-<ol>
-<li><p>Create an account and log into Disqus. Once logged in, click the <code>GET STARTED</code> button on the homepage, then select <code>I want to install Disqus on my site</code> option and you will see the <code>Create a new site</code> interface.</p>
-</li>
-<li><p>Enter your <code>Website Name</code>, which will serve as your Disqus shortname, and select a Category from the drop-down menu. Then click <code>Create Site</code> button.</p>
-</li>
-<li><p>Choose <code>I don&#39;t see my platform listed, install manually with Universal Code</code>, configure Disqus for your site, and click <code>Complete Setup</code> button.</p>
-</li>
-<li><p>Set the value<code>enable</code> to <code>true</code>, add the obtained Disqus shortname (<code>shortname</code>), and edit other configurations in <code>disqus</code> section in the theme config file as following:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">next/_config.yml</span><br><span class="line">disqus:</span><br><span class="line">  enable: false</span><br><span class="line">  shortname: your-short-disqus-name</span><br><span class="line">  count: true</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h1 id="不蒜子统计"><a href="#不蒜子统计" class="headerlink" title="不蒜子统计"></a>不蒜子统计</h1><p>Edit <code>busuanzi_count</code> option in theme config file.<br>When <code>enable: true</code>, global setting is enabled. If <code>site_uv</code>, <code>site_pv</code>, <code>page_pv</code> are all <code>false</code>, Busuanzi only counts but never shows.</p>
-<h1 id="绑定代码到Coding"><a href="#绑定代码到Coding" class="headerlink" title="绑定代码到Coding"></a>绑定代码到Coding</h1><p>创建coding仓库</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/4093388-383ab28e2c2b2e84.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt=""></p>
-<p>上传公钥</p>
-<p><a href="https://coding.net/user/account/setting/keys" target="_blank" rel="noopener">https://coding.net/user/account/setting/keys</a></p>
-<p>测试SSH Key 是否配置成功</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@git.coding.net</span><br></pre></td></tr></table></figure>
-<p>用来部署Hexo博客的Coding项目地址为：<code>git@git.coding.net:ddxy1986/DavidXu-Blog</code></p>
-<p>deploy的配置改为</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: </span><br><span class="line">    github: git@github.com:Schwimmer/Schwimmer.github.io.git</span><br><span class="line">    coding: git@git.coding.net:ddxy1986/DavidXu-Blog</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
-<h2 id="配置Coding项目的Pages服务"><a href="#配置Coding项目的Pages服务" class="headerlink" title="配置Coding项目的Pages服务"></a>配置Coding项目的Pages服务</h2><h3 id="开启Coding项目的Pages服务"><a href="#开启Coding项目的Pages服务" class="headerlink" title="开启Coding项目的Pages服务"></a>开启Coding项目的Pages服务</h3><p><img src="https://upload-images.jianshu.io/upload_images/4093388-1ab23c0ef7e753ea.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt=""></p>
-<h1 id="踩过的坑"><a href="#踩过的坑" class="headerlink" title="踩过的坑"></a>踩过的坑</h1><h2 id="启动时报错"><a href="#启动时报错" class="headerlink" title="启动时报错"></a>启动时报错</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> Error: Warning: Permanently added &apos;github.com,192.30.253.112&apos; (RSA) to the list of known hosts.</span><br><span class="line">sign_and_send_pubkey: signing failed: agent refused operation</span><br><span class="line">Permission denied (publickey).</span><br><span class="line">fatal: Could not read from remote repository.</span><br></pre></td></tr></table></figure>
-<p>处理是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ eval &quot;$(ssh-agent -s)&quot;</span><br><span class="line">$ ssh-add</span><br></pre></td></tr></table></figure>
-<h2 id="生成html时报错"><a href="#生成html时报错" class="headerlink" title="生成html时报错"></a>生成html时报错</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">end of the stream or a document separator is expected</span><br></pre></td></tr></table></figure>
-<h2 id="更新next主题后，菜单不是中文也不是英文"><a href="#更新next主题后，菜单不是中文也不是英文" class="headerlink" title="更新next主题后，菜单不是中文也不是英文"></a>更新next主题后，菜单不是中文也不是英文</h2><p>next主题的所有语言配置文件都在\themes\next\languages文件夹下，原来中文对应的是zh-Hans.yml，更新之后变成了<code>zh-CN.yml</code>。</p>
-<p>而语言的配置信息再主目录的_config.yml文件，于是找到这里</p>
-<p><img src="//schwimmer.github.io/2018/02/01/工具和环境/Hexo + Github 搭建博客入门/pic/377adab44aed2e73180cc7b68e01a18b86d6fa47.jpg" alt="img"></p>
-<p>将其改为<code>zh-CN</code>，解决问题。</p>
-<h2 id="安装npm报错"><a href="#安装npm报错" class="headerlink" title="安装npm报错"></a>安装npm报错</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error: EACCES: permission denied, access &apos;/Users/david/david/myblog/node_modules/babel-polyfill/node_modules/core-js&apos;</span><br></pre></td></tr></table></figure>
-<p>用了sudu命令也依旧报错。</p>
-<p>解决方案是</p>
-<p>you can fix that error by allowing unsafe perms</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo npm config set unsafe-perm=true</span><br></pre></td></tr></table></figure>
-<p>参考<a href="https://github.com/Microsoft/WSL/issues/14" target="_blank" rel="noopener">https://github.com/Microsoft/WSL/issues/14</a></p>
-<h2 id="next安装搜索后一直转圈"><a href="#next安装搜索后一直转圈" class="headerlink" title="next安装搜索后一直转圈"></a>next安装搜索后一直转圈</h2><p>本来以为是npm插件的问题，反复卸载安装几次后还是不行，后面看到<a href="https://xuebin.me/posts/abcc0996.html" target="_blank" rel="noopener">这篇文章</a>的做法解决了问题，摘录如下：</p>
-<p>因为搜索插件的原理是生成search.xml文件，先找到<code>/public/search.xml</code>，将其拖到浏览器中打开，如果有问题就会提示错误和错误的行号。</p>
-<p>一般的问题都是出现了非法字符，定位到md文件，删去非法字符后再打包就OK啦。</p>
-<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><p><a href="http://blog.csdn.net/kesarchen/article/details/50579550" target="_blank" rel="noopener">ubuntu下使用hexo搭建博客</a> </p>
-
+            <p>
+              1、安装node.js$ sudo add-apt-repository ppa:chris-lea/node.js$ sudo apt-get update$ sudo apt-get install nodejs#原方法没有这一步，但是后面的操作会提示npm command not found$
+              ...
+            </p>
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/02/01/工具和环境/Hexo + Github 搭建博客入门/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -1180,7 +1050,7 @@ topic吞吐量 / 消费者吞吐量 = 分区个数</script><p>即，如果每秒
 
 
 
-  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.2.0</div>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.2.0</div>
 
 
 
@@ -1323,8 +1193,9 @@ topic吞吐量 / 消费者吞吐量 = 分区个数</script><p>即，如果每秒
   
 
 
-  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+  <script src="/js/affix.js?v=7.2.0"></script>
 
+  <script src="/js/schemes/pisces.js?v=7.2.0"></script>
 
 
 
