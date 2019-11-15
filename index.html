@@ -357,6 +357,188 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/11/15/kafka/百问kafka/如何选定分区数量/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/11/15/kafka/百问kafka/如何选定分区数量/" class="post-title-link" itemprop="url">如何选定分区数量</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-15 12:04:42 / 修改时间：12:05:12" itemprop="dateCreated datePublished" datetime="2019-11-15T12:04:42+08:00">2019-11-15</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/百问kafka/" itemprop="url" rel="index"><span itemprop="name">百问kafka</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/11/15/kafka/百问kafka/如何选定分区数量/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/11/15/kafka/百问kafka/如何选定分区数量/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>需要考虑：</p>
+<p>1、topic需要多大吞吐量，每秒100KB还是1GB？</p>
+<p>2、从单个分区读取数据的最大吞吐量是多少？每个分区一般都会有一个消费者，如果知道消费者将写入数据库的速度不超过每秒50MB，那从一个分区读取数据的吞吐量不需要超过每秒50MB。</p>
+<p>3、每个broker包含的分区个数，可用的磁盘空间和网络带宽。</p>
+<p>4、如果消息按照不同键写入分区，则为已有主题增加分区就会困难。（为什么，键已经分布好了？）</p>
+<p>5、单个broker<strong>对分区个数有限制</strong>，因为<strong>分区越多，占用内存越多</strong>，完成首领选举需要时间越长。</p>
+<p>如果估算出topic的吞吐量和消费者的吞吐量，可以用</p>
+<script type="math/tex; mode=display">
+topic吞吐量 / 消费者吞吐量 = 分区个数</script><p>即，如果每秒要从topic写入和读取1GB数据，且每个消费者每秒可处理50MB数据，那至少需要20个分区，这样可以让20个消费者同时读取这些分区。</p>
+<p><strong>每个分区的大小，经验值是25GB</strong>。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/11/15/kafka/百问kafka/topic常用配置项/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -402,7 +584,7 @@
                 
               
 
-              <time title="创建时间：2019-11-15 11:50:40 / 修改时间：11:58:17" itemprop="dateCreated datePublished" datetime="2019-11-15T11:50:40+08:00">2019-11-15</time>
+              <time title="创建时间：2019-11-15 11:50:40 / 修改时间：11:59:58" itemprop="dateCreated datePublished" datetime="2019-11-15T11:50:40+08:00">2019-11-15</time>
             </span>
           
 
@@ -580,7 +762,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">1</span>
+                    <span class="site-state-item-count">2</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1178,6 +1360,8 @@
 
   
   
+    
+      
     
       
     
