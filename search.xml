@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[kafka和zookeeper的关系]]></title>
+    <url>%2F2019%2F11%2F15%2Fkafka%2F%E7%99%BE%E9%97%AEkafka%2Fkafka%E5%92%8Czookeeper%E7%9A%84%E5%85%B3%E7%B3%BB%2F</url>
+    <content type="text"><![CDATA[消费者可以选择将偏移量提交给zookeeper或kafka，还可以选择提交偏移量的时间间隔。 若提交到zookeeper，那么在每个提交时间上，消费者会为每个消息的分区往zookeeper写入一次偏移量。合理提交间隔是1分钟，因为这刚好是group的某个消费者发生失效时能读取到重复消息的时间。 并且，这些提交对zookeeper来说流量不算小，特别是当集群中有多个消费者的时候。若zookeeper无法处理太大的流量，就有必要使用长一点的提交时间间隔。 kafka在0.9.0.0后，引入一个新的消费者接口，允许broker直接维护group信息、topic信息、offset信息。建议使用该接口，消除对zookeeper的依赖。]]></content>
+      <categories>
+        <category>百问kafka</category>
+      </categories>
+  </entry>
+  <entry>
     <title><![CDATA[如何选定分区数量]]></title>
     <url>%2F2019%2F11%2F15%2Fkafka%2F%E7%99%BE%E9%97%AEkafka%2F%E5%A6%82%E4%BD%95%E9%80%89%E5%AE%9A%E5%88%86%E5%8C%BA%E6%95%B0%E9%87%8F%2F</url>
     <content type="text"><![CDATA[需要考虑： 1、topic需要多大吞吐量，每秒100KB还是1GB？ 2、从单个分区读取数据的最大吞吐量是多少？每个分区一般都会有一个消费者，如果知道消费者将写入数据库的速度不超过每秒50MB，那从一个分区读取数据的吞吐量不需要超过每秒50MB。 3、每个broker包含的分区个数，可用的磁盘空间和网络带宽。 4、如果消息按照不同键写入分区，则为已有主题增加分区就会困难。（为什么，键已经分布好了？） 5、单个broker对分区个数有限制，因为分区越多，占用内存越多，完成首领选举需要时间越长。 如果估算出topic的吞吐量和消费者的吞吐量，可以用 topic吞吐量 / 消费者吞吐量 = 分区个数即，如果每秒要从topic写入和读取1GB数据，且每个消费者每秒可处理50MB数据，那至少需要20个分区，这样可以让20个消费者同时读取这些分区。 每个分区的大小，经验值是25GB。]]></content>

@@ -94,17 +94,17 @@
 
 
 
-  <meta name="description" content="需要考虑： 1、topic需要多大吞吐量，每秒100KB还是1GB？ 2、从单个分区读取数据的最大吞吐量是多少？每个分区一般都会有一个消费者，如果知道消费者将写入数据库的速度不超过每秒50MB，那从一个分区读取数据的吞吐量不需要超过每秒50MB。 3、每个broker包含的分区个数，可用的磁盘空间和网络带宽。 4、如果消息按照不同键写入分区，则为已有主题增加分区就会困难。（为什么，键已经分布好了？">
+  <meta name="description" content="消费者可以选择将偏移量提交给zookeeper或kafka，还可以选择提交偏移量的时间间隔。 若提交到zookeeper，那么在每个提交时间上，消费者会为每个消息的分区往zookeeper写入一次偏移量。合理提交间隔是1分钟，因为这刚好是group的某个消费者发生失效时能读取到重复消息的时间。 并且，这些提交对zookeeper来说流量不算小，特别是当集群中有多个消费者的时候。若zookeeper">
 <meta property="og:type" content="article">
-<meta property="og:title" content="如何选定分区数量">
-<meta property="og:url" content="https://schwimmer.github.io/2019/11/15/kafka/百问kafka/如何选定分区数量/index.html">
+<meta property="og:title" content="kafka和zookeeper的关系">
+<meta property="og:url" content="https://schwimmer.github.io/2019/11/15/kafka/百问kafka/kafka和zookeeper的关系/index.html">
 <meta property="og:site_name" content="Schwimmer&#39;s Blog">
-<meta property="og:description" content="需要考虑： 1、topic需要多大吞吐量，每秒100KB还是1GB？ 2、从单个分区读取数据的最大吞吐量是多少？每个分区一般都会有一个消费者，如果知道消费者将写入数据库的速度不超过每秒50MB，那从一个分区读取数据的吞吐量不需要超过每秒50MB。 3、每个broker包含的分区个数，可用的磁盘空间和网络带宽。 4、如果消息按照不同键写入分区，则为已有主题增加分区就会困难。（为什么，键已经分布好了？">
+<meta property="og:description" content="消费者可以选择将偏移量提交给zookeeper或kafka，还可以选择提交偏移量的时间间隔。 若提交到zookeeper，那么在每个提交时间上，消费者会为每个消息的分区往zookeeper写入一次偏移量。合理提交间隔是1分钟，因为这刚好是group的某个消费者发生失效时能读取到重复消息的时间。 并且，这些提交对zookeeper来说流量不算小，特别是当集群中有多个消费者的时候。若zookeeper">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-15T04:05:12.400Z">
+<meta property="og:updated_time" content="2019-11-15T04:30:36.459Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="如何选定分区数量">
-<meta name="twitter:description" content="需要考虑： 1、topic需要多大吞吐量，每秒100KB还是1GB？ 2、从单个分区读取数据的最大吞吐量是多少？每个分区一般都会有一个消费者，如果知道消费者将写入数据库的速度不超过每秒50MB，那从一个分区读取数据的吞吐量不需要超过每秒50MB。 3、每个broker包含的分区个数，可用的磁盘空间和网络带宽。 4、如果消息按照不同键写入分区，则为已有主题增加分区就会困难。（为什么，键已经分布好了？">
+<meta name="twitter:title" content="kafka和zookeeper的关系">
+<meta name="twitter:description" content="消费者可以选择将偏移量提交给zookeeper或kafka，还可以选择提交偏移量的时间间隔。 若提交到zookeeper，那么在每个提交时间上，消费者会为每个消息的分区往zookeeper写入一次偏移量。合理提交间隔是1分钟，因为这刚好是group的某个消费者发生失效时能读取到重复消息的时间。 并且，这些提交对zookeeper来说流量不算小，特别是当集群中有多个消费者的时候。若zookeeper">
 
 
 
@@ -112,7 +112,7 @@
 
   
   
-  <link rel="canonical" href="https://schwimmer.github.io/2019/11/15/kafka/百问kafka/如何选定分区数量/">
+  <link rel="canonical" href="https://schwimmer.github.io/2019/11/15/kafka/百问kafka/kafka和zookeeper的关系/">
 
 
 
@@ -122,7 +122,7 @@
   };
 </script>
 
-  <title>如何选定分区数量 | Schwimmer's Blog</title>
+  <title>kafka和zookeeper的关系 | Schwimmer's Blog</title>
   
 
 
@@ -357,7 +357,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/11/15/kafka/百问kafka/如何选定分区数量/">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/11/15/kafka/百问kafka/kafka和zookeeper的关系/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Schwimmer">
@@ -374,7 +374,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">如何选定分区数量
+          <h1 class="post-title" itemprop="name headline">kafka和zookeeper的关系
 
               
             
@@ -400,7 +400,7 @@
                 
               
 
-              <time title="创建时间：2019-11-15 12:04:42 / 修改时间：12:05:12" itemprop="dateCreated datePublished" datetime="2019-11-15T12:04:42+08:00">2019-11-15</time>
+              <time title="创建时间：2019-11-15 12:30:15 / 修改时间：12:30:36" itemprop="dateCreated datePublished" datetime="2019-11-15T12:30:15+08:00">2019-11-15</time>
             </span>
           
 
@@ -437,8 +437,8 @@
                 </span>
             
                 <span class="post-meta-item-text">评论数：</span>
-                <a href="/2019/11/15/kafka/百问kafka/如何选定分区数量/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/11/15/kafka/百问kafka/如何选定分区数量/" itemprop="commentCount"></span>
+                <a href="/2019/11/15/kafka/百问kafka/kafka和zookeeper的关系/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/11/15/kafka/百问kafka/kafka和zookeeper的关系/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -477,16 +477,10 @@
       
 
       
-        <p>需要考虑：</p>
-<p>1、topic需要多大吞吐量，每秒100KB还是1GB？</p>
-<p>2、从单个分区读取数据的最大吞吐量是多少？每个分区一般都会有一个消费者，如果知道消费者将写入数据库的速度不超过每秒50MB，那从一个分区读取数据的吞吐量不需要超过每秒50MB。</p>
-<p>3、每个broker包含的分区个数，可用的磁盘空间和网络带宽。</p>
-<p>4、如果消息按照不同键写入分区，则为已有主题增加分区就会困难。（为什么，键已经分布好了？）</p>
-<p>5、单个broker<strong>对分区个数有限制</strong>，因为<strong>分区越多，占用内存越多</strong>，完成首领选举需要时间越长。</p>
-<p>如果估算出topic的吞吐量和消费者的吞吐量，可以用</p>
-<script type="math/tex; mode=display">
-topic吞吐量 / 消费者吞吐量 = 分区个数</script><p>即，如果每秒要从topic写入和读取1GB数据，且每个消费者每秒可处理50MB数据，那至少需要20个分区，这样可以让20个消费者同时读取这些分区。</p>
-<p><strong>每个分区的大小，经验值是25GB</strong>。</p>
+        <p>消费者可以选择将偏移量提交给zookeeper或kafka，还可以选择提交偏移量的时间间隔。</p>
+<p>若提交到zookeeper，那么在每个提交时间上，消费者会为每个消息的分区往zookeeper写入一次偏移量。合理提交间隔是1分钟，因为这刚好是group的某个消费者发生失效时能读取到重复消息的时间。</p>
+<p>并且，这些提交对zookeeper来说流量不算小，特别是当集群中有多个消费者的时候。若zookeeper无法处理太大的流量，就有必要使用长一点的提交时间间隔。</p>
+<p>kafka在0.9.0.0后，引入一个新的消费者接口，允许broker直接维护group信息、topic信息、offset信息。建议使用该接口，消除对zookeeper的依赖。</p>
 
       
     </div>
@@ -517,8 +511,8 @@ topic吞吐量 / 消费者吞吐量 = 分区个数</script><p>即，如果每秒
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/11/15/kafka/百问kafka/topic常用配置项/" rel="next" title="topic常用配置项">
-                <i class="fa fa-chevron-left"></i> topic常用配置项
+              <a href="/2019/11/15/kafka/百问kafka/如何选定分区数量/" rel="next" title="如何选定分区数量">
+                <i class="fa fa-chevron-left"></i> 如何选定分区数量
               </a>
             
           </div>
@@ -526,10 +520,6 @@ topic吞吐量 / 消费者吞吐量 = 分区个数</script><p>即，如果每秒
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/11/15/kafka/百问kafka/kafka和zookeeper的关系/" rel="prev" title="kafka和zookeeper的关系">
-                kafka和zookeeper的关系 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -881,9 +871,9 @@ topic吞吐量 / 消费者吞吐量 = 分区个数</script><p>即，如果每秒
 
 <script>
   var disqus_config = function() {
-    this.page.url = "https://schwimmer.github.io/2019/11/15/kafka/百问kafka/如何选定分区数量/";
-    this.page.identifier = "2019/11/15/kafka/百问kafka/如何选定分区数量/";
-    this.page.title = '如何选定分区数量';
+    this.page.url = "https://schwimmer.github.io/2019/11/15/kafka/百问kafka/kafka和zookeeper的关系/";
+    this.page.identifier = "2019/11/15/kafka/百问kafka/kafka和zookeeper的关系/";
+    this.page.title = 'kafka和zookeeper的关系';
     };
   function loadComments() {
     var d = document, s = d.createElement('script');
