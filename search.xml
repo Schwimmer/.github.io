@@ -1,6 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[kafka的ack机制]]></title>
+    <url>%2F2019%2F11%2F16%2Fkafka%2F%E7%99%BE%E9%97%AEkafka%2Fkafka%E7%9A%84ack%E6%9C%BA%E5%88%B6%2F</url>
+    <content type="text"><![CDATA[Kafka的ack机制，指的是producer的消息发送确认机制，这直接影响到Kafka集群的吞吐量和消息可靠性。而吞吐量和可靠性就像硬币的两面，两者不可兼得，只能平衡。 ack有3个可选值，分别是1，0，-1。 ack=1，简单来说就是，producer只要收到一个分区副本成功写入的通知就认为推送消息成功了。这里有一个地方需要注意，这个副本必须是leader副本。只有leader副本成功写入了，producer才会认为消息发送成功。 注意，ack的默认值就是1。这个默认值其实就是吞吐量与可靠性的一个折中方案。生产上我们可以根据实际情况进行调整，比如如果你要追求高吞吐量，那么就要放弃可靠性。 ack=0，简单来说就是，producer发送一次就不再发送了，不管是否发送成功。 ack=-1，简单来说就是，producer只有收到分区内所有副本的成功写入的通知才认为推送消息成功了。 参考： https://www.jianshu.com/p/c98b934f2c2b]]></content>
+      <categories>
+        <category>百问kafka</category>
+      </categories>
+  </entry>
+  <entry>
+    <title><![CDATA[Partition和Broker]]></title>
+    <url>%2F2019%2F11%2F15%2Fkafka%2F%E7%99%BE%E9%97%AEkafka%2FPartition%E5%92%8CBroker%2F</url>
+    <content type="text"><![CDATA[Partition分区数和Broker数关系 1.如果Partition数等于Broker数 Kafka集群将比较均衡！！！ 2.如果Partition数小于Broker数 某个Broker节点上不存在当前topic的分区，Broker节点可能被闲置！最终导致Kafka集群吞吐率下降 3.如果Partition数大于Broker数 抛异常：java.lang.IllegalArgumentException: Invalid partition given with record: 1 is not in the range [0…0]. 建议将Partition数必须设置为Broker数的整数倍！！！ 参考： https://blog.csdn.net/yk_3215123/article/details/99699210]]></content>
+      <categories>
+        <category>百问kafka</category>
+      </categories>
+  </entry>
+  <entry>
+    <title><![CDATA[关于Rebalance]]></title>
+    <url>%2F2019%2F11%2F15%2Fkafka%2F%E7%99%BE%E9%97%AEkafka%2F%E5%85%B3%E4%BA%8ERebalance%2F</url>
+    <content type="text"><![CDATA[什么是Rebalance？Rebalance的起因： consumer通过向群组协调器（coordinator，也是一个broker）发送心跳来维持他们和群组的从属关系以及它们对分区的所有权关系。只要consumer以正常时间间隔发送心跳，就被认为是活跃的，说明还在读取分区里的消息。consumer会在轮询消息或提交偏移量时发送心跳。若停止发送心跳时间过长，会话就会过期，coordinator认为它已经死亡，就会触发一次Rebalance。]]></content>
+      <categories>
+        <category>百问kafka</category>
+      </categories>
+  </entry>
+  <entry>
     <title></title>
     <url>%2F2019%2F11%2F15%2Fspark%2F%E7%99%BE%E9%97%AESpark%2Fspark%20streaming%E5%A6%82%E4%BD%95%E6%B6%88%E8%B4%B9kafka%2F</url>
     <content type="text"><![CDATA[与普通java程序消费kafka有何区别]]></content>
@@ -29,7 +53,7 @@
   <entry>
     <title><![CDATA[topic常用配置项]]></title>
     <url>%2F2019%2F11%2F15%2Fkafka%2F%E7%99%BE%E9%97%AEkafka%2Ftopic%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%E9%A1%B9%2F</url>
-    <content type="text"><![CDATA[num.partitions topic包含多少个分区，一旦设定后，只能增加不能减少；若需要减少，得新增一个topic。 kafka通过partitions对topic进行横向扩展，当有新broker加入时，通过分区个数实现集群的负载均衡。一般的，topic的partitions的个数大于broker个数。 log.retention.hours 过期时间。默认值是168小时，也就是一周。还有两个其他参数log.retention.minutes和log.retention.ms。如果指定多个，kafka优先使用最小值。 log.retention.bytes 通过保留的字节数判断过期。作用在每个分区。即假设有8个partitions，且设为1G，那该topic最多保留8GB的数据。所以，当topic的分区个数增加时，整个topic可保留的数据也随之增加。如果也设置了hours，只要任意一个条件满足，消息就会被删除。 log.segment.bytes 上面设置在日志片段上，而不是在单个消息上。当消息到达broker时，它们被追加到分区的当前日志片段上。当日志片段大小超过该参数上限（默认是1GB），当前日志片段会被关闭，产生一个新的日志片段。 如果一个日志片段被关闭，就开始等待过期。该参数值越小，就会频繁关闭和分配新文件，从而降低磁盘写入的整体效率。 如果topic消息量不大，那么如何调整该参数大小就很重要。比如，一个topic每天100MB，而该参数是默认值，那么10天才能填满一个日志片段。由于日志片段在被关闭之前是不会过期的，所以如果log.retention,ms=1周，则segment最多需要17天才会过期。 segment大小也会影响通过timestamp获取offset。在获取offset时，kafka会检查分区最后修改时间大于指定timestamp的segment，让该segment的前一个的最后修改时间小于指定timestamp。然后，kafka返回该segment文件开头的offset。 message.max.bytes broker设置这个来限制单个消息的大小，默认是1MB。若生产者发生的消息超过这个大小，不仅不会被接收，还会收到broker返回的错误信息。跟其他与字节相关配置参数一样，该参数指的是压缩后的消息大小，实际大小可以大于这个值。 该值对性能有很大影响。值越大，负责网络连接和请求的线程就要花更多时间处理这些请求。还会增加磁盘写入块的大小，从而影响IO吞吐量。 在服务端和客户端之间协调消息大小 客户端的fetch.message.max.bytes必须与服务端的参数进行协调。若该值更小，则消费者无法获取大的消息，导致消费者被阻塞。 在集群里的broker配置replica.fetch.max.bytes时，遵循同样原则。]]></content>
+    <content type="text"><![CDATA[Topic配置num.partitions topic包含多少个分区，一旦设定后，只能增加不能减少；若需要减少，得新增一个topic。 kafka通过partitions对topic进行横向扩展，当有新broker加入时，通过分区个数实现集群的负载均衡。一般的，topic的partitions的个数大于broker个数。 log.retention.hours 过期时间。默认值是168小时，也就是一周。还有两个其他参数log.retention.minutes和log.retention.ms。如果指定多个，kafka优先使用最小值。 log.retention.bytes 通过保留的字节数判断过期。作用在每个分区。即假设有8个partitions，且设为1G，那该topic最多保留8GB的数据。所以，当topic的分区个数增加时，整个topic可保留的数据也随之增加。如果也设置了hours，只要任意一个条件满足，消息就会被删除。 log.segment.bytes 上面设置在日志片段上，而不是在单个消息上。当消息到达broker时，它们被追加到分区的当前日志片段上。当日志片段大小超过该参数上限（默认是1GB），当前日志片段会被关闭，产生一个新的日志片段。 如果一个日志片段被关闭，就开始等待过期。该参数值越小，就会频繁关闭和分配新文件，从而降低磁盘写入的整体效率。 如果topic消息量不大，那么如何调整该参数大小就很重要。比如，一个topic每天100MB，而该参数是默认值，那么10天才能填满一个日志片段。由于日志片段在被关闭之前是不会过期的，所以如果log.retention,ms=1周，则segment最多需要17天才会过期。 segment大小也会影响通过timestamp获取offset。在获取offset时，kafka会检查分区最后修改时间大于指定timestamp的segment，让该segment的前一个的最后修改时间小于指定timestamp。然后，kafka返回该segment文件开头的offset。 message.max.bytes broker设置这个来限制单个消息的大小，默认是1MB。若生产者发生的消息超过这个大小，不仅不会被接收，还会收到broker返回的错误信息。跟其他与字节相关配置参数一样，该参数指的是压缩后的消息大小，实际大小可以大于这个值。 该值对性能有很大影响。值越大，负责网络连接和请求的线程就要花更多时间处理这些请求。还会增加磁盘写入块的大小，从而影响IO吞吐量。 在服务端和客户端之间协调消息大小 客户端的fetch.message.max.bytes必须与服务端的参数进行协调。若该值更小，则消费者无法获取大的消息，导致消费者被阻塞。 在集群里的broker配置replica.fetch.max.bytes时，遵循同样原则。 num.netword.threads 处理网络请求的线程数量，也就是接收消息的线程数 接收线程会将消息放入内存中，再写到磁盘 num.io.threads 消息从内存写入磁盘的线程数量 用来处理磁盘io的线程数量 producer配置partitioner.class 生产者生产的消息被发送到哪个block，需要一个分组策略 指定分区处理类。默认kafka.producer.DefaultPartitioner，通过key哈希到对应分区 compression.codec 生产者生产的消息可以通过一定的压缩策略（或者说压缩算法）来压缩。消息被压缩后发送到broker集群 而broker集群是不会进行解压缩的，broker集群只会把消息发送到消费者集群，然后由消费者来解压缩 是否压缩，默认0表示不压缩，1表示用gzip压缩，2表示用snappy压缩 参考： https://blog.csdn.net/yk_3215123/article/details/99699210]]></content>
       <categories>
         <category>百问kafka</category>
       </categories>
