@@ -1,9 +1,174 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[avro]]></title>
+    <url>%2F2019%2F11%2F20%2Fhadoop%2F%E7%99%BE%E9%97%AEhadoop%2Favro%2F</url>
+    <content type="text"><![CDATA[Avro是一种序列化框架，使用JSON来定义schema，shcema由原始类型(null，boolean，int，long，float，double，bytes，string)和复杂类型(record，enum，array，map，union，fixed)组成，schema文件以.avsc结尾，表示avro schema，有2种序列化方式 二进制方式：也就是Specific方式，定义好schema asvc文件后，使用编译器(avro-tools.jar)编译生成相关语言(java)的业务类，类中会嵌入JSON schema JSON方式：也就是Generic方式，在代码中动态加载schema asvc文件，将FieldName - FieldValue，以Map的方式存储 序列化后的数据，是schema和data同时存在的，如下图]]></content>
+      <categories>
+        <category>百问hadoop</category>
+      </categories>
+  </entry>
+  <entry>
+    <title></title>
+    <url>%2F2019%2F11%2F20%2Fspark%2F%E7%99%BE%E9%97%AESpark%2FThriftServer%2F</url>
+    <content type="text"></content>
+  </entry>
+  <entry>
+    <title><![CDATA[kafka为什么有高性能]]></title>
+    <url>%2F2019%2F11%2F20%2Fkafka%2F%E7%99%BE%E9%97%AEkafka%2Fkafka%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%89%E9%AB%98%E6%80%A7%E8%83%BD%2F</url>
+    <content type="text"><![CDATA[1、高效使用磁盘顺序写磁盘将写磁盘的过程变为顺序写，可极大提高对磁盘的利用率。Consumer通过offset顺序消费这些数据，且不删除已经消费的数据，从而避免随机写磁盘的过程。 Kafka删除旧数据的方式是删除整个Segment对应的log文件和整个index文件，而不是删除部分内容。 充分利用Page CachePage Cache的优点： I/O Scheduler会将连续的小块写组装成大块的物理写从而提高性能。 I/O Scheduler会尝试将一些写操作重新按顺序排好，从而减少磁头移动时间。 充分利用所有空闲内存（非JVM内存）。 读操作可以直接在Page Cache内进行。如果消费和生产速度相当，甚至不需要通过物理磁盘交换数据。 如果进程重启，JVM内的Cache会失效，但Page Cache仍然可用 零拷贝Kafka中存在大量网络数据持久化到磁盘（Producer到Broker）和磁盘文件通过网络发送（Broker到Consumer）的过程，这个过程中，传统模式下要进行数据的四次拷贝，但是Kafka通过零拷贝技术将其减为了一次，大大增加了效率，原理可以在另一篇文章（https://www.jianshu.com/p/835ec2d4c170）中获得。 2.减少网络开销批处理​ 批处理减少了网络传输的overhead，又提高了写磁盘的效率。​ Kafka的API做中，从send接口来看，一次只能发送一个ProducerRecord，但是send方法并不是立即将消息发送出去，而是通过batch.size和linger.ms控制实际发送频率，从而实现批量发送。 数据压缩降低网络负载高效的序列化方式参考： 作者：阿猫阿狗Hakuna链接：https://www.jianshu.com/p/ff7dd5b349f1来源：简书著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。]]></content>
+      <categories>
+        <category>百问kafka</category>
+      </categories>
+  </entry>
+  <entry>
+    <title><![CDATA[kafka与传统消息系统]]></title>
+    <url>%2F2019%2F11%2F17%2Fkafka%2F%E7%99%BE%E9%97%AEkafka%2FKafka%20%E4%B8%8E%E4%BC%A0%E7%BB%9F%E6%B6%88%E6%81%AF%E7%B3%BB%E7%BB%9F%2F</url>
+    <content type="text"><![CDATA[(1).Kafka 持久化日志，这些日志可以被重复读取和无限期保留 (2).Kafka 是一个分布式系统：它以集群的方式运行，可以灵活伸缩，在内部通过复制数据 提升容错能力和高可用性 (3).Kafka 支持实时的流式处理]]></content>
+      <categories>
+        <category>百问kafka</category>
+      </categories>
+  </entry>
+  <entry>
+    <title><![CDATA[kafka文件存储特点]]></title>
+    <url>%2F2019%2F11%2F17%2Fkafka%2F%E7%99%BE%E9%97%AEkafka%2Fkafka%E6%96%87%E4%BB%B6%E5%AD%98%E5%82%A8%E7%89%B9%E7%82%B9%2F</url>
+    <content type="text"><![CDATA[Kafka 把 topic 中一个 parition 大文件分成多个小文件段，通过多个小文件段，就容易定 期清除或删除已经消费完文件，减少磁盘占用。 通过索引信息可以快速定位 message 和确定 response 的最大大小。 通过 index 元数据全部映射到 memory，可以避免 segment file 的 IO 磁盘操作。 通过索引文件稀疏存储，可以大幅降低 index 文件元数据占用空间大小。（这个不理解） Kafka 新建的分区会在哪个目录下创建在启动 Kafka 集群之前，我们需要配置好 log.dirs 参数，其值是 Kafka 数据的存放目录， 这个参数可以配置多个目录，目录之间使用逗号分隔，通常这些目录是分布在不同的磁盘 上用于提高读写性能。 当然我们也可以配置 log.dir 参数，含义一样。只需要设置其中一个即可。 如果 log.dirs 参数只配置了一个目录，那么分配到各个 Broker 上的分区肯定只能在这个 目录下创建文件夹用于存放数据。 但是如果 log.dirs 参数配置了多个目录，那么 Kafka 会在哪个文件夹中创建分区目录呢？ 答案是：Kafka 会在含有分区目录最少的文件夹中创建新的分区目录，分区目录名为 Topic 名+分区 ID。注意，是分区文件夹总数最少的目录，而不是磁盘使用量最少的目录！也就 是说，如果你给 log.dirs 参数新增了一个新的磁盘，新的分区目录肯定是先在这个新的磁 盘上创建直到这个新的磁盘目录拥有的分区目录不是最少为止。]]></content>
+      <categories>
+        <category>百问kafka</category>
+      </categories>
+  </entry>
+  <entry>
+    <title><![CDATA[kafka消息采用pull还是push模式]]></title>
+    <url>%2F2019%2F11%2F17%2Fkafka%2F%E7%99%BE%E9%97%AEkafka%2Fkafka%E6%B6%88%E6%81%AF%E9%87%87%E7%94%A8pull%E8%BF%98%E6%98%AFpush%E6%A8%A1%E5%BC%8F%2F</url>
+    <content type="text"><![CDATA[Kafka 最初考虑的问题是，customer 应该从 brokes 拉取消息还是 brokers 将消息推送到 consumer，也就是 pull 还 push。在这方面，Kafka 遵循了一种大部分消息系统共同的传统 的设计：producer 将消息推送到 broker，consumer 从 broker 拉取消息 一些消息系统比如 Scribe 和 Apache Flume 采用了 push 模式，将消息推送到下游的 consumer。这样做有好处也有坏处：由 broker 决定消息推送的速率，对于不同消费速率的 consumer 就不太好处理了。消息系统都致力于让 consumer 以最大的速率最快速的消费消 息，但不幸的是，push 模式下，当 broker 推送的速率远大于 consumer 消费的速率时， consumer 恐怕就要崩溃了。最终 Kafka 还是选取了传统的 pull 模式 Pull 模式的另外一个好处是 consumer 可以自主决定是否批量的从 broker 拉取数据。Push 模式必须在不知道下游 consumer 消费能力和消费策略的情况下决定是立即推送每条消息还 是缓存之后批量推送。如果为了避免 consumer 崩溃而采用较低的推送速率，将可能导致一 次只推送较少的消息而造成浪费。Pull 模式下，consumer 就可以根据自己的消费能力去决 定这些策略 Pull 有个缺点是，如果 broker 没有可供消费的消息，将导致 consumer 不断在循环中轮询， 直到新消息到达。为了避免这点，Kafka 有个参数可以让 consumer 阻塞知道新消息到达 (当然也可以阻塞知道消息的数量达到某个特定的量这样就可以批量发 参考： https://www.cnblogs.com/kx33389/p/11182082.html]]></content>
+      <categories>
+        <category>百问kafka</category>
+      </categories>
+  </entry>
+  <entry>
+    <title></title>
+    <url>%2F2019%2F11%2F17%2F%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%2F%E7%99%BE%E9%97%AE%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%2FData%20Vault%2F</url>
+    <content type="text"></content>
+  </entry>
+  <entry>
+    <title><![CDATA[ODS]]></title>
+    <url>%2F2019%2F11%2F17%2F%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%2F%E7%99%BE%E9%97%AE%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%2FODS%2F</url>
+    <content type="text"><![CDATA[ODS 作业数据存储 Operational Data Store]]></content>
+      <categories>
+        <category>百问数据仓库</category>
+      </categories>
+  </entry>
+  <entry>
+    <title></title>
+    <url>%2F2019%2F11%2F16%2Fspark%2Fspark%E5%BC%80%E5%8F%91%E7%82%B9%E6%BB%B4%2FSparkSQL%20ThriftServer%2F</url>
+    <content type="text"></content>
+  </entry>
+  <entry>
+    <title></title>
+    <url>%2F2019%2F11%2F16%2Fkafka%2F%E7%99%BE%E9%97%AEkafka%2Fkafka%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%8D%E9%87%8D%E5%A4%8D%2F</url>
+    <content type="text"></content>
+  </entry>
+  <entry>
+    <title><![CDATA[kafka如何保持数据不丢失]]></title>
+    <url>%2F2019%2F11%2F16%2Fkafka%2F%E7%99%BE%E9%97%AEkafka%2Fkafka%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%8D%E4%B8%A2%E5%A4%B1%2F</url>
+    <content type="text"><![CDATA[主要三个部分会造成消息丢失 broker 端消息丢失 生产者端消息丢失 消费者端消息丢失 broker 端消息丢失broker端的消息不丢失，其实就是用partition副本机制来保证。 broker 端有三个重要的参数来保证消息可靠： 1、复制系数 创建topic时使用replication.factor，broker配置中使用default.replication.factor来配置自动创建的主题。 2、不完全的首领选举 broker中配置unclean.leader.election，默认为true 。该参数配置决定在分区首领不可用时、非同步副本是否可以被选举为首领副本;如果设置为true 则予许不同步的副本成为首领，但我们将面临丢失消息的风险、如果设置为false 就需要等待原先的首领副本重新上线 从而降低了可用性。 换个角度说就是:该参数配置为true时 且分区发生重新选举选举出的首领分区为不完全分区时 可能就会发生消息丢失 所以为了避免丢失，最好改成false 3、最小同步副本 topic和broker都可以配置min.insync.replicas 该参数是为了避免在发生不完全选举时数据的写入和读取出现非预期的行为 参考： https://blog.csdn.net/guokekanhai/article/details/90292106]]></content>
+      <categories>
+        <category>百问kafka</category>
+      </categories>
+  </entry>
+  <entry>
+    <title><![CDATA[kafka如何保持数据一致性]]></title>
+    <url>%2F2019%2F11%2F16%2Fkafka%2F%E7%99%BE%E9%97%AEkafka%2Fkafka%E5%A6%82%E4%BD%95%E4%BF%9D%E6%8C%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7%2F</url>
+    <content type="text"><![CDATA[一致性就是说不论是老的 Leader 还是新选举的 Leader，Consumer 都能读到一样的数据。 假设分区的副本为3，其中副本0是 Leader，副本1和副本2是 follower，并且在 ISR 列表里面。虽然副本0已经写入了 Message4，但是 Consumer 只能读取到 Message2。因为所有的 ISR 都同步了 Message2，只有 High Water Mark 以上的消息才支持 Consumer 读取，而 High Water Mark 取决于 ISR 列表里面偏移量最小的分区，对应于上图的副本2，这个很类似于木桶原理。]]></content>
+      <categories>
+        <category>百问kafka</category>
+      </categories>
+  </entry>
+  <entry>
+    <title><![CDATA[kafka的设计架构]]></title>
+    <url>%2F2019%2F11%2F16%2Fkafka%2F%E7%99%BE%E9%97%AEkafka%2Fkafka%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%9E%B6%E6%9E%84%2F</url>
+    <content type="text"><![CDATA[简单架构如下 详细如下]]></content>
+      <categories>
+        <category>百问kafka</category>
+      </categories>
+  </entry>
+  <entry>
+    <title><![CDATA[kafka应用场景]]></title>
+    <url>%2F2019%2F11%2F16%2Fkafka%2F%E7%99%BE%E9%97%AEkafka%2Fkafka%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%2F</url>
+    <content type="text"><![CDATA[日志收集：一个公司可以用Kafka可以收集各种服务的log，通过kafka以统一接口服务的方式开放给各种consumer，例如hadoop、HBase、Solr等。 消息系统：解耦和生产者和消费者、缓存消息等。 用户活动跟踪：Kafka经常被用来记录web用户或者app用户的各种活动，如浏览网页、搜索、点击等活动，这些活动信息被各个服务器发布到kafka的topic中，然后订阅者通过订阅这些topic来做实时的监控分析，或者装载到hadoop、数据仓库中做离线分析和挖掘。 运营指标：Kafka也经常用来记录运营监控数据。包括收集各种分布式应用的数据，生产各种操作的集中反馈，比如报警和报告。 流式处理：比如spark streaming和 Flink]]></content>
+      <categories>
+        <category>百问kafka</category>
+      </categories>
+  </entry>
+  <entry>
+    <title></title>
+    <url>%2F2019%2F11%2F16%2Fflink%2Fflink%E4%B8%8Espark%E7%9A%84%E5%8C%BA%E5%88%AB%2F</url>
+    <content type="text"></content>
+  </entry>
+  <entry>
+    <title></title>
+    <url>%2F2019%2F11%2F16%2Fhadoop%2F%E7%99%BE%E9%97%AEhadoop%2F%E5%85%B3%E4%BA%8Eyarn%2F</url>
+    <content type="text"></content>
+  </entry>
+  <entry>
+    <title></title>
+    <url>%2F2019%2F11%2F16%2Fhadoop%2F%E7%99%BE%E9%97%AEhadoop%2Fhadoop3.0%E7%9A%84%E6%94%B9%E8%BF%9B%2F</url>
+    <content type="text"></content>
+  </entry>
+  <entry>
+    <title></title>
+    <url>%2F2019%2F11%2F16%2Fhadoop%2F%E7%99%BE%E9%97%AEhadoop%2Fhdfs%E6%9E%B6%E6%9E%84%E5%92%8C%E8%AF%BB%E5%86%99%E6%B5%81%E7%A8%8B%2F</url>
+    <content type="text"></content>
+  </entry>
+  <entry>
+    <title></title>
+    <url>%2F2019%2F11%2F16%2F%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%90%86%E8%AE%BA%E4%B8%8E%E6%A1%86%E6%9E%B6%2F%E5%AF%B9%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%9A%84%E8%A7%81%E8%A7%A3%2F</url>
+    <content type="text"></content>
+  </entry>
+  <entry>
+    <title><![CDATA[java并发]]></title>
+    <url>%2F2019%2F11%2F16%2Fjava%2Fjava%E5%BC%80%E5%8F%91%E7%82%B9%E6%BB%B4%2Fjava%E5%B9%B6%E5%8F%91%2F</url>
+    <content type="text"><![CDATA[volatile]]></content>
+      <categories>
+        <category>java开发点滴</category>
+      </categories>
+  </entry>
+  <entry>
+    <title><![CDATA[spark调优]]></title>
+    <url>%2F2019%2F11%2F16%2Fspark%2Fspark%E5%BC%80%E5%8F%91%E7%82%B9%E6%BB%B4%2Fspark%E8%B0%83%E4%BC%98%2F</url>
+    <content type="text"></content>
+      <categories>
+        <category>spark开发点滴</category>
+      </categories>
+  </entry>
+  <entry>
+    <title><![CDATA[lag和lead]]></title>
+    <url>%2F2019%2F11%2F16%2Fhive%2Fhive%E8%AF%AD%E6%B3%95%2Flag%E5%92%8Clead%2F</url>
+    <content type="text"><![CDATA[lag 和lead 可以 获取结果集中，按一定排序所排列的当前行的上下相邻若干offset 的某个行的某个列(不用结果集的自关联）；lag ，lead 分别是向前，向后；lag 和lead 有三个参数，第一个参数是列名，第二个参数是偏移的offset，第三个参数是 超出记录窗口时的默认值） over()表示 lag()与lead()操作的数据都在over()的范围内，他里面可以使用partition by 语句（用于分组） order by 语句（用于排序）。partition by a order by b表示以a字段进行分组，再 以b字段进行排序，对数据进行查询。 例如：lead(field, num, defaultvalue) field需要查找的字段，num往后查找的num行的数据，defaultvalue没有符合条件的默认值。 举例如下：SQL&gt; select * from kkk; ID NAME 1 1name 2 2name 3 3name 4 4name 5 5name SQL&gt; select id,name,lag(name,1,0) over ( order by id ) from kkk; ID NAME LAG(NAME,1,0)OVER(ORDERBYID) 1 1name 0 2 2name 1name 3 3name 2name 4 4name 3name 5 5name 4name SQL&gt; select id,name,lead(name,1,0) over ( order by id ) from kkk; ID NAME LEAD(NAME,1,0)OVER(ORDERBYID) 1 1name 2name 2 2name 3name 3 3name 4name 4 4name 5name 5 5name 0 SQL&gt;SQL&gt; select id,name,lead(name,2,0) over ( order by id ) from kkk; ID NAME LEAD(NAME,2,0)OVER(ORDERBYID) 1 1name 3name 2 2name 4name 3 3name 5name 4 4name 0 5 5name 0 参考： https://blog.csdn.net/qq_34941023/article/details/52590176]]></content>
+      <categories>
+        <category>hive语法</category>
+      </categories>
+  </entry>
+  <entry>
+    <title><![CDATA[蚂蚁森林植物申领统计]]></title>
+    <url>%2F2019%2F11%2F16%2Fhive%2Fhive%E6%93%8D%E4%BD%9C%E7%82%B9%E6%BB%B4%2F%E8%9A%82%E8%9A%81%E6%A3%AE%E6%9E%97%E6%A4%8D%E7%89%A9%E7%94%B3%E9%A2%86%E7%BB%9F%E8%AE%A1%2F</url>
+    <content type="text"><![CDATA[一道蚂蚁金服面试题： 一.题目说明：以下表记录了用户每天的蚂蚁森林低碳生活领取的记录流水。table_name：user_low_carbonuser_id data_dt low_carbon用户 日期 减少碳排放（g） 蚂蚁森林植物换购表，用于记录申领环保植物所需要减少的碳排放量table_name: plant_carbonplant_id plant_name low_carbon植物编号 植物名 换购植物所需要的碳 ——题目1.蚂蚁森林植物申领统计问题：假设2017年1月1日开始记录低碳数据（user_low_carbon），假设2017年10月1日之前满足申领条件的用户都申领了一颗p004-胡杨，剩余的能量全部用来领取“p002-沙柳” 。统计在10月1日累计申领“p002-沙柳” 排名前10的以用户信息；及他比后一名多领了几颗沙柳。得到的统计结果如下表样式：user_id plant_count less_count(比后一名多领了几颗沙柳)u_101 1000 100u_088 900 400u_103 500 … 2、蚂蚁森林低碳用户排名分析问题：查询user_low_carbon表中每日流水记录，条件为：用户在2017年，连续三天（或以上）的天数里，每天减少碳排放（low_carbon）都超过100g的用户低碳流水。需要查询返回满足以上条件的user_low_carbon表中的记录流水。例如用户u_002符合条件的记录如下，因为2017/1/2~2017/1/5连续四天的碳排放量之和都大于等于100g：seq（key） user_id data_dt low_carbonxxxxx10 u_002 2017/1/2 150xxxxx11 u_002 2017/1/2 70xxxxx12 u_002 2017/1/3 30xxxxx13 u_002 2017/1/3 80xxxxx14 u_002 2017/1/4 150xxxxx14 u_002 2017/1/5 101备注：统计方法不限于sql、procedure、python,java等 提供的数据说明：user_low_carbon：u_001 2017/1/1 10u_001 2017/1/2 150u_001 2017/1/2 110u_001 2017/1/2 10u_001 2017/1/4 50u_001 2017/1/4 10u_001 2017/1/6 45u_001 2017/1/6 90u_002 2017/1/1 10u_002 2017/1/2 150u_002 2017/1/2 70u_002 2017/1/3 30u_002 2017/1/3 80u_002 2017/1/4 150u_002 2017/1/5 101u_002 2017/1/6 68… plant_carbon：p001 梭梭树 17p002 沙柳 19p003 樟子树 146p004 胡杨 215… 1.创建表create table user_low_carbon(user_id String,data_dt String,low_carbon int) row format delimited fields terminated by ‘\t’;create table plant_carbon(plant_id string,plant_name String,low_carbon int) row format delimited fields terminated by ‘\t’; 2.加载数据load data local inpath “/opt/module/data/low_carbon.txt” into table user_low_carbon;load data local inpath “/opt/module/data/plant_carbon.txt” into table plant_carbon; 3.设置本地模式set hive.exec.mode.local.auto=true; 二.答案第一题 12345678910111213141516171819202122SELECT user_id, plant_count , plant_count - lead(plant_count, 1) OVER (ORDER BY plant_count DESC)FROM ( SELECT user_id, floor((sum - hy) / sl) AS plant_count FROM ( SELECT user_id, SUM(low_carbon) AS sum FROM user_low_carbon WHERE datediff(regexp_replace(data_dt, &apos;/&apos;, &apos;-&apos;), &apos;2017-1-1&apos;) &gt;= 0 AND datediff(regexp_replace(data_dt, &apos;/&apos;, &apos;-&apos;), &apos;2017-10-1&apos;) &lt;= 0 GROUP BY user_id ) t1, ( SELECT low_carbon AS hy FROM plant_carbon WHERE plant_id = &apos;p004&apos; ) t2, ( SELECT low_carbon AS sl FROM plant_carbon WHERE plant_id = &apos;p002&apos; ) t3) t4LIMIT 10; 参考： https://blog.csdn.net/weixin_44546916/article/details/88790579]]></content>
+      <categories>
+        <category>hive操作点滴</category>
+      </categories>
+  </entry>
+  <entry>
+    <title><![CDATA[ISR、AR、HW、LEO、LSO、LW]]></title>
+    <url>%2F2019%2F11%2F16%2Fkafka%2F%E7%99%BE%E9%97%AEkafka%2FISR%E3%80%81AR%E3%80%81HW%E3%80%81LEO%E3%80%81LSO%E3%80%81LW%2F</url>
+    <content type="text"><![CDATA[ISR和AR分区中的所有副本统称为AR（Assigned Repllicas）。所有与leader副本保持一定程度同步的副本（包括Leader）组成ISR（In-Sync Replicas），ISR集合是AR集合中的一个子集。 消息会先发送到leader副本，然后follower副本才能从leader副本中拉取消息进行同步，同步期间内follower副本相对于leader副本而言会有一定程度的滞后。前面所说的“一定程度”是指可以忍受的滞后范围，这个范围可以通过参数进行配置。与leader副本同步滞后过多的副本（不包括leader）副本，组成OSR(Out-Sync Relipcas),由此可见：AR=ISR+OSR。在正常情况下，所有的follower副本都应该与leader副本保持一定程度的同步，即AR=ISR,OSR集合为空。 Leader副本负责维护和跟踪ISR集合中所有的follower副本的滞后状态，当follower副本落后太多或者失效时，leader副本会吧它从ISR集合中剔除。如果OSR集合中follower副本“追上”了Leader副本，之后在ISR集合中的副本才有资格被选举为leader，而在OSR集合中的副本则没有机会（这个原则可以通过修改对应的参数配置来改变） HW、LEO、LSO、LWHW是High Watermak的缩写， 俗称高水位，它表示了一个特定消息的偏移量（offset），消费者只能拉取到这个offset之前的消息。 如下，它代表一个日志文件，这个日志文件中有9条消息，第一消息的offset（LogStartOffset）为0，最后的一条消息offset为8，offset为9的消息用虚线框表示，代表下的一个待写入的消息。日志文件的HW为6.表示消费者只能拉取到offset0至5之间的消息，而offset为6的消息对消费者而言是不可见的 LEO是Log End Offset的缩写，它表示了当前日志文件中下一条待写入消息的offset，如上图offset为9的位置即为当前日志文件LEO,LEO的大小相当于当前日志分区中最后一条消息的offset值加1。分区ISR集合中的每个副本都会维护自身的LEO，而ISR集合中最小的LEO即为分区的HW，对消费这而言只能消费HW之前的消息。 HW指向的是实实在在的消息，而LEO总是指向下一条待写入消息，也就是说LEO指向的位置上是没有消息的，例如HW值是7，这表示前8条消息（位移从0计数）都已经处于“已备份状态”；而LEO值是12，则表示当前日志中写入了11条消息，而消息8、9、10、11尚未完全备份，即它们属于未提交消息。 如下图，假设某个分区的ISR集合中有三个副本，即一个leader副本和两个follower副本，此时分区的LEO和HW都为3。消息3和消息4从生产者发出之后会被先存入leader副本。 在消息写入leader副本之后，follower副本会发送拉取请求来拉取消息3和消息4以进行消息同步。 在同步过程中，不同的follower副本的同步效率也不尽相同。在某一时刻follower1完全跟上了leader副本而follower2只同步了消息3，如此leader副本的LEO为5，follower1的LEO为5，Follower2的LEO为4。那么当前分区的HW最小值4，此时消费者可以消费到offset为0-3之间的消息（注意这几个数字的关系）。 这种机制的好处是什么？ kafka的复制机制不是完全的同步复制，也不是单纯的异步复制，事实上，同步复制要求所有能工作的Follower副本都复制完，这条消息才会被确认为成功提交，这种复制方式影响了性能。而在异步复制的情况下， follower副本异步地从leader副本中复制数据，数据只要被leader副本写入就被认为已经成功提交。在这种情况下，如果follower副本都没有复制完而落后于leader副本，如果突然leader副本宕机，则会造成数据丢失。Kafka使用这种ISR的方式有效的权衡了数据可靠性与性能之间的关系。 LSO特指LastStableOffset。它具体与kafka的事务有关。对未完成的事务而言，LSO 的值等于事务中第一条消息的位置(firstUnstableOffset)，对已完成的事务而言，它的值同 HW 相同 LW Low Watermark 低水位, 代表 AR 集合中最小的 logStartOffset 值。 更新LEO的机制follower更新LEOfollower副本的LEO保存在2个地方： （1）follower副本所在的broker缓存里（2）leader所在broker的缓存里，也就是leader所在broker的缓存上保存了该分区所有副本的LEO 在follower发送FETCH请求后，leader将数据返回给follower，此时follower开始向底层log写数据，从而自动更新其LEO值，每当新写入一条消息，其LEO值就会加1。 leader更新LEOleader的LEO就保存在其所在broker的缓存里，leader写log时就自动更新其LEO值。 更新HW的机制follower更新HWfollower更新HW发生在其更新LEO之后，一旦follower向log写完数据，它就会尝试更新HW值。具体算法就是比较当前LEO值与FETCH响应中leader的HW值，取两者的小者作为新的HW值。这告诉我们一个事实：如果follower的LEO值超过了leader的HW值，那么follower HW值是不会越过leader HW值的。 leader更新HWleader更新HW的时机： producer 向 leader 写消息时 leader 处理 follower 的 fetch 请求时 某副本成为leader时 broker 崩溃导致副本被踢出ISR时 leader更新HW的方式： 当尝试确定分区HW时，它会选出所有满足条件的副本，比较它们的LEO（当然也包括leader自己的LEO），并选择最小的LEO值作为HW值。 这里的满足条件主要是指副本要满足以下两个条件之一： 处于ISR中 副本LEO落后于leader LEO的时长不大于replica.lag.time.max.ms参数值（默认值是10秒） 引入了 High Water Mark 机制，会导致 Broker 间的消息复制因为某些原因变慢，那么消息到达消费者的时间也会随之变长（因为我们会先等待消息复制完毕）。延迟时间可以通过参数 replica.lag.time.max.ms 参数配置，它指定了副本在复制消息时可被允许的最大延迟时间。 ISR的伸缩kafka何时缩减ISRKafka在启动的时候会开启两个与ISR相关的定时任务，名称分别为“isr-expiration”和”isr-change-propagation”.。isr-expiration任务会周期性的检测每个分区是否需要缩减其ISR集合。这个周期和“replica.lag.time.max.ms”参数有关。 当检测到ISR中有是失效的副本的时候，就会缩减ISR集合。如果某个分区的ISR集合发生变更， 则会将变更后的数据记录到zookeeper对应/brokers/topics/partition/state节点中。节点中数据示例如下： 1&#123;“controller_epoch&quot;:26,“leader”:0,“version”:1,“leader_epoch”:2,“isr”:&#123;0,1&#125;&#125; controller_epoch表示的是当前的kafka控制器epoch leader表示当前分区的leader副本所在的broker的id编号 isr表示变更后的isr列表 kafka何时扩充ISR的随着follower副本不断进行消息同步，follower副本LEO也会逐渐后移，并且最终赶上leader副本，此时follower副本就有资格进入ISR集合，追赶上leader副本的判定准侧是此副本的LEO是否小于leader副本HW，这里并不是和leader副本LEO相比。ISR扩充之后同样会更新ZooKeeper中的/broker/topics//partition//state节点和isrChangeSet，之后的步骤就和ISR收缩的时的相同。 参考： https://blog.csdn.net/weixin_43975220/article/details/93190906 https://blog.csdn.net/lukabruce/article/details/101012815]]></content>
+      <categories>
+        <category>百问kafka</category>
+      </categories>
+  </entry>
+  <entry>
     <title><![CDATA[kafka的ack机制]]></title>
     <url>%2F2019%2F11%2F16%2Fkafka%2F%E7%99%BE%E9%97%AEkafka%2Fkafka%E7%9A%84ack%E6%9C%BA%E5%88%B6%2F</url>
-    <content type="text"><![CDATA[Kafka的ack机制，指的是producer的消息发送确认机制，这直接影响到Kafka集群的吞吐量和消息可靠性。而吞吐量和可靠性就像硬币的两面，两者不可兼得，只能平衡。 ack有3个可选值，分别是1，0，-1。 ack=1，简单来说就是，producer只要收到一个分区副本成功写入的通知就认为推送消息成功了。这里有一个地方需要注意，这个副本必须是leader副本。只有leader副本成功写入了，producer才会认为消息发送成功。 注意，ack的默认值就是1。这个默认值其实就是吞吐量与可靠性的一个折中方案。生产上我们可以根据实际情况进行调整，比如如果你要追求高吞吐量，那么就要放弃可靠性。 ack=0，简单来说就是，producer发送一次就不再发送了，不管是否发送成功。 ack=-1，简单来说就是，producer只有收到分区内所有副本的成功写入的通知才认为推送消息成功了。 参考： https://www.jianshu.com/p/c98b934f2c2b]]></content>
+    <content type="text"><![CDATA[request.required.acks Kafka的ack机制，指的是producer的消息发送确认机制，这直接影响到Kafka集群的吞吐量和消息可靠性。而吞吐量和可靠性就像硬币的两面，两者不可兼得，只能平衡。 ack有3个可选值，分别是1，0，-1。 ack=1。写入leader成功。简单来说就是，producer只要收到一个分区副本成功写入的通知就认为推送消息成功了。这里有一个地方需要注意，这个副本必须是leader副本。只有leader副本成功写入了，producer才会认为消息发送成功。 注意，ack的默认值就是1。这个默认值其实就是吞吐量与可靠性的一个折中方案。生产上我们可以根据实际情况进行调整，比如如果你要追求高吞吐量，那么就要放弃可靠性。 ack=。不在乎是否写入成功。简单来说就是，producer发送一次就不再发送了，不管是否发送成功。 ack=-1，写入leader和所有副本都成功。简单来说就是，producer只有收到分区内所有副本的成功写入的通知才认为推送消息成功了。 ack=1的情况下，为什么消息也会丢失？ ack=1的情况下，producer只要收到分区leader成功写入的通知就会认为消息发送成功了。如果leader成功写入后，还没来得及把数据同步到follower节点就挂了，这时候消息就丢失了。 参考： https://www.jianshu.com/p/c98b934f2c2b]]></content>
       <categories>
         <category>百问kafka</category>
       </categories>

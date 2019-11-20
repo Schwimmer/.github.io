@@ -94,17 +94,17 @@
 
 
 
-  <meta name="description" content="Kafka的ack机制，指的是producer的消息发送确认机制，这直接影响到Kafka集群的吞吐量和消息可靠性。而吞吐量和可靠性就像硬币的两面，两者不可兼得，只能平衡。 ack有3个可选值，分别是1，0，-1。 ack=1，简单来说就是，producer只要收到一个分区副本成功写入的通知就认为推送消息成功了。这里有一个地方需要注意，这个副本必须是leader副本。只有leader副本成功写入了，">
+  <meta name="description" content="request.required.acks Kafka的ack机制，指的是producer的消息发送确认机制，这直接影响到Kafka集群的吞吐量和消息可靠性。而吞吐量和可靠性就像硬币的两面，两者不可兼得，只能平衡。 ack有3个可选值，分别是1，0，-1。 ack=1。写入leader成功。简单来说就是，producer只要收到一个分区副本成功写入的通知就认为推送消息成功了。这里有一个地方需要注意">
 <meta property="og:type" content="article">
 <meta property="og:title" content="kafka的ack机制">
 <meta property="og:url" content="https://schwimmer.github.io/2019/11/16/kafka/百问kafka/kafka的ack机制/index.html">
 <meta property="og:site_name" content="Schwimmer&#39;s Blog">
-<meta property="og:description" content="Kafka的ack机制，指的是producer的消息发送确认机制，这直接影响到Kafka集群的吞吐量和消息可靠性。而吞吐量和可靠性就像硬币的两面，两者不可兼得，只能平衡。 ack有3个可选值，分别是1，0，-1。 ack=1，简单来说就是，producer只要收到一个分区副本成功写入的通知就认为推送消息成功了。这里有一个地方需要注意，这个副本必须是leader副本。只有leader副本成功写入了，">
+<meta property="og:description" content="request.required.acks Kafka的ack机制，指的是producer的消息发送确认机制，这直接影响到Kafka集群的吞吐量和消息可靠性。而吞吐量和可靠性就像硬币的两面，两者不可兼得，只能平衡。 ack有3个可选值，分别是1，0，-1。 ack=1。写入leader成功。简单来说就是，producer只要收到一个分区副本成功写入的通知就认为推送消息成功了。这里有一个地方需要注意">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-16T04:01:07.196Z">
+<meta property="og:updated_time" content="2019-11-16T04:29:33.293Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="kafka的ack机制">
-<meta name="twitter:description" content="Kafka的ack机制，指的是producer的消息发送确认机制，这直接影响到Kafka集群的吞吐量和消息可靠性。而吞吐量和可靠性就像硬币的两面，两者不可兼得，只能平衡。 ack有3个可选值，分别是1，0，-1。 ack=1，简单来说就是，producer只要收到一个分区副本成功写入的通知就认为推送消息成功了。这里有一个地方需要注意，这个副本必须是leader副本。只有leader副本成功写入了，">
+<meta name="twitter:description" content="request.required.acks Kafka的ack机制，指的是producer的消息发送确认机制，这直接影响到Kafka集群的吞吐量和消息可靠性。而吞吐量和可靠性就像硬币的两面，两者不可兼得，只能平衡。 ack有3个可选值，分别是1，0，-1。 ack=1。写入leader成功。简单来说就是，producer只要收到一个分区副本成功写入的通知就认为推送消息成功了。这里有一个地方需要注意">
 
 
 
@@ -400,7 +400,7 @@
                 
               
 
-              <time title="创建时间：2019-11-16 00:23:09 / 修改时间：12:01:07" itemprop="dateCreated datePublished" datetime="2019-11-16T00:23:09+08:00">2019-11-16</time>
+              <time title="创建时间：2019-11-16 00:23:09 / 修改时间：12:29:33" itemprop="dateCreated datePublished" datetime="2019-11-16T00:23:09+08:00">2019-11-16</time>
             </span>
           
 
@@ -477,12 +477,17 @@
       
 
       
-        <p>Kafka的ack机制，指的是producer的<strong>消息发送确认机制</strong>，这直接影响到Kafka集群的吞吐量和消息可靠性。而吞吐量和可靠性就像硬币的两面，两者不可兼得，只能平衡。</p>
+        <p><code>request.required.acks</code></p>
+<p>Kafka的ack机制，指的是producer的<strong>消息发送确认机制</strong>，这直接影响到Kafka集群的吞吐量和消息可靠性。而吞吐量和可靠性就像硬币的两面，两者不可兼得，只能平衡。</p>
 <p>ack有3个可选值，分别是1，0，-1。</p>
-<p>ack=1，简单来说就是，producer只要收到一个分区副本成功写入的通知就认为推送消息成功了。这里有一个地方需要注意，这个副本必须是leader副本。只有leader副本成功写入了，producer才会认为消息发送成功。</p>
+<p>ack=1。<strong>写入leader成功</strong>。简单来说就是，producer只要收到一个分区副本成功写入的通知就认为推送消息成功了。这里有一个地方需要注意，这个副本必须是leader副本。只有leader副本成功写入了，producer才会认为消息发送成功。</p>
 <p>注意，ack的默认值就是1。这个默认值其实就是吞吐量与可靠性的一个折中方案。生产上我们可以根据实际情况进行调整，比如如果你要追求高吞吐量，那么就要放弃可靠性。</p>
-<p>ack=0，简单来说就是，producer发送一次就不再发送了，不管是否发送成功。</p>
-<p>ack=-1，简单来说就是，producer只有收到分区内所有副本的成功写入的通知才认为推送消息成功了。</p>
+<p>ack=。<strong>不在乎是否写入成功</strong>。简单来说就是，producer发送一次就不再发送了，不管是否发送成功。</p>
+<p>ack=-1，<strong>写入leader和所有副本都成功</strong>。简单来说就是，producer只有收到分区内所有副本的成功写入的通知才认为推送消息成功了。</p>
+<blockquote>
+<p>ack=1的情况下，为什么消息也会丢失？</p>
+</blockquote>
+<p>ack=1的情况下，producer只要收到分区leader成功写入的通知就会认为消息发送成功了。如果leader成功写入后，还没来得及把数据同步到follower节点就挂了，这时候消息就丢失了。</p>
 <p>参考：</p>
 <p><a href="https://www.jianshu.com/p/c98b934f2c2b" target="_blank" rel="noopener">https://www.jianshu.com/p/c98b934f2c2b</a></p>
 
@@ -524,6 +529,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/11/16/kafka/百问kafka/ISR、AR、HW、LEO、LSO、LW/" rel="prev" title="ISR、AR、HW、LEO、LSO、LW">
+                ISR、AR、HW、LEO、LSO、LW <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -590,7 +599,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">9</span>
+                    <span class="site-state-item-count">33</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -611,7 +620,19 @@
                     
                       
                     
-                    <span class="site-state-item-count">2</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
