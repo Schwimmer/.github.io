@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="XGBoost的缺点（1）XGBoost是基于预排序的方法 对所有特征都按照特征的数值进行预排序在遍历分割点的时候用O(#data)的代价找到一个特征上的最好分割点。预排序算法的优点：能精确地找到分割点。（2）预排序的缺点： 空间消耗大。保存数据的特征值、排序结果（排序后的索引，为了后续快速的计算分割点），消耗训练数据两倍的内存。时间开销大。遍历每个分割点的时候，都需要进行分裂增益的计算。对cac">
+<meta property="og:type" content="article">
+<meta property="og:title" content="lightgbm原理">
+<meta property="og:url" content="https://schwimmer.github.io/2019/11/27/机器学习算法专题/lightgbm/lightgbm原理/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="XGBoost的缺点（1）XGBoost是基于预排序的方法 对所有特征都按照特征的数值进行预排序在遍历分割点的时候用O(#data)的代价找到一个特征上的最好分割点。预排序算法的优点：能精确地找到分割点。（2）预排序的缺点： 空间消耗大。保存数据的特征值、排序结果（排序后的索引，为了后续快速的计算分割点），消耗训练数据两倍的内存。时间开销大。遍历每个分割点的时候，都需要进行分裂增益的计算。对cac">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://schwimmer.github.io/2019/11/27/机器学习算法专题/lightgbm/lightgbm原理/20190528154551112.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/11/27/机器学习算法专题/lightgbm/lightgbm原理/20190528155017603.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/11/27/机器学习算法专题/lightgbm/lightgbm原理/20190528155509116.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/11/27/机器学习算法专题/lightgbm/lightgbm原理/image-20191127160401307.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/11/27/机器学习算法专题/lightgbm/lightgbm原理/20190528160635313.png">
+<meta property="og:updated_time" content="2019-11-27T08:07:00.181Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="lightgbm原理">
+<meta name="twitter:description" content="XGBoost的缺点（1）XGBoost是基于预排序的方法 对所有特征都按照特征的数值进行预排序在遍历分割点的时候用O(#data)的代价找到一个特征上的最好分割点。预排序算法的优点：能精确地找到分割点。（2）预排序的缺点： 空间消耗大。保存数据的特征值、排序结果（排序后的索引，为了后续快速的计算分割点），消耗训练数据两倍的内存。时间开销大。遍历每个分割点的时候，都需要进行分裂增益的计算。对cac">
+<meta name="twitter:image" content="https://schwimmer.github.io/2019/11/27/机器学习算法专题/lightgbm/lightgbm原理/20190528154551112.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://schwimmer.github.io/2019/11/27/机器学习算法专题/lightgbm/lightgbm原理/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>lightgbm原理 | Schwimmer's Blog</title>
+  
+
+
+
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-143240576-1"></script>
+  <script>
+    var host = window.location.hostname;
+    if (host !== "localhost" || !true) {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-143240576-1');
+    }
+  </script>
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/11/27/机器学习算法专题/lightgbm/lightgbm原理/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">lightgbm原理
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-27 15:46:23 / 修改时间：16:07:00" itemprop="dateCreated datePublished" datetime="2019-11-27T15:46:23+08:00">2019-11-27</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习算法专题/" itemprop="url" rel="index"><span itemprop="name">机器学习算法专题</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/11/27/机器学习算法专题/lightgbm/lightgbm原理/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/11/27/机器学习算法专题/lightgbm/lightgbm原理/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+                 阅读次数： 
+                <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+              </span>
+            </span>
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="XGBoost的缺点"><a href="#XGBoost的缺点" class="headerlink" title="XGBoost的缺点"></a>XGBoost的缺点</h1><p>（1）XGBoost是基于预排序的方法</p>
+<p>对所有特征都按照特征的数值进行预排序<br>在遍历分割点的时候用O(#data)的代价找到一个特征上的最好分割点。<br>预排序算法的优点：能精确地找到分割点。<br>（2）预排序的缺点：</p>
+<p>空间消耗大。保存数据的特征值、排序结果（排序后的索引，为了后续快速的计算分割点），消耗训练数据两倍的内存。<br>时间开销大。遍历每个分割点的时候，都需要进行分裂增益的计算。<br>对cache优化不友好。在预排序后，特征对梯度的访问是一种随机访问，并且不同的特征访问的顺序不一样，无法对cache进行优化。同时，在每一层生长树的时候，需要随机访问一个行索引到叶子索引的数组，并且不同特征访问的顺序也不一样，也会造成较大的cache miss。</p>
+<h1 id="2-LightGBM做的优化"><a href="#2-LightGBM做的优化" class="headerlink" title="2. LightGBM做的优化"></a>2. LightGBM做的优化</h1><ul>
+<li>基于Histogram的决策树算法</li>
+<li>带深度限制的Leaf-wise的叶子生长策略</li>
+<li>直方图做差加速</li>
+<li>支持类别特征</li>
+<li>Cache命中率优化</li>
+<li>基于直方图的稀疏特征多线程优化</li>
+</ul>
+<h2 id="2-1-Histogram算法"><a href="#2-1-Histogram算法" class="headerlink" title="2.1 Histogram算法"></a>2.1 Histogram算法</h2><p>直方图算法的基本思想：先把连续的浮点特征值离散化成k个整数（其实是<strong>分桶的思想</strong>，这些桶称为bin，比如[0,0.1)→0, [0.1,0.3)→1），同时构造一个宽度为k的直方图。</p>
+<ul>
+<li>在遍历数据的时候，根据离散化后的值作为索引在直方图中累积统计量</li>
+<li>当遍历一次数据后，直方图累积了需要的统计量</li>
+<li>然后根据直方图的离散值，遍历寻找最优的分割点。</li>
+</ul>
+<p>直方图算法的优点：</p>
+<p>降低消耗的内存：不需要存储预排序的结果。只保存特征离散化后的值，而且一般用整型存储就够了，不再需要浮点类型。<br>降低计算复杂度：预排序O(#data<em>#feature)，直方图O(#bin</em>#feature)<br>直方图算法的缺点（也是它的优点）：</p>
+<p>特征离散化后，分割点不精确。但实验表明影响并不大，甚至效果会更好一点。<br>较粗的分割点也有正则化的效果，可以防止过拟合</p>
+<h2 id="2-2-带深度限制的Leaf-wise的叶子生长策略"><a href="#2-2-带深度限制的Leaf-wise的叶子生长策略" class="headerlink" title="2.2 带深度限制的Leaf-wise的叶子生长策略"></a>2.2 带深度限制的Leaf-wise的叶子生长策略</h2><p>（1）XGBoost 的层次生长策略，称为 Level-wise tree growth</p>
+<p><img src="//schwimmer.github.io/2019/11/27/机器学习算法专题/lightgbm/lightgbm原理/20190528154551112.png" alt="在这里插入图片描述"></p>
+<ul>
+<li><strong>同一层的所有节点都做分裂</strong></li>
+<li>可以同时分裂同一层的叶子，容易多线程优化，也好控制模型复杂度，不容易过拟合</li>
+<li>但算法低效，因为不加区分的对待同一层的叶子，带来了很多没必要的开销。</li>
+<li><strong>实际上很多叶子节点的分裂增益较低，没必要进行搜索和分裂</strong>。</li>
+</ul>
+<p>（2）LightGBM 的带有深度限制的按叶子生长 (leaf-wise)策略</p>
+<p><img src="//schwimmer.github.io/2019/11/27/机器学习算法专题/lightgbm/lightgbm原理/20190528155017603.png" alt="在这里插入图片描述"></p>
+<p>Leaf-wise是一种更高效的策略，每次从当前所有叶子中，找到分裂增益最大的一个叶子，然后分裂，如此循环。<br>与Level-wise相比，在分裂次数相同的情况下，Leaf-wise可以降低更多的误差，得到更好的精度。<br><strong>Leaf-wise的缺点是可能会长出比较深的决策树，产生过拟合</strong>。因此增加了一个最大深度的限制，在保证高效率的同时防止过拟合。</p>
+<h2 id="2-3-直方图差加速"><a href="#2-3-直方图差加速" class="headerlink" title="2.3 直方图差加速"></a>2.3 直方图差加速</h2><p>现象：一个叶子的直方图可以由它的父亲节点的直方图与它兄弟节点的直方图做差得到。</p>
+<ul>
+<li>通常构造直方图，需要遍历该叶子上的所有数据，但直方图做差仅需遍历直方图的k个桶。</li>
+<li>用非常微小的代价得到它兄弟叶子的直方图，在速度上可以提升一倍。</li>
+</ul>
+<p><img src="//schwimmer.github.io/2019/11/27/机器学习算法专题/lightgbm/lightgbm原理/20190528155509116.png" alt="在这里插入图片描述"></p>
+<h2 id="2-4-数值型特征"><a href="#2-4-数值型特征" class="headerlink" title="2.4 数值型特征"></a>2.4 数值型特征</h2><p>和XGBoost是一样的</p>
+<p>在得到叶子节点的输出后，给定输出的叶子节点分割增益（左右子树累加起来）为：</p>
+<p><img src="//schwimmer.github.io/2019/11/27/机器学习算法专题/lightgbm/lightgbm原理/image-20191127160401307.png" alt="image-20191127160401307"></p>
+<p>XGBoost的分割增益如下：</p>
+<p><img src="//schwimmer.github.io/2019/11/27/机器学习算法专题/lightgbm/lightgbm原理/20190528160635313.png" alt="在这里插入图片描述"></p>
+<h2 id="2-5-直接支持类别特征"><a href="#2-5-直接支持类别特征" class="headerlink" title="2.5 直接支持类别特征"></a>2.5 直接支持类别特征</h2><ul>
+<li>实际上大多数机器学习工具都无法直接支持类别特征，一般需要把类别特征转化到多维的0/1特征，降低了空间和时间的效率。</li>
+<li>LightGBM 可以直接输入类别特征，不需要额外的0/1展开。并在决策树算法上增加了类别特征的决策规则。</li>
+<li>相比0/1展开的方法，训练速度可以加速很多倍，并且精度一致。LightGBM是第一个直接支持类别特征的GBDT工具。</li>
+</ul>
+<h1 id="3-LightGBM的并行化"><a href="#3-LightGBM的并行化" class="headerlink" title="3. LightGBM的并行化"></a>3. LightGBM的并行化</h1><ul>
+<li>在特征并行中，在本地保存全部数据避免对数据切分结果的通信；</li>
+<li>在数据并行中，使用分散规约(Reduce scatter)把<strong>直方图合并的任务</strong>分摊到不同的机器，降低通信和计算，并利用直方图做差，进一步减少了一半的通信量。</li>
+</ul>
+<h1 id="4、LightGBM调参"><a href="#4、LightGBM调参" class="headerlink" title="4、LightGBM调参"></a>4、LightGBM调参</h1><p>XGBoost有三类参数：通用参数、学习目标参数、Booster参数<br>LightGBM：核心参数、学习控制参数、IO参数、目标参数、度量参数、网络参数、GPU参数、模型参数。其中比较重要的是【核心参数、学习控制参数、度量参数】</p>
+<h2 id="5-1-核心参数"><a href="#5-1-核心参数" class="headerlink" title="5.1 核心参数"></a>5.1 核心参数</h2><p>boosting：可选gbdt，rf等<br>num_thread<br>application：可选 regression，binary，multi-class，lambdarank等<br>learning_rate：shrinkage_rate<br>num_leaves：默认31，一颗树上的叶子节点数<br>num_iterations<br>device：可选cpu，gpu</p>
+<h2 id="5-2-学习控制参数"><a href="#5-2-学习控制参数" class="headerlink" title="5.2 学习控制参数"></a>5.2 学习控制参数</h2><p>max_depth<br>feature_fraction：也称sub_feature，colsample_bytree<br>bagging_fraction：也称sub_row，subsample<br>early_stopping_round<br>min_data_in_leaf：默认20，一个叶子节点上数据的最小数量，用于防止过拟合<br>min_gain_to_split<br>max_bin：默认255，最大直方图数，越大越容易过拟合 </p>
+<p>参考：</p>
+<p><a href="https://blog.csdn.net/malele4th/article/details/90637328" target="_blank" rel="noopener">详细说明</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/27/机器学习算法专题/lightgbm/lightgbm参数/" rel="next" title="lightgbm参数">
+                <i class="fa fa-chevron-left"></i> lightgbm参数
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/11/27/机器学习算法专题/lstm/lstm推导/" rel="prev" title="lstm推导">
+                lstm推导 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Schwimmer</p>
+              <div class="site-description motion-element" itemprop="description">Record and Think!</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">71</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#XGBoost的缺点"><span class="nav-number">1.</span> <span class="nav-text">XGBoost的缺点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-LightGBM做的优化"><span class="nav-number">2.</span> <span class="nav-text">2. LightGBM做的优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Histogram算法"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 Histogram算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-带深度限制的Leaf-wise的叶子生长策略"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 带深度限制的Leaf-wise的叶子生长策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-直方图差加速"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 直方图差加速</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-数值型特征"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 数值型特征</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-直接支持类别特征"><span class="nav-number">2.5.</span> <span class="nav-text">2.5 直接支持类别特征</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-LightGBM的并行化"><span class="nav-number">3.</span> <span class="nav-text">3. LightGBM的并行化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4、LightGBM调参"><span class="nav-number">4.</span> <span class="nav-text">4、LightGBM调参</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-核心参数"><span class="nav-number">4.1.</span> <span class="nav-text">5.1 核心参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-学习控制参数"><span class="nav-number">4.2.</span> <span class="nav-text">5.2 学习控制参数</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.2.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      "image": {
+        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+        "viewText": "分享到：",
+        "viewSize": "16"
+      },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      </div>
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.2.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+  
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-schwimmer-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://schwimmer.github.io/2019/11/27/机器学习算法专题/lightgbm/lightgbm原理/";
+    this.page.identifier = "2019/11/27/机器学习算法专题/lightgbm/lightgbm原理/";
+    this.page.title = 'lightgbm原理';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-schwimmer-github-io.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    window.addEventListener('load', loadComments, false);
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

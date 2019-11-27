@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="熵1、什么是信息量？假设X是一个离散型随机变量，其取值集合为X，概率分布函数为$p(x) = P(X=x), x \in X$，定义$X=x_0$的信息量为：  I(x_0) = -log(p(x_0))可以理解为，一个事件发生的概率越大，携带的信息量越小。当$p(x_0)=1$时，信息量为0。 2、什么是熵？熵就是信息的不确定程度，信息熵越小，信息越确定  第一，假设存在一个随机变量，可以问一下">
+<meta property="og:type" content="article">
+<meta property="og:title" content="熵、条件熵、相对熵、交叉熵">
+<meta property="og:url" content="https://schwimmer.github.io/2018/03/17/机器学习算法专题/基础理论/熵/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="熵1、什么是信息量？假设X是一个离散型随机变量，其取值集合为X，概率分布函数为$p(x) = P(X=x), x \in X$，定义$X=x_0$的信息量为：  I(x_0) = -log(p(x_0))可以理解为，一个事件发生的概率越大，携带的信息量越小。当$p(x_0)=1$时，信息量为0。 2、什么是熵？熵就是信息的不确定程度，信息熵越小，信息越确定  第一，假设存在一个随机变量，可以问一下">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://schwimmer.github.io/2018/03/17/机器学习算法专题/基础理论/熵/image-20191126103658645.png">
+<meta property="og:image" content="https://www.zhihu.com/equation?tex=x">
+<meta property="og:image" content="https://www.zhihu.com/equation?tex=p%28x%29">
+<meta property="og:image" content="https://www.zhihu.com/equation?tex=h%28x%29">
+<meta property="og:image" content="https://www.zhihu.com/equation?tex=x">
+<meta property="og:image" content="https://www.zhihu.com/equation?tex=y">
+<meta property="og:image" content="https://www.zhihu.com/equation?tex=h">
+<meta property="og:image" content="https://www.zhihu.com/equation?tex=p%28x%29">
+<meta property="og:image" content="https://www.zhihu.com/equation?tex=log%0A">
+<meta property="og:image" content="https://www.zhihu.com/equation?tex=log">
+<meta property="og:image" content="http://img.blog.csdn.net/20170619101153719?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcGlwaXNvcnJ5/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://www.2cto.com/uploadfile/Collfiles/20160617/20160617091445667.png">
+<meta property="og:image" content="https://schwimmer.github.io/2018/03/17/机器学习算法专题/基础理论/熵/image-20191126113147769.png">
+<meta property="og:updated_time" content="2019-11-26T03:40:01.595Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="熵、条件熵、相对熵、交叉熵">
+<meta name="twitter:description" content="熵1、什么是信息量？假设X是一个离散型随机变量，其取值集合为X，概率分布函数为$p(x) = P(X=x), x \in X$，定义$X=x_0$的信息量为：  I(x_0) = -log(p(x_0))可以理解为，一个事件发生的概率越大，携带的信息量越小。当$p(x_0)=1$时，信息量为0。 2、什么是熵？熵就是信息的不确定程度，信息熵越小，信息越确定  第一，假设存在一个随机变量，可以问一下">
+<meta name="twitter:image" content="https://schwimmer.github.io/2018/03/17/机器学习算法专题/基础理论/熵/image-20191126103658645.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://schwimmer.github.io/2018/03/17/机器学习算法专题/基础理论/熵/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>熵、条件熵、相对熵、交叉熵 | Schwimmer's Blog</title>
+  
+
+
+
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-143240576-1"></script>
+  <script>
+    var host = window.location.hostname;
+    if (host !== "localhost" || !true) {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-143240576-1');
+    }
+  </script>
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2018/03/17/机器学习算法专题/基础理论/熵/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">熵、条件熵、相对熵、交叉熵
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-03-17 20:50:31" itemprop="dateCreated datePublished" datetime="2018-03-17T20:50:31+08:00">2018-03-17</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-26 11:40:01" itemprop="dateModified" datetime="2019-11-26T11:40:01+08:00">2019-11-26</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/算法背后的数学原理/" itemprop="url" rel="index"><span itemprop="name">算法背后的数学原理</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/03/17/机器学习算法专题/基础理论/熵/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/17/机器学习算法专题/基础理论/熵/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+                 阅读次数： 
+                <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+              </span>
+            </span>
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="熵"><a href="#熵" class="headerlink" title="熵"></a>熵</h1><h1 id="1、什么是信息量？"><a href="#1、什么是信息量？" class="headerlink" title="1、什么是信息量？"></a>1、什么是信息量？</h1><p>假设X是一个<strong>离散型随机变量</strong>，其取值集合为X，概率分布函数为$p(x) = P(X=x), x \in X$，定义$X=x_0$的信息量为：</p>
+<script type="math/tex; mode=display">
+I(x_0) = -log(p(x_0))</script><p>可以理解为，一个事件发生的概率越大，携带的信息量越小。当$p(x_0)=1$时，信息量为0。</p>
+<h1 id="2、什么是熵？"><a href="#2、什么是熵？" class="headerlink" title="2、什么是熵？"></a>2、什么是熵？</h1><p>熵就是信息的不确定程度，信息熵越小，信息越确定</p>
+<p><img src="//schwimmer.github.io/2018/03/17/机器学习算法专题/基础理论/熵/image-20191126103658645.png" alt="image-20191126103658645"></p>
+<p>第一，假设存在一个随机变量<img src="https://www.zhihu.com/equation?tex=x" alt="x">，可以问一下自己当我们观测到该随机变量的一个样本时，我们可以接受到多少信息量呢？毫无疑问，当我们被告知一个极不可能发生的事情发生了，那我们就接收到了更多的信息；而当我们观测到一个非常常见的事情发生了，那么我们就接收到了相对较少的信息量。因此信息的量度应该依赖于概率分布<img src="https://www.zhihu.com/equation?tex=p%28x%29" alt="p(x)">，<strong>所以说熵<img src="https://www.zhihu.com/equation?tex=h%28x%29" alt="h(x)">的定义应该是概率的单调函数。</strong> </p>
+<p>第二，假设两个随机变量<img src="https://www.zhihu.com/equation?tex=x" alt="x">和<img src="https://www.zhihu.com/equation?tex=y" alt="y">是相互独立的，那么分别观测两个变量得到的信息量应该和同时观测两个变量的信息量是相同的，即：$H(X+Y)=H(X)+H(Y)$ 。而从概率上来讲，两个独立随机变量就意味着$p(x,y)=p(x)p(y)$，所以此处可以得出结论熵的定义<img src="https://www.zhihu.com/equation?tex=h" alt="h">应该是概率<img src="https://www.zhihu.com/equation?tex=p%28x%29" alt="p(x)">的<img src="https://www.zhihu.com/equation?tex=log%0A" alt="log">函数。因此一个随机变量的熵可以使用如下定义：</p>
+<p>设$X \in {x_1,x_2,…,x_n} $ 为一个离散随机变量，其概率分布为$P(X=x_i)=p_i$。则X的熵为</p>
+<script type="math/tex; mode=display">
+H(X)=-\sum_{i=1}^np_i\log p_i</script><p>其中，当$p_i=0$时，熵为0。</p>
+<p><strong>此处的负号仅仅是用来保证熵（即信息量）是正数或者为零。而<img src="https://www.zhihu.com/equation?tex=log" alt="log">函数基的选择是任意的</strong>（<em>信息论中基常常选择为2，因此信息的单位为比特bits；而机器学习中基常常选择为自然常数，因此单位常常被称为nats</em>）。</p>
+<p><strong>用熵来评价整个随机变量x平均的信息量，而平均最好的量度就是随机变量的期望</strong>。</p>
+<p>熵的取值范围是</p>
+<script type="math/tex; mode=display">
+0 \leq H(X) \leq \log n</script><p>两个随机变量一起发生的熵就是<strong>联合熵</strong></p>
+<h1 id="3、条件熵"><a href="#3、条件熵" class="headerlink" title="3、条件熵"></a>3、条件熵</h1><p>设$Y \in {y_1,y_2,…,y_m}$为随机变量，在已知X的条件下，Y的条件熵（conditional entropy）为</p>
+<script type="math/tex; mode=display">
+H(Y|X) = \sum_{i=1}^n p(x_i)H(Y|X=x_i) = -\sum_{i=1}^np(x_i) \sum_{j=1}^m p(y_j|x_i)\log p(y_j|x_i)</script><p>表示在已知X的条件下，Y的条件概率分布的熵对X的数学期望。</p>
+<h1 id="4、交叉熵"><a href="#4、交叉熵" class="headerlink" title="4、交叉熵"></a>4、交叉熵</h1><p>例如：</p>
+<blockquote>
+<p>箱子里面有小球任意个，但其中1/2是橙色球，1/4是紫色球，1/8是蓝色球及1/8是青色球。我从中拿出一个球，你猜我手中的球是什么颜色的？</p>
+</blockquote>
+<p>知道了每种颜色小球的比例，比如橙色占比二分之一，如果我猜橙色，很有可能第一次就猜中了。所以，根据策略2，1/2的概率是橙色球，小明需要猜一次，1/4的概率是紫色球，小明需要猜两次，1/8的概率是蓝色球，小明需要猜三次，1/8的概率是青色球，小明需要猜三次，所以小明预期的猜题次数为：</p>
+<p>H = 1/2 <em> 1 + 1/4 </em> 2 + 1/8 <em> 3 + 1/8 </em> 3=  1.75</p>
+<p>针对概率为p的小球，需要猜球的次数$=log_2 \frac 1 p$ 。例如1/8是蓝色球，次数就是3。则预期的猜题次数就是熵。</p>
+<p>因此，每个系统都会有一个真实的概率分布（<strong>真实分布</strong>）。根据真实分布，可以找到一个最优策略，以最小的代价消除系统的不确定性，这个不确定性的值就是熵（比如猜题次数，编码长度）。</p>
+<p>如果小明不知道真实分布，认为小球的分布为（1/4，1/4，1/4，1/4），这个分布就是<strong>非真实分布</strong>。此时，小明猜中任何一种颜色的小球都需要猜两次，即1/2 <em> 2 + 1/4 </em> 2 + 1/8 <em> 2 + 1/8 </em> 2 = 2。</p>
+<p>当我们使用非最优策略消除系统的不确定性，所需要付出的努力的大小我们该如何去衡量呢？</p>
+<p>这就需要引入<strong>交叉熵，其用来衡量在给定的真实分布下，使用非真实分布所指定的策略消除系统的不确定性所需要付出的努力的大小</strong>。</p>
+<p>交叉熵的公式为：</p>
+<script type="math/tex; mode=display">
+H = \sum_{i=1}^N p_i log_2 \frac 1 {q_i}</script><blockquote>
+<p>在网上看的其他文章，包括LR等的损失函数中，都是如下的形式</p>
+<script type="math/tex; mode=display">
+H = \sum_{i=1}^N p_i log_2 q_i</script><p>不清楚哪种表达是正确的。</p>
+</blockquote>
+<p>其中，$p_i$是真实分布，$q_i$是非真实分布。</p>
+<p>因此，交叉熵越低，这个策略就越好，最低的交叉熵也就是使用了真实分布所计算出来的信息熵，因为此时$p_i=q_i$ ，交叉熵 = 信息熵。</p>
+<p><strong>这也是为什么在机器学习中的分类算法中，我们总是最小化交叉熵，因为交叉熵越低，就证明由算法所产生的策略最接近最优策略，也间接证明我们算法所算出的非真实分布越接近真实分布。</strong></p>
+<blockquote>
+<p>来自知乎王赟</p>
+</blockquote>
+<h2 id="交叉熵（Cross-Entropy）和negative-log-likelihood"><a href="#交叉熵（Cross-Entropy）和negative-log-likelihood" class="headerlink" title="交叉熵（Cross Entropy）和negative log likelihood"></a>交叉熵（Cross Entropy）和negative log likelihood</h2><p>当ground truth只有一类为1，其它类为0时，cross entropy就是negative log likelihood，可以认为只是叫了一个比较fancy的名字。当ground truth本身也是一个分布时（比如在知识蒸馏过程中），cross entropy这个名字就比较好理解了。</p>
+<h1 id="5、相对熵-KL散度"><a href="#5、相对熵-KL散度" class="headerlink" title="5、相对熵(KL散度)"></a>5、相对熵(KL散度)</h1><p>最后，我们如何去衡量不同策略之间的差异呢？这就需要用到<strong>相对熵，其用来衡量两个取值为正的函数或概率分布之间的差异</strong>，即：</p>
+<script type="math/tex; mode=display">
+KL(f(x) || g(x)) = \sum_{x \in X} f(x) * log_2 \frac {f(x)} {g(x)}</script><p>现在，假设我们想知道某个策略和最优策略之间的差异，我们就可以用相对熵来衡量这两者之间的差异。即，相对熵 = <strong>某个策略的交叉熵 - 信息熵</strong>（根据系统真实分布计算而得的信息熵，为最优策略），公式如下：</p>
+<script type="math/tex; mode=display">
+KL(p || q) = H(p,q)-H(p) = \sum_{k=1}^N p_k log_2 \frac 1 {q_k} - \sum_{k=1}^N p_k log_2 \frac 1 {p_k} = \sum_{k=1}^N p_k log_2 \frac {p_k} {q_k}</script><p><strong>互信息是相对熵的特殊形式</strong>。如果变量不是独立的，可以通过考察联合概率分布和边缘概率分布乘积之间的相对熵，来判断它们是否接近于相对独立。此时，散度表示为</p>
+<p><img src="http://img.blog.csdn.net/20170619101153719?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcGlwaXNvcnJ5/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></p>
+<p>这被称为变量 x 和变量 y 之间的互信息( mutual information )。根据 Kullback-Leibler 散度的性质,我们看到 I[x, y] ≥ 0 ,当且仅当 x 和 y 相互独立时等号成立。经过推导，得互信息公式为</p>
+<p><img src="http://www.2cto.com/uploadfile/Collfiles/20160617/20160617091445667.png" alt=""></p>
+<p>互信息不能归一化，对连续变量计算不方便（连续变量需要先离散化）。最大信息系数首先寻求一种最优离散化方式，然后把互信息取值转换成一种度量方式，取值区间在[0，1]。</p>
+<h1 id="6、交叉熵作为损失函数"><a href="#6、交叉熵作为损失函数" class="headerlink" title="6、交叉熵作为损失函数"></a>6、交叉熵作为损失函数</h1><p>由于信息熵描述的是消除 ppp (即真实分布) 的不确定性所需信息量的度量，所以其值应该是最小的、固定的。那么：<strong>优化减小相对熵也就是优化交叉熵，所以在机器学习中使用交叉熵就可以了</strong>。</p>
+<p>交叉熵的损失函数定义：</p>
+<p><img src="//schwimmer.github.io/2018/03/17/机器学习算法专题/基础理论/熵/image-20191126113147769.png" alt="image-20191126113147769"></p>
+<p>交叉熵损失函数一般用来代替均方差损失函数与sigmoid激活函数组合。</p>
+<p>与对数损失函数的关系是：</p>
+<p>把所有样本取均值就把交叉熵转化成了对数损失函数</p>
+<h1 id="7、总结"><a href="#7、总结" class="headerlink" title="7、总结"></a>7、总结</h1><p>熵：衡量不确定性的度量</p>
+<p>联合熵：X、Y在一起时的不确定性度量</p>
+<p>条件熵：X确定时，Y的不确定性度量。也就是在X发生的前提下，新发生Y带来的熵</p>
+<p>交叉熵：衡量p和q的相似性，越小越相似</p>
+<p>相对熵：p和q的不相似度量。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/01/工具和环境/Hexo + Github 搭建博客入门/" rel="next" title="Hexo + Github 搭建博客入门">
+                <i class="fa fa-chevron-left"></i> Hexo + Github 搭建博客入门
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/08/机器学习算法专题/softmax/输出层的Softmax/" rel="prev" title="">
+                 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Schwimmer</p>
+              <div class="site-description motion-element" itemprop="description">Record and Think!</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">71</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#熵"><span class="nav-number">1.</span> <span class="nav-text">熵</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1、什么是信息量？"><span class="nav-number">2.</span> <span class="nav-text">1、什么是信息量？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2、什么是熵？"><span class="nav-number">3.</span> <span class="nav-text">2、什么是熵？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3、条件熵"><span class="nav-number">4.</span> <span class="nav-text">3、条件熵</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4、交叉熵"><span class="nav-number">5.</span> <span class="nav-text">4、交叉熵</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#交叉熵（Cross-Entropy）和negative-log-likelihood"><span class="nav-number">5.1.</span> <span class="nav-text">交叉熵（Cross Entropy）和negative log likelihood</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5、相对熵-KL散度"><span class="nav-number">6.</span> <span class="nav-text">5、相对熵(KL散度)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6、交叉熵作为损失函数"><span class="nav-number">7.</span> <span class="nav-text">6、交叉熵作为损失函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7、总结"><span class="nav-number">8.</span> <span class="nav-text">7、总结</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.2.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      "image": {
+        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+        "viewText": "分享到：",
+        "viewSize": "16"
+      },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      </div>
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.2.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+  
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-schwimmer-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://schwimmer.github.io/2018/03/17/机器学习算法专题/基础理论/熵/";
+    this.page.identifier = "2018/03/17/机器学习算法专题/基础理论/熵/";
+    this.page.title = '熵、条件熵、相对熵、交叉熵';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-schwimmer-github-io.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    window.addEventListener('load', loadComments, false);
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

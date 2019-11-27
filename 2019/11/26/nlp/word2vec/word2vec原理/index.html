@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="CBOW与Skip-Gram用于神经网络语言模型​    在word2vec出现之前，已经有用神经网络DNN来用训练词向量进而处理词与词之间的关系了。采用的方法一般是一个三层的神经网络结构（当然也可以多层），分为输入层，隐藏层和输出层(softmax层)。 ​    这个模型是如何定义数据的输入和输出呢？一般分为CBOW（Continuous Bag-of-Words） 与Skip-Gram两种模">
+<meta property="og:type" content="article">
+<meta property="og:title" content="word2vec原理">
+<meta property="og:url" content="https://schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="CBOW与Skip-Gram用于神经网络语言模型​    在word2vec出现之前，已经有用神经网络DNN来用训练词向量进而处理词与词之间的关系了。采用的方法一般是一个三层的神经网络结构（当然也可以多层），分为输入层，隐藏层和输出层(softmax层)。 ​    这个模型是如何定义数据的输入和输出呢？一般分为CBOW（Continuous Bag-of-Words） 与Skip-Gram两种模">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/image-20191126155958086.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/cbow.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/神经网络层.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/image-20191126163159397.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/image-20191126162732473.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/image-20191126172239575.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/image-20191126172304989.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/image-20191126174927398.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/image-20191126175013357.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/table映射.png">
+<meta property="og:updated_time" content="2019-11-26T10:36:34.577Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="word2vec原理">
+<meta name="twitter:description" content="CBOW与Skip-Gram用于神经网络语言模型​    在word2vec出现之前，已经有用神经网络DNN来用训练词向量进而处理词与词之间的关系了。采用的方法一般是一个三层的神经网络结构（当然也可以多层），分为输入层，隐藏层和输出层(softmax层)。 ​    这个模型是如何定义数据的输入和输出呢？一般分为CBOW（Continuous Bag-of-Words） 与Skip-Gram两种模">
+<meta name="twitter:image" content="https://schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/image-20191126155958086.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>word2vec原理 | Schwimmer's Blog</title>
+  
+
+
+
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-143240576-1"></script>
+  <script>
+    var host = window.location.hostname;
+    if (host !== "localhost" || !true) {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-143240576-1');
+    }
+  </script>
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">word2vec原理
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-26 15:58:53 / 修改时间：18:36:34" itemprop="dateCreated datePublished" datetime="2019-11-26T15:58:53+08:00">2019-11-26</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/word2vec/" itemprop="url" rel="index"><span itemprop="name">word2vec</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/11/26/nlp/word2vec/word2vec原理/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/11/26/nlp/word2vec/word2vec原理/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+                 阅读次数： 
+                <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+              </span>
+            </span>
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="CBOW与Skip-Gram用于神经网络语言模型"><a href="#CBOW与Skip-Gram用于神经网络语言模型" class="headerlink" title="CBOW与Skip-Gram用于神经网络语言模型"></a>CBOW与Skip-Gram用于神经网络语言模型</h1><p>​    在word2vec出现之前，已经有用神经网络DNN来用训练词向量进而处理词与词之间的关系了。采用的方法一般是一个三层的神经网络结构（当然也可以多层），分为输入层，隐藏层和输出层(softmax层)。</p>
+<p>​    这个模型是如何定义数据的输入和输出呢？一般分为CBOW（Continuous Bag-of-Words） 与Skip-Gram两种模型。两个模型都包含：输入层、投影层、输出层。</p>
+<p><img src="//schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/image-20191126155958086.png" alt="image-20191126155958086"></p>
+<h2 id="2-1-CBOW"><a href="#2-1-CBOW" class="headerlink" title="2.1 CBOW"></a>2.1 CBOW</h2><p>上下文相关的词对应的词向量，而输出就是这特定的一个词的词向量。比如下面这段话，我们的上下文大小取值为4，特定的这个词是”Learning”，也就是我们需要的输出词向量,上下文对应的词有8个，前后各4个，这8个词是我们模型的输入。由于CBOW使用的是词袋模型，因此这8个词都是平等的，也就是不考虑他们和我们关注的词之间的距离大小，只要在我们上下文之内即可。</p>
+<p><img src="//schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/cbow.png" alt="word2vec原理"></p>
+<p>在这个CBOW神经网络模型中，输入层有8个神经元（8个词向量），输出层有词汇表D大小的神经元。</p>
+<p>目标函数通常为</p>
+<script type="math/tex; mode=display">
+L=\sum_{w \in C} \log p(w|Context(w))</script><blockquote>
+<p>为什么是这个形式？</p>
+<p>根据n-gram模型和对数最大似然，得到这个目标函数。</p>
+</blockquote>
+<p>包括四个层：输入、投影、隐藏、输出。</p>
+<p><img src="//schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/神经网络层.png" alt="神word2vec原理"></p>
+<p>对于语料C中的任意一个词w，将Context(w)设为取前面的n-1个词，这样二元对(Context(w),w)就是一个训练样本。</p>
+<p>投影层向量$x_w$的构造是，将输入层的n-1个词向量按顺序首尾相接的拼起来，长度就是m(n-1)了（每个词向量的长度是m）。</p>
+<p>从而</p>
+<script type="math/tex; mode=display">
+z_w = tanh(W{x_w}+p) \\
+y_w=Uz_w+q</script><p>其中，tanh是双曲正切函数，用来做隐藏层的激活函数。</p>
+<p>经过上面两步计算得到的$y<em>w=(y</em>{w,1},y<em>{w,2},…,y</em>{w,N})^T$是一个长度为N的向量，<strong>其分量不能代表概率</strong>。如果想要$y_{w,i}$表示当上下文为Context(w)时下一次为词典D中第i个词的概率，则还需要做一个<strong>softmax归一化</strong>，之后得到</p>
+<script type="math/tex; mode=display">
+p(w|Context(w))=\frac {e^{y_{w,i_w}}} {\sum_{i=1}^N e^{y_{w,i_w}}}</script><p>其中$i_w$表示词w在词典D中的索引。</p>
+<p>与n-gram相比，神经概率语言模型的<strong>优势</strong>是：</p>
+<p>1、词语之间的相似性可以通过词向量来体现。</p>
+<p>1）神经网络模型通过上下文来预测，那么相似的上下文的词的词向量也是相似的；</p>
+<p>2）概率函数关于词向量是光滑的，即词向量的一个小变化对概率的影响也是一个小变化。</p>
+<p>2、词向量自带平滑功能（因为$p(w|Context(w)) \in (0,1)$不会为零）。</p>
+<h2 id="2-2-Skip-Gram"><a href="#2-2-Skip-Gram" class="headerlink" title="2.2 Skip-Gram"></a>2.2 Skip-Gram</h2><p>与CBOW相反，输入是一个特定向量，输出是特定词对应的上下文词向量。</p>
+<p>Hierarchical Softmax，以及Negative Sampling都可以实现上述两种模型</p>
+<h1 id="基于Hierarchical-Softmax的模型"><a href="#基于Hierarchical-Softmax的模型" class="headerlink" title="基于Hierarchical Softmax的模型"></a>基于Hierarchical Softmax的模型</h1><p>对于CBOW模型，目标函数是</p>
+<script type="math/tex; mode=display">
+L=\sum_{w \in C} \log p(w|Context(w))</script><blockquote>
+<p>为什么是这个形式？</p>
+<p>根据n-gram模型和对数最大似然，得到这个目标函数。</p>
+</blockquote>
+<p>网络的构建</p>
+<p><img src="//schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/image-20191126163159397.png" alt="image-2019112616315word2vec原理"></p>
+<p>定义0是正类，</p>
+<blockquote>
+<p>与神经网络模型的区别：</p>
+<p>1、（输入层到投影层）前者是拼接，后者是直接相加</p>
+<p>2、（隐藏层）后者没有</p>
+<p>3、（输出层）前者是线性结构，后者是树结构</p>
+</blockquote>
+<p>定义几个变量：</p>
+<p><img src="//schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/image-20191126162732473.png" alt="image-2019112616273word2vec原理"></p>
+<blockquote>
+<p>为什么非叶子节点也需要定义向量？</p>
+<p>参与两分类问题的权重更新</p>
+</blockquote>
+<p><img src="//schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/image-20191126172239575.png" alt="image-2019112617223word2vec原理"></p>
+<p><img src="//schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/image-20191126172304989.png" alt="image-2019112617230word2vec原理"></p>
+<p><strong>层次Softmax</strong>的基本思想就是：</p>
+<p><strong>对于词典D中的任意词w，Huffman树中必存在一条从根结点到词w对应结点的路径$p^w$，且这条路径是唯一的。路径$p^w$上存在$l^w-1$个分支，将每个分支看做是一个二分类，每一次分类就产生一个概率，将这些概率连乘起来，就是所需的$p(w|Context(w))$ 。</strong></p>
+<p>条件概率连乘的公示可以写为</p>
+<script type="math/tex; mode=display">
+p(w|Context(w))=\prod_{j=2}^{l^w}p(d_j^w|x_w,\theta_{j-1}^w)</script><p>其中，</p>
+<script type="math/tex; mode=display">
+p(d_j^w|x_w,\theta_{j-1}^w)=[\sigma(x_w^T\theta_{j-1}^w)]^{1-d_j^w} \cdot [1-\sigma(x_w^T\theta_{j-1}^w)]^{d_j^w} \tag{3-1}</script><p>这里$\sigma(x<em>w^T\theta</em>{j-1}^w)$表示分到正类的概率。</p>
+<p>将3-1代入对数似然函数，得到</p>
+<script type="math/tex; mode=display">
+L=\sum_{w \in C} \sum_{j=2}^{l^w} \{ (1-d_j^w)\log [\sigma(x_w^T\theta_{j-1}^w)] + d_j^w \log[1-\sigma(x_w^T\theta_{j-1}^w)] \}</script><p>其中，令</p>
+<script type="math/tex; mode=display">
+L(w,j)=(1-d_j^w)\log [\sigma(x_w^T\theta_{j-1}^w)] + d_j^w \log[1-\sigma(x_w^T\theta_{j-1}^w)]</script><p>至此，已经推导出对数似然函数，这就是CBOW模型的目标函数。</p>
+<h1 id="基于Negative-Sampling的模型"><a href="#基于Negative-Sampling的模型" class="headerlink" title="基于Negative Sampling的模型"></a>基于Negative Sampling的模型</h1><p>NEG不使用Huffman树，而是利用随机负采样，能大幅度提高性能。</p>
+<h2 id="CBOW模型"><a href="#CBOW模型" class="headerlink" title="CBOW模型"></a>CBOW模型</h2><p>推到过程中，把w作为正样本，Context(w)作为负样本。对于一个给定的正样本，希望最大化</p>
+<p><img src="//schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/image-20191126174927398.png" alt="image-20191126174927398"></p>
+<p>即增大正样本概率的同时降低负样本的概率。更新公式为</p>
+<p><img src="//schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/image-20191126175013357.png" alt="image-20191126175013357"></p>
+<p>前面的原理差不多，也是用梯度下降，关键在于，h-softmax是通过Huffman树的路径长度来进行迭代和更新参数；NEG是通过找出负采样来迭代。</p>
+<h2 id="4-1-负采样算法"><a href="#4-1-负采样算法" class="headerlink" title="4.1 负采样算法"></a>4.1 负采样算法</h2><p>这里的关键是，对于一个给定的词w，如何生成负样本子集$NEG(w)$？</p>
+<p>词典D中的词在语料C中出现的次数有高有低，对于那些<strong>高频词，被选为负采样的概率就应该比较大</strong>，反之较小。这是我们对采样过程的一个大致要求，本质上就是一个<strong>带权采样问题</strong>。</p>
+<blockquote>
+<p>设词典D中的每个词w对应一条线段l(w)，则线段的长度可以表示为</p>
+<script type="math/tex; mode=display">
+len(w)=\frac {count(w)} {\sum_{u \in D} count(u)}</script><p>也就是计算词频再归一化。现在将这些线段首尾相连拼接在一起，形成一个长度为1的单位线段。如果随机往这个单位线段上打点，则其中越长的线段命中概率越大。</p>
+</blockquote>
+<p>通过这些线段得到一个<strong>非等距剖分</strong>（假设分成N个区间），再定义一个<strong>等距剖分</strong>（假设分成M个区间），$M &gt;&gt; N$ 。</p>
+<p><img src="//schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/table映射.png" alt="tabword2vec原理"></p>
+<p>建立如下的映射关系</p>
+<script type="math/tex; mode=display">
+Table(i) = w_k, \ where\  m_i \in I_k,\ i=1,2,...,M-1</script><p>那么，采样就是每次生成一个[1,M-1]之间的整数r，Table(r)就是一个样本。如果负采样的时候选到正样本自己，就跳过再选。</p>
+<h1 id="源码细节"><a href="#源码细节" class="headerlink" title="源码细节"></a>源码细节</h1>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/26/机器学习算法专题/基础理论/生成模型VS判别模型/" rel="next" title="生成模型VS判别模型">
+                <i class="fa fa-chevron-left"></i> 生成模型VS判别模型
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/11/26/nlp/word2vec/百问word2vec/" rel="prev" title="百问word2vec">
+                百问word2vec <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Schwimmer</p>
+              <div class="site-description motion-element" itemprop="description">Record and Think!</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">71</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CBOW与Skip-Gram用于神经网络语言模型"><span class="nav-number">1.</span> <span class="nav-text">CBOW与Skip-Gram用于神经网络语言模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-CBOW"><span class="nav-number">1.1.</span> <span class="nav-text">2.1 CBOW</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Skip-Gram"><span class="nav-number">1.2.</span> <span class="nav-text">2.2 Skip-Gram</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基于Hierarchical-Softmax的模型"><span class="nav-number">2.</span> <span class="nav-text">基于Hierarchical Softmax的模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基于Negative-Sampling的模型"><span class="nav-number">3.</span> <span class="nav-text">基于Negative Sampling的模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CBOW模型"><span class="nav-number">3.1.</span> <span class="nav-text">CBOW模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-负采样算法"><span class="nav-number">3.2.</span> <span class="nav-text">4.1 负采样算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#源码细节"><span class="nav-number">4.</span> <span class="nav-text">源码细节</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.2.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      "image": {
+        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+        "viewText": "分享到：",
+        "viewSize": "16"
+      },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      </div>
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.2.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+  
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-schwimmer-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://schwimmer.github.io/2019/11/26/nlp/word2vec/word2vec原理/";
+    this.page.identifier = "2019/11/26/nlp/word2vec/word2vec原理/";
+    this.page.title = 'word2vec原理';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-schwimmer-github-io.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    window.addEventListener('load', loadComments, false);
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
