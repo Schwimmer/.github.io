@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="转自：谈谈因子分解机模型（FM） 背景广告、推荐系统的特征，用了one-hot编码后，稀疏性比较高。 交叉特征用户是否会点击某个 item，往往与不同特征的组合高度相关。例如，地处天津的用户点击相声类 item 的概率可能显著高于全国用户的平均水平。因此，若一条样本的 地区 = 天津 和 频道 = 相声 同时出现，则其 CTR 应该相对较高。 模型演进线性模型线性回归和逻辑回归模型。假设模型的输入">
+<meta property="og:type" content="article">
+<meta property="og:title" content="因子分解机FM推导">
+<meta property="og:url" content="https://schwimmer.github.io/2019/12/09/机器学习算法专题/fm/因子分解机FM推导/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="转自：谈谈因子分解机模型（FM） 背景广告、推荐系统的特征，用了one-hot编码后，稀疏性比较高。 交叉特征用户是否会点击某个 item，往往与不同特征的组合高度相关。例如，地处天津的用户点击相声类 item 的概率可能显著高于全国用户的平均水平。因此，若一条样本的 地区 = 天津 和 频道 = 相声 同时出现，则其 CTR 应该相对较高。 模型演进线性模型线性回归和逻辑回归模型。假设模型的输入">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-12-09T08:12:56.739Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="因子分解机FM推导">
+<meta name="twitter:description" content="转自：谈谈因子分解机模型（FM） 背景广告、推荐系统的特征，用了one-hot编码后，稀疏性比较高。 交叉特征用户是否会点击某个 item，往往与不同特征的组合高度相关。例如，地处天津的用户点击相声类 item 的概率可能显著高于全国用户的平均水平。因此，若一条样本的 地区 = 天津 和 频道 = 相声 同时出现，则其 CTR 应该相对较高。 模型演进线性模型线性回归和逻辑回归模型。假设模型的输入">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://schwimmer.github.io/2019/12/09/机器学习算法专题/fm/因子分解机FM推导/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>因子分解机FM推导 | Schwimmer's Blog</title>
+  
+
+
+
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-143240576-1"></script>
+  <script>
+    var host = window.location.hostname;
+    if (host !== "localhost" || !true) {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-143240576-1');
+    }
+  </script>
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/12/09/机器学习算法专题/fm/因子分解机FM推导/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">因子分解机FM推导
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-12-09 11:12:51 / 修改时间：16:12:56" itemprop="dateCreated datePublished" datetime="2019-12-09T11:12:51+08:00">2019-12-09</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习算法专题/" itemprop="url" rel="index"><span itemprop="name">机器学习算法专题</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/12/09/机器学习算法专题/fm/因子分解机FM推导/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/12/09/机器学习算法专题/fm/因子分解机FM推导/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+                 阅读次数： 
+                <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+              </span>
+            </span>
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>转自：<a href="https://www.codercto.com/a/69752.html" target="_blank" rel="noopener">谈谈因子分解机模型（FM）</a></p>
+<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>广告、推荐系统的特征，用了one-hot编码后，稀疏性比较高。</p>
+<h2 id="交叉特征"><a href="#交叉特征" class="headerlink" title="交叉特征"></a>交叉特征</h2><p>用户是否会点击某个 item，往往与不同特征的组合高度相关。例如，地处天津的用户点击相声类 item 的概率可能显著高于全国用户的平均水平。因此，若一条样本的 <code>地区 = 天津</code> 和 <code>频道 = 相声</code> 同时出现，则其 CTR 应该相对较高。</p>
+<h1 id="模型演进"><a href="#模型演进" class="headerlink" title="模型演进"></a>模型演进</h1><h2 id="线性模型"><a href="#线性模型" class="headerlink" title="线性模型"></a>线性模型</h2><p>线性回归和逻辑回归模型。假设模型的输入是特征向量 $\vec x$， 则它们的预测函数分别是：</p>
+<script type="math/tex; mode=display">
+\hat y = f(\vec x) = w_0 + \sum_{i = 1}^{n}w_ix_i</script><script type="math/tex; mode=display">
+\hat y = f(\vec x) = \sigma(\vec w\vec x) = \frac{1}{1 + \exp{\{w_0 + \sum_{i = 1}^{n}w_ix_i\}}}</script><p>由于线性模型无法捕获交叉特征带来的信息，因此其预测效果依赖大量的人工特征工程。随着特征量和样本量的增加，人工特征工程的成本越来越高，考虑让模型自动学习特征组合是必然的模型演进方向。</p>
+<h2 id="二阶多项式核-SVM"><a href="#二阶多项式核-SVM" class="headerlink" title="二阶多项式核 SVM"></a>二阶多项式核 SVM</h2><p>既然单纯的线性模型无法捕获交叉特征。那么，最简单直接的做法就是<strong>为两两的特征组合分配一个权重参数</strong>。这些新的权重参数和原始特征对应的参数一样，交给模型去在训练阶段学习。如此一来就形成了如下的预测函数：</p>
+<script type="math/tex; mode=display">
+\hat y = f(\vec x) = w_0 + \sum_{i = 1}^{n}w_ix_i + \sum_{0 < i < j <= n}w_{i, j}x_ix_j</script><p>这实际上就是核函数选择为二阶多项式核的 SVM 模型。</p>
+<p>缺点是：由于 $w<em>{i, j}$的取值 <strong>完全取决于 $x_i$ 和 $x_j$ 的乘积</strong> ，在数据稀疏的场景下，可能存在训练集中 $x_ix_j$ 始终为零的情况。这样一来，模型就无法有效地更新权重 $w</em>{i, j}$了；更进一步，在预测阶段，模型遇到 $x_ix_j$ 不为零的情况可能就很难有效地泛化。</p>
+<h1 id="因子分解机模型"><a href="#因子分解机模型" class="headerlink" title="因子分解机模型"></a>因子分解机模型</h1><p>既然二阶多项式核 SVM 泛化性能不足的原因是「$w_{i, j}$ 的取值 <strong>完全取决于$x_i$和 $x_j$的乘积</strong> 」，那么最直接的办法就是突破这一限制了。</p>
+<p>FM 模型的解决办法是为每个维度的特征（ $x_i$ ）学习一个表征向量（ $v_i$ ，其实可以理解为是特征 ID 的 embedding 向量）。而后将 $x_i$ 和 $x_j$ 的乘积的权重设定为各自表征向量的点积。也就是有如下形式的预测函数：</p>
+<script type="math/tex; mode=display">
+\hat y = f(\vec x) = w_0 + \sum_{i = 1}^{n}w_ix_i + \sum_{0 < i < j <= n}\langle \vec v_i, \vec v_j\rangle x_ix_j</script><p>显然，FM 模型也具有二阶多项式核 SVM 的优点：能够学习到特征两两交叉带来的信息。那么现在的问题是，为什么相对二阶多项式核 SVM 做出的改进能够提高模型的泛化性能？</p>
+<p>如果你熟悉现在深度学习中各种对 item 的 embedding 操作，那么这个问题就不难理解了。FM 模型的表征向量相比深度学习中各种 embedding 其实是一回事——只是少了若干层 MLP，而是直接对交叉特征的组合进行建模。</p>
+<p>我们回到上一小节举的例子：训练集中 $x<em>ix_j$ 始终为零。在二阶多项式核 SVM 中，由于参数权重 $w</em>{i, j}$得不到更新，模型无法学到 $x_i$ 和 $x_j$ 交叉带来的信息。但是在 FM 中， $x_i$ 和 $x_j$ 的参数并不完全由 $x_i$ 和 $x_j$ 的乘积决定。具体来说，每一维特征的表征向量由该维特征与其它所有维度特征的交叉共同决定。于是，只要存在某个 $k$ 使得 $x_i$ 和 $x_k$ 的乘积不总是为零，那么第 $i$ 维特征的表征向量 $\vec v_i$ 就能够学到有效的信息——同理对 $\vec v_j$ 也有同样的结论。于是乎，哪怕在训练集中， $x_ix_j$ 始终为零，其参数 $\langle \vec v_i, \vec v_j\rangle$也是经过了学习更新的，因此能够表现出很好的泛化性能。</p>
+<p>也许有人会说，如果不存在这样的 $k$ 使得 $x_i$ 和 $x_k$ 的乘积不总是为零，会怎么样呢？好吧，这就意味着这一维特征的取值永远是零——那它还有什么意义？从特征列表中删掉它就好啦！</p>
+<h1 id="效率问题"><a href="#效率问题" class="headerlink" title="效率问题"></a>效率问题</h1><p>考虑到 FM 模型会对特征进行二阶组合，在有 $n$ 个原始特征时，交叉特征就会有 <code>$\frac{n ^ 2 - n}{2}$</code> 个。因此，如果不做任何优化，FM 模型的复杂度会是 <code>$O(n^2)$</code> ，具体来说是 <code>$O(kn^2)$</code> （其中 <code>$k$</code> 是表征向量的长度）。在特征规模非常大的场景中，这是不可接受的。</p>
+<p>那么问题来了，是否有办法将复杂度降低到 <code>$O(kn)$</code> 呢？答案是可以的，我们来看针对特征交叉项的一系列变换。</p>
+<script type="math/tex; mode=display">
+\begin{aligned} \sum_{0 < i < j <= n}\langle \vec v_i, \vec v_j\rangle x_ix_j &{} = \sum_{i = 1}^{n - 1}\sum_{j = i + 1}^{n} \langle \vec v_i, \vec v_j\rangle x_ix_j \\ &{} = \frac{1}{2}\sum_{i = 1}^{n}\sum_{j = 1}^{n}\langle \vec v_i, \vec v_j\rangle x_ix_j - \frac{1}{2}\sum_{i = 1}^{n}\langle \vec v_i, \vec v_i\rangle x_ix_i \\ &{} = \frac{1}{2}\biggl(\sum_{i = 1}^{n}\sum_{j = 1}^{n}\sum_{d = 1}^{k}\vec v_{i, d}\vec v_{j, d}x_ix_j - \sum_{i = 1}^{n}\sum_{d = 1}^{k}\vec v_{i, d}^2x_i^2\biggr) \\ &{} = \frac{1}{2}\sum_{d = 1}^{k}\biggl(\sum_{i = 1}^{n}\sum_{j = 1}^{n}\vec v_{i, d}\vec v_{j, d}x_ix_j - \sum_{i = 1}^{n}\vec v_{i, d}^2x_i^2\biggr) \\ &{} = \frac{1}{2}\sum_{d = 1}^{k}\biggl(\Bigl(\sum_{i = 1}^{n}\vec v_{i, d}x_i\Bigr)\Bigl(\sum_{j = 1}^{n}\vec v_{j, d}x_j\Bigr) - \sum_{i = 1}^{n}\vec v_{i, d}^2x_i^2\biggr) \\ &{} = \frac{1}{2}\sum_{d = 1}^{k}\biggl(\Bigl(\sum_{i = 1}^{n}\vec v_{i, d}x_i\Bigr)^2 - \sum_{i = 1}^{n}\vec v_{i, d}^2x_i^2\biggr). \end{aligned}</script><p>如此一来，FM 的预测公式变成了下面这样</p>
+<script type="math/tex; mode=display">
+\begin{aligned} \hat y &{} = f(\vec x) \\ &{} = w_0 + \sum_{i = 1}^{n}w_ix_i + \frac{1}{2}\sum_{d = 1}^{k}\biggl(\Bigl(\sum_{i = 1}^{n}\vec v_{i, d}x_i\Bigr)^2 - \sum_{i = 1}^{n}\vec v_{i, d}^2x_i^2\biggr). \end{aligned}</script><p>扩展：</p>
+<p><a href="https://zhuanlan.zhihu.com/p/50692817" target="_blank" rel="noopener">FFM(Field-aware Factorization Machines)的理论与实践</a></p>
+<p><a href="https://blog.csdn.net/linxid/article/details/80382569" target="_blank" rel="noopener">xlearn安装与实战</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/12/09/机器学习应用/计算广告/最新进展/" rel="next" title="">
+                <i class="fa fa-chevron-left"></i> 
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/12/09/机器学习算法专题/基础理论/海森矩阵/" rel="prev" title="海森矩阵">
+                海森矩阵 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Schwimmer</p>
+              <div class="site-description motion-element" itemprop="description">Record and Think!</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">98</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#交叉特征"><span class="nav-number">1.1.</span> <span class="nav-text">交叉特征</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#模型演进"><span class="nav-number">2.</span> <span class="nav-text">模型演进</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#线性模型"><span class="nav-number">2.1.</span> <span class="nav-text">线性模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二阶多项式核-SVM"><span class="nav-number">2.2.</span> <span class="nav-text">二阶多项式核 SVM</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#因子分解机模型"><span class="nav-number">3.</span> <span class="nav-text">因子分解机模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#效率问题"><span class="nav-number">4.</span> <span class="nav-text">效率问题</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.2.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      "image": {
+        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+        "viewText": "分享到：",
+        "viewSize": "16"
+      },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      </div>
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.2.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+  
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-schwimmer-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://schwimmer.github.io/2019/12/09/机器学习算法专题/fm/因子分解机FM推导/";
+    this.page.identifier = "2019/12/09/机器学习算法专题/fm/因子分解机FM推导/";
+    this.page.title = '因子分解机FM推导';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-schwimmer-github-io.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    window.addEventListener('load', loadComments, false);
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

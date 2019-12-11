@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="转自：https://zhuanlan.zhihu.com/p/85454896 盒子取球的例子和变量定义取第一个球假设有4个盒子，每个盒子里面有不同数量的红、白两种颜色的球，具体如下表  现在从这些盒子中抽取若干个球，每次抽取后记录颜色，再放回原盒子，采样的规则如下： 开始时，按照一个初始概率分布随机选择第一个盒子。   初始概率分布定义为：  \pi = [\pi_i]_N^T$N$ 是盒子的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="隐马尔可夫推导">
+<meta property="og:url" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/index.html">
+<meta property="og:site_name" content="Schwimmer&#39;s Blog">
+<meta property="og:description" content="转自：https://zhuanlan.zhihu.com/p/85454896 盒子取球的例子和变量定义取第一个球假设有4个盒子，每个盒子里面有不同数量的红、白两种颜色的球，具体如下表  现在从这些盒子中抽取若干个球，每次抽取后记录颜色，再放回原盒子，采样的规则如下： 开始时，按照一个初始概率分布随机选择第一个盒子。   初始概率分布定义为：  \pi = [\pi_i]_N^T$N$ 是盒子的">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/v2-fec4d6fc5042da745cb9735fb42af790_hd.jpg">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/v2-5086ec4531b2b1f86200d6369d0e316a_hd.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/v2-ee67e1b6d53957d7cd9ad7ccc446dab7_hd.jpg">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/v2-4b08b4a4fcae66a1dfd0ebdaac75fa30_hd.jpg">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/v2-7111c01df7631ca768df1fb09ee8bb5e_hd.jpg">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203111838035.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203111854399.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203112816804.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203112843655.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/v2-d7a0a527a28521cdd6dc4e539e613517_hd.jpg">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/v2-f307367eb57dab7b76f3290782d4f42e_hd.jpg">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203151202914.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203151448764.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203151616958.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203152112182.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203152922214.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203152953552.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203153130294.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203153252441.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203153435655.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203154948822.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/v2-d39e1c71e535f8e344e9ed659e010e41_hd.jpg">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203155019265.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203155028321.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203161227329.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203161447789.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203161526438.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203161615409.png">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203161635117.png">
+<meta property="og:image" content="https://pic4.zhimg.com/80/v2-42ff2e1b983fccd602c5f91d3525aa97_hd.jpg">
+<meta property="og:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/v2-1dda230ce3021b0b31d02d0474016cca_hd.jpg">
+<meta property="og:updated_time" content="2019-12-03T10:40:48.440Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="隐马尔可夫推导">
+<meta name="twitter:description" content="转自：https://zhuanlan.zhihu.com/p/85454896 盒子取球的例子和变量定义取第一个球假设有4个盒子，每个盒子里面有不同数量的红、白两种颜色的球，具体如下表  现在从这些盒子中抽取若干个球，每次抽取后记录颜色，再放回原盒子，采样的规则如下： 开始时，按照一个初始概率分布随机选择第一个盒子。   初始概率分布定义为：  \pi = [\pi_i]_N^T$N$ 是盒子的">
+<meta name="twitter:image" content="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/v2-fec4d6fc5042da745cb9735fb42af790_hd.jpg">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>隐马尔可夫推导 | Schwimmer's Blog</title>
+  
+
+
+
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-143240576-1"></script>
+  <script>
+    var host = window.location.hostname;
+    if (host !== "localhost" || !true) {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-143240576-1');
+    }
+  </script>
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schwimmer's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Schwimmer">
+      <meta itemprop="description" content="Record and Think!">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schwimmer's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">隐马尔可夫推导
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-12-03 10:25:43 / 修改时间：18:40:48" itemprop="dateCreated datePublished" datetime="2019-12-03T10:25:43+08:00">2019-12-03</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/机器学习算法专题/" itemprop="url" rel="index"><span itemprop="name">机器学习算法专题</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+                 阅读次数： 
+                <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+              </span>
+            </span>
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>转自：<a href="https://zhuanlan.zhihu.com/p/85454896" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/85454896</a></p>
+<h1 id="盒子取球的例子和变量定义"><a href="#盒子取球的例子和变量定义" class="headerlink" title="盒子取球的例子和变量定义"></a>盒子取球的例子和变量定义</h1><h2 id="取第一个球"><a href="#取第一个球" class="headerlink" title="取第一个球"></a>取第一个球</h2><p>假设有4个盒子，每个盒子里面有不同数量的红、白两种颜色的球，具体如下表</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/v2-fec4d6fc5042da745cb9735fb42af790_hd.jpg" alt="img"></p>
+<p>现在从这些盒子中抽取若干个球，每次抽取后记录颜色，再放回原盒子，采样的规则如下：</p>
+<p>开始时，按照一个<strong>初始概率分布</strong>随机选择第一个盒子。</p>
+<blockquote>
+<p> 初始概率分布定义为：</p>
+<script type="math/tex; mode=display">
+\pi = [\pi_i]_N^T</script><p>$N$ 是盒子的总数（例子中是4） </p>
+<p>其中$\pi_i$表示$z$取各个值的概率</p>
+<script type="math/tex; mode=display">
+\pi_i=P(z_t=q_i)</script><p>例如该分布是均匀分布的话，对应的向量就是</p>
+<script type="math/tex; mode=display">
+\pi=[0.25, 0.25, 0.25, 0.25]^T</script></blockquote>
+<p>令第一个盒子叫$z_1$，将z的取值用是$q_i$表示，$i \in {1,2,…,N}$ 。从盒子里面随机取出一个球，使用$x_1$表示</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/v2-5086ec4531b2b1f86200d6369d0e316a_hd.png" alt="img"></p>
+<p>将$x_1$ 的值用变量$v_j$表示，$j \in 1,2,…,M$。M是球的类别数（例子中是2）。</p>
+<p>这样，一共有4个盒子，2种类别，每个盒子取每种球的概率，用一个矩阵表示为</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/v2-ee67e1b6d53957d7cd9ad7ccc446dab7_hd.jpg" alt="img"></p>
+<p>这个矩阵叫<strong>观测概率矩阵（发射矩阵）</strong></p>
+<blockquote>
+<p>观测概率矩阵（发射矩阵）定义为</p>
+<script type="math/tex; mode=display">
+B=[b_{ij}]_{N*M}</script><p>其中$b_{ij}$表示在当前时刻$t$，取第i个盒子$z_t=q_i$时，$x_t=v_j$的概率</p>
+<script type="math/tex; mode=display">
+b_{ij}=P(x_t=v_j|z_t=q_i)</script></blockquote>
+<h2 id="取下一个球"><a href="#取下一个球" class="headerlink" title="取下一个球"></a>取下一个球</h2><p>记录抽取的球的颜色后将其放回，然后在按照如下规则选择下一个盒子$z_2$：</p>
+<ul>
+<li><p>如果当前是盒子1，则选择盒子2</p>
+</li>
+<li><p>如果当前是盒子2或3，则分布以概率0.4和0.6选择前一个或后一个盒子</p>
+</li>
+<li><p>如果当前是盒子4，则各以0.5的概率停留在盒子4或者选择盒子3</p>
+</li>
+</ul>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/v2-4b08b4a4fcae66a1dfd0ebdaac75fa30_hd.jpg" alt="img"></p>
+<p>同样，也可以根据以上规则做出一个表格，其中首列表示当前盒子，首行表示下一个盒子</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/v2-7111c01df7631ca768df1fb09ee8bb5e_hd.jpg" alt="img"></p>
+<p>同样使用一个矩阵（称为<strong>状态转移矩阵</strong>）来表示上表</p>
+<blockquote>
+<p><strong>状态转移矩阵</strong>的定义是</p>
+<script type="math/tex; mode=display">
+A=[a_{ij}]_{N*N}</script><p>其中，$a_{ij}$表示在当前时刻$t$，盒子的取值是$q_i$的状态下，下一时刻转移到$q_j$的概率</p>
+<script type="math/tex; mode=display">
+a_{ij}=P(z_{t+1}=q_j|z_t=q_i)</script></blockquote>
+<p>整理一下上述内容，我们得到两个矩阵和一个向量</p>
+<p>1、状态转移矩阵</p>
+<script type="math/tex; mode=display">
+A=[a_{ij}]_{N*N}</script><p>2、观测概率矩阵（发射矩阵）</p>
+<script type="math/tex; mode=display">
+B=[b_{ij}]_{N*M}</script><p>3、初始概率分布向量</p>
+<script type="math/tex; mode=display">
+\pi = [\pi_i]_N^T</script><p>在后面用$\lambda$表示所有参数。</p>
+<p>根据例子写一个数据生成代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HMM</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, N, M, pi=None, A=None, B=None)</span>:</span></span><br><span class="line">        self.N = N</span><br><span class="line">        self.M = M</span><br><span class="line">        self.pi = pi</span><br><span class="line">        self.A = A</span><br><span class="line">        self.B = B</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 根据给定的概率分布随机返回数据</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_data_with_distribute</span><span class="params">(self, dist)</span>:</span></span><br><span class="line">        <span class="comment"># r = np.random.rand()</span></span><br><span class="line">        <span class="comment"># for i,p in enumerate(dist):</span></span><br><span class="line">        <span class="comment">#     if r &lt; p: return i</span></span><br><span class="line">        <span class="comment">#     r -= p</span></span><br><span class="line">        <span class="comment"># 更好的写法</span></span><br><span class="line">        <span class="keyword">return</span> np.random.choice(np.arange(len(dist)), p=dist)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">generate</span><span class="params">(self, T: int)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        根据给定参数生成观测序列，返回选择的球</span></span><br><span class="line"><span class="string">        T: 指定要生成数据的数量</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="comment"># 根据初始概率分布，选择第一个盒子</span></span><br><span class="line">        z = self.get_data_with_distribute(self.pi)</span><br><span class="line">        <span class="comment"># 根据观察概率矩阵/发射矩阵，选择从盒子里面取出哪个球</span></span><br><span class="line">        x = self.get_data_with_distribute(self.B[z])</span><br><span class="line">        result = [x]</span><br><span class="line">        <span class="comment"># 依次生成余下的状态和观测数据</span></span><br><span class="line">        <span class="keyword">for</span> _ <span class="keyword">in</span> range(T - <span class="number">1</span>):</span><br><span class="line">            <span class="comment"># 根据上一个盒子，用 状态转移矩阵 选出下一个盒子</span></span><br><span class="line">            z = self.get_data_with_distribute(self.A[z])</span><br><span class="line">            x = self.get_data_with_distribute(self.B[z])</span><br><span class="line">            result.append(x)</span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    pi = np.array([<span class="number">.25</span>, <span class="number">.25</span>, <span class="number">.25</span>, <span class="number">.25</span>])</span><br><span class="line">    A = np.array([</span><br><span class="line">        [<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>],</span><br><span class="line">        [<span class="number">.4</span>, <span class="number">0</span>, <span class="number">.6</span>, <span class="number">0</span>],</span><br><span class="line">        [<span class="number">0</span>, <span class="number">.4</span>, <span class="number">0</span>, <span class="number">.6</span>],</span><br><span class="line">        [<span class="number">0</span>, <span class="number">0</span>, <span class="number">.5</span>, <span class="number">.5</span>]</span><br><span class="line">    ])</span><br><span class="line">    B = np.array([</span><br><span class="line">        [<span class="number">.5</span>, <span class="number">.5</span>],</span><br><span class="line">        [<span class="number">.3</span>, <span class="number">.7</span>],</span><br><span class="line">        [<span class="number">.6</span>, <span class="number">.4</span>],</span><br><span class="line">        [<span class="number">.8</span>, <span class="number">.2</span>]])</span><br><span class="line">    hmm = HMM(<span class="number">4</span>, <span class="number">2</span>, pi, A, B)</span><br><span class="line">    print(hmm.generate(<span class="number">10</span>))</span><br></pre></td></tr></table></figure>
+<p>HMM可以解决<strong>三个基本问题</strong>：</p>
+<p>1、概率计算：给定参数$\lambda = (\pi, A, B)$，和观测序列$X = (x_1, x_2, …, x_T)$ ，计算观测序列的条件概率$P(X|\lambda)$ (Forward-backward算法)</p>
+<p>2、参数学习：给定观测序列X，反推参数$\pi, A, B$ (Baum-Welch算法)</p>
+<p>3、解码问题：给定参数$\lambda$和观测序列，求可能性最大的$Z = (z_1, …, Z_T)$ (viterbi算法)</p>
+<p>比如中文分词问题</p>
+<p>HMM首先要<strong>满足两个假设</strong>：</p>
+<p>1、齐次马尔可夫假设：即任意时刻的状态<strong>只依赖</strong>于前一时刻的状态，与其他时刻的状态无关（当然，初始时刻的状态由参数$\pi$决定）：</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203111838035.png" alt="image-20191203111838035"></p>
+<p>2、观测独立假设：即任意时刻的观测只依赖于该时刻的状态，与其他无关：</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203111854399.png" alt="image-20191203111854399"></p>
+<h1 id="概率计算算法"><a href="#概率计算算法" class="headerlink" title="概率计算算法"></a>概率计算算法</h1><p>现在，来看第一个问题，关于概率的计算，由于存在隐变量，所以X的边际概率需要将所有的联合概率加和得到：</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203112816804.png" alt="image-20191203112816804"></p>
+<p>由于给出了$T$个观测数据，所以相应的状态也有T个：</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203112843655.png" alt="image-20191203112843655"></p>
+<p>（1）的时间复杂度是$O(N^T)$级别，有下面两种优化算法</p>
+<h2 id="前向算法"><a href="#前向算法" class="headerlink" title="前向算法"></a>前向算法</h2><p>设有$T$个序列，如下图所示</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/v2-d7a0a527a28521cdd6dc4e539e613517_hd.jpg" alt="img"></p>
+<p>现在定义一个<strong>前向概率</strong>$a_t(i)$，他是t时刻盒子的取值状态$z_t=q_i$，以及$1,2,…t$时刻球的观测值，在给定参数下的<strong>联合概率</strong>：</p>
+<script type="math/tex; mode=display">
+a_t(i)=P(x_1,...,x_t,z_t=q_i|\lambda) \tag{2}</script><p>也就是下图中标记的那一部分</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/v2-f307367eb57dab7b76f3290782d4f42e_hd.jpg" alt="img"></p>
+<p>根据定义，可以得到它的初值：</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203151202914.png" alt="image-20191203151202914"></p>
+<p>前面一个概率就是$\pi_i$的定义，后面一个就是$P(x_1=v_j|z_1=q_i)$，也就是发射矩阵的定义。</p>
+<blockquote>
+<p> $b_i(x_1)$就表示由状态$q_i$生成给定观测数据的概率。假设t时刻观测数据$x_t=v_j$，有</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203151448764.png" alt="image-20191203151448764"></p>
+</blockquote>
+<hr>
+<p>接下来，根据公式（2），再得到最后一个时刻</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203151616958.png" alt="image-20191203151616958"></p>
+<p>由此公式，遍历$z_T$的取值求和，可以得到X的边际概率</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203152112182.png" alt="image-20191203152112182"></p>
+<hr>
+<blockquote>
+<p>上面这段没看懂有什么作用？</p>
+</blockquote>
+<p>假设已知$a<em>t(1),a_t(2),…,a_t(N)$，推导$a</em>{t+1}(*)$，在（2）式的基础上</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203152922214.png" alt="image-20191203152922214"></p>
+<p>引入变量$z_t=q_i$，有</p>
+<blockquote>
+<p>为什么这里可以引入变量？</p>
+</blockquote>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203152953552.png" alt="image-20191203152953552"></p>
+<p>首先，来看上式中红色部分，根据观测独立假设（下文再引用该假设时称作假设2）：<br><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203153130294.png" alt="image-20191203153130294"></p>
+<p>然后是蓝色部分，根据齐次马尔可夫假设（下文再引用该假设时称作假设1）</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203153252441.png" alt="image-20191203153252441"></p>
+<p>将上述结果代入（3）式，得到</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203153435655.png" alt="image-20191203153435655"></p>
+<p>以上就是前向算法的推导，下面根据一个栗子来写代码，假设前面抽了五个球，分别是：红、红、白、白、红，求概率</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment"># 增加一个func</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">evaluate</span><span class="params">(self, X)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        根据给定的参数计算条件概率</span></span><br><span class="line"><span class="string">        X: 观测数据</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        alpha = self.pi * self.B[:,X[<span class="number">0</span>]]</span><br><span class="line">        <span class="comment"># 这里需要再强化，一下子不理解</span></span><br><span class="line">        <span class="keyword">for</span> x <span class="keyword">in</span> X[<span class="number">1</span>:]:</span><br><span class="line">            alpha = np.sum(self.A * alpha.reshape(<span class="number">-1</span>,<span class="number">1</span>) * self.B[:,x].reshape(<span class="number">1</span>,<span class="number">-1</span>), axis=<span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> alpha.sum()</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">print(hmm.evaluate([<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>]))</span><br></pre></td></tr></table></figure>
+<p>上面的注释中的代码是按照公式来写的，可以看出，时间复杂度降为了$O(TN^2)$</p>
+<h2 id="后向算法"><a href="#后向算法" class="headerlink" title="后向算法"></a>后向算法</h2><p>首先定义后向概率：</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203154948822.png" alt="image-20191203154948822"></p>
+<p>也就是下图中的部分</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/v2-d39e1c71e535f8e344e9ed659e010e41_hd.jpg" alt="img"></p>
+<p>规定初始值</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203155019265.png" alt="image-20191203155019265"></p>
+<p>根据（4）式，还可以得到</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203155028321.png" alt="image-20191203155028321"></p>
+<p>然后来看上式和要计算的概率$P(X|\lambda)$的关系</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203161227329.png" alt="image-20191203161227329"></p>
+<p>另外说一点，如果对于前向算法还有印象的话，你会发现：上面$b_i(x_1)\pi_i$也是$a_1(i)$的定义。实际上，对于时刻t，存在以下等式</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203161447789.png" alt="image-20191203161447789"></p>
+<p>接着，假设已知所有的$\beta_{t+1}$，来推导$\beta_t$</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203161526438.png" alt="image-20191203161526438"></p>
+<p>观察上式，蓝色部分自然就是$a_{ij}$。而红色部分，根据假设2可以省去一部分，所以这部分最终变成：</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203161615409.png" alt="image-20191203161615409"></p>
+<p>综合上述结果，最终代入到$\beta_t(i)$，得到：</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/image-20191203161635117.png" alt="image-20191203161635117"></p>
+<p>推导完毕，上代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 后向算法</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">evaluate_backward</span><span class="params">(self, X)</span>:</span></span><br><span class="line">      beta = np.ones(self.N)</span><br><span class="line">      <span class="keyword">for</span> x <span class="keyword">in</span> X[:<span class="number">0</span>:<span class="number">-1</span>]:</span><br><span class="line">          beta_next = np.empty(self.N)</span><br><span class="line">          <span class="keyword">for</span> i <span class="keyword">in</span> range(self.N):</span><br><span class="line">              beta_next[i] = np.sum(self.A[i,:] * self.B[:,x] * beta)</span><br><span class="line">          beta = beta_next</span><br><span class="line">      <span class="keyword">return</span> np.sum(beta * self.pi * self.B[:,X[<span class="number">0</span>]])</span><br></pre></td></tr></table></figure>
+<h1 id="参数学习算法"><a href="#参数学习算法" class="headerlink" title="参数学习算法"></a>参数学习算法</h1><p>（待学习）</p>
+<h1 id="预测算法"><a href="#预测算法" class="headerlink" title="预测算法"></a>预测算法</h1><p>最后一个问题了，解决这个问题的算法叫做维特比（Viterbi）算法。实际上它是一个动态规划求解最优路径的算法，这里的最优路径不过就是对应成最大概率而已，比前面两个问题容易解决得多。直接上例子，如下图所示</p>
+<p><img src="https://pic4.zhimg.com/80/v2-42ff2e1b983fccd602c5f91d3525aa97_hd.jpg" alt="img"></p>
+<p>$x$和$\lambda$是已知，$z$是不能确定，它们的取值都可能是$q$中的一个。</p>
+<p>先来看初始条件和终止条件，假设 $x_1=v_1$，如下图</p>
+<p><img src="//schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/v2-1dda230ce3021b0b31d02d0474016cca_hd.jpg" alt="img"></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/12/02/nlp/bert/keras的bert/" rel="next" title="keras的bert">
+                <i class="fa fa-chevron-left"></i> keras的bert
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/12/03/机器学习算法专题/基础理论/各种概率公式/" rel="prev" title="各种概率公式">
+                各种概率公式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Schwimmer</p>
+              <div class="site-description motion-element" itemprop="description">Record and Think!</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">98</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#盒子取球的例子和变量定义"><span class="nav-number">1.</span> <span class="nav-text">盒子取球的例子和变量定义</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#取第一个球"><span class="nav-number">1.1.</span> <span class="nav-text">取第一个球</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#取下一个球"><span class="nav-number">1.2.</span> <span class="nav-text">取下一个球</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#概率计算算法"><span class="nav-number">2.</span> <span class="nav-text">概率计算算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前向算法"><span class="nav-number">2.1.</span> <span class="nav-text">前向算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后向算法"><span class="nav-number">2.2.</span> <span class="nav-text">后向算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参数学习算法"><span class="nav-number">3.</span> <span class="nav-text">参数学习算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#预测算法"><span class="nav-number">4.</span> <span class="nav-text">预测算法</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Schwimmer</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.2.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      "image": {
+        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+        "viewText": "分享到：",
+        "viewSize": "16"
+      },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      </div>
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.2.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+  
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-schwimmer-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://schwimmer.github.io/2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/";
+    this.page.identifier = "2019/12/03/机器学习算法专题/hmm/隐马尔可夫推导/";
+    this.page.title = '隐马尔可夫推导';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-schwimmer-github-io.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    window.addEventListener('load', loadComments, false);
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
